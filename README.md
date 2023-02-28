@@ -12,9 +12,18 @@ The `pyiron_lammps` package is under development.
 ```
 import os
 from ase.build import bulk
-from pyiron_lammps import PyironLammpsLibrary, ase_to_pyiron, view_potentials, settings
+from pyiron_lammps import PyironLammpsLibrary, ase_to_pyiron, view_potentials, settings, get_sqs_structures
 
-structure = ase_to_pyiron(bulk("Al", cubic=True).repeat([3,3,3]))
+structure_template = ase_to_pyiron(bulk("Al", cubic=True).repeat([3,3,3]))
+element_lst = ["Fe", "Ni", "Cr", "Co", "Cu"]
+count_lst = [22, 22, 22, 21, 21]
+structures, sro_breakdown, num_iterations, cycle_time = get_sqs_structures(
+    structure=structure_template,
+    mole_fractions={el: c/len(structure_template) for el, c in zip(element_lst, count_lst)},
+)
+structure = structures[0]
+
+potential = '2021--Deluigi-O-R--Fe-Ni-Cr-Co-Cu--LAMMPS--ipr1'
 lmp = PyironLammpsLibrary()
 
 lammps_input_template = """\
@@ -26,7 +35,7 @@ thermo ${thermotime}
 run 0"""
 
 df_pot = view_potentials(structure=structure)
-df_pot_selected = df_pot[df_pot.Name=='2005--Mendelev-M-I--Al-Fe--LAMMPS--ipr1'].iloc[0]
+df_pot_selected = df_pot[df_pot.Name==potential].iloc[0]
 
 lmp.interactive_structure_setter(
     structure=structure,
@@ -65,8 +74,7 @@ lmp.close()
 ```
 
 ## Limitations
-* It would be great to use the ASE atoms directly. 
-* Add support for SQS structure generation. 
+* It would be great to use the ASE atoms directly.
 * Add elastic constant, energy volume curve and phonon calculations. 
 
 ## License and Acknowledgments
