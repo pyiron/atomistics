@@ -66,9 +66,11 @@ lmp.close()
 
 ## Limitations
 * It would be great to use the ASE atoms directly. 
+* Add support for SQS structure generation. 
+* Add elastic constant, energy volume curve and phonon calculations. 
 
 ## License and Acknowledgments
-`pyiron_base` is licensed under the BSD license.
+`pyiron_lammps` is licensed under the BSD license.
 
 If you use pyiron in your scientific work, [please consider citing](http://www.sciencedirect.com/science/article/pii/S0927025618304786):
 
