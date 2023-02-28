@@ -9,7 +9,7 @@ The `pyiron_lammps` package is under development.
 * In contrast to all other `pyiron_*` packages, `pyiron_lammps` does not depent on `pyiron_base`. 
 
 ## Example
-```
+```python
 import os
 from ase.build import bulk
 from pyiron_lammps import PyironLammpsLibrary, ase_to_pyiron, view_potentials, settings, get_sqs_structures
