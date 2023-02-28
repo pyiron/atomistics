@@ -11,3 +11,4 @@ from pyiron_lammps.lammps.potential import (
     list_potentials,
 )
 from pyiron_lammps.state.settings import settings
+from pyiron_lammps.sqs.generator import get_sqs_structures
