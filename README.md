@@ -73,9 +73,10 @@ print(lmp.interactive_energy_tot_getter())
 lmp.close()
 ```
 
-## Limitations
-* It would be great to use the ASE atoms directly.
+## Limitations / Next steps
+* Use the ASE atoms directly.
 * Add elastic constant, energy volume curve and phonon calculations. 
+* Use LAMMPS as engine so multiple GenericMasters can use the same LAMMPS instance. 
 
 ## License and Acknowledgments
 `pyiron_lammps` is licensed under the BSD license.
