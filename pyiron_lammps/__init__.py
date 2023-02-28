@@ -12,3 +12,4 @@ from pyiron_lammps.lammps.potential import (
 )
 from pyiron_lammps.state.settings import settings
 from pyiron_lammps.sqs.generator import get_sqs_structures
+from pyiron_lammps.masters.elastic import ElasticMatrixCalculator
