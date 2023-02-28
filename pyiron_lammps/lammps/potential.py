@@ -3,11 +3,9 @@
 # Distributed under the terms of "New BSD License", see the LICENSE file.
 
 import pandas
-import shutil
+from pathlib import Path
 import os
-from pyiron_lammps.state.settings import settings
 from pyiron_lammps.structure.atoms import Atoms
-from typing import List
 
 __author__ = "Joerg Neugebauer, Sudarsan Surendralal, Jan Janssen"
 __copyright__ = (
@@ -100,253 +98,43 @@ class PotentialAbstract(object):
         return str(self.list())
 
     @staticmethod
-    def _get_potential_df(plugin_name, file_name_lst, backward_compatibility_name):
+    def _get_potential_df(plugin_name, file_name_lst, resource_path):
         """
 
         Args:
             plugin_name (str):
             file_name_lst (set):
-            backward_compatibility_name (str):
+            resource_path (str):
 
         Returns:
             pandas.DataFrame:
         """
-        env = os.environ
-        resource_path_lst = settings.resource_paths
-        for conda_var in ["CONDA_PREFIX", "CONDA_DIR"]:
-            if conda_var in env.keys():  # support iprpy-data package
-                path_to_add = os.path.join(env[conda_var], "share", "iprpy")
-                if path_to_add not in resource_path_lst:
-                    resource_path_lst += [path_to_add]
-        df_lst = []
-        for resource_path in resource_path_lst:
-            if os.path.exists(os.path.join(resource_path, plugin_name, "potentials")):
-                resource_path = os.path.join(resource_path, plugin_name, "potentials")
-            if "potentials" in resource_path or "iprpy" in resource_path:
-                for path, folder_lst, file_lst in os.walk(resource_path):
-                    for periodic_table_file_name in file_name_lst:
-                        if (
-                            periodic_table_file_name in file_lst
-                            and periodic_table_file_name.endswith(".csv")
-                        ):
-                            df_lst.append(
-                                pandas.read_csv(
-                                    os.path.join(path, periodic_table_file_name),
-                                    index_col=0,
-                                    converters={
-                                        "Species": lambda x: x.replace("'", "")
-                                        .strip("[]")
-                                        .split(", "),
-                                        "Config": lambda x: x.replace("'", "")
-                                        .replace("\\n", "\n")
-                                        .strip("[]")
-                                        .split(", "),
-                                        "Filename": lambda x: x.replace("'", "")
-                                        .strip("[]")
-                                        .split(", "),
-                                    },
-                                )
-                            )
-        if len(df_lst) > 0:
-            return pandas.concat(df_lst)
-        else:
-            raise ValueError("Was not able to locate the potential files.")
-
-    @staticmethod
-    def _get_potential_default_df(
-        plugin_name,
-        file_name_lst={"potentials_vasp_pbe_default.csv"},
-        backward_compatibility_name="defaultvasppbe",
-    ):
-        """
-
-        Args:
-            plugin_name (str):
-            file_name_lst (set):
-            backward_compatibility_name (str):
-
-        Returns:
-            pandas.DataFrame:
-        """
-        for resource_path in settings.resource_paths:
-            pot_path = os.path.join(resource_path, plugin_name, "potentials")
-            if os.path.exists(pot_path):
-                resource_path = pot_path
-            if "potentials" in resource_path:
-                for path, folder_lst, file_lst in os.walk(resource_path):
-                    for periodic_table_file_name in file_name_lst:
-                        if (
-                            periodic_table_file_name in file_lst
-                            and periodic_table_file_name.endswith(".csv")
-                        ):
-                            return pandas.read_csv(
+        if os.path.exists(os.path.join(resource_path, plugin_name, "potentials")):
+            resource_path = os.path.join(resource_path, plugin_name, "potentials")
+        if "potentials" in resource_path or "iprpy" in resource_path:
+            for path, folder_lst, file_lst in os.walk(resource_path):
+                for periodic_table_file_name in file_name_lst:
+                    if (
+                        periodic_table_file_name in file_lst
+                        and periodic_table_file_name.endswith(".csv")
+                    ):
+                        return pandas.read_csv(
                                 os.path.join(path, periodic_table_file_name),
                                 index_col=0,
-                            )
-                        elif (
-                            periodic_table_file_name in file_lst
-                            and periodic_table_file_name.endswith(".h5")
-                        ):
-                            return pandas.read_hdf(
-                                os.path.join(path, periodic_table_file_name), mode="r"
+                                converters={
+                                    "Species": lambda x: x.replace("'", "")
+                                    .strip("[]")
+                                    .split(", "),
+                                    "Config": lambda x: x.replace("'", "")
+                                    .replace("\\n", "\n")
+                                    .strip("[]")
+                                    .split(", "),
+                                    "Filename": lambda x: x.replace("'", "")
+                                    .strip("[]")
+                                    .split(", "),
+                                },
                             )
         raise ValueError("Was not able to locate the potential files.")
-
-
-class LammpsPotential(object):
-
-    """
-    This module helps write commands which help in the control of parameters related to the potential used in LAMMPS
-    simulations
-    """
-
-    def __init__(self, input_file_name=None):
-        self._potential = None
-        self._attributes = {}
-        self._df = None
-
-    @property
-    def df(self):
-        return self._df
-
-    @df.setter
-    def df(self, new_dataframe):
-        self._df = new_dataframe
-        # ToDo: In future lammps should also support more than one potential file - that is currently not implemented.
-        try:
-            self.load_string("".join(list(new_dataframe["Config"])[0]))
-        except IndexError:
-            raise ValueError(
-                "Potential not found! "
-                "Validate the potential name by self.potential in self.list_potentials()."
-            )
-
-    def remove_structure_block(self):
-        self.remove_keys(["units"])
-        self.remove_keys(["atom_style"])
-        self.remove_keys(["dimension"])
-
-    @property
-    def files(self):
-        if len(self._df["Filename"].values[0]) > 0 and self._df["Filename"].values[
-            0
-        ] != [""]:
-            absolute_file_paths = [
-                files for files in list(self._df["Filename"])[0] if os.path.isabs(files)
-            ]
-            relative_file_paths = [
-                files
-                for files in list(self._df["Filename"])[0]
-                if not os.path.isabs(files)
-            ]
-            env = os.environ
-            resource_path_lst = settings.resource_paths
-            for conda_var in ["CONDA_PREFIX", "CONDA_DIR"]:
-                if conda_var in env.keys():  # support iprpy-data package
-                    path_to_add = settings.convert_path_to_abs_posix(
-                        os.path.join(env[conda_var], "share", "iprpy")
-                    )
-                    if path_to_add not in resource_path_lst:
-                        resource_path_lst.append(path_to_add)
-            for path in relative_file_paths:
-                absolute_file_paths.append(
-                    find_potential_file_base(
-                        path=path,
-                        resource_path_lst=resource_path_lst,
-                        rel_path=os.path.join("lammps", "potentials"),
-                    )
-                )
-            if len(absolute_file_paths) != len(list(self._df["Filename"])[0]):
-                raise ValueError("Was not able to locate the potentials.")
-            else:
-                return absolute_file_paths
-
-    def copy_pot_files(self, working_directory):
-        if self.files is not None:
-            _ = [shutil.copy(path_pot, working_directory) for path_pot in self.files]
-
-    def get_element_lst(self):
-        return list(self._df["Species"])[0]
-
-    def _find_line_by_prefix(self, prefix):
-        """
-        Find a line that starts with the given prefix.  Differences in white
-        space are ignored.  Raises a ValueError if not line matches the prefix.
-
-        Args:
-            prefix (str): line prefix to search for
-
-        Returns:
-            list: words of the matching line
-
-        Raises:
-            ValueError: if not matching line was found
-        """
-
-        def isprefix(prefix, lst):
-            if len(prefix) > len(lst):
-                return False
-            return all(n == l for n, l in zip(prefix, lst))
-
-        # compare the line word by word to also match lines that differ only in
-        # whitespace
-        prefix = prefix.split()
-        for parameter, value in zip(self._dataset["Parameter"], self._dataset["Value"]):
-            words = (parameter + " " + value).strip().split()
-            if isprefix(prefix, words):
-                return words
-
-        raise ValueError('No line with prefix "{}" found.'.format(" ".join(prefix)))
-
-    def get_element_id(self, element_symbol):
-        """
-        Return numeric element id for element. If potential does not contain
-        the element raise a :class:NameError.  Only makes sense for potentials
-        with pair_style "full".
-
-        Args:
-            element_symbol (str): short symbol for element
-
-        Returns:
-            int: id matching the given symbol
-
-        Raise:
-            NameError: if potential does not contain this element
-        """
-
-        try:
-            line = "group {} type".format(element_symbol)
-            return int(self._find_line_by_prefix(line)[3])
-
-        except ValueError:
-            msg = "potential does not contain element {}".format(element_symbol)
-            raise NameError(msg) from None
-
-    def get_charge(self, element_symbol):
-        """
-        Return charge for element. If potential does not specify a charge,
-        raise a :class:NameError.  Only makes sense for potentials
-        with pair_style "full".
-
-        Args:
-            element_symbol (str): short symbol for element
-
-        Returns:
-            float: charge speicified for the given element
-
-        Raises:
-            NameError: if potential does not specify charge for this element
-        """
-
-        try:
-            line = "set group {} charge".format(element_symbol)
-            return float(self._find_line_by_prefix(line)[4])
-
-        except ValueError:
-            msg = "potential does not specify charge for element {}".format(
-                element_symbol
-            )
-            raise NameError(msg) from None
 
 
 class LammpsPotentialFile(PotentialAbstract):
@@ -360,18 +148,19 @@ class LammpsPotentialFile(PotentialAbstract):
         selected_atoms:
     """
 
-    def __init__(self, potential_df=None, default_df=None, selected_atoms=None):
+    def __init__(self, potential_df=None, default_df=None, selected_atoms=None, resource_path=None):
         if potential_df is None:
             potential_df = self._get_potential_df(
                 plugin_name="lammps",
                 file_name_lst={"potentials_lammps.csv"},
-                backward_compatibility_name="lammpspotentials",
+                resource_path=resource_path,
             )
         super(LammpsPotentialFile, self).__init__(
             potential_df=potential_df,
             default_df=default_df,
             selected_atoms=selected_atoms,
         )
+        self._resource_path = resource_path
 
     def default(self):
         if self._default_df is not None:
@@ -417,6 +206,7 @@ class LammpsPotentialFile(PotentialAbstract):
             potential_df=potential_df,
             default_df=self._default_df,
             selected_atoms=selected_atoms,
+            resource_path=self._resource_path
         )
 
 
@@ -456,7 +246,7 @@ def find_potential_file_base(path, resource_path_lst, rel_path):
     )
 
 
-def view_potentials(structure: Atoms) -> pandas.DataFrame:
+def view_potentials(structure: Atoms, resource_path: str) -> pandas.DataFrame:
     """
     List all interatomic potentials for the given atomistic structure including all potential parameters.
 
@@ -464,24 +254,30 @@ def view_potentials(structure: Atoms) -> pandas.DataFrame:
 
     Args:
         structure (Atoms): The structure for which to get potentials.
+        resource_path (str): Path to the "lammps/potentials_lammps.csv" file
 
     Returns:
         pandas.Dataframe: Dataframe including all potential parameters.
     """
     list_of_elements = set(structure.get_chemical_symbols())
-    return LammpsPotentialFile().find(list_of_elements)
+    return LammpsPotentialFile(resource_path=resource_path).find(list_of_elements)
 
 
-def list_potentials(structure: Atoms) -> List[str]:
+def convert_path_to_abs_posix(path: str) -> str:
     """
-    List of interatomic potentials suitable for the given atomic structure.
-
-    See `view_potentials` to get more details.
+    Convert path to an absolute POSIX path
 
     Args:
-        structure (Atoms): The structure for which to get potentials.
+        path (str): input path.
 
     Returns:
-        list: potential names
+        str: absolute path in POSIX format
     """
-    return list(view_potentials(structure)["Name"].values)
+    return (
+        Path(path.strip())
+        .expanduser()
+        .resolve()
+        .absolute()
+        .as_posix()
+        .replace("\\", "/")
+    )

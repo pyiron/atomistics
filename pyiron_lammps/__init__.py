@@ -3,7 +3,6 @@ from pyiron_lammps.helpers.elastic import (
     generate_sqs_structure,
     get_ase_bulk,
     get_lammps_engine,
-    get_potential,
     get_potential_dataframe,
     optimize_structure,
 )

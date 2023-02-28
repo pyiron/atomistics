@@ -1,6 +1,5 @@
 import os
 from ase.build import bulk
-from pyiron_lammps.state.settings import settings
 from pyiron_lammps.sqs.generator import get_sqs_structures
 from pyiron_lammps.masters.elastic import ElasticMatrixCalculator
 from pyiron_lammps.lammps.wrapper import PyironLammpsLibrary
@@ -8,18 +7,21 @@ from pyiron_lammps.structure.atoms import ase_to_pyiron
 from pyiron_lammps.lammps.potential import view_potentials
 
 
-def get_potential(df_pot_select):
-    potential_file_lst = df_pot_select["Filename"]
-    potential_path = [p for p in settings.resource_paths if "iprpy" in p][-1]
-    potential_file_path_lst = [os.path.join(potential_path, f) for f in potential_file_lst]
-    potential_dict = {os.path.basename(f): f for f in potential_file_path_lst}
-    potential_commands = []
-    for l in df_pot_select["Config"]:
-        l = l.replace("\n", "")
-        for key, value in potential_dict.items():
-            l = l.replace(key, value)
-        potential_commands.append(l)
-    return potential_commands
+def update_potential_paths(df_pot, resource_path):
+    config_lst = []
+    for row in df_pot.itertuples():
+        potential_file_lst = row.Filename
+        potential_file_path_lst = [os.path.join(resource_path, f) for f in potential_file_lst]
+        potential_dict = {os.path.basename(f): f for f in potential_file_path_lst}
+        potential_commands = []
+        for l in row.Config:
+            l = l.replace("\n", "")
+            for key, value in potential_dict.items():
+                l = l.replace(key, value)
+            potential_commands.append(l)
+        config_lst.append(potential_commands)
+    df_pot["Config"] = config_lst
+    return df_pot
 
 
 def generate_sqs_structure(structure_template, element_lst, count_lst):
@@ -31,9 +33,6 @@ def generate_sqs_structure(structure_template, element_lst, count_lst):
 
 
 def run_simulation(lmp, structure, potential_dataframe, input_template):
-    # get potential
-    potential_commands = get_potential(df_pot_select=potential_dataframe)
-
     # write structure to LAMMPS
     lmp.interactive_structure_setter(
         structure=structure,
@@ -46,7 +45,7 @@ def run_simulation(lmp, structure, potential_dataframe, input_template):
     )
 
     # execute calculation
-    for c in potential_commands:
+    for c in potential_dataframe.Config:
         lmp.interactive_lib_command(c)
 
     for l in input_template.split("\n"):
@@ -67,7 +66,7 @@ minimize 0.0 0.0001 100000 10000000"""
         lmp=lmp,
         structure=structure,
         potential_dataframe=potential_dataframe,
-        input_template=lammps_input_template_minimize_cell
+        input_template=lammps_input_template_minimize_cell,
     )
 
     # get final structure
@@ -107,7 +106,7 @@ minimize 0.0 0.0001 100000 10000000"""
             lmp=lmp,
             structure=struct,
             potential_dataframe=potential_dataframe,
-            input_template=lammps_input_template_minimize_pos
+            input_template=lammps_input_template_minimize_pos,
         )
         energy_tot_lst[key] = lmp.interactive_energy_tot_getter()
         lmp.interactive_lib_command("clear")
@@ -133,5 +132,8 @@ def get_ase_bulk(*args, **kwargs):
     return ase_to_pyiron(bulk(*args, **kwargs))
 
 
-def get_potential_dataframe(structure):
-    return view_potentials(structure=structure)
+def get_potential_dataframe(structure, resource_path):
+    return update_potential_paths(
+        df_pot=view_potentials(structure=structure, resource_path=resource_path),
+        resource_path=resource_path
+    )
