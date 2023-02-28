@@ -24,7 +24,10 @@ lmp = pyr.get_lammps_engine()
 
 # Select Potential
 potential = '2021--Deluigi-O-R--Fe-Ni-Cr-Co-Cu--LAMMPS--ipr1'
-df_pot = pyr.get_potential_dataframe(structure=structure)
+df_pot = pyr.get_potential_dataframe(
+    structure=structure, 
+    resource_path="/Users/janssen/mambaforge/share/iprpy"
+)
 df_pot_selected = df_pot[df_pot.Name==potential].iloc[0]
 
 # Optimize Structure
