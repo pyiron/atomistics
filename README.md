@@ -129,9 +129,9 @@ lmp.close()
 ```
 
 ## Limitations / Next steps
-*[ ] Use the ASE atoms directly.
-*[X] Add elastic constant, energy volume curve and phonon calculations. 
-*[X] Use LAMMPS as engine so multiple GenericMasters can use the same LAMMPS instance. 
+* [ ] Use the ASE atoms directly.
+* [X] Add elastic constant, energy volume curve and phonon calculations. 
+* [X] Use LAMMPS as engine so multiple GenericMasters can use the same LAMMPS instance. 
 
 ## License and Acknowledgments
 `pyiron_lammps` is licensed under the BSD license.
