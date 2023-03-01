@@ -16,4 +16,4 @@ jobs:
     - uses: psf/black@stable
       with:
         options: "--check --diff"
-        src: "./pyiron_base"
+        src: "./pyiron_lammps"
