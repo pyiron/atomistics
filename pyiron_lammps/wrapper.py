@@ -157,9 +157,7 @@ class PyironLammpsLibrary(object):
                     f"structure has different chemical symbols than old one: {new_symbols} != {old_symbols}"
                 )
         self.interactive_lib_command(command="clear")
-        control_dict = set_selective_dynamics(
-            structure=structure, calc_md=calc_md
-        )
+        control_dict = set_selective_dynamics(structure=structure, calc_md=calc_md)
         self.interactive_lib_command(command="units " + units)
         self.interactive_lib_command(command="dimension " + str(dimension))
         self.interactive_lib_command(command="boundary " + boundary)
