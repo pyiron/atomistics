@@ -24,7 +24,7 @@ class PyironLammpsLibrary(object):
         logger=None,
         log_file=None,
         library=None,
-        diable_log_file=True
+        diable_log_file=True,
     ):
         self._logger = logger
         self._prism = None
@@ -215,7 +215,9 @@ class PyironLammpsLibrary(object):
         for id_eam, el_eam in enumerate(el_eam_lst):
             if el_eam in el_struct_lst:
                 self.interactive_lib_command(
-                    command="mass {0:3d} {1:f}".format(id_eam + 1, atomic_masses[atomic_numbers[el_eam]]),
+                    command="mass {0:3d} {1:f}".format(
+                        id_eam + 1, atomic_masses[atomic_numbers[el_eam]]
+                    ),
                 )
             else:
                 self.interactive_lib_command(
@@ -227,7 +229,9 @@ class PyironLammpsLibrary(object):
             positions = np.matmul(positions, self._prism.R)
         positions = positions.flatten()
         try:
-            elem_all = get_lammps_indicies_from_ase_structure(structure=structure, el_eam_lst=el_eam_lst)
+            elem_all = get_lammps_indicies_from_ase_structure(
+                structure=structure, el_eam_lst=el_eam_lst
+            )
         except KeyError:
             missing = set(get_species_symbols(structure)).difference(el_dict.keys())
             missing = ", ".join([el.Abbreviation for el in missing])
@@ -299,9 +303,7 @@ class PyironLammpsLibrary(object):
 
     def interactive_indices_setter(self, indices, el_eam_lst):
         elem_all = get_lammps_indicies_from_ase_indices(
-            indices=indices,
-            structure=self._structure,
-            el_eam_lst=el_eam_lst
+            indices=indices, structure=self._structure, el_eam_lst=el_eam_lst
         )
         if self._cores == 1:
             self._interactive_library.scatter_atoms(
@@ -553,7 +555,8 @@ def get_lammps_indicies_from_ase_indices(indices, structure, el_eam_lst):
     el_struct_lst = get_species_symbols(structure=structure)
     el_pot_dict = {
         el_eam: id_eam + 1
-        for id_eam, el_eam in enumerate(el_eam_lst) if el_eam in el_struct_lst
+        for id_eam, el_eam in enumerate(el_eam_lst)
+        if el_eam in el_struct_lst
     }
     ind_translate_dict = {
         i: el_pot_dict[el]
@@ -569,7 +572,8 @@ def get_lammps_indicies_from_ase_structure(structure, el_eam_lst):
     el_struct_lst = get_species_symbols(structure=structure)
     el_pot_dict = {
         el_eam: id_eam + 1
-        for id_eam, el_eam in enumerate(el_eam_lst) if el_eam in el_struct_lst
+        for id_eam, el_eam in enumerate(el_eam_lst)
+        if el_eam in el_struct_lst
     }
     symbols_lst = np.array(structure.get_chemical_symbols())
     elem_all = symbols_lst.copy()

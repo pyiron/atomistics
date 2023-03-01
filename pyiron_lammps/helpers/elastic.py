@@ -10,7 +10,9 @@ def update_potential_paths(df_pot, resource_path):
     config_lst = []
     for row in df_pot.itertuples():
         potential_file_lst = row.Filename
-        potential_file_path_lst = [os.path.join(resource_path, f) for f in potential_file_lst]
+        potential_file_path_lst = [
+            os.path.join(resource_path, f) for f in potential_file_lst
+        ]
         potential_dict = {os.path.basename(f): f for f in potential_file_path_lst}
         potential_commands = []
         for l in row.Config:
@@ -26,7 +28,9 @@ def update_potential_paths(df_pot, resource_path):
 def generate_sqs_structure(structure_template, element_lst, count_lst):
     structures, sro_breakdown, num_iterations, cycle_time = get_sqs_structures(
         structure=structure_template,
-        mole_fractions={el: c/len(structure_template) for el, c in zip(element_lst, count_lst)},
+        mole_fractions={
+            el: c / len(structure_template) for el, c in zip(element_lst, count_lst)
+        },
     )
     return structures
 
@@ -78,8 +82,15 @@ minimize 0.0 0.0001 100000 10000000"""
     return structure_copy
 
 
-def calculate_elastic_constants(lmp, structure, potential_dataframe, num_of_point=5, eps_range=0.005, sqrt_eta=True,
-                                fit_order=2):
+def calculate_elastic_constants(
+    lmp,
+    structure,
+    potential_dataframe,
+    num_of_point=5,
+    eps_range=0.005,
+    sqrt_eta=True,
+    fit_order=2,
+):
     lammps_input_template_minimize_pos = """\
 variable thermotime equal 100
 thermo_style custom step temp pe etotal pxx pxy pxz pyy pyz pzz vol
@@ -94,7 +105,7 @@ minimize 0.0 0.0001 100000 10000000"""
         num_of_point=num_of_point,
         eps_range=eps_range,
         sqrt_eta=sqrt_eta,
-        fit_order=fit_order
+        fit_order=fit_order,
     )
     structure_dict = calculator.generate_structures()
 
@@ -112,10 +123,18 @@ minimize 0.0 0.0001 100000 10000000"""
 
     # Fit
     calculator.analyse_structures(energy_tot_lst)
-    return calculator._data['C']
+    return calculator._data["C"]
 
 
-def get_lammps_engine(working_directory=None, cores=1, comm=None, logger=None, log_file=None, library=None, diable_log_file=True):
+def get_lammps_engine(
+    working_directory=None,
+    cores=1,
+    comm=None,
+    logger=None,
+    log_file=None,
+    library=None,
+    diable_log_file=True,
+):
     return PyironLammpsLibrary(
         working_directory=working_directory,
         cores=cores,
@@ -123,7 +142,7 @@ def get_lammps_engine(working_directory=None, cores=1, comm=None, logger=None, l
         logger=logger,
         log_file=log_file,
         library=library,
-        diable_log_file=diable_log_file
+        diable_log_file=diable_log_file,
     )
 
 
@@ -134,5 +153,5 @@ def get_ase_bulk(*args, **kwargs):
 def get_potential_dataframe(structure, resource_path):
     return update_potential_paths(
         df_pot=view_potentials(structure=structure, resource_path=resource_path),
-        resource_path=resource_path
+        resource_path=resource_path,
     )

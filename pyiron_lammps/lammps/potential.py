@@ -116,21 +116,21 @@ class PotentialAbstract(object):
                     and periodic_table_file_name.endswith(".csv")
                 ):
                     return pandas.read_csv(
-                            os.path.join(path, periodic_table_file_name),
-                            index_col=0,
-                            converters={
-                                "Species": lambda x: x.replace("'", "")
-                                .strip("[]")
-                                .split(", "),
-                                "Config": lambda x: x.replace("'", "")
-                                .replace("\\n", "\n")
-                                .strip("[]")
-                                .split(", "),
-                                "Filename": lambda x: x.replace("'", "")
-                                .strip("[]")
-                                .split(", "),
-                            },
-                        )
+                        os.path.join(path, periodic_table_file_name),
+                        index_col=0,
+                        converters={
+                            "Species": lambda x: x.replace("'", "")
+                            .strip("[]")
+                            .split(", "),
+                            "Config": lambda x: x.replace("'", "")
+                            .replace("\\n", "\n")
+                            .strip("[]")
+                            .split(", "),
+                            "Filename": lambda x: x.replace("'", "")
+                            .strip("[]")
+                            .split(", "),
+                        },
+                    )
         raise ValueError("Was not able to locate the potential files.")
 
 
@@ -145,7 +145,13 @@ class LammpsPotentialFile(PotentialAbstract):
         selected_atoms:
     """
 
-    def __init__(self, potential_df=None, default_df=None, selected_atoms=None, resource_path=None):
+    def __init__(
+        self,
+        potential_df=None,
+        default_df=None,
+        selected_atoms=None,
+        resource_path=None,
+    ):
         if potential_df is None:
             potential_df = self._get_potential_df(
                 file_name_lst={"potentials_lammps.csv"},
@@ -202,7 +208,7 @@ class LammpsPotentialFile(PotentialAbstract):
             potential_df=potential_df,
             default_df=self._default_df,
             selected_atoms=selected_atoms,
-            resource_path=self._resource_path
+            resource_path=self._resource_path,
         )
 
 

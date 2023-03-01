@@ -96,9 +96,7 @@ def mole_fractions_to_composition(
 
 def remap_sro(species: Iterable[str], array: np.ndarray):
     # remaps computed short-range order parameters to style of sqsgenerator=v0.0.5
-    species = tuple(
-        sorted(species, key=lambda abbr: atomic_numbers[abbr])
-    )
+    species = tuple(sorted(species, key=lambda abbr: atomic_numbers[abbr]))
     return {
         "{}-{}".format(si, sj): array[:, i, j].tolist()
         for (i, si), (j, sj) in itertools.product(
