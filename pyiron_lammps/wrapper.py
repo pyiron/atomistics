@@ -7,6 +7,7 @@ import numpy as np
 import os
 from scipy import constants
 import warnings
+from pyiron_lammps.constraints import set_selective_dynamics
 
 
 try:  # mpi4py is only supported on Linux and Mac Os X
@@ -156,6 +157,9 @@ class PyironLammpsLibrary(object):
                     f"structure has different chemical symbols than old one: {new_symbols} != {old_symbols}"
                 )
         self.interactive_lib_command(command="clear")
+        control_dict = set_selective_dynamics(
+            structure=structure, calc_md=calc_md
+        )
         self.interactive_lib_command(command="units " + units)
         self.interactive_lib_command(command="dimension " + str(dimension))
         self.interactive_lib_command(command="boundary " + boundary)
@@ -259,6 +263,8 @@ class PyironLammpsLibrary(object):
                 shrinkexceed=False,
             )
         self.interactive_lib_command(command="change_box all remap")
+        for key, value in control_dict.items():
+            self.interactive_lib_command(command=key + " " + value)
         self._structure = structure
 
     def interactive_indices_getter(self):
