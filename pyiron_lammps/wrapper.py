@@ -351,6 +351,18 @@ class PyironLammpsLibrary(object):
             fix_id=fix_id, callback=callback, caller=caller
         )
 
+    def __enter__(self):
+        """
+        Compatibility function for the with statement
+        """
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        Compatibility function for the with statement
+        """
+        self.close()
+
 
 class UnfoldingPrism(Prism):
     """
