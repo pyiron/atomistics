@@ -98,7 +98,7 @@ class PotentialAbstract(object):
         return str(self.list())
 
     @staticmethod
-    def _get_potential_df(plugin_name, file_name_lst, resource_path):
+    def _get_potential_df(file_name_lst, resource_path):
         """
 
         Args:
@@ -109,31 +109,28 @@ class PotentialAbstract(object):
         Returns:
             pandas.DataFrame:
         """
-        if os.path.exists(os.path.join(resource_path, plugin_name, "potentials")):
-            resource_path = os.path.join(resource_path, plugin_name, "potentials")
-        if "potentials" in resource_path or "iprpy" in resource_path:
-            for path, folder_lst, file_lst in os.walk(resource_path):
-                for periodic_table_file_name in file_name_lst:
-                    if (
-                        periodic_table_file_name in file_lst
-                        and periodic_table_file_name.endswith(".csv")
-                    ):
-                        return pandas.read_csv(
-                                os.path.join(path, periodic_table_file_name),
-                                index_col=0,
-                                converters={
-                                    "Species": lambda x: x.replace("'", "")
-                                    .strip("[]")
-                                    .split(", "),
-                                    "Config": lambda x: x.replace("'", "")
-                                    .replace("\\n", "\n")
-                                    .strip("[]")
-                                    .split(", "),
-                                    "Filename": lambda x: x.replace("'", "")
-                                    .strip("[]")
-                                    .split(", "),
-                                },
-                            )
+        for path, folder_lst, file_lst in os.walk(resource_path):
+            for periodic_table_file_name in file_name_lst:
+                if (
+                    periodic_table_file_name in file_lst
+                    and periodic_table_file_name.endswith(".csv")
+                ):
+                    return pandas.read_csv(
+                            os.path.join(path, periodic_table_file_name),
+                            index_col=0,
+                            converters={
+                                "Species": lambda x: x.replace("'", "")
+                                .strip("[]")
+                                .split(", "),
+                                "Config": lambda x: x.replace("'", "")
+                                .replace("\\n", "\n")
+                                .strip("[]")
+                                .split(", "),
+                                "Filename": lambda x: x.replace("'", "")
+                                .strip("[]")
+                                .split(", "),
+                            },
+                        )
         raise ValueError("Was not able to locate the potential files.")
 
 
@@ -151,7 +148,6 @@ class LammpsPotentialFile(PotentialAbstract):
     def __init__(self, potential_df=None, default_df=None, selected_atoms=None, resource_path=None):
         if potential_df is None:
             potential_df = self._get_potential_df(
-                plugin_name="lammps",
                 file_name_lst={"potentials_lammps.csv"},
                 resource_path=resource_path,
             )

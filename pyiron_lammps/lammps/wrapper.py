@@ -545,8 +545,8 @@ def get_structure_indices(structure):
     elements = np.array(structure.get_chemical_symbols())
     indices = elements.copy()
     for k, v in element_indices_dict.items():
-        indices[elements == k] = int(v)
-    return indices.astype(np.int)
+        indices[elements == k] = v
+    return indices.astype(int)
 
 
 def get_lammps_indicies_from_ase_indices(indices, structure, el_eam_lst):
@@ -562,7 +562,7 @@ def get_lammps_indicies_from_ase_indices(indices, structure, el_eam_lst):
     elem_all = indices.copy()
     for k, v in ind_translate_dict.items():
         elem_all[indices == k] = v
-    return elem_all.astype(np.int)
+    return elem_all.astype(int)
 
 
 def get_lammps_indicies_from_ase_structure(structure, el_eam_lst):
@@ -575,4 +575,4 @@ def get_lammps_indicies_from_ase_structure(structure, el_eam_lst):
     elem_all = symbols_lst.copy()
     for k, v in el_pot_dict.items():
         elem_all[symbols_lst == k] = v
-    return elem_all.astype(np.int)
+    return elem_all.astype(int)

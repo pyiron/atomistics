@@ -10,8 +10,6 @@ from ase.data import atomic_numbers
 from ase.atoms import Atoms
 import numpy as np
 from sqsgenerator import sqs_optimize
-
-
 from typing import Dict, Optional, Union, Iterable
 
 
