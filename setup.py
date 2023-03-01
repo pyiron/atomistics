@@ -30,7 +30,7 @@ setup(
     packages=find_packages(exclude=["*tests*", "*docs*", "*binder*", "*conda*", "*notebooks*", "*.ci_support*"]),
     install_requires=[
         'ase==3.22.1',
-        'numpy==1.24.2',
+        'numpy==1.23.5',
         'pandas==1.5.3',
         'pathlib2==2.3.7.post1',
         'scipy==1.10.1',
