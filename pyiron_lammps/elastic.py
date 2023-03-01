@@ -1,19 +1,7 @@
-# coding: utf-8
-# Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
-# Distributed under the terms of "GPLv3", see the LICENSE file.
-
 from collections import OrderedDict
 import numpy as np
 import spglib
 import scipy.constants
-
-__author__ = "Yury Lysogorskiy"
-__copyright__ = "Copyright 2020, Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department"
-__version__ = "1.0"
-__maintainer__ = "Jan Janssen"
-__email__ = "janssen@mpie.de"
-__status__ = "development"
-__date__ = "Sep 1, 2017"
 
 
 def find_symmetry_group_number(struct):

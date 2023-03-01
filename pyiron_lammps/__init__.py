@@ -1,4 +1,4 @@
-from pyiron_lammps.helpers.elastic import (
+from pyiron_lammps.helpers import (
     calculate_elastic_constants,
     generate_sqs_structure,
     get_ase_bulk,

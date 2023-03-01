@@ -1,9 +1,9 @@
 import os
 from ase.build import bulk
-from pyiron_lammps.sqs.generator import get_sqs_structures
-from pyiron_lammps.masters.elastic import ElasticMatrixCalculator
-from pyiron_lammps.lammps.wrapper import PyironLammpsLibrary
-from pyiron_lammps.lammps.potential import view_potentials
+from pyiron_lammps.sqs import get_sqs_structures
+from pyiron_lammps.elastic import ElasticMatrixCalculator
+from pyiron_lammps.wrapper import PyironLammpsLibrary
+from pyiron_lammps.potential import view_potentials
 
 
 def update_potential_paths(df_pot, resource_path):

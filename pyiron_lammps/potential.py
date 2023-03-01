@@ -1,22 +1,7 @@
-# coding: utf-8
-# Copyright (c) Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department
-# Distributed under the terms of "New BSD License", see the LICENSE file.
-
 import pandas
 from pathlib import Path
 import os
 from ase.atoms import Atoms
-
-__author__ = "Joerg Neugebauer, Sudarsan Surendralal, Jan Janssen"
-__copyright__ = (
-    "Copyright 2021, Max-Planck-Institut für Eisenforschung GmbH - "
-    "Computational Materials Design (CM) Department"
-)
-__version__ = "1.0"
-__maintainer__ = "Sudarsan Surendralal"
-__email__ = "surendralal@mpie.de"
-__status__ = "production"
-__date__ = "Sep 1, 2017"
 
 
 class PotentialAbstract(object):
