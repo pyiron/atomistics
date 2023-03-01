@@ -1,9 +1,10 @@
 import os
 from ase.build import bulk
-from pyiron_lammps.sqs import get_sqs_structures
+from pyiron_lammps.decorator import calculation
 from pyiron_lammps.elastic import ElasticMatrixCalculator
-from pyiron_lammps.wrapper import PyironLammpsLibrary
 from pyiron_lammps.potential import view_potentials
+from pyiron_lammps.sqs import get_sqs_structures
+from pyiron_lammps.wrapper import PyironLammpsLibrary
 
 
 def update_potential_paths(df_pot, resource_path):
@@ -35,11 +36,7 @@ def generate_sqs_structure(structure_template, element_lst, count_lst):
     return structures
 
 
-def run_simulation(structure, potential_dataframe, input_template, lmp=None):
-    # initialize LAMMPS
-    if lmp is None:
-        lmp = PyironLammpsLibrary()
-
+def _run_simulation(structure, potential_dataframe, input_template, lmp):
     # write structure to LAMMPS
     lmp.interactive_structure_setter(
         structure=structure,
@@ -61,7 +58,8 @@ def run_simulation(structure, potential_dataframe, input_template, lmp=None):
     return lmp
 
 
-def optimize_structure(structure, potential_dataframe, lmp=None):
+@calculation
+def optimize_structure(lmp, structure, potential_dataframe):
     lammps_input_template_minimize_cell = """\
 fix ensemble all box/relax iso 0.0
 variable thermotime equal 100
@@ -71,12 +69,7 @@ thermo ${thermotime}
 min_style cg
 minimize 0.0 0.0001 100000 10000000"""
 
-    if lmp is None:
-        close_lmp_after_calculation = True
-    else:
-        close_lmp_after_calculation = False
-
-    lmp = run_simulation(
+    lmp = _run_simulation(
         structure=structure,
         potential_dataframe=potential_dataframe,
         input_template=lammps_input_template_minimize_cell,
@@ -90,19 +83,18 @@ minimize 0.0 0.0001 100000 10000000"""
 
     # clean memory
     lmp.interactive_lib_command("clear")
-    if close_lmp_after_calculation:
-        lmp.close()
     return structure_copy
 
 
+@calculation
 def calculate_elastic_constants(
+    lmp,
     structure,
     potential_dataframe,
     num_of_point=5,
     eps_range=0.005,
     sqrt_eta=True,
     fit_order=2,
-    lmp=None,
 ):
     lammps_input_template_minimize_pos = """\
 variable thermotime equal 100
@@ -111,11 +103,6 @@ thermo_modify format float %20.15g
 thermo ${thermotime}
 min_style cg
 minimize 0.0 0.0001 100000 10000000"""
-
-    if lmp is None:
-        close_lmp_after_calculation = True
-    else:
-        close_lmp_after_calculation = False
 
     # Generate structures
     calculator = ElasticMatrixCalculator(
@@ -130,7 +117,7 @@ minimize 0.0 0.0001 100000 10000000"""
     # run calculation
     energy_tot_lst = {}
     for key, struct in structure_dict.items():
-        lmp = run_simulation(
+        lmp = _run_simulation(
             lmp=lmp,
             structure=struct,
             potential_dataframe=potential_dataframe,
@@ -141,10 +128,6 @@ minimize 0.0 0.0001 100000 10000000"""
 
     # fit
     calculator.analyse_structures(energy_tot_lst)
-
-    # clean memory
-    if close_lmp_after_calculation:
-        lmp.close()
     return calculator._data["C"]
 
 
