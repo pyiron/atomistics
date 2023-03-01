@@ -6,12 +6,8 @@ import random
 import warnings
 import itertools
 from multiprocessing import cpu_count
-from pyiron_lammps.structure.periodic_table import ChemicalElement
-from pyiron_lammps.structure.atoms import (
-    Atoms,
-    ase_to_pyiron,
-    pyiron_to_ase,
-)
+from ase.data import atomic_numbers
+from ase.atoms import Atoms
 import numpy as np
 from sqsgenerator import sqs_optimize
 
@@ -103,7 +99,7 @@ def mole_fractions_to_composition(
 def remap_sro(species: Iterable[str], array: np.ndarray):
     # remaps computed short-range order parameters to style of sqsgenerator=v0.0.5
     species = tuple(
-        sorted(species, key=lambda abbr: ChemicalElement(abbr).atomic_number)
+        sorted(species, key=lambda abbr: atomic_numbers[abbr])
     )
     return {
         "{}-{}".format(si, sj): array[:, i, j].tolist()
@@ -116,9 +112,8 @@ def remap_sro(species: Iterable[str], array: np.ndarray):
 
 def remap_sqs_results(result):
     # makes new interface compatible with old one
-    pyiron_structure = ase_to_pyiron(result["structure"])
-    return pyiron_structure, remap_sro(
-        set(pyiron_structure.get_chemical_symbols()), result["parameters"]
+    return result["structure"], remap_sro(
+        set(result["structure"].get_chemical_symbols()), result["parameters"]
     )
 
 
@@ -144,7 +139,6 @@ def get_sqs_structures(
     minimal: Optional[bool] = True,
     similar: Optional[bool] = True,
 ):
-    structure = pyiron_to_ase(structure)
     composition = mole_fractions_to_composition(mole_fractions, len(structure))
 
     settings = dict(

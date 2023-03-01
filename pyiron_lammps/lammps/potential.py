@@ -5,7 +5,7 @@
 import pandas
 from pathlib import Path
 import os
-from pyiron_lammps.structure.atoms import Atoms
+from ase.atoms import Atoms
 
 __author__ = "Joerg Neugebauer, Sudarsan Surendralal, Jan Janssen"
 __copyright__ = (

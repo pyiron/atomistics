@@ -1,4 +1,5 @@
 from ase.calculators.lammps import Prism
+from ase.data import atomic_numbers, atomic_masses
 from ctypes import c_double, c_int
 import decimal as dec
 import importlib
@@ -148,16 +149,13 @@ class PyironLammpsLibrary(object):
         calc_md=True,
     ):
         if self._structure is not None:
-            old_symbols = self._structure.get_species_symbols()
-            new_symbols = structure.get_species_symbols()
+            old_symbols = get_species_symbols(structure=self._structure)
+            new_symbols = get_species_symbols(structure)
             if any(old_symbols != new_symbols):
                 raise ValueError(
                     f"structure has different chemical symbols than old one: {new_symbols} != {old_symbols}"
                 )
         self.interactive_lib_command(command="clear")
-        control_dict = self._set_selective_dynamics(
-            structure=structure, calc_md=calc_md
-        )
         self.interactive_lib_command(command="units " + units)
         self.interactive_lib_command(command="dimension " + str(dimension))
         self.interactive_lib_command(command="boundary " + boundary)
@@ -198,8 +196,7 @@ class PyironLammpsLibrary(object):
                 + str(zhi)
                 + " units box",
             )
-        el_struct_lst = structure.get_species_symbols()
-        el_obj_lst = structure.get_species_objects()
+        el_struct_lst = get_species_symbols(structure)
         if atom_style == "full":
             self.interactive_lib_command(
                 command="create_box "
@@ -217,11 +214,8 @@ class PyironLammpsLibrary(object):
         el_dict = {}
         for id_eam, el_eam in enumerate(el_eam_lst):
             if el_eam in el_struct_lst:
-                id_el = list(el_struct_lst).index(el_eam)
-                el = el_obj_lst[id_el]
-                el_dict[el] = id_eam + 1
                 self.interactive_lib_command(
-                    command="mass {0:3d} {1:f}".format(id_eam + 1, el.AtomicMass),
+                    command="mass {0:3d} {1:f}".format(id_eam + 1, atomic_masses[atomic_numbers[el_eam]]),
                 )
             else:
                 self.interactive_lib_command(
@@ -233,11 +227,9 @@ class PyironLammpsLibrary(object):
             positions = np.matmul(positions, self._prism.R)
         positions = positions.flatten()
         try:
-            elem_all = np.array(
-                [el_dict[el] for el in structure.get_chemical_elements()]
-            )
+            elem_all = get_lammps_indicies_from_ase_structure(structure=structure, el_eam_lst=el_eam_lst)
         except KeyError:
-            missing = set(structure.get_chemical_elements()).difference(el_dict.keys())
+            missing = set(get_species_symbols(structure)).difference(el_dict.keys())
             missing = ", ".join([el.Abbreviation for el in missing])
             raise ValueError(
                 f"Structure contains elements [{missing}], that are not present in the potential!"
@@ -263,107 +255,7 @@ class PyironLammpsLibrary(object):
                 shrinkexceed=False,
             )
         self.interactive_lib_command(command="change_box all remap")
-        for key, value in control_dict.items():
-            self.interactive_lib_command(command=key + " " + value)
         self._structure = structure
-
-    @staticmethod
-    def _set_selective_dynamics(structure, calc_md):
-        control_dict = {}
-        if "selective_dynamics" in structure._tag_list.keys():
-            if structure.selective_dynamics._default is None:
-                structure.selective_dynamics._default = [True, True, True]
-            sel_dyn = np.logical_not(structure.selective_dynamics.list())
-            # Enter loop only if constraints present
-            if len(np.argwhere(np.any(sel_dyn, axis=1)).flatten()) != 0:
-                all_indices = np.arange(len(structure), dtype=int)
-                constraint_xyz = np.argwhere(np.all(sel_dyn, axis=1)).flatten()
-                not_constrained_xyz = np.setdiff1d(all_indices, constraint_xyz)
-                # LAMMPS starts counting from 1
-                constraint_xyz += 1
-                ind_x = np.argwhere(sel_dyn[not_constrained_xyz, 0]).flatten()
-                ind_y = np.argwhere(sel_dyn[not_constrained_xyz, 1]).flatten()
-                ind_z = np.argwhere(sel_dyn[not_constrained_xyz, 2]).flatten()
-                constraint_xy = not_constrained_xyz[np.intersect1d(ind_x, ind_y)] + 1
-                constraint_yz = not_constrained_xyz[np.intersect1d(ind_y, ind_z)] + 1
-                constraint_zx = not_constrained_xyz[np.intersect1d(ind_z, ind_x)] + 1
-                constraint_x = (
-                    not_constrained_xyz[np.setdiff1d(np.setdiff1d(ind_x, ind_y), ind_z)]
-                    + 1
-                )
-                constraint_y = (
-                    not_constrained_xyz[np.setdiff1d(np.setdiff1d(ind_y, ind_z), ind_x)]
-                    + 1
-                )
-                constraint_z = (
-                    not_constrained_xyz[np.setdiff1d(np.setdiff1d(ind_z, ind_x), ind_y)]
-                    + 1
-                )
-                control_dict = {}
-                if len(constraint_xyz) > 0:
-                    control_dict["group constraintxyz"] = "id " + " ".join(
-                        [str(ind) for ind in constraint_xyz]
-                    )
-                    control_dict[
-                        "fix constraintxyz"
-                    ] = "constraintxyz setforce 0.0 0.0 0.0"
-                    if calc_md:
-                        control_dict["velocity constraintxyz"] = "set 0.0 0.0 0.0"
-                if len(constraint_xy) > 0:
-                    control_dict["group constraintxy"] = "id " + " ".join(
-                        [str(ind) for ind in constraint_xy]
-                    )
-                    control_dict[
-                        "fix constraintxy"
-                    ] = "constraintxy setforce 0.0 0.0 NULL"
-                    if calc_md:
-                        control_dict["velocity constraintxy"] = "set 0.0 0.0 NULL"
-                if len(constraint_yz) > 0:
-                    control_dict["group constraintyz"] = "id " + " ".join(
-                        [str(ind) for ind in constraint_yz]
-                    )
-                    control_dict[
-                        "fix constraintyz"
-                    ] = "constraintyz setforce NULL 0.0 0.0"
-                    if calc_md:
-                        control_dict["velocity constraintyz"] = "set NULL 0.0 0.0"
-                if len(constraint_zx) > 0:
-                    control_dict["group constraintxz"] = "id " + " ".join(
-                        [str(ind) for ind in constraint_zx]
-                    )
-                    control_dict[
-                        "fix constraintxz"
-                    ] = "constraintxz setforce 0.0 NULL 0.0"
-                    if calc_md:
-                        control_dict["velocity constraintxz"] = "set 0.0 NULL 0.0"
-                if len(constraint_x) > 0:
-                    control_dict["group constraintx"] = "id " + " ".join(
-                        [str(ind) for ind in constraint_x]
-                    )
-                    control_dict[
-                        "fix constraintx"
-                    ] = "constraintx setforce 0.0 NULL NULL"
-                    if calc_md:
-                        control_dict["velocity constraintx"] = "set 0.0 NULL NULL"
-                if len(constraint_y) > 0:
-                    control_dict["group constrainty"] = "id " + " ".join(
-                        [str(ind) for ind in constraint_y]
-                    )
-                    control_dict[
-                        "fix constrainty"
-                    ] = "constrainty setforce NULL 0.0 NULL"
-                    if calc_md:
-                        control_dict["velocity constrainty"] = "set NULL 0.0 NULL"
-                if len(constraint_z) > 0:
-                    control_dict["group constraintz"] = "id " + " ".join(
-                        [str(ind) for ind in constraint_z]
-                    )
-                    control_dict[
-                        "fix constraintz"
-                    ] = "constraintz setforce NULL NULL 0.0"
-                    if calc_md:
-                        control_dict["velocity constraintz"] = "set NULL NULL 0.0"
-        return control_dict
 
     def interactive_indices_getter(self):
         return np.array(self._interactive_library.gather_atoms("type", 0, 1))
@@ -406,15 +298,11 @@ class PyironLammpsLibrary(object):
         return pp
 
     def interactive_indices_setter(self, indices, el_eam_lst):
-        el_struct_lst = self._structure.get_species_symbols()
-        el_obj_lst = self._structure.get_species_objects()
-        el_dict = {}
-        for id_eam, el_eam in enumerate(el_eam_lst):
-            if el_eam in el_struct_lst:
-                id_el = list(el_struct_lst).index(el_eam)
-                el = el_obj_lst[id_el]
-                el_dict[el] = id_eam + 1
-        elem_all = np.array([el_dict[self._structure.species[el]] for el in indices])
+        elem_all = get_lammps_indicies_from_ase_indices(
+            indices=indices,
+            structure=self._structure,
+            el_eam_lst=el_eam_lst
+        )
         if self._cores == 1:
             self._interactive_library.scatter_atoms(
                 "type", 0, 1, (len(elem_all) * c_int)(*elem_all)
@@ -644,3 +532,47 @@ def _check_ortho_prism(prism, rtol=0.0, atol=1e-08):
     return np.isclose(prism.R, np.eye(3), rtol=rtol, atol=atol).all()
 
 
+def get_species_symbols(structure):
+    return np.array(sorted(structure.symbols.indices().keys()))
+
+
+def get_species_indices_dict(structure):
+    return {el: i for i, el in enumerate(sorted(structure.symbols.indices().keys()))}
+
+
+def get_structure_indices(structure):
+    element_indices_dict = get_species_indices_dict(structure=structure)
+    elements = np.array(structure.get_chemical_symbols())
+    indices = elements.copy()
+    for k, v in element_indices_dict.items():
+        indices[elements == k] = int(v)
+    return indices.astype(np.int)
+
+
+def get_lammps_indicies_from_ase_indices(indices, structure, el_eam_lst):
+    el_struct_lst = get_species_symbols(structure=structure)
+    el_pot_dict = {
+        el_eam: id_eam + 1
+        for id_eam, el_eam in enumerate(el_eam_lst) if el_eam in el_struct_lst
+    }
+    ind_translate_dict = {
+        i: el_pot_dict[el]
+        for i, el in enumerate(sorted(structure.symbols.indices().keys()))
+    }
+    elem_all = indices.copy()
+    for k, v in ind_translate_dict.items():
+        elem_all[indices == k] = v
+    return elem_all.astype(np.int)
+
+
+def get_lammps_indicies_from_ase_structure(structure, el_eam_lst):
+    el_struct_lst = get_species_symbols(structure=structure)
+    el_pot_dict = {
+        el_eam: id_eam + 1
+        for id_eam, el_eam in enumerate(el_eam_lst) if el_eam in el_struct_lst
+    }
+    symbols_lst = np.array(structure.get_chemical_symbols())
+    elem_all = symbols_lst.copy()
+    for k, v in el_pot_dict.items():
+        elem_all[symbols_lst == k] = v
+    return elem_all.astype(np.int)

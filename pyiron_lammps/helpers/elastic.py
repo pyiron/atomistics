@@ -3,7 +3,6 @@ from ase.build import bulk
 from pyiron_lammps.sqs.generator import get_sqs_structures
 from pyiron_lammps.masters.elastic import ElasticMatrixCalculator
 from pyiron_lammps.lammps.wrapper import PyironLammpsLibrary
-from pyiron_lammps.structure.atoms import ase_to_pyiron
 from pyiron_lammps.lammps.potential import view_potentials
 
 
@@ -129,7 +128,7 @@ def get_lammps_engine(working_directory=None, cores=1, comm=None, logger=None, l
 
 
 def get_ase_bulk(*args, **kwargs):
-    return ase_to_pyiron(bulk(*args, **kwargs))
+    return bulk(*args, **kwargs)
 
 
 def get_potential_dataframe(structure, resource_path):

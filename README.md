@@ -6,7 +6,7 @@ The `pyiron_lammps` package is under development.
 ## Idea
 * The `pyiron_lammps` package is designed to calculate concentration dependent material properties, like the elastic constants, energy-volume curves and phonons for interatomic potentials. 
 * It uses `mpi4py` for parallel execution, does not write any files to the file system and does not use any database. With this combination is it one order of magnitude faster than competing software packages for evaluating material properties for interatomic potentials. 
-* In contrast to all other `pyiron_*` packages, `pyiron_lammps` does not depent on `pyiron_base`. 
+* In contrast to all other `pyiron_*` packages, `pyiron_lammps` does not depent on `pyiron_base`. Overall the dependencies are designed to be minimal. 
 
 ## Example
 ```python
@@ -52,11 +52,6 @@ print(elastic_matrix)
 # Finalize
 lmp.close()
 ```
-
-## Limitations / Next steps
-* [ ] Use the ASE atoms directly.
-* [X] Add elastic constant, energy volume curve and phonon calculations. 
-* [X] Use LAMMPS as engine so multiple GenericMasters can use the same LAMMPS instance. 
 
 ## License and Acknowledgments
 `pyiron_lammps` is licensed under the BSD license.
