@@ -1,4 +1,3 @@
-from mpi4py import MPI
 from pympipool import Pool
 from pyiron_lammps.wrapper import PyironLammpsLibrary
 from pyiron_lammps.calculation import (
@@ -9,6 +8,8 @@ from pyiron_lammps.calculation import (
 
 
 def _get_lammps_mpi():
+    # To get the right instance of MPI.COMM_SELF it is necessary to import it inside the function.
+    from mpi4py import MPI
     return PyironLammpsLibrary(
         working_directory=None,
         cores=1,

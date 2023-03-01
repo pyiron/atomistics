@@ -138,26 +138,26 @@ class TestProjectData(unittest.TestCase):
         self.assertEqual(len(structure_opt_lst[0]), sum(self.count_lst))
         self.assertTrue(all(validate_elastic_constants(elastic_matrix=elastic_matrix)))
 
-    # def test_example_elastic_constants_parallel_cores_two(self):
-    #     structure_opt_lst = pyr.optimize_structure_parallel(
-    #         structure_list=[self.structure.copy()],
-    #         potential_dataframe=self.df_pot_selected,
-    #         cores=2
-    #     )
-    #
-    #     # Calculate Elastic Constants
-    #     elastic_matrix = pyr.calculate_elastic_constants_parallel(
-    #         structure_list=structure_opt_lst,
-    #         potential_dataframe=self.df_pot_selected,
-    #         num_of_point=5,
-    #         eps_range=0.005,
-    #         sqrt_eta=True,
-    #         fit_order=2,
-    #         cores=2
-    #     )[0]
-    #
-    #     self.assertEqual(len(structure_opt_lst[0]), sum(self.count_lst))
-    #     self.assertTrue(all(validate_elastic_constants(elastic_matrix=elastic_matrix)))
+    def test_example_elastic_constants_parallel_cores_two(self):
+        structure_opt_lst = pyr.optimize_structure_parallel(
+            structure_list=[self.structure.copy()],
+            potential_dataframe=self.df_pot_selected,
+            cores=2
+        )
+
+        # Calculate Elastic Constants
+        elastic_matrix = pyr.calculate_elastic_constants_parallel(
+            structure_list=structure_opt_lst,
+            potential_dataframe=self.df_pot_selected,
+            num_of_point=5,
+            eps_range=0.005,
+            sqrt_eta=True,
+            fit_order=2,
+            cores=2
+        )[0]
+
+        self.assertEqual(len(structure_opt_lst[0]), sum(self.count_lst))
+        self.assertTrue(all(validate_elastic_constants(elastic_matrix=elastic_matrix)))
 
     def test_example_elastic_constants_with_minimization(self):
         with pyr.get_lammps_engine() as lmp:
@@ -173,17 +173,17 @@ class TestProjectData(unittest.TestCase):
 
         self.assertTrue(all(validate_elastic_constants(elastic_matrix=elastic_matrix)))
 
-    # def test_example_elastic_constants_with_minimization_parallel_cores_two(self):
-    #     elastic_matrix = pyr.calculate_elastic_constants_with_minimization_parallel(
-    #         structure_list=[self.structure.copy()],
-    #         potential_dataframe=self.df_pot_selected,
-    #         num_of_point=5,
-    #         eps_range=0.005,
-    #         sqrt_eta=True,
-    #         fit_order=2,
-    #         cores=2
-    #     )[0]
-    #     self.assertTrue(all(validate_elastic_constants(elastic_matrix=elastic_matrix)))
+    def test_example_elastic_constants_with_minimization_parallel_cores_two(self):
+        elastic_matrix = pyr.calculate_elastic_constants_with_minimization_parallel(
+            structure_list=[self.structure.copy()],
+            potential_dataframe=self.df_pot_selected,
+            num_of_point=5,
+            eps_range=0.005,
+            sqrt_eta=True,
+            fit_order=2,
+            cores=2
+        )[0]
+        self.assertTrue(all(validate_elastic_constants(elastic_matrix=elastic_matrix)))
 
     def test_example_elastic_constants_with_minimization_parallel_cores_one(self):
         elastic_matrix = pyr.calculate_elastic_constants_with_minimization_parallel(
