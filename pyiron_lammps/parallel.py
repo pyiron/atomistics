@@ -7,38 +7,52 @@ from pyiron_lammps.calculation import (
 )
 
 
-def _get_lammps_mpi():
-    # To get the right instance of MPI.COMM_SELF it is necessary to import it inside the function.
-    from mpi4py import MPI
+def _get_lammps_mpi(enable_mpi=True):
+    if enable_mpi:
+        # To get the right instance of MPI.COMM_SELF it is necessary to import it inside the function.
+        from mpi4py import MPI
 
-    return PyironLammpsLibrary(
-        working_directory=None,
-        cores=1,
-        comm=MPI.COMM_SELF,
-        logger=None,
-        log_file=None,
-        library=None,
-        diable_log_file=True,
-    )
+        return PyironLammpsLibrary(
+            working_directory=None,
+            cores=1,
+            comm=MPI.COMM_SELF,
+            logger=None,
+            log_file=None,
+            library=None,
+            diable_log_file=True,
+        )
+    else:
+        return PyironLammpsLibrary(
+            working_directory=None,
+            cores=1,
+            comm=None,
+            logger=None,
+            log_file=None,
+            library=None,
+            diable_log_file=True,
+        )
 
 
 def _parallel_execution(function, input_parameter_lst, cores=1):
     if cores == 1:
         return [
-            function(input_parameter=input_parameter)
+            function(input_parameter=input_parameter + [False])
             for input_parameter in input_parameter_lst
         ]
     elif cores > 1:
         with Pool(cores=cores) as p:
-            return p.map(function=function, lst=input_parameter_lst)
+            return p.map(
+                function=function,
+                lst=[input_parameter + [True] for input_parameter in input_parameter_lst]
+            )
     else:
         raise ValueError("The number of cores has to be a positive integer.")
 
 
 def _optimize_structure_serial(input_parameter):
-    structure, potential_dataframe = input_parameter
+    structure, potential_dataframe, enable_mpi = input_parameter
     return optimize_structure(
-        lmp=_get_lammps_mpi(),
+        lmp=_get_lammps_mpi(enable_mpi=enable_mpi),
         structure=structure,
         potential_dataframe=potential_dataframe,
     )
@@ -52,9 +66,10 @@ def _calculate_elastic_constants_serial(input_parameter):
         eps_range,
         sqrt_eta,
         fit_order,
+        enable_mpi,
     ) = input_parameter
     return calculate_elastic_constants(
-        lmp=_get_lammps_mpi(),
+        lmp=_get_lammps_mpi(enable_mpi=enable_mpi),
         structure=structure,
         potential_dataframe=potential_dataframe,
         num_of_point=num_of_point,
@@ -72,9 +87,10 @@ def _calculate_elastic_constants_with_minimization_serial(input_parameter):
         eps_range,
         sqrt_eta,
         fit_order,
+        enable_mpi,
     ) = input_parameter
     return calculate_elastic_constants_with_minimization(
-        lmp=_get_lammps_mpi(),
+        lmp=_get_lammps_mpi(enable_mpi=enable_mpi),
         structure=structure,
         potential_dataframe=potential_dataframe,
         num_of_point=num_of_point,
