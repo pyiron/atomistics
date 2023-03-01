@@ -3,6 +3,20 @@ import unittest
 import pyiron_lammps as pyr
 
 
+def validate_elastic_constants(elastic_matrix):
+    return [
+        elastic_matrix[0, 0] > 200,
+        elastic_matrix[1, 1] > 200,
+        elastic_matrix[2, 2] > 200,
+        elastic_matrix[0, 1] > 135,
+        elastic_matrix[0, 2] > 135,
+        elastic_matrix[1, 2] > 135,
+        elastic_matrix[3, 3] > 100,
+        elastic_matrix[4, 4] > 100,
+        elastic_matrix[5, 5] > 100,
+    ]
+
+
 class TestProjectData(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -48,15 +62,7 @@ class TestProjectData(unittest.TestCase):
             sqrt_eta=True,
             fit_order=2
         )
-        self.assertTrue(elastic_matrix[0, 0] > 200)
-        self.assertTrue(elastic_matrix[1, 1] > 200)
-        self.assertTrue(elastic_matrix[2, 2] > 200)
-        self.assertTrue(elastic_matrix[0, 1] > 135)
-        self.assertTrue(elastic_matrix[0, 2] > 135)
-        self.assertTrue(elastic_matrix[1, 2] > 135)
-        self.assertTrue(elastic_matrix[3, 3] > 100)
-        self.assertTrue(elastic_matrix[4, 4] > 100)
-        self.assertTrue(elastic_matrix[5, 5] > 100)
+        self.assertTrue(all(validate_elastic_constants(elastic_matrix=elastic_matrix)))
 
         # Finalize
         lmp.close()
@@ -93,15 +99,7 @@ class TestProjectData(unittest.TestCase):
             sqrt_eta=True,
             fit_order=2
         )
-        self.assertTrue(elastic_matrix[0, 0] > 200)
-        self.assertTrue(elastic_matrix[1, 1] > 200)
-        self.assertTrue(elastic_matrix[2, 2] > 200)
-        self.assertTrue(elastic_matrix[0, 1] > 135)
-        self.assertTrue(elastic_matrix[0, 2] > 135)
-        self.assertTrue(elastic_matrix[1, 2] > 135)
-        self.assertTrue(elastic_matrix[3, 3] > 100)
-        self.assertTrue(elastic_matrix[4, 4] > 100)
-        self.assertTrue(elastic_matrix[5, 5] > 100)
+        self.assertTrue(all(validate_elastic_constants(elastic_matrix=elastic_matrix)))
 
     def test_example_elastic_constants_with_statement(self):
         # Generate SQS Structure
@@ -112,21 +110,20 @@ class TestProjectData(unittest.TestCase):
         )[0]
         self.assertEqual(len(structure), sum(self.count_lst))
 
-        with pyr.get_lammps_engine() as lmp:
-            # Select Potential
-            df_pot = pyr.get_potential_dataframe(
-                structure=structure,
-                resource_path=self.resource_path
-            )
-            df_pot_selected = df_pot[df_pot.Name == self.potential].iloc[0]
+        # Select Potential
+        df_pot = pyr.get_potential_dataframe(
+            structure=structure,
+            resource_path=self.resource_path
+        )
+        df_pot_selected = df_pot[df_pot.Name == self.potential].iloc[0]
 
+        with pyr.get_lammps_engine() as lmp:
             # Optimize Structure
             structure_opt = pyr.optimize_structure(
                 lmp=lmp,
                 structure=structure,
                 potential_dataframe=df_pot_selected
             )
-            self.assertEqual(len(structure_opt), sum(self.count_lst))
 
             # Calculate Elastic Constants
             elastic_matrix = pyr.calculate_elastic_constants(
@@ -138,12 +135,6 @@ class TestProjectData(unittest.TestCase):
                 sqrt_eta=True,
                 fit_order=2
             )
-            self.assertTrue(elastic_matrix[0, 0] > 200)
-            self.assertTrue(elastic_matrix[1, 1] > 200)
-            self.assertTrue(elastic_matrix[2, 2] > 200)
-            self.assertTrue(elastic_matrix[0, 1] > 135)
-            self.assertTrue(elastic_matrix[0, 2] > 135)
-            self.assertTrue(elastic_matrix[1, 2] > 135)
-            self.assertTrue(elastic_matrix[3, 3] > 100)
-            self.assertTrue(elastic_matrix[4, 4] > 100)
-            self.assertTrue(elastic_matrix[5, 5] > 100)
+
+        self.assertEqual(len(structure_opt), sum(self.count_lst))
+        self.assertTrue(all(validate_elastic_constants(elastic_matrix=elastic_matrix)))
