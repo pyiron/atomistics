@@ -1,0 +1,3 @@
+include versioneer.py
+include pyiron_lammps/_version.py
+include LICENSE
