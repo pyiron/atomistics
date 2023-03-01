@@ -43,7 +43,9 @@ def _parallel_execution(function, input_parameter_lst, cores=1):
         with Pool(cores=cores) as p:
             return p.map(
                 function=function,
-                lst=[input_parameter + [True] for input_parameter in input_parameter_lst]
+                lst=[
+                    input_parameter + [True] for input_parameter in input_parameter_lst
+                ],
             )
     else:
         raise ValueError("The number of cores has to be a positive integer.")
