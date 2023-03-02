@@ -19,9 +19,6 @@ structure = pyr.generate_sqs_structure(
     count_lst=[22, 22, 22, 21, 21]
 )[0]
 
-# Initialize Engine 
-lmp = pyr.get_lammps_engine()
-
 # Select Potential
 potential = '2021--Deluigi-O-R--Fe-Ni-Cr-Co-Cu--LAMMPS--ipr1'
 df_pot = pyr.get_potential_dataframe(
@@ -32,14 +29,12 @@ df_pot_selected = df_pot[df_pot.Name==potential].iloc[0]
 
 # Optimize Structure
 structure_opt = pyr.optimize_structure(
-    lmp=lmp, 
     structure=structure, 
     potential_dataframe=df_pot_selected
 )
 
 # Calculate Elastic Constants
 elastic_matrix = pyr.calculate_elastic_constants(
-    lmp=lmp, 
     structure=structure_opt, 
     potential_dataframe=df_pot_selected, 
     num_of_point=5, 
@@ -48,10 +43,19 @@ elastic_matrix = pyr.calculate_elastic_constants(
     fit_order=2
 )
 print(elastic_matrix)
-
-# Finalize
-lmp.close()
 ```
+
+## Features
+* `generate_sqs_structure` - generate an SQS structure using `sqsgenerator`.
+* `get_ase_bulk` - create an `ase.build.bulk` structure.
+* `get_lammps_engine` - create an `LAMMPS` instance, these instances can then be shared between multiple serial calculation.
+* `get_potential_dataframe` - load dataframe of suitable interatomic potentials for the selected atomistic structure from the NIST database.
+* `optimize_structure` - optimize the `cell` and the `positions` of a given structure, while maintaining the cell shape.
+* `calculate_elastic_constants` - calculate the elastic constants.
+* `calculate_elastic_constants_with_minimization` - combine the structure optimization and the calculation of the elastic constants.
+* `optimize_structure_parallel` - optimize a list of atomistic structures all with the same interatomic potential. 
+* `calculate_elastic_constants_parallel` - calculate the elastic constants for a list of atomistic structures. 
+* `calculate_elastic_constants_with_minimization_parallel` - combine the structure optimization and the calculation of the elastic constants for a list of atomistic structures. 
 
 ## License and Acknowledgments
 `pyiron_lammps` is licensed under the BSD license.
