@@ -112,28 +112,37 @@ def optimize_structure_parallel(structure_list, potential_dataframe_list, cores=
                 return _parallel_execution(
                     function=_optimize_structure_serial,
                     input_parameter_lst=[
-                        [structure, potential] for structure, potential in zip(structure_list, potential_dataframe_list)
+                        [structure, potential]
+                        for structure, potential in zip(
+                            structure_list, potential_dataframe_list
+                        )
                     ],
                     cores=cores,
                 )
             else:
-                raise ValueError("Input lists have len(structure_list) != len(potential_dataframe_list) .")
+                raise ValueError(
+                    "Input lists have len(structure_list) != len(potential_dataframe_list) ."
+                )
         elif isinstance(potential_dataframe_list, DataFrame):
             return _parallel_execution(
                 function=_optimize_structure_serial,
                 input_parameter_lst=[
-                    [structure, potential_dataframe_list] for structure in structure_list
+                    [structure, potential_dataframe_list]
+                    for structure in structure_list
                 ],
                 cores=cores,
             )
         else:
-            raise TypeError("potential_dataframe_list should either be an pandas.DataFrame object or a list of those. ")
+            raise TypeError(
+                "potential_dataframe_list should either be an pandas.DataFrame object or a list of those. "
+            )
     elif isinstance(structure_list, Atoms):
         if isinstance(potential_dataframe_list, (list, np.ndarray)):
             return _parallel_execution(
                 function=_optimize_structure_serial,
                 input_parameter_lst=[
-                    [structure_list, potential] for potential in potential_dataframe_list
+                    [structure_list, potential]
+                    for potential in potential_dataframe_list
                 ],
                 cores=cores,
             )
@@ -144,9 +153,13 @@ def optimize_structure_parallel(structure_list, potential_dataframe_list, cores=
                 potential_dataframe=potential_dataframe_list,
             )
         else:
-            raise TypeError("potential_dataframe_list should either be an pandas.DataFrame object or a list of those. ")
+            raise TypeError(
+                "potential_dataframe_list should either be an pandas.DataFrame object or a list of those. "
+            )
     else:
-        raise TypeError("structure_list should either be an ase.atoms.Atoms object or a list of those.")
+        raise TypeError(
+            "structure_list should either be an ase.atoms.Atoms object or a list of those."
+        )
 
 
 def calculate_elastic_constants_parallel(
@@ -164,30 +177,57 @@ def calculate_elastic_constants_parallel(
                 return _parallel_execution(
                     function=_calculate_elastic_constants_serial,
                     input_parameter_lst=[
-                        [structure, potential, num_of_point, eps_range, sqrt_eta, fit_order]
-                        for structure, potential in zip(structure_list, potential_dataframe_list)
+                        [
+                            structure,
+                            potential,
+                            num_of_point,
+                            eps_range,
+                            sqrt_eta,
+                            fit_order,
+                        ]
+                        for structure, potential in zip(
+                            structure_list, potential_dataframe_list
+                        )
                     ],
                     cores=cores,
                 )
             else:
-                raise ValueError("Input lists have len(structure_list) != len(potential_dataframe_list) .")
+                raise ValueError(
+                    "Input lists have len(structure_list) != len(potential_dataframe_list) ."
+                )
         elif isinstance(potential_dataframe_list, DataFrame):
             return _parallel_execution(
                 function=_calculate_elastic_constants_serial,
                 input_parameter_lst=[
-                    [structure, potential_dataframe_list, num_of_point, eps_range, sqrt_eta, fit_order]
+                    [
+                        structure,
+                        potential_dataframe_list,
+                        num_of_point,
+                        eps_range,
+                        sqrt_eta,
+                        fit_order,
+                    ]
                     for structure in structure_list
                 ],
                 cores=cores,
             )
         else:
-            raise TypeError("potential_dataframe_list should either be an pandas.DataFrame object or a list of those. ")
+            raise TypeError(
+                "potential_dataframe_list should either be an pandas.DataFrame object or a list of those. "
+            )
     elif isinstance(structure_list, Atoms):
         if isinstance(potential_dataframe_list, (list, np.ndarray)):
             return _parallel_execution(
                 function=_calculate_elastic_constants_serial,
                 input_parameter_lst=[
-                    [structure_list, potential, num_of_point, eps_range, sqrt_eta, fit_order]
+                    [
+                        structure_list,
+                        potential,
+                        num_of_point,
+                        eps_range,
+                        sqrt_eta,
+                        fit_order,
+                    ]
                     for potential in potential_dataframe_list
                 ],
                 cores=cores,
@@ -203,9 +243,13 @@ def calculate_elastic_constants_parallel(
                 fit_order=fit_order,
             )
         else:
-            raise TypeError("potential_dataframe_list should either be an pandas.DataFrame object or a list of those. ")
+            raise TypeError(
+                "potential_dataframe_list should either be an pandas.DataFrame object or a list of those. "
+            )
     else:
-        raise TypeError("structure_list should either be an ase.atoms.Atoms object or a list of those.")
+        raise TypeError(
+            "structure_list should either be an ase.atoms.Atoms object or a list of those."
+        )
 
 
 def calculate_elastic_constants_with_minimization_parallel(
@@ -223,30 +267,57 @@ def calculate_elastic_constants_with_minimization_parallel(
                 return _parallel_execution(
                     function=_calculate_elastic_constants_with_minimization_serial,
                     input_parameter_lst=[
-                        [structure, potential, num_of_point, eps_range, sqrt_eta, fit_order]
-                        for structure, potential in zip(structure_list, potential_dataframe_list)
+                        [
+                            structure,
+                            potential,
+                            num_of_point,
+                            eps_range,
+                            sqrt_eta,
+                            fit_order,
+                        ]
+                        for structure, potential in zip(
+                            structure_list, potential_dataframe_list
+                        )
                     ],
                     cores=cores,
                 )
             else:
-                raise ValueError("Input lists have len(structure_list) != len(potential_dataframe_list) .")
+                raise ValueError(
+                    "Input lists have len(structure_list) != len(potential_dataframe_list) ."
+                )
         elif isinstance(potential_dataframe_list, DataFrame):
             return _parallel_execution(
                 function=_calculate_elastic_constants_with_minimization_serial,
                 input_parameter_lst=[
-                    [structure, potential_dataframe_list, num_of_point, eps_range, sqrt_eta, fit_order]
+                    [
+                        structure,
+                        potential_dataframe_list,
+                        num_of_point,
+                        eps_range,
+                        sqrt_eta,
+                        fit_order,
+                    ]
                     for structure in structure_list
                 ],
                 cores=cores,
             )
         else:
-            raise TypeError("potential_dataframe_list should either be an pandas.DataFrame object or a list of those. ")
+            raise TypeError(
+                "potential_dataframe_list should either be an pandas.DataFrame object or a list of those. "
+            )
     elif isinstance(structure_list, Atoms):
         if isinstance(potential_dataframe_list, (list, np.ndarray)):
             return _parallel_execution(
                 function=_calculate_elastic_constants_with_minimization_serial,
                 input_parameter_lst=[
-                    [structure_list, potential, num_of_point, eps_range, sqrt_eta, fit_order]
+                    [
+                        structure_list,
+                        potential,
+                        num_of_point,
+                        eps_range,
+                        sqrt_eta,
+                        fit_order,
+                    ]
                     for potential in potential_dataframe_list
                 ],
                 cores=cores,
@@ -262,6 +333,10 @@ def calculate_elastic_constants_with_minimization_parallel(
                 fit_order=fit_order,
             )
         else:
-            raise TypeError("potential_dataframe_list should either be an pandas.DataFrame object or a list of those. ")
+            raise TypeError(
+                "potential_dataframe_list should either be an pandas.DataFrame object or a list of those. "
+            )
     else:
-        raise TypeError("structure_list should either be an ase.atoms.Atoms object or a list of those.")
+        raise TypeError(
+            "structure_list should either be an ase.atoms.Atoms object or a list of those."
+        )
