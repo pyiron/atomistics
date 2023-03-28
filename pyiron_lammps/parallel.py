@@ -1,6 +1,6 @@
 import numpy as np
 from ase.atoms import Atoms
-from pandas import DataFrame
+from pandas import DataFrame, Series
 from pympipool import Pool
 from pyiron_lammps.wrapper import PyironLammpsLibrary
 from pyiron_lammps.calculation import (
@@ -123,7 +123,7 @@ def optimize_structure_parallel(structure_list, potential_dataframe_list, cores=
                 raise ValueError(
                     "Input lists have len(structure_list) != len(potential_dataframe_list) ."
                 )
-        elif isinstance(potential_dataframe_list, DataFrame):
+        elif isinstance(potential_dataframe_list, (DataFrame, Series)):
             return _parallel_execution(
                 function=_optimize_structure_serial,
                 input_parameter_lst=[
@@ -146,7 +146,7 @@ def optimize_structure_parallel(structure_list, potential_dataframe_list, cores=
                 ],
                 cores=cores,
             )
-        elif isinstance(potential_dataframe_list, DataFrame):
+        elif isinstance(potential_dataframe_list, (DataFrame, Series)):
             return optimize_structure(
                 lmp=_get_lammps_mpi(enable_mpi=False),
                 structure=structure_list,
@@ -195,7 +195,7 @@ def calculate_elastic_constants_parallel(
                 raise ValueError(
                     "Input lists have len(structure_list) != len(potential_dataframe_list) ."
                 )
-        elif isinstance(potential_dataframe_list, DataFrame):
+        elif isinstance(potential_dataframe_list, (DataFrame, Series)):
             return _parallel_execution(
                 function=_calculate_elastic_constants_serial,
                 input_parameter_lst=[
@@ -232,7 +232,7 @@ def calculate_elastic_constants_parallel(
                 ],
                 cores=cores,
             )
-        elif isinstance(potential_dataframe_list, DataFrame):
+        elif isinstance(potential_dataframe_list, (DataFrame, Series)):
             return calculate_elastic_constants(
                 lmp=_get_lammps_mpi(enable_mpi=False),
                 structure=structure_list,
@@ -285,7 +285,7 @@ def calculate_elastic_constants_with_minimization_parallel(
                 raise ValueError(
                     "Input lists have len(structure_list) != len(potential_dataframe_list) ."
                 )
-        elif isinstance(potential_dataframe_list, DataFrame):
+        elif isinstance(potential_dataframe_list, (DataFrame, Series)):
             return _parallel_execution(
                 function=_calculate_elastic_constants_with_minimization_serial,
                 input_parameter_lst=[
@@ -322,7 +322,7 @@ def calculate_elastic_constants_with_minimization_parallel(
                 ],
                 cores=cores,
             )
-        elif isinstance(potential_dataframe_list, DataFrame):
+        elif isinstance(potential_dataframe_list, (DataFrame, Series)):
             return calculate_elastic_constants_with_minimization(
                 lmp=_get_lammps_mpi(enable_mpi=False),
                 structure=structure_list,
