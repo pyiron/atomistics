@@ -51,14 +51,14 @@ class TestParallelSingleCore(unittest.TestCase):
     def test_example_elastic_constants_parallel_cores_one(self):
         structure_opt_lst = pyr.optimize_structure_parallel(
             structure_list=[self.structure.copy()],
-            potential_dataframe=self.df_pot_selected,
+            potential_dataframe_list=self.df_pot_selected,
             cores=1
         )
 
         # Calculate Elastic Constants
         elastic_matrix = pyr.calculate_elastic_constants_parallel(
             structure_list=structure_opt_lst,
-            potential_dataframe=self.df_pot_selected,
+            potential_dataframe_list=self.df_pot_selected,
             num_of_point=5,
             eps_range=0.005,
             sqrt_eta=True,
@@ -72,7 +72,7 @@ class TestParallelSingleCore(unittest.TestCase):
     def test_example_elastic_constants_with_minimization_parallel_cores_one(self):
         elastic_matrix = pyr.calculate_elastic_constants_with_minimization_parallel(
             structure_list=[self.structure.copy()],
-            potential_dataframe=self.df_pot_selected,
+            potential_dataframe_list=self.df_pot_selected,
             num_of_point=5,
             eps_range=0.005,
             sqrt_eta=True,
