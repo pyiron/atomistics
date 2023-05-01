@@ -51,4 +51,11 @@ jobs:
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
-      run: for f in $(ls tests/*.py); do echo $f; python $f; done
+      run: for f in $(ls tests/*.py); do if [[ "$f" == *"tests/test_"* ]];then echo $f; coverage run -m unittest $f; fi; done
+    - name: Coverage
+      continue-on-error: True
+      shell: bash -l {0}
+      run: |
+        coverage combine
+        coveralls
+        coverage xml
