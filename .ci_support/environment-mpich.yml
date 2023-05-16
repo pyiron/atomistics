@@ -2,7 +2,7 @@ channels:
 - conda-forge
 dependencies:
 - ase =3.22.1
-- lammps =2022.06.23
+- lammps =2023.03.28
 - mpich
 - numpy =1.23.5
 - pandas =1.5.3
