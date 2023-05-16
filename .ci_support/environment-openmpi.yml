@@ -4,7 +4,7 @@ dependencies:
 - coverage
 - coveralls =3.3.1
 - ase =3.22.1
-- lammps =2022.06.23
+- lammps =2023.03.28
 - numpy =1.23.5
 - openmpi
 - pandas =1.5.3
