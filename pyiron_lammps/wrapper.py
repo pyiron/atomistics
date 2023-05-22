@@ -252,8 +252,7 @@ class PyironLammpsLibrary(object):
             )
         else:
             self._interactive_library.create_atoms(
-                n=len(structure),
-                id=None,
+                ids=None,
                 type=elem_all,
                 x=positions,
                 v=None,
