@@ -33,7 +33,7 @@ setup(
         'numpy==1.23.5',
         'pandas==2.0.1',
         'pathlib2==2.3.7.post1',
-        'pympipool==0.3.0',
+        'pympipool==0.4.0',
         'scipy==1.10.1',
         'spglib==2.0.2',
     ],
