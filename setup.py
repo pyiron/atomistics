@@ -31,7 +31,7 @@ setup(
     install_requires=[
         'ase==3.22.1',
         'numpy==1.23.5',
-        'pandas==2.0.1',
+        'pandas==2.0.2',
         'pathlib2==2.3.7.post1',
         'pympipool==0.5.0',
         'scipy==1.10.1',
