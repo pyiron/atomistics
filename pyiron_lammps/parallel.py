@@ -43,10 +43,10 @@ def _parallel_execution(function, input_parameter_lst, cores=1):
             for input_parameter in input_parameter_lst
         ]
     elif cores > 1:
-        with Pool(cores=cores) as p:
+        with Pool(max_workers=cores) as p:
             return p.map(
-                fn=function,
-                iterables=[
+                func=function,
+                iterable=[
                     input_parameter + [True] for input_parameter in input_parameter_lst
                 ],
             )
