@@ -1,8 +1,9 @@
 import os
 from ase.build import bulk
+from pylammpsmpi import LammpsASELibrary
+
 from pyiron_lammps.potential import view_potentials
 from pyiron_lammps.sqs import get_sqs_structures
-from pyiron_lammps.wrapper import PyironLammpsLibrary
 
 
 def update_potential_paths(df_pot, resource_path):
@@ -43,7 +44,7 @@ def get_lammps_engine(
     library=None,
     diable_log_file=True,
 ):
-    return PyironLammpsLibrary(
+    return LammpsASELibrary(
         working_directory=working_directory,
         cores=cores,
         comm=comm,

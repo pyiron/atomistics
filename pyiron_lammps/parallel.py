@@ -2,7 +2,8 @@ import numpy as np
 from ase.atoms import Atoms
 from pandas import DataFrame, Series
 from pympipool import Pool
-from pyiron_lammps.wrapper import PyironLammpsLibrary
+from pylammpsmpi import LammpsASELibrary
+
 from pyiron_lammps.calculation import (
     optimize_structure,
     calculate_elastic_constants,
@@ -15,7 +16,7 @@ def _get_lammps_mpi(enable_mpi=True):
         # To get the right instance of MPI.COMM_SELF it is necessary to import it inside the function.
         from mpi4py import MPI
 
-        return PyironLammpsLibrary(
+        return LammpsASELibrary(
             working_directory=None,
             cores=1,
             comm=MPI.COMM_SELF,
@@ -25,7 +26,7 @@ def _get_lammps_mpi(enable_mpi=True):
             diable_log_file=True,
         )
     else:
-        return PyironLammpsLibrary(
+        return LammpsASELibrary(
             working_directory=None,
             cores=1,
             comm=None,
