@@ -1,4 +1,4 @@
-from pyiron_lammps.wrapper import PyironLammpsLibrary
+from pylammpsmpi import LammpsASELibrary
 
 
 def calculation(funct):
@@ -6,7 +6,7 @@ def calculation(funct):
         # Create temporary LAMMPS instance if necessary
         if lmp is None:
             close_lmp_after_calculation = True
-            lmp = PyironLammpsLibrary()
+            lmp = LammpsASELibrary()
         else:
             close_lmp_after_calculation = False
 
