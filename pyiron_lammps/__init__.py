@@ -8,6 +8,8 @@ from pyiron_lammps.calculation import (
     optimize_structure,
     calculate_elastic_constants,
     calculate_elastic_constants_with_minimization,
+    calculate_energy_volume_curve,
+    calculate_energy_volume_curve_with_minimization,
 )
 from pyiron_lammps.parallel import (
     optimize_structure_parallel,
