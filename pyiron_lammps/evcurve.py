@@ -75,10 +75,29 @@ class DebyeModel(object):
     def _reset(self):
         self._debye_T = None
 
-    def polynomial(self, volumes=None):
+    def interpolate(self, volumes=None):
         if volumes is None:
             volumes = self.volume
-        return np.poly1d(self._fit_dict["poly_fit"])(volumes)
+        if self._fit_dict["fit_type"] == "polynomial":
+            return np.poly1d(self._fit_dict["poly_fit"])(volumes)
+        elif self._fit_dict["fit_type"] in [
+            "birch",
+            "birchmurnaghan",
+            "murnaghan",
+            "pouriertarantola",
+            "vinet",
+        ]:
+            parameters = [
+                self._fit_dict["energy_eq"],
+                self._fit_dict["bulkmodul_eq"],
+                self._fit_dict["b_prime_eq"],
+                self._fit_dict["volume_eq"],
+            ]
+            return fitfunction(
+                parameters=parameters, vol=volumes, fittype=self._fit_dict["fit_type"]
+            )
+        else:
+            raise ValueError("Unsupported fit_type: ", self._fit_dict["fit_type"])
 
     @property
     def debye_temperature(self):
