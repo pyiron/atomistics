@@ -30,20 +30,25 @@ class DebyeModel(object):
     Calculate Thermodynamic Properties based on the Murnaghan output
     """
 
-    def __init__(self, fit_dict, masses, vol_min, vol_max, num_steps=50):
+    def __init__(self, fit_dict, masses, num_steps=50):
         self._fit_dict = fit_dict
         self._masses = masses
 
         # self._atoms_per_cell = len(murnaghan.structure)
-        self._v_min = vol_min
-        self._v_max = vol_max
+        self._v_min = None
+        self._v_max = None
         self._num_steps = None
 
         self._volume = None
+        self._init_volume()
 
         self.num_steps = num_steps
         self._fit_volume = None
         self._debye_T = None
+
+    def _init_volume(self):
+        vol = self._fit_dict["volume"]
+        self._v_min, self._v_max = np.min(vol), np.max(vol)
 
     def _set_volume(self):
         if self._v_min and self._v_max and self._num_steps:
@@ -62,6 +67,7 @@ class DebyeModel(object):
     @property
     def volume(self):
         if self._volume is None:
+            self._init_volume()
             self._set_volume()
         return self._volume
 
@@ -681,3 +687,7 @@ class EnergyVolumeCurveCalculator(object):
                 + " is not a supported fit_type"
             )
         return self.fit_dict
+
+
+def get_debye_model(fit_dict, masses, num_steps=50):
+    return DebyeModel(fit_dict=fit_dict, masses=masses, num_steps=num_steps)

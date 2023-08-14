@@ -18,11 +18,7 @@ class ThermoBulk(object):
     eV_to_J_per_mol = 1.60217662e-19 * 6.022e23
     kB = 1 / 8.6173303e-5
 
-    def __init__(self, project=None, name=None):
-        # only for compatibility with pyiron objects
-        self._project = project
-        self._name = name
-
+    def __init__(self):
         self._volumes = None
         self._temperatures = None
         self._energies = None
@@ -497,3 +493,14 @@ class ThermoBulk(object):
             ax.ylabel("Temperature [K]")
         ax.plot(self.get_minimum_energy_path(), self.temperatures, *args, **qwargs)
         return ax
+
+
+def get_thermo_bulk_model(temperatures, debye_model):
+    thermo = ThermoBulk()
+    thermo.temperatures = temperatures
+    thermo.volumes = debye_model.volume
+    thermo.energies = (
+        debye_model.interpolate()
+        + debye_model.energy_vib(T=thermo.temperatures, low_T_limit=True).T
+    )
+    return thermo
