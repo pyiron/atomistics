@@ -4,12 +4,13 @@ dependencies:
 - coverage
 - coveralls =3.3.1
 - ase =3.22.1
-- lammps =2022.06.23
+- lammps =2023.03.28
 - numpy =1.23.5
 - openmpi
-- pandas =1.5.3
-- pathlib2 =2.3.7.post1
-- pympipool =0.3.0
-- scipy =1.10.1
+- pandas =2.0.2
+- pympipool =0.5.6
+- pylammpsmpi =0.2.1
+- scipy =1.11.1
 - spglib =2.0.2
 - sqsgenerator =0.2
+- structuretoolkit =0.0.8
