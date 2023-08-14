@@ -31,9 +31,9 @@ setup(
     install_requires=[
         'ase==3.22.1',
         'numpy==1.23.5',
-        'pandas==2.0.1',
-        'pathlib2==2.3.7.post1',
-        'pympipool==0.3.0',
+        'pandas==2.0.2',
+        'pylammpsmpi==0.2.1',
+        'pympipool==0.5.6',
         'scipy==1.10.1',
         'spglib==2.0.2',
         'structuretoolkit==0.0.8',
