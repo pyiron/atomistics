@@ -32,7 +32,7 @@ setup(
         'ase==3.22.1',
         'numpy==1.23.5',
         'pandas==2.0.3',
-        'pylammpsmpi==0.2.1',
+        'pylammpsmpi==0.2.2',
         'pympipool==0.6.2',
         'scipy==1.11.1',
         'spglib==2.0.2',
