@@ -75,6 +75,11 @@ class DebyeModel(object):
     def _reset(self):
         self._debye_T = None
 
+    def polynomial(self, volumes=None):
+        if volumes is None:
+            volumes = self.volume
+        return np.poly1d(self._fit_dict['poly_fit'])(volumes)
+
     @property
     def debye_temperature(self):
         if self._debye_T is not None:
