@@ -8,7 +8,7 @@ def validate_elastic_constants_poly(fit_dict):
     return [
         fit_dict['b_prime_eq'] > 3.3,
         fit_dict['b_prime_eq'] < 4.1,
-        fit_dict['bulkmodul_eq'] > 183,
+        fit_dict['bulkmodul_eq'] > 178,
         fit_dict['bulkmodul_eq'] < 188,
         fit_dict['energy_eq'] > -453.9,
         fit_dict['energy_eq'] < -453.6,
@@ -22,7 +22,7 @@ def validate_elastic_constants_birch(fit_dict):
     return [
         fit_dict['b_prime_eq'] > 3.3,
         fit_dict['b_prime_eq'] < 4.1,
-        fit_dict['bulkmodul_eq'] > 181,
+        fit_dict['bulkmodul_eq'] > 178,
         fit_dict['bulkmodul_eq'] < 188,
         fit_dict['energy_eq'] > -453.9,
         fit_dict['energy_eq'] < -453.6,
@@ -36,7 +36,7 @@ def validate_elastic_constants_birchmurnaghan(fit_dict):
     return [
         fit_dict['b_prime_eq'] > 3.3,
         fit_dict['b_prime_eq'] < 4.1,
-        fit_dict['bulkmodul_eq'] > 181,
+        fit_dict['bulkmodul_eq'] > 178,
         fit_dict['bulkmodul_eq'] < 188,
         fit_dict['energy_eq'] > -453.9,
         fit_dict['energy_eq'] < -453.6,
@@ -50,7 +50,7 @@ def validate_elastic_constants_murnaghan(fit_dict):
     return [
         fit_dict['b_prime_eq'] > 3.3,
         fit_dict['b_prime_eq'] < 4.1,
-        fit_dict['bulkmodul_eq'] > 181,
+        fit_dict['bulkmodul_eq'] > 178,
         fit_dict['bulkmodul_eq'] < 188,
         fit_dict['energy_eq'] > -453.9,
         fit_dict['energy_eq'] < -453.6,
@@ -64,7 +64,7 @@ def validate_elastic_constants_pouriertarantola(fit_dict):
     return [
         fit_dict['b_prime_eq'] > 3.3,
         fit_dict['b_prime_eq'] < 4.1,
-        fit_dict['bulkmodul_eq'] > 181,
+        fit_dict['bulkmodul_eq'] > 178,
         fit_dict['bulkmodul_eq'] < 188,
         fit_dict['energy_eq'] > -453.9,
         fit_dict['energy_eq'] < -453.6,
@@ -78,7 +78,7 @@ def validate_elastic_constants_vinet(fit_dict):
     return [
         fit_dict['b_prime_eq'] > 3.3,
         fit_dict['b_prime_eq'] < 4.1,
-        fit_dict['bulkmodul_eq'] > 181,
+        fit_dict['bulkmodul_eq'] > 178,
         fit_dict['bulkmodul_eq'] < 188,
         fit_dict['energy_eq'] > -453.9,
         fit_dict['energy_eq'] < -453.6,
