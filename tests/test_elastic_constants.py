@@ -1,6 +1,8 @@
 import os
 import unittest
+from ase.build import bulk
 import pyiron_lammps as pyr
+import structuretoolkit as stk
 
 
 def validate_elastic_constants(elastic_matrix):
@@ -26,10 +28,13 @@ class TestIntegration(unittest.TestCase):
         resource_path = os.path.join(os.path.dirname(__file__), "static")
 
         # Generate SQS Structure
-        structure = pyr.generate_sqs_structure(
-            structure_template=pyr.get_ase_bulk("Al", cubic=True).repeat([3, 3, 3]),
-            element_lst=element_lst,
-            count_lst=count_lst
+        structure_template = bulk("Al", cubic=True).repeat([3, 3, 3])
+        mole_fractions = {
+            el: c / len(structure_template) for el, c in zip(element_lst, count_lst)
+        }
+        structure = stk.build.sqs_structures(
+            structure=structure_template,
+            mole_fractions=mole_fractions,
         )[0]
 
         # Select potential

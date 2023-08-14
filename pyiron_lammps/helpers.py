@@ -1,8 +1,8 @@
 import os
-from ase.build import bulk
+
+from pylammpsmpi import LammpsASELibrary
+
 from pyiron_lammps.potential import view_potentials
-from pyiron_lammps.sqs import get_sqs_structures
-from pyiron_lammps.wrapper import PyironLammpsLibrary
 
 
 def update_potential_paths(df_pot, resource_path):
@@ -24,16 +24,6 @@ def update_potential_paths(df_pot, resource_path):
     return df_pot
 
 
-def generate_sqs_structure(structure_template, element_lst, count_lst):
-    structures, sro_breakdown, num_iterations, cycle_time = get_sqs_structures(
-        structure=structure_template,
-        mole_fractions={
-            el: c / len(structure_template) for el, c in zip(element_lst, count_lst)
-        },
-    )
-    return structures
-
-
 def get_lammps_engine(
     working_directory=None,
     cores=1,
@@ -43,7 +33,7 @@ def get_lammps_engine(
     library=None,
     diable_log_file=True,
 ):
-    return PyironLammpsLibrary(
+    return LammpsASELibrary(
         working_directory=working_directory,
         cores=cores,
         comm=comm,
@@ -52,10 +42,6 @@ def get_lammps_engine(
         library=library,
         diable_log_file=diable_log_file,
     )
-
-
-def get_ase_bulk(*args, **kwargs):
-    return bulk(*args, **kwargs)
 
 
 def get_potential_dataframe(structure, resource_path):
