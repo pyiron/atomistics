@@ -130,7 +130,7 @@ def calculate_energy_volume_curve(
     num_points=11,
     fit_type="polynomial",
     fit_order=3,
-    vol_range=0.1,
+    vol_range=0.05,
     axes=["x", "y", "z"],
     strains=None,
 ):
@@ -178,7 +178,7 @@ def calculate_energy_volume_curve_with_minimization(
     num_points=11,
     fit_type="polynomial",
     fit_order=3,
-    vol_range=0.1,
+    vol_range=0.05,
     axes=["x", "y", "z"],
     strains=None,
 ):

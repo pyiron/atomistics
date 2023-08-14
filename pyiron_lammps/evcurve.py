@@ -609,7 +609,7 @@ class EnergyVolumeCurveCalculator(object):
         num_points=11,
         fit_type="polynomial",
         fit_order=3,
-        vol_range=0.1,
+        vol_range=0.05,
         axes=["x", "y", "z"],
         strains=None,
     ):
