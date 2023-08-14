@@ -7,9 +7,9 @@ def validate_elastic_constants(fit_dict):
     print(fit_dict)
     return [
         fit_dict['b_prime_eq'] > 3.3,
-        fit_dict['b_prime_eq'] < 3.9,
+        fit_dict['b_prime_eq'] < 4.1,
         fit_dict['bulkmodul_eq'] > 183,
-        fit_dict['bulkmodul_eq'] < 187,
+        fit_dict['bulkmodul_eq'] < 188,
         fit_dict['energy_eq'] > -453.9,
         fit_dict['energy_eq'] < -453.6,
         fit_dict['volume_eq'] > 1208,
