@@ -17,4 +17,5 @@ from pyiron_lammps.parallel import (
     calculate_energy_volume_curve_with_minimization_parallel,
 )
 from pyiron_lammps.thermo import get_thermo_bulk_model
-from pyiron_lammps.evcurve import get_debye_model
+from pyiron_lammps.debye import get_debye_model
+from pyiron_lammps.evcurve_fit import get_energy_volume_curve_fit
