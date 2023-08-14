@@ -13,4 +13,6 @@ from pyiron_lammps.parallel import (
     optimize_structure_parallel,
     calculate_elastic_constants_parallel,
     calculate_elastic_constants_with_minimization_parallel,
+    calculate_energy_volume_curve_parallel,
+    calculate_energy_volume_curve_with_minimization_parallel,
 )
