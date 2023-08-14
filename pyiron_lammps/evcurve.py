@@ -434,6 +434,8 @@ class EnergyVolumeFit(object):
         fit_dict["bulkmodul_eq"] = pfit_leastsq[1]
         fit_dict["b_prime_eq"] = pfit_leastsq[2]
         fit_dict["least_square_error"] = perr_leastsq  # [e0, b0, bP, v0]
+        fit_dict["volume"] = volume_lst
+        fit_dict["energy"] = energy_lst
 
         return fit_dict
 
@@ -500,6 +502,8 @@ class EnergyVolumeFit(object):
         fit_dict["bulkmodul_eq"] = eV_div_A3_to_GPa * volume_eq * a2
         fit_dict["b_prime_eq"] = b_prime
         fit_dict["least_square_error"] = self.get_error(volume_lst, energy_lst, p_fit)
+        fit_dict["volume"] = volume_lst
+        fit_dict["energy"] = energy_lst
         return fit_dict
 
     def _fit_leastsq(self, volume_lst, energy_lst, fittype="birchmurnaghan"):
