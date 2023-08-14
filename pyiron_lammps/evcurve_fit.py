@@ -441,3 +441,7 @@ class EnergyVolumeFit(object):
     @staticmethod
     def pouriertarantola(V, E0, B0, BP, V0):
         return pouriertarantola(V, E0, B0, BP, V0)
+
+
+def get_energy_volume_curve_fit(volume_lst=None, energy_lst=None):
+    return EnergyVolumeFit(volume_lst=volume_lst, energy_lst=energy_lst)
