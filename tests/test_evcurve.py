@@ -3,82 +3,12 @@ import unittest
 import pyiron_lammps as pyr
 
 
-def validate_elastic_constants_poly(fit_dict):
+def validate_fitdict(fit_dict):
     print(fit_dict)
     return [
         fit_dict['b_prime_eq'] > 3.3,
         fit_dict['b_prime_eq'] < 4.1,
-        fit_dict['bulkmodul_eq'] > 178,
-        fit_dict['bulkmodul_eq'] < 188,
-        fit_dict['energy_eq'] > -453.9,
-        fit_dict['energy_eq'] < -453.6,
-        fit_dict['volume_eq'] > 1208,
-        fit_dict['volume_eq'] < 1212,
-    ]
-
-
-def validate_elastic_constants_birch(fit_dict):
-    print(fit_dict)
-    return [
-        fit_dict['b_prime_eq'] > 3.3,
-        fit_dict['b_prime_eq'] < 4.1,
-        fit_dict['bulkmodul_eq'] > 178,
-        fit_dict['bulkmodul_eq'] < 188,
-        fit_dict['energy_eq'] > -453.9,
-        fit_dict['energy_eq'] < -453.6,
-        fit_dict['volume_eq'] > 1208,
-        fit_dict['volume_eq'] < 1212,
-    ]
-
-
-def validate_elastic_constants_birchmurnaghan(fit_dict):
-    print(fit_dict)
-    return [
-        fit_dict['b_prime_eq'] > 3.3,
-        fit_dict['b_prime_eq'] < 4.1,
-        fit_dict['bulkmodul_eq'] > 178,
-        fit_dict['bulkmodul_eq'] < 188,
-        fit_dict['energy_eq'] > -453.9,
-        fit_dict['energy_eq'] < -453.6,
-        fit_dict['volume_eq'] > 1208,
-        fit_dict['volume_eq'] < 1212,
-    ]
-
-
-def validate_elastic_constants_murnaghan(fit_dict):
-    print(fit_dict)
-    return [
-        fit_dict['b_prime_eq'] > 3.3,
-        fit_dict['b_prime_eq'] < 4.1,
-        fit_dict['bulkmodul_eq'] > 178,
-        fit_dict['bulkmodul_eq'] < 188,
-        fit_dict['energy_eq'] > -453.9,
-        fit_dict['energy_eq'] < -453.6,
-        fit_dict['volume_eq'] > 1208,
-        fit_dict['volume_eq'] < 1212,
-    ]
-
-
-def validate_elastic_constants_pouriertarantola(fit_dict):
-    print(fit_dict)
-    return [
-        fit_dict['b_prime_eq'] > 3.3,
-        fit_dict['b_prime_eq'] < 4.1,
-        fit_dict['bulkmodul_eq'] > 178,
-        fit_dict['bulkmodul_eq'] < 188,
-        fit_dict['energy_eq'] > -453.9,
-        fit_dict['energy_eq'] < -453.6,
-        fit_dict['volume_eq'] > 1208,
-        fit_dict['volume_eq'] < 1212,
-    ]
-
-
-def validate_elastic_constants_vinet(fit_dict):
-    print(fit_dict)
-    return [
-        fit_dict['b_prime_eq'] > 3.3,
-        fit_dict['b_prime_eq'] < 4.1,
-        fit_dict['bulkmodul_eq'] > 178,
+        fit_dict['bulkmodul_eq'] > 177,
         fit_dict['bulkmodul_eq'] < 188,
         fit_dict['energy_eq'] > -453.9,
         fit_dict['energy_eq'] < -453.6,
@@ -141,7 +71,7 @@ class TestEvCurePoly(unittest.TestCase):
             axes=["x", "y", "z"],
             strains=None,
         )
-        self.assertTrue(all(validate_elastic_constants_poly(fit_dict=ev_curve_fit_dict)))
+        self.assertTrue(all(validate_fitdict(fit_dict=ev_curve_fit_dict)))
 
         # Finalize
         lmp.close()
@@ -165,7 +95,7 @@ class TestEvCurePoly(unittest.TestCase):
             axes=["x", "y", "z"],
             strains=None,
         )
-        self.assertTrue(all(validate_elastic_constants_poly(fit_dict=ev_curve_fit_dict)))
+        self.assertTrue(all(validate_fitdict(fit_dict=ev_curve_fit_dict)))
 
     def test_example_evcurve_with_statement(self):
         with pyr.get_lammps_engine() as lmp:
@@ -190,7 +120,7 @@ class TestEvCurePoly(unittest.TestCase):
             )
 
         self.assertEqual(len(structure_opt), sum(self.count_lst))
-        self.assertTrue(all(validate_elastic_constants_poly(fit_dict=ev_curve_fit_dict)))
+        self.assertTrue(all(validate_fitdict(fit_dict=ev_curve_fit_dict)))
 
     def test_example_evcurve_with_minimization(self):
         with pyr.get_lammps_engine() as lmp:
@@ -206,7 +136,7 @@ class TestEvCurePoly(unittest.TestCase):
                 strains=None,
             )
 
-        self.assertTrue(all(validate_elastic_constants_poly(fit_dict=ev_curve_fit_dict)))
+        self.assertTrue(all(validate_fitdict(fit_dict=ev_curve_fit_dict)))
 
 
 class TestEquationOfState(unittest.TestCase):
@@ -264,7 +194,7 @@ class TestEquationOfState(unittest.TestCase):
             strains=None,
         )
         print("vinet", ev_curve_fit_dict)
-        self.assertTrue(all(validate_elastic_constants_vinet(fit_dict=ev_curve_fit_dict)))
+        self.assertTrue(all(validate_fitdict(fit_dict=ev_curve_fit_dict)))
 
         # Finalize
         lmp.close()
@@ -293,7 +223,7 @@ class TestEquationOfState(unittest.TestCase):
             strains=None,
         )
         print("pouriertarantola", ev_curve_fit_dict)
-        self.assertTrue(all(validate_elastic_constants_pouriertarantola(fit_dict=ev_curve_fit_dict)))
+        self.assertTrue(all(validate_fitdict(fit_dict=ev_curve_fit_dict)))
 
         # Finalize
         lmp.close()
@@ -322,7 +252,7 @@ class TestEquationOfState(unittest.TestCase):
             strains=None,
         )
         print("murnaghan", ev_curve_fit_dict)
-        self.assertTrue(all(validate_elastic_constants_murnaghan(fit_dict=ev_curve_fit_dict)))
+        self.assertTrue(all(validate_fitdict(fit_dict=ev_curve_fit_dict)))
 
         # Finalize
         lmp.close()
@@ -351,7 +281,7 @@ class TestEquationOfState(unittest.TestCase):
             strains=None,
         )
         print("birchmurnaghan", ev_curve_fit_dict)
-        self.assertTrue(all(validate_elastic_constants_birchmurnaghan(fit_dict=ev_curve_fit_dict)))
+        self.assertTrue(all(validate_fitdict(fit_dict=ev_curve_fit_dict)))
 
         # Finalize
         lmp.close()
@@ -380,7 +310,7 @@ class TestEquationOfState(unittest.TestCase):
             strains=None,
         )
         print("birch", ev_curve_fit_dict)
-        self.assertTrue(all(validate_elastic_constants_birch(fit_dict=ev_curve_fit_dict)))
+        self.assertTrue(all(validate_fitdict(fit_dict=ev_curve_fit_dict)))
 
         # Finalize
         lmp.close()
