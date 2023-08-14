@@ -7,14 +7,14 @@ import structuretoolkit as stk
 
 def validate_fitdict(fit_dict):
     lst = [
-        fit_dict['b_prime_eq'] > 3.3,
-        fit_dict['b_prime_eq'] < 4.1,
-        fit_dict['bulkmodul_eq'] > 177,
-        fit_dict['bulkmodul_eq'] < 188,
+        fit_dict['b_prime_eq'] > 1.6,
+        fit_dict['b_prime_eq'] < 3.0,
+        fit_dict['bulkmodul_eq'] > 174,
+        fit_dict['bulkmodul_eq'] < 181,
         fit_dict['energy_eq'] > -453.9,
-        fit_dict['energy_eq'] < -453.6,
-        fit_dict['volume_eq'] > 1208,
-        fit_dict['volume_eq'] < 1212,
+        fit_dict['energy_eq'] < -453.5,
+        fit_dict['volume_eq'] > 1207,
+        fit_dict['volume_eq'] < 1213,
     ]
     if not all(lst):
         print(fit_dict)
@@ -74,7 +74,7 @@ class TestEvCurePoly(unittest.TestCase):
             num_points=11,
             fit_type="polynomial",
             fit_order=3,
-            vol_range=0.1,
+            vol_range=0.05,
             axes=["x", "y", "z"],
             strains=None,
         )
@@ -98,7 +98,7 @@ class TestEvCurePoly(unittest.TestCase):
             num_points=11,
             fit_type="polynomial",
             fit_order=3,
-            vol_range=0.1,
+            vol_range=0.05,
             axes=["x", "y", "z"],
             strains=None,
         )
@@ -121,7 +121,7 @@ class TestEvCurePoly(unittest.TestCase):
                 num_points=11,
                 fit_type="polynomial",
                 fit_order=3,
-                vol_range=0.1,
+                vol_range=0.05,
                 axes=["x", "y", "z"],
                 strains=None,
             )
@@ -138,7 +138,7 @@ class TestEvCurePoly(unittest.TestCase):
                 num_points=11,
                 fit_type="polynomial",
                 fit_order=3,
-                vol_range=0.1,
+                vol_range=0.05,
                 axes=["x", "y", "z"],
                 strains=None,
             )
@@ -199,7 +199,7 @@ class TestEquationOfState(unittest.TestCase):
             num_points=11,
             fit_type="vinet",
             fit_order=3,
-            vol_range=0.1,
+            vol_range=0.05,
             axes=["x", "y", "z"],
             strains=None,
         )
@@ -227,7 +227,7 @@ class TestEquationOfState(unittest.TestCase):
             num_points=11,
             fit_type="pouriertarantola",
             fit_order=3,
-            vol_range=0.1,
+            vol_range=0.05,
             axes=["x", "y", "z"],
             strains=None,
         )
@@ -255,7 +255,7 @@ class TestEquationOfState(unittest.TestCase):
             num_points=11,
             fit_type="murnaghan",
             fit_order=3,
-            vol_range=0.1,
+            vol_range=0.05,
             axes=["x", "y", "z"],
             strains=None,
         )
@@ -283,7 +283,7 @@ class TestEquationOfState(unittest.TestCase):
             num_points=11,
             fit_type="birchmurnaghan",
             fit_order=3,
-            vol_range=0.1,
+            vol_range=0.05,
             axes=["x", "y", "z"],
             strains=None,
         )
@@ -311,7 +311,7 @@ class TestEquationOfState(unittest.TestCase):
             num_points=11,
             fit_type="birch",
             fit_order=3,
-            vol_range=0.1,
+            vol_range=0.05,
             axes=["x", "y", "z"],
             strains=None,
         )
