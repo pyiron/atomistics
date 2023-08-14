@@ -4,7 +4,6 @@ import pyiron_lammps as pyr
 
 
 def validate_fitdict(fit_dict):
-    print(fit_dict)
     return [
         fit_dict['b_prime_eq'] > 3.3,
         fit_dict['b_prime_eq'] < 4.1,
@@ -193,7 +192,6 @@ class TestEquationOfState(unittest.TestCase):
             axes=["x", "y", "z"],
             strains=None,
         )
-        print("vinet", ev_curve_fit_dict)
         self.assertTrue(all(validate_fitdict(fit_dict=ev_curve_fit_dict)))
 
         # Finalize
@@ -222,7 +220,6 @@ class TestEquationOfState(unittest.TestCase):
             axes=["x", "y", "z"],
             strains=None,
         )
-        print("pouriertarantola", ev_curve_fit_dict)
         self.assertTrue(all(validate_fitdict(fit_dict=ev_curve_fit_dict)))
 
         # Finalize
@@ -251,7 +248,6 @@ class TestEquationOfState(unittest.TestCase):
             axes=["x", "y", "z"],
             strains=None,
         )
-        print("murnaghan", ev_curve_fit_dict)
         self.assertTrue(all(validate_fitdict(fit_dict=ev_curve_fit_dict)))
 
         # Finalize
@@ -280,7 +276,6 @@ class TestEquationOfState(unittest.TestCase):
             axes=["x", "y", "z"],
             strains=None,
         )
-        print("birchmurnaghan", ev_curve_fit_dict)
         self.assertTrue(all(validate_fitdict(fit_dict=ev_curve_fit_dict)))
 
         # Finalize
@@ -309,7 +304,6 @@ class TestEquationOfState(unittest.TestCase):
             axes=["x", "y", "z"],
             strains=None,
         )
-        print("birch", ev_curve_fit_dict)
         self.assertTrue(all(validate_fitdict(fit_dict=ev_curve_fit_dict)))
 
         # Finalize
