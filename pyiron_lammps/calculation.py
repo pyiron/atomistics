@@ -1,5 +1,6 @@
 from pyiron_lammps.decorator import calculation
 from pyiron_lammps.elastic import ElasticMatrixCalculator
+from pyiron_lammps.evcurve import EnergyVolumeCurveCalculator
 
 
 def _run_simulation(structure, potential_dataframe, input_template, lmp):
@@ -118,4 +119,80 @@ def calculate_elastic_constants_with_minimization(
         eps_range=eps_range,
         sqrt_eta=sqrt_eta,
         fit_order=fit_order,
+    )
+
+
+@calculation
+def calculate_energy_volume_curve(
+    lmp,
+    structure,
+    potential_dataframe,
+    num_points=11,
+    fit_type="polynomial",
+    fit_order=3,
+    vol_range=0.1,
+    axes=["x", "y", "z"],
+    strains=None,
+):
+    lammps_input_calc_static = """\
+variable thermotime equal 100
+thermo_style custom step temp pe etotal pxx pxy pxz pyy pyz pzz vol
+thermo_modify format float %20.15g
+thermo ${thermotime}
+run 0"""
+
+    # Generate structures
+    calculator = EnergyVolumeCurveCalculator(
+        basis_ref=structure.copy(),
+        num_points=num_points,
+        fit_type=fit_type,
+        fit_order=fit_order,
+        vol_range=vol_range,
+        axes=axes,
+        strains=strains,
+    )
+    structure_dict = calculator.generate_structures()
+
+    # run calculation
+    energy_tot_lst = {}
+    for key, struct in structure_dict.items():
+        lmp = _run_simulation(
+            lmp=lmp,
+            structure=struct,
+            potential_dataframe=potential_dataframe,
+            input_template=lammps_input_calc_static,
+        )
+        energy_tot_lst[key] = lmp.interactive_energy_tot_getter()
+        lmp.interactive_lib_command("clear")
+
+    # fit
+    calculator.analyse_structures(energy_tot_lst)
+    return calculator.fit_dict
+
+
+@calculation
+def calculate_energy_volume_curve_with_minimization(
+    lmp,
+    structure,
+    potential_dataframe,
+    num_points=11,
+    fit_type="polynomial",
+    fit_order=3,
+    vol_range=0.1,
+    axes=["x", "y", "z"],
+    strains=None,
+):
+    structure_optimized = optimize_structure(
+        lmp=lmp, structure=structure, potential_dataframe=potential_dataframe
+    )
+    return calculate_energy_volume_curve(
+        lmp=lmp,
+        structure=structure_optimized,
+        potential_dataframe=potential_dataframe,
+        num_points=num_points,
+        fit_type=fit_type,
+        fit_order=fit_order,
+        vol_range=vol_range,
+        axes=axes,
+        strains=strains,
     )
