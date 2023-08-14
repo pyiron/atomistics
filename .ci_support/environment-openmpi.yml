@@ -9,7 +9,7 @@ dependencies:
 - openmpi
 - pandas =2.0.3
 - pympipool =0.6.2
-- pylammpsmpi =0.2.1
+- pylammpsmpi =0.2.2
 - scipy =1.11.1
 - spglib =2.0.2
 - sqsgenerator =0.2
