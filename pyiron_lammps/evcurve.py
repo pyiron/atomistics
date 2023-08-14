@@ -30,8 +30,9 @@ class DebyeModel(object):
     Calculate Thermodynamic Properties based on the Murnaghan output
     """
 
-    def __init__(self, murnaghan, num_steps=50):
-        self._murnaghan = murnaghan
+    def __init__(self, fit_dict, masses, num_steps=50):
+        self._fit_dict = fit_dict
+        self._masses = masses
 
         # self._atoms_per_cell = len(murnaghan.structure)
         self._v_min = None
@@ -46,14 +47,13 @@ class DebyeModel(object):
         self._debye_T = None
 
     def _init_volume(self):
-        vol = self._murnaghan["output/volume"]
+        vol = self._fit_dict["volume"]
         self._v_min, self._v_max = np.min(vol), np.max(vol)
 
     def _set_volume(self):
         if self._v_min and self._v_max and self._num_steps:
             self._volume = np.linspace(self._v_min, self._v_max, self._num_steps)
             self._reset()
-            # print ('set_volume: ', self._num_steps)
 
     @property
     def num_steps(self):
@@ -81,14 +81,29 @@ class DebyeModel(object):
     def _reset(self):
         self._debye_T = None
 
-    def polynomial(self, poly_fit=None, volumes=None):
-        if poly_fit is None:
-            self._murnaghan.fit_polynomial()  # TODO: include polyfit in output
-            poly_fit = self._murnaghan.fit_dict["poly_fit"]
-        p_fit = np.poly1d(poly_fit)
+    def interpolate(self, volumes=None):
         if volumes is None:
-            return p_fit(self.volume)
-        return p_fit(volumes)
+            volumes = self.volume
+        if self._fit_dict["fit_type"] == "polynomial":
+            return np.poly1d(self._fit_dict["poly_fit"])(volumes)
+        elif self._fit_dict["fit_type"] in [
+            "birch",
+            "birchmurnaghan",
+            "murnaghan",
+            "pouriertarantola",
+            "vinet",
+        ]:
+            parameters = [
+                self._fit_dict["energy_eq"],
+                self._fit_dict["bulkmodul_eq"],
+                self._fit_dict["b_prime_eq"],
+                self._fit_dict["volume_eq"],
+            ]
+            return fitfunction(
+                parameters=parameters, vol=volumes, fittype=self._fit_dict["fit_type"]
+            )
+        else:
+            raise ValueError("Unsupported fit_type: ", self._fit_dict["fit_type"])
 
     @property
     def debye_temperature(self):
@@ -104,14 +119,13 @@ class DebyeModel(object):
         empirical = 0.617  # empirical factor, Moruzzi Eq. (6)
         gamma_low, gamma_high = 1, 2 / 3  # low/high T gamma
 
-        out = self._murnaghan["output"]
-        V0 = out["equilibrium_volume"]
-        B0 = out["equilibrium_bulk_modulus"]
-        Bp = out["equilibrium_b_prime"]
+        V0 = self._fit_dict["volume_eq"]
+        B0 = self._fit_dict["bulkmodul_eq"]
+        Bp = self._fit_dict["b_prime_eq"]
 
         vol = self.volume
 
-        mass = set(self._murnaghan.structure.get_masses())
+        mass = set(self._masses)
         if len(mass) > 1:
             raise NotImplementedError(
                 "Debye temperature only for single species systems!"
@@ -150,7 +164,7 @@ class DebyeModel(object):
             val = 9.0 / 8.0 * kB * debye_T + T * kB * (
                 3 * np.log(1 - np.exp(-debye_T / T)) - debye_function(debye_T / T)
             )
-        atoms_per_cell = len(self._murnaghan.structure)
+        atoms_per_cell = len(self._masses)
         return atoms_per_cell * val
 
 
@@ -673,3 +687,7 @@ class EnergyVolumeCurveCalculator(object):
                 + " is not a supported fit_type"
             )
         return self.fit_dict
+
+
+def get_debye_model(fit_dict, masses, num_steps=50):
+    return DebyeModel(fit_dict=fit_dict, masses=masses, num_steps=num_steps)
