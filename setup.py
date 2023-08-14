@@ -34,7 +34,7 @@ setup(
         'pandas==2.0.2',
         'pylammpsmpi==0.2.1',
         'pympipool==0.5.6',
-        'scipy==1.10.1',
+        'scipy==1.11.1',
         'spglib==2.0.2',
         'structuretoolkit==0.0.8',
     ],
