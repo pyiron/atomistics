@@ -4,7 +4,7 @@ import pyiron_lammps as pyr
 
 
 def validate_fitdict(fit_dict):
-    return [
+    lst = [
         fit_dict['b_prime_eq'] > 3.3,
         fit_dict['b_prime_eq'] < 4.1,
         fit_dict['bulkmodul_eq'] > 177,
@@ -14,6 +14,9 @@ def validate_fitdict(fit_dict):
         fit_dict['volume_eq'] > 1208,
         fit_dict['volume_eq'] < 1212,
     ]
+    if not all(lst):
+        print(fit_dict)
+    return lst
 
 
 class TestEvCurePoly(unittest.TestCase):
