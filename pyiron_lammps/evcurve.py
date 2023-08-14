@@ -118,7 +118,5 @@ class EnergyVolumeCurveCalculator(object):
             volume_lst=volume_lst,
             energy_lst=energy_lst,
         )
-        self.fit_module.fit(
-            fit_type=self.fit_type, fit_order=self.fit_order
-        )
+        self.fit_module.fit(fit_type=self.fit_type, fit_order=self.fit_order)
         return self.fit_dict
