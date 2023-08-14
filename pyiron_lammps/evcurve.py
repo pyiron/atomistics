@@ -36,7 +36,7 @@ class DebyeModel(object):
 
         # self._atoms_per_cell = len(murnaghan.structure)
         self._v_min = vol_min
-        self._v_max = vol_max,
+        self._v_max = vol_max
         self._num_steps = None
 
         self._volume = None
