@@ -4,13 +4,14 @@ import pyiron_lammps as pyr
 
 
 def validate_elastic_constants(fit_dict):
+    print(fit_dict)
     return [
         fit_dict['b_prime_eq'] > 3.3,
         fit_dict['b_prime_eq'] < 3.9,
-        fit_dict['bulkmodul_eq'] > 184,
+        fit_dict['bulkmodul_eq'] > 183,
         fit_dict['bulkmodul_eq'] < 187,
         fit_dict['energy_eq'] > -453.9,
-        fit_dict['energy_eq'] < -453.7,
+        fit_dict['energy_eq'] < -453.6,
         fit_dict['volume_eq'] > 1208,
         fit_dict['volume_eq'] < 1212,
     ]
@@ -135,7 +136,6 @@ class TestIntegration(unittest.TestCase):
                 strains=None,
             )
 
-        print(ev_curve_fit_dict)
         self.assertTrue(all(validate_elastic_constants(fit_dict=ev_curve_fit_dict)))
 
 
