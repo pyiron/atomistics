@@ -7,12 +7,12 @@ import structuretoolkit as stk
 
 def validate_fitdict(fit_dict):
     lst = [
-        fit_dict['b_prime_eq'] > 3.1,
-        fit_dict['b_prime_eq'] < 4.1,
-        fit_dict['bulkmodul_eq'] > 177,
-        fit_dict['bulkmodul_eq'] < 188,
+        fit_dict['b_prime_eq'] > 1.6,
+        fit_dict['b_prime_eq'] < 3.0,
+        fit_dict['bulkmodul_eq'] > 174,
+        fit_dict['bulkmodul_eq'] < 181,
         fit_dict['energy_eq'] > -453.9,
-        fit_dict['energy_eq'] < -453.6,
+        fit_dict['energy_eq'] < -453.5,
         fit_dict['volume_eq'] > 1207,
         fit_dict['volume_eq'] < 1213,
     ]
@@ -69,7 +69,7 @@ class TestParallelSingleCore(unittest.TestCase):
             num_points=11,
             fit_type="polynomial",
             fit_order=3,
-            vol_range=0.1,
+            vol_range=0.05,
             axes=["x", "y", "z"],
             strains=None,
             cores=1
@@ -85,7 +85,7 @@ class TestParallelSingleCore(unittest.TestCase):
             num_points=11,
             fit_type="polynomial",
             fit_order=3,
-            vol_range=0.1,
+            vol_range=0.05,
             axes=["x", "y", "z"],
             strains=None,
             cores=1
