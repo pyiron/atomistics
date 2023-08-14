@@ -36,6 +36,7 @@ setup(
         'pympipool==0.3.0',
         'scipy==1.10.1',
         'spglib==2.0.2',
+        'structuretoolkit==0.0.8',
     ],
     cmdclass=versioneer.get_cmdclass(),
 )
