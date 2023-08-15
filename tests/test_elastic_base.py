@@ -73,7 +73,8 @@ class TestIntegration(unittest.TestCase):
             num_of_point=5,
             eps_range=0.005,
             sqrt_eta=True,
-            fit_order=2
+            fit_order=2,
+            minimization_activated=False,
         )
         self.assertTrue(all(validate_elastic_constants(elastic_matrix=elastic_matrix)))
 
@@ -95,7 +96,8 @@ class TestIntegration(unittest.TestCase):
             num_of_point=5,
             eps_range=0.005,
             sqrt_eta=True,
-            fit_order=2
+            fit_order=2,
+            minimization_activated=False,
         )
         self.assertTrue(all(validate_elastic_constants(elastic_matrix=elastic_matrix)))
 
@@ -116,7 +118,8 @@ class TestIntegration(unittest.TestCase):
                 num_of_point=5,
                 eps_range=0.005,
                 sqrt_eta=True,
-                fit_order=2
+                fit_order=2,
+                minimization_activated=False,
             )
 
         self.assertEqual(len(structure_opt), sum(self.count_lst))
@@ -124,14 +127,15 @@ class TestIntegration(unittest.TestCase):
 
     def test_example_elastic_constants_with_minimization(self):
         with pyr.get_lammps_engine() as lmp:
-            elastic_matrix = pyr.calculate_elastic_constants_with_minimization(
+            elastic_matrix = pyr.calculate_elastic_constants(
                 lmp=lmp,
                 structure=self.structure.copy(),
                 potential_dataframe=self.df_pot_selected,
                 num_of_point=5,
                 eps_range=0.005,
                 sqrt_eta=True,
-                fit_order=2
+                fit_order=2,
+                minimization_activated=True,
             )
 
         self.assertTrue(all(validate_elastic_constants(elastic_matrix=elastic_matrix)))

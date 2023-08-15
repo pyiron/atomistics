@@ -68,21 +68,23 @@ class TestParallelTwoCores(unittest.TestCase):
             eps_range=0.005,
             sqrt_eta=True,
             fit_order=2,
-            cores=2
+            cores=2,
+            minimization_activated=False,
         )[0]
 
         self.assertEqual(len(structure_opt_lst[0]), sum(self.count_lst))
         self.assertTrue(all(validate_elastic_constants(elastic_matrix=elastic_matrix)))
 
     def test_example_elastic_constants_with_minimization_parallel_cores_two(self):
-        elastic_matrix = pyr.calculate_elastic_constants_with_minimization_parallel(
+        elastic_matrix = pyr.calculate_elastic_constants_parallel(
             structure_list=[self.structure.copy()],
             potential_dataframe_list=[self.df_pot_selected],
             num_of_point=5,
             eps_range=0.005,
             sqrt_eta=True,
             fit_order=2,
-            cores=2
+            cores=2,
+            minimization_activated=True,
         )[0]
         self.assertTrue(all(validate_elastic_constants(elastic_matrix=elastic_matrix)))
 
