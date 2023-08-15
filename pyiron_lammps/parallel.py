@@ -72,8 +72,8 @@ def _calculate_elastic_constants_serial(input_parameter):
         eps_range,
         sqrt_eta,
         fit_order,
-        enable_mpi,
         minimization_activated,
+        enable_mpi,
     ) = input_parameter
     return calculate_elastic_constants(
         lmp=_get_lammps_mpi(enable_mpi=enable_mpi),
@@ -97,8 +97,8 @@ def _calculate_energy_volume_curve_serial(input_parameter):
         vol_range,
         axes,
         strains,
-        enable_mpi,
         minimization_activated,
+        enable_mpi,
     ) = input_parameter
     return calculate_energy_volume_curve(
         lmp=_get_lammps_mpi(enable_mpi=enable_mpi),
@@ -246,7 +246,7 @@ def calculate_elastic_constants_parallel(
                 cores=cores,
             )
         elif isinstance(potential_dataframe_list, (DataFrame, Series)):
-            return calculate_elastic_constants_with_minimization(
+            return calculate_elastic_constants(
                 lmp=_get_lammps_mpi(enable_mpi=False),
                 structure=structure_list,
                 potential_dataframe=potential_dataframe_list,
@@ -349,7 +349,7 @@ def calculate_energy_volume_curve_parallel(
                 cores=cores,
             )
         elif isinstance(potential_dataframe_list, (DataFrame, Series)):
-            return calculate_energy_volume_curve_with_minimization(
+            return calculate_energy_volume_curve(
                 lmp=_get_lammps_mpi(enable_mpi=False),
                 structure=structure_list,
                 potential_dataframe=potential_dataframe_list,
