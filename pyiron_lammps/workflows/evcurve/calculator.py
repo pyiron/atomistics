@@ -3,7 +3,7 @@ from ase.atoms import Atoms
 from typing import Literal
 from collections import OrderedDict
 
-from pyiron_lammps.evcurve_fit import EnergyVolumeFit
+from pyiron_lammps.workflows.evcurve.fit import EnergyVolumeFit
 from pyiron_lammps.interface import Calculator
 
 
