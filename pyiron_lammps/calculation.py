@@ -107,10 +107,14 @@ def calculate_elastic_constants_with_minimization(
     eps_range=0.005,
     sqrt_eta=True,
     fit_order=2,
+    minimization_activated=True,
 ):
-    structure_optimized = optimize_structure(
-        lmp=lmp, structure=structure, potential_dataframe=potential_dataframe
-    )
+    if minimization_activated:
+        structure_optimized = optimize_structure(
+            lmp=lmp, structure=structure, potential_dataframe=potential_dataframe
+        )
+    else:
+        structure_optimized = structure
     return calculate_elastic_constants(
         lmp=lmp,
         structure=structure_optimized,
@@ -181,10 +185,14 @@ def calculate_energy_volume_curve_with_minimization(
     vol_range=0.05,
     axes=["x", "y", "z"],
     strains=None,
+    minimization_activated=True,
 ):
-    structure_optimized = optimize_structure(
-        lmp=lmp, structure=structure, potential_dataframe=potential_dataframe
-    )
+    if minimization_activated:
+        structure_optimized = optimize_structure(
+            lmp=lmp, structure=structure, potential_dataframe=potential_dataframe
+        )
+    else:
+        structure_optimized = structure
     return calculate_energy_volume_curve(
         lmp=lmp,
         structure=structure_optimized,
