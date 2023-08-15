@@ -72,14 +72,15 @@ class TestParallelTwoCores(unittest.TestCase):
             vol_range=0.05,
             axes=["x", "y", "z"],
             strains=None,
-            cores=2
+            cores=2,
+            minimization_activated=False,
         )[0]
 
         self.assertEqual(len(structure_opt_lst[0]), sum(self.count_lst))
         self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))
 
     def test_example_elastic_constants_with_minimization_parallel_cores_two(self):
-        fit_dict = pyr.calculate_energy_volume_curve_with_minimization_parallel(
+        fit_dict = pyr.calculate_energy_volume_curve_parallel(
             structure_list=[self.structure.copy()],
             potential_dataframe_list=[self.df_pot_selected],
             num_points=11,
@@ -88,7 +89,8 @@ class TestParallelTwoCores(unittest.TestCase):
             vol_range=0.05,
             axes=["x", "y", "z"],
             strains=None,
-            cores=2
+            cores=2,
+            minimization_activated=True,
         )[0]
         self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))
 
