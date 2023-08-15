@@ -3,6 +3,8 @@ import numpy as np
 import spglib
 import scipy.constants
 
+from pyiron_lammps.interface import Calculator
+
 
 def find_symmetry_group_number(struct):
     dataset = spglib.get_symmetry_dataset(struct)
@@ -321,7 +323,7 @@ def get_C_from_A2(A2, LC):
     return C
 
 
-class ElasticMatrixCalculator(object):
+class ElasticMatrixCalculator(Calculator):
     def __init__(
         self, basis_ref, num_of_point=5, eps_range=0.005, sqrt_eta=True, fit_order=2
     ):

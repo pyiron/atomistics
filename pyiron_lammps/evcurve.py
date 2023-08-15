@@ -4,6 +4,7 @@ from typing import Literal
 from collections import OrderedDict
 
 from pyiron_lammps.evcurve_fit import EnergyVolumeFit
+from pyiron_lammps.interface import Calculator
 
 
 def _strain_axes(
@@ -66,7 +67,7 @@ def apply_strain(structure, epsilon, return_box=False, mode="linear"):
         return structure_copy
 
 
-class EnergyVolumeCurveCalculator(object):
+class EnergyVolumeCurveCalculator(Calculator):
     def __init__(
         self,
         basis_ref,
