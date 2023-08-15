@@ -1,6 +1,6 @@
 from pyiron_lammps.decorator import calculation
-from pyiron_lammps.elastic import ElasticMatrixCalculator
-from pyiron_lammps.evcurve import EnergyVolumeCurveCalculator
+from pyiron_lammps.workflows.elastic.calculator import ElasticMatrixCalculator
+from pyiron_lammps.workflows.evcurve.calculator import EnergyVolumeCurveCalculator
 
 
 def _run_simulation(structure, potential_dataframe, input_template, lmp):
