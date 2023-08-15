@@ -26,7 +26,7 @@ def _run_simulation(structure, potential_dataframe, input_template, lmp):
 
 
 def _optimize_structure_optional(
-    structure, potential_dataframe, minimization_activated=True
+    lmp, structure, potential_dataframe, minimization_activated=True
 ):
     if minimization_activated:
         return optimize_structure(
@@ -85,6 +85,7 @@ minimize 0.0 0.0001 100000 10000000"""
 
     # Optimize structure
     structure_opt = _optimize_structure_optional(
+        lmp=lmp,
         structure=structure,
         potential_dataframe=potential_dataframe,
         minimization_activated=minimization_activated,
@@ -139,6 +140,7 @@ run 0"""
 
     # Optimize structure
     structure_opt = _optimize_structure_optional(
+        lmp=lmp,
         structure=structure,
         potential_dataframe=potential_dataframe,
         minimization_activated=minimization_activated,

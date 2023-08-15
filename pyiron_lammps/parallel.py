@@ -6,8 +6,8 @@ from pylammpsmpi import LammpsASELibrary
 
 from pyiron_lammps.calculation import (
     optimize_structure,
-    calculate_elastic_constants_with_minimization,
-    calculate_energy_volume_curve_with_minimization,
+    calculate_elastic_constants,
+    calculate_energy_volume_curve,
 )
 
 
@@ -75,7 +75,7 @@ def _calculate_elastic_constants_serial(input_parameter):
         enable_mpi,
         minimization_activated,
     ) = input_parameter
-    return calculate_elastic_constants_with_minimization(
+    return calculate_elastic_constants(
         lmp=_get_lammps_mpi(enable_mpi=enable_mpi),
         structure=structure,
         potential_dataframe=potential_dataframe,
@@ -100,7 +100,7 @@ def _calculate_energy_volume_curve_serial(input_parameter):
         enable_mpi,
         minimization_activated,
     ) = input_parameter
-    return calculate_energy_volume_curve_with_minimization(
+    return calculate_energy_volume_curve(
         lmp=_get_lammps_mpi(enable_mpi=enable_mpi),
         structure=structure,
         potential_dataframe=potential_dataframe,
