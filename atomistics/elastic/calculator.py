@@ -2,8 +2,8 @@ from collections import OrderedDict
 import numpy as np
 import scipy.constants
 
-from pyiron_lammps.workflows.shared.calculator import Calculator
-from pyiron_lammps.workflows.elastic.symmetry import (
+from atomistics.shared.calculator import Calculator
+from atomistics.elastic.symmetry import (
     find_symmetry_group_number,
     get_C_from_A2,
     get_LAG_Strain_List,

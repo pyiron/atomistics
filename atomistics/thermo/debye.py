@@ -2,7 +2,7 @@ import numpy as np
 import scipy.constants
 import scipy.optimize
 
-from pyiron_lammps.workflows.evcurve.fit import interpolate_energy
+from atomistics.evcurve.fit import interpolate_energy
 
 
 def _debye_kernel(xi):

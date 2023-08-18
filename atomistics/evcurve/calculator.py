@@ -3,8 +3,8 @@ from ase.atoms import Atoms
 from typing import Literal
 from collections import OrderedDict
 
-from pyiron_lammps.workflows.evcurve.fit import EnergyVolumeFit
-from pyiron_lammps.workflows.shared.calculator import Calculator
+from atomistics.evcurve.fit import EnergyVolumeFit
+from atomistics.shared.calculator import Calculator
 
 
 def _strain_axes(

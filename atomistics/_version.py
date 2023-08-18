@@ -40,9 +40,9 @@ def get_config():
     cfg = VersioneerConfig()
     cfg.VCS = "git"
     cfg.style = "pep440-pre"
-    cfg.tag_prefix = "pyiron_lammps-"
-    cfg.parentdir_prefix = "pyiron_lammps"
-    cfg.versionfile_source = "pyiron_lammps/_version.py"
+    cfg.tag_prefix = "atomistics-"
+    cfg.parentdir_prefix = "atomistics"
+    cfg.versionfile_source = "atomistics/_version.py"
     cfg.verbose = False
     return cfg
 
