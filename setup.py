@@ -5,12 +5,12 @@ from setuptools import setup, find_packages
 import versioneer
 
 setup(
-    name='pyiron_lammps',
+    name='atomistics',
     version=versioneer.get_version(),
-    description='pyiron_lammps - calculate material properties for interatomic potentials',
+    description='atomistics - materials science workgflows to calculate material properties',
     long_description='http://pyiron.org',
 
-    url='https://github.com/pyiron/pyiron_lammps',
+    url='https://github.com/pyiron/atomistics',
     author='Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department',
     author_email='janssen@mpie.de',
     license='BSD',
@@ -31,12 +31,8 @@ setup(
     install_requires=[
         'ase==3.22.1',
         'numpy==1.23.5',
-        'pandas==2.0.3',
-        'pylammpsmpi==0.2.2',
-        'pympipool==0.6.2',
         'scipy==1.11.1',
         'spglib==2.0.2',
-        'structuretoolkit==0.0.8',
     ],
     cmdclass=versioneer.get_cmdclass(),
 )
