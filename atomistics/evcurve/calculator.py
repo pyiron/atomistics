@@ -70,7 +70,7 @@ def apply_strain(structure, epsilon, return_box=False, mode="linear"):
 class EnergyVolumeCurveCalculator(Calculator):
     def __init__(
         self,
-        basis_ref,
+        structure,
         num_points=11,
         fit_type="polynomial",
         fit_order=3,
@@ -78,7 +78,7 @@ class EnergyVolumeCurveCalculator(Calculator):
         axes=["x", "y", "z"],
         strains=None,
     ):
-        self.basis_ref = basis_ref
+        self.structure = structure
         self.num_points = num_points
         self.fit_type = fit_type
         self.vol_range = vol_range
@@ -106,7 +106,7 @@ class EnergyVolumeCurveCalculator(Calculator):
                 int(self.num_points),
             )
         for strain in strains:
-            basis = _strain_axes(self.basis_ref, self.axes, strain)
+            basis = _strain_axes(self.structure, self.axes, strain)
             self._structure_dict[1 + np.round(strain, 7)] = basis
         return self._structure_dict
 

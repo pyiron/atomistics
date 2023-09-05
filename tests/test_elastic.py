@@ -14,7 +14,7 @@ def get_potential_energy_from_emt(structure):
 class TestElastic(unittest.TestCase):
     def test_calc_elastic(self):
         calculator = calculator = ElasticMatrixCalculator(
-            basis_ref=bulk("Al", a=4.0, cubic=True),
+            structure=bulk("Al", a=4.0, cubic=True),
             num_of_point=5,
             eps_range=0.005,
             sqrt_eta=True,
