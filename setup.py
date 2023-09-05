@@ -34,5 +34,8 @@ setup(
         'scipy==1.11.2',
         'spglib==2.0.2',
     ],
+    extras_require={
+        "phonopy": ['phonopy==2.20.0', 'structuretoolkit==0.0.10'],
+    },
     cmdclass=versioneer.get_cmdclass(),
 )
