@@ -136,6 +136,7 @@ class ElasticMatrixCalculator(Calculator):
                 strain_energy[-1].append((eps, ene))
         self._data["strain_energy"] = strain_energy
         self.fit_elastic_matrix()
+        return self._data
 
     def calculate_modulus(self):
         """

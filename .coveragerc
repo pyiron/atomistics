@@ -1,5 +1,5 @@
 # .coveragerc to control coverage.py
 [run]
-source = pyiron_lammps
-omit = pyiron_lammps/_version.py
+source = atomistics
+omit = atomistics/_version.py
 concurrency = multiprocessing
