@@ -31,7 +31,7 @@ setup(
     install_requires=[
         'ase==3.22.1',
         'numpy==1.23.5',
-        'scipy==1.11.1',
+        'scipy==1.11.2',
         'spglib==2.0.2',
     ],
     cmdclass=versioneer.get_cmdclass(),
