@@ -1,6 +1,4 @@
-# This workflow is used to run the unittest of pyiron
-
-name: OpenMPI
+name: Unittest
 
 on:
   push:
