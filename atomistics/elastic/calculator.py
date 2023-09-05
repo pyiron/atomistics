@@ -14,9 +14,9 @@ from atomistics.elastic.symmetry import (
 
 class ElasticMatrixCalculator(Calculator):
     def __init__(
-        self, basis_ref, num_of_point=5, eps_range=0.005, sqrt_eta=True, fit_order=2
+        self, structure, num_of_point=5, eps_range=0.005, sqrt_eta=True, fit_order=2
     ):
-        self.basis_ref = basis_ref.copy()
+        self.structure = structure.copy()
         self.num_of_point = num_of_point
         self.eps_range = eps_range
         self.sqrt_eta = sqrt_eta
@@ -36,9 +36,9 @@ class ElasticMatrixCalculator(Calculator):
         Returns:
 
         """
-        self.SGN = find_symmetry_group_number(self.basis_ref)
+        self.SGN = find_symmetry_group_number(self.structure)
         self._data["SGN"] = self.SGN
-        self.v0 = self.basis_ref.get_volume()
+        self.v0 = self.structure.get_volume()
         self._data["v0"] = self.v0
         self.LC = get_symmetry_family_from_SGN(self.SGN)
         self._data["LC"] = self.LC
@@ -54,7 +54,7 @@ class ElasticMatrixCalculator(Calculator):
 
         """
         self.symmetry_analysis()
-        basis_ref = self.basis_ref
+        basis_ref = self.structure
         Lag_strain_list = self.Lag_strain_list
         epss = self.epss
 

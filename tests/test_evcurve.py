@@ -14,7 +14,7 @@ def get_potential_energy_from_emt(structure):
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         calculator = EnergyVolumeCurveCalculator(
-            basis_ref=bulk("Al", a=4.0, cubic=True),
+            structure=bulk("Al", a=4.0, cubic=True),
             num_points=11,
             fit_type='polynomial',
             fit_order=3,
