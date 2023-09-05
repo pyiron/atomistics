@@ -25,7 +25,7 @@ jobs:
         activate-environment: my-env
         use-mamba: true
     - name: Update environment
-      run: mamba env update -n my-env -f .ci_support/environment-openmpi.yml
+      run: mamba env update -n my-env -f .ci_support/environment.yml
     - name: Pip check
       shell: bash -l {0}
       run: |
