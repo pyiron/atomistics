@@ -7,4 +7,5 @@ dependencies:
 - numpy =1.23.5
 - scipy =1.11.2
 - spglib =2.0.2
+- phonopy =2.20.0
 - structuretoolkit =0.0.10
