@@ -108,10 +108,13 @@ class ElasticMatrixCalculator(Calculator):
 
                 self._structure_dict[jobname] = nstruct
 
-        return self._structure_dict
+        return {"calc_energy": self._structure_dict}
 
     def analyse_structures(self, output_dict):
         """
+
+        Args:
+            output_dict (dict):
 
         Returns:
 
@@ -119,6 +122,9 @@ class ElasticMatrixCalculator(Calculator):
         self.symmetry_analysis()
         epss = self.epss
         Lag_strain_list = self.Lag_strain_list
+
+        if "energy" in output_dict.keys():
+            output_dict = output_dict["energy"]
 
         ene0 = None
         if 0.0 in epss:

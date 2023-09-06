@@ -70,10 +70,10 @@ class PhonopyCalculator(Calculator):
         self._mesh_dict = {}
 
     def generate_structures(self):
-        return {
+        return {"calc_forces": {
             ind: self._restore_magmoms(structuretoolkit.common.phonopy_to_atoms(sc))
             for ind, sc in enumerate(self.phonopy.supercells_with_displacements)
-        }
+        }}
 
     def _restore_magmoms(self, structure):
         """
@@ -105,6 +105,8 @@ class PhonopyCalculator(Calculator):
         Returns:
 
         """
+        if "forces" in output_dict.keys():
+            output_dict = output_dict["forces"]
         forces_lst = [output_dict[k] for k in sorted(output_dict.keys())]
         self.phonopy.forces = forces_lst
         self.phonopy.produce_force_constants(
