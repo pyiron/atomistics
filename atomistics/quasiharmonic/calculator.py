@@ -25,7 +25,7 @@ class QuasiHarmonicCalculator(EnergyVolumeCurveCalculator):
             fit_order=fit_order,
             vol_range=vol_range,
             axes=["x", "y", "z"],
-            strains=None
+            strains=None,
         )
         self._interaction_range = interaction_range
         self._displacement = displacement
@@ -49,19 +49,25 @@ class QuasiHarmonicCalculator(EnergyVolumeCurveCalculator):
                 number_of_snapshots=self._number_of_snapshots,
             )
             structure_task_dict = self._phonopy_dict[strain].generate_structures()
-            task_dict["calc_forces"].update({
-                (strain, key): structure_phono
-                for key, structure_phono in structure_task_dict["calc_forces"].items()
-            })
+            task_dict["calc_forces"].update(
+                {
+                    (strain, key): structure_phono
+                    for key, structure_phono in structure_task_dict[
+                        "calc_forces"
+                    ].items()
+                }
+            )
         return task_dict
 
     def analyse_structures(self, output_dict):
         eng_internal_dict = output_dict["energy"]
         mesh_collect_dict, dos_collect_dict = {}, {}
         for strain, phono in self._phonopy_dict.items():
-            mesh_dict, dos_dict = phono.analyse_structures(output_dict={
-                k: v for k, v in output_dict["forces"].items() if strain in k
-            })
+            mesh_dict, dos_dict = phono.analyse_structures(
+                output_dict={
+                    k: v for k, v in output_dict["forces"].items() if strain in k
+                }
+            )
             mesh_collect_dict[strain] = mesh_dict
             dos_collect_dict[strain] = dos_dict
         return eng_internal_dict, mesh_collect_dict, dos_collect_dict
