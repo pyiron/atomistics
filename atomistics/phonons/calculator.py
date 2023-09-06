@@ -2,9 +2,7 @@ from typing import Optional
 import posixpath
 
 import numpy as np
-import scipy.constants
 from phonopy import Phonopy
-from phonopy.units import VaspToTHz
 from phonopy.file_IO import write_FORCE_CONSTANTS
 import structuretoolkit
 
@@ -16,6 +14,7 @@ from atomistics.phonons.helper import (
     plot_band_structure,
     plot_dos,
 )
+from atomistics.phonons.units import VaspToTHz, kJ_mol_to_eV
 
 
 class PhonopyCalculator(Calculator):
@@ -139,7 +138,6 @@ class PhonopyCalculator(Calculator):
             t_step=t_step, t_max=t_max, t_min=t_min, temperatures=temperatures
         )
         tp_dict = self.phonopy.get_thermal_properties_dict()
-        kJ_mol_to_eV = 1000 / scipy.constants.Avogadro / scipy.constants.electron_volt
         tp_dict["free_energy"] *= kJ_mol_to_eV
         return tp_dict
 
