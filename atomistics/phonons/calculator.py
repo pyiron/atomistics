@@ -70,10 +70,12 @@ class PhonopyCalculator(Calculator):
         self._mesh_dict = {}
 
     def generate_structures(self):
-        return {"calc_forces": {
-            ind: self._restore_magmoms(structuretoolkit.common.phonopy_to_atoms(sc))
-            for ind, sc in enumerate(self.phonopy.supercells_with_displacements)
-        }}
+        return {
+            "calc_forces": {
+                ind: self._restore_magmoms(structuretoolkit.common.phonopy_to_atoms(sc))
+                for ind, sc in enumerate(self.phonopy.supercells_with_displacements)
+            }
+        }
 
     def _restore_magmoms(self, structure):
         """
