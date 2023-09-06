@@ -108,9 +108,12 @@ class EnergyVolumeCurveCalculator(Calculator):
         for strain in strains:
             basis = _strain_axes(self.structure, self.axes, strain)
             self._structure_dict[1 + np.round(strain, 7)] = basis
-        return self._structure_dict
+        return {"calc_energy": self._structure_dict}
 
     def analyse_structures(self, output_dict):
+        if "energy" in output_dict.keys():
+            output_dict = output_dict["energy"]
+
         volume_lst, energy_lst = [], []
         for k in self._structure_dict.keys():
             volume_lst.append(self._structure_dict[k].get_volume())

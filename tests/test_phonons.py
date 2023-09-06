@@ -1,15 +1,10 @@
 import unittest
 
 from ase.build import bulk
-from ase.calculators.emt import EMT
 from phonopy.units import VaspToTHz
-
 from atomistics.phonons.calculator import PhonopyCalculator
 
-
-def get_forces_from_emt(structure):
-    structure.calc = EMT()
-    return structure.get_forces()
+from emt_helper import evaluate_with_emt
 
 
 class TestPhonons(unittest.TestCase):
@@ -24,11 +19,8 @@ class TestPhonons(unittest.TestCase):
             number_of_snapshots=None,
         )
         structure_dict = calculator.generate_structures()
-        force_dict = {
-            k: get_forces_from_emt(structure=v)
-            for k, v in structure_dict.items()
-        }
-        mesh_dict, dos_dict = calculator.analyse_structures(output_dict=force_dict)
+        result_dict = evaluate_with_emt(task_dict=structure_dict)
+        mesh_dict, dos_dict = calculator.analyse_structures(output_dict=result_dict)
         self.assertEqual((324, 324), calculator.get_hesse_matrix().shape)
         self.assertTrue('qpoints' in mesh_dict.keys())
         self.assertTrue('weights' in mesh_dict.keys())
