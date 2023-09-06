@@ -49,22 +49,22 @@ class QuasiHarmonicCalculator(EnergyVolumeCurveCalculator):
                 number_of_snapshots=self._number_of_snapshots,
             )
             structure_task_dict = self._phonopy_dict[strain].generate_structures()
-            task_dict["calc_forces"].extend({
+            task_dict["calc_forces"].update({
                 (strain, key): structure_phono
                 for key, structure_phono in structure_task_dict["calc_forces"].items()
             })
         return task_dict
 
     def analyse_structures(self, output_dict):
-        fit_dict = super().analyse_structures(output_dict=output_dict["energy"])
+        eng_internal_dict = output_dict["energy"]
         mesh_collect_dict, dos_collect_dict = {}, {}
         for strain, phono in self._phonopy_dict.items():
             mesh_dict, dos_dict = phono.analyse_structures(output_dict={
-                k: v for k, v in output_dict["forces"] if strain in k
+                k: v for k, v in output_dict["forces"].items() if strain in k
             })
             mesh_collect_dict[strain] = mesh_dict
             dos_collect_dict[strain] = dos_dict
-        return fit_dict, mesh_collect_dict, dos_collect_dict
+        return eng_internal_dict, mesh_collect_dict, dos_collect_dict
 
     def get_thermal_properties(self, t_min=1, t_max=1500, t_step=50, temperatures=None):
         """
@@ -74,7 +74,7 @@ class QuasiHarmonicCalculator(EnergyVolumeCurveCalculator):
         Args:
             t_min (float): minimum sample temperature
             t_max (float): maximum sample temperature
-            t_step (int):  tempeature sample interval
+            t_step (int):  temperature sample interval
             temperatures (array_like, float):  custom array of temperature samples, if given t_min, t_max, t_step are
                                                ignored.
 
@@ -83,10 +83,7 @@ class QuasiHarmonicCalculator(EnergyVolumeCurveCalculator):
         """
         tp_collect_dict = {}
         for strain, phono in self._phonopy_dict.items():
-            phono.run_thermal_properties(
+            tp_collect_dict[strain] = phono.get_thermal_properties(
                 t_step=t_step, t_max=t_max, t_min=t_min, temperatures=temperatures
             )
-            tp_dict = phono.get_thermal_properties_dict()
-            tp_dict["free_energy"] *= kJ_mol_to_eV
-            tp_collect_dict[strain] = tp_dict
         return tp_collect_dict
