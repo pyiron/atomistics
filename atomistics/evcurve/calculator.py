@@ -122,6 +122,5 @@ class EnergyVolumeCurveCalculator(Calculator):
 
     def get_volume_lst(self):
         return [
-            self._structure_dict[k].get_volume()
-            for k in self._structure_dict.keys()
+            self._structure_dict[k].get_volume() for k in self._structure_dict.keys()
         ]
