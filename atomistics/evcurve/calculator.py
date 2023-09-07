@@ -113,14 +113,15 @@ class EnergyVolumeCurveCalculator(Calculator):
     def analyse_structures(self, output_dict):
         if "energy" in output_dict.keys():
             output_dict = output_dict["energy"]
-
-        volume_lst, energy_lst = [], []
-        for k in self._structure_dict.keys():
-            volume_lst.append(self._structure_dict[k].get_volume())
-            energy_lst.append(output_dict[k])
         self.fit_module = EnergyVolumeFit(
-            volume_lst=volume_lst,
-            energy_lst=energy_lst,
+            volume_lst=self.get_volume_lst(),
+            energy_lst=[output_dict[k] for k in self._structure_dict.keys()],
         )
         self.fit_module.fit(fit_type=self.fit_type, fit_order=self.fit_order)
         return self.fit_dict
+
+    def get_volume_lst(self):
+        return [
+            self._structure_dict[k].get_volume()
+            for k in self._structure_dict.keys()
+        ]
