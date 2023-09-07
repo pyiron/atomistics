@@ -9,3 +9,4 @@ dependencies:
 - spglib =2.0.2
 - phonopy =2.20.0
 - structuretoolkit =0.0.10
+- seekpath =2.1.0

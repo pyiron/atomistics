@@ -12,8 +12,6 @@ class TestPhonons(unittest.TestCase):
         calculator = QuasiHarmonicCalculator(
             structure=bulk("Al", a=4.0, cubic=True),
             num_points=11,
-            fit_type="polynomial",
-            fit_order=3,
             vol_range=0.05,
             interaction_range=10,
             factor=VaspToTHz,
