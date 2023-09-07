@@ -35,7 +35,7 @@ setup(
         'spglib==2.0.2',
     ],
     extras_require={
-        "phonopy": ['phonopy==2.20.0', 'structuretoolkit==0.0.10'],
+        "phonopy": ['phonopy==2.20.0', 'seekpath==2.1.0', 'structuretoolkit==0.0.10'],
     },
     cmdclass=versioneer.get_cmdclass(),
 )
