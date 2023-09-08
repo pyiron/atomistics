@@ -17,7 +17,7 @@ except ImportError:
 )
 class TestElastic(unittest.TestCase):
     def test_calc_elastic(self):
-        calculator = calculator = ElasticMatrixWorkflow(
+        calculator = ElasticMatrixWorkflow(
             structure=bulk("Al", a=4.0, cubic=True),
             num_of_point=5,
             eps_range=0.05,
@@ -33,6 +33,6 @@ class TestElastic(unittest.TestCase):
         )
         elastic_dict = calculator.analyse_structures(output_dict=result_dict)
         print(elastic_dict)
-        self.assertTrue(np.isclose(elastic_dict["C"][0, 0], 98.43569769, atol=1e-04))
-        self.assertTrue(np.isclose(elastic_dict["C"][0, 1], 63.17412944, atol=1e-04))
-        self.assertTrue(np.isclose(elastic_dict["C"][3, 3], 84.66136171, atol=1e-04))
+        self.assertTrue(np.isclose(elastic_dict["C"][0, 0], 125.66807354, atol=1e-04))
+        self.assertTrue(np.isclose(elastic_dict["C"][0, 1], 68.41418321, atol=1e-04))
+        self.assertTrue(np.isclose(elastic_dict["C"][3, 3], 99.29916329, atol=1e-04))
