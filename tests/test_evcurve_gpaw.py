@@ -2,14 +2,24 @@ from ase.build import bulk
 import numpy as np
 import unittest
 
-from atomistics.calculators.gpaw_ase.calculator import evaluate_with_gpaw
 from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
 
 
+try:
+    from atomistics.calculators.gpaw_ase.calculator import evaluate_with_gpaw
+
+    skip_gpaw_test = False
+except ImportError:
+    skip_gpaw_test = True
+
+
+@unittest.skipIf(
+    skip_gpaw_test, "gpaw is not installed, so the gpaw tests are skipped."
+)
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         calculator = EnergyVolumeCurveWorkflow(
-            structure=bulk("Al", a=4.0, cubic=True),
+            structure=bulk("Al", a=4.05, cubic=True),
             num_points=11,
             fit_type='polynomial',
             fit_order=3,
@@ -21,10 +31,10 @@ class TestEvCurve(unittest.TestCase):
         result_dict = evaluate_with_gpaw(
             task_dict=structure_dict,
             xc="PBE",
-            encut=500,
-            kpts=(5, 5, 5)
+            encut=300,
+            kpts=(3, 3, 3)
         )
         fit_dict = calculator.analyse_structures(output_dict=result_dict)
-        self.assertTrue(np.isclose(fit_dict['volume_eq'], 63.72615218844302))
-        self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 39.544084907317895))
-        self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 2.2509394023322566))
+        self.assertTrue(np.isclose(fit_dict['volume_eq'], 66.44252286126346))
+        self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 72.3891982628566))
+        self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 4.4538365509116735))

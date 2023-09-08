@@ -10,4 +10,3 @@ dependencies:
 - phonopy =2.20.0
 - structuretoolkit =0.0.11
 - seekpath =2.1.0
-- gpaw =23.6.1
