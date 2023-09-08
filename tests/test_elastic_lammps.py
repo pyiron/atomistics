@@ -21,7 +21,7 @@ except ImportError:
 class TestElastic(unittest.TestCase):
     def test_calc_elastic(self):
         potential = '1999--Mishin-Y--Al--LAMMPS--ipr1'
-        resource_path = os.path.join(os.path.dirname(__file__), "static")
+        resource_path = os.path.join(os.path.dirname(__file__), "static", "lammps")
         structure = bulk("Al", a=4.05, cubic=True)
         df_pot = get_potential_dataframe(
             structure=structure,
