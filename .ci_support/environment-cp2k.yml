@@ -1,0 +1,4 @@
+channels:
+- conda-forge
+dependencies:
+- cp2k =9.1.0
