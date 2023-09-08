@@ -35,6 +35,7 @@ class TestEvCurve(unittest.TestCase):
             kpts=(3, 3, 3)
         )
         fit_dict = calculator.analyse_structures(output_dict=result_dict)
+        print(fit_dict)
         self.assertTrue(np.isclose(fit_dict['volume_eq'], 66.44252286126346))
         self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 72.3891982628566))
         self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 4.4538365509116735))

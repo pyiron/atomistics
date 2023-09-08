@@ -32,6 +32,7 @@ class TestElastic(unittest.TestCase):
             kpts=(3, 3, 3)
         )
         elastic_dict = calculator.analyse_structures(output_dict=result_dict)
+        print(elastic_dict)
         self.assertTrue(np.isclose(elastic_dict["C"][0, 0], 98.43569769))
         self.assertTrue(np.isclose(elastic_dict["C"][0, 1], 63.17412944))
         self.assertTrue(np.isclose(elastic_dict["C"][3, 3], 84.66136171))

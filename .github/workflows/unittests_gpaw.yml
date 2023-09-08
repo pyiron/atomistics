@@ -1,4 +1,4 @@
-name: Unittest
+name: Gpaw Unittest
 
 on:
   push:
@@ -40,3 +40,5 @@ jobs:
       run: |
         python -m unittest tests/test_evcurve_gpaw.py
         python -m unittest tests/test_elastic_gpaw.py
+        python -m unittest tests/test_phonons_gpaw.py
+        python -m unittest tests/test_quasiharmonic_gpaw.py
