@@ -6,18 +6,18 @@ from phonopy import Phonopy
 from phonopy.file_IO import write_FORCE_CONSTANTS
 import structuretoolkit
 
-from atomistics.shared.calculator import Calculator
-from atomistics.phonons.helper import (
+from atomistics.workflows.shared.workflow import Workflow
+from atomistics.workflows.phonons.helper import (
     get_supercell_matrix,
     get_hesse_matrix,
     get_band_structure,
     plot_band_structure,
     plot_dos,
 )
-from atomistics.phonons.units import VaspToTHz, kJ_mol_to_eV
+from atomistics.workflows.phonons.units import VaspToTHz, kJ_mol_to_eV
 
 
-class PhonopyCalculator(Calculator):
+class PhonopyWorkflow(Workflow):
     """
     Phonopy wrapper for the calculation of free energy in the framework of quasi harmonic approximation.
 

@@ -2,8 +2,8 @@ from collections import OrderedDict
 import numpy as np
 import scipy.constants
 
-from atomistics.shared.calculator import Calculator
-from atomistics.elastic.symmetry import (
+from atomistics.workflows.shared.workflow import Workflow
+from atomistics.workflows.elastic.symmetry import (
     find_symmetry_group_number,
     get_C_from_A2,
     get_LAG_Strain_List,
@@ -12,7 +12,7 @@ from atomistics.elastic.symmetry import (
 )
 
 
-class ElasticMatrixCalculator(Calculator):
+class ElasticMatrixWorkflow(Workflow):
     def __init__(
         self, structure, num_of_point=5, eps_range=0.005, sqrt_eta=True, fit_order=2
     ):

@@ -1,15 +1,14 @@
-import unittest
-
 from ase.build import bulk
 from phonopy.units import VaspToTHz
-from atomistics.quasiharmonic.calculator import QuasiHarmonicCalculator
+import unittest
 
-from emt_helper import evaluate_with_emt
+from atomistics.calculators.emt_ase.calculator import evaluate_with_emt
+from atomistics.workflows.quasiharmonic.workflow import QuasiHarmonicWorkflow
 
 
 class TestPhonons(unittest.TestCase):
     def test_calc_phonons(self):
-        calculator = QuasiHarmonicCalculator(
+        calculator = QuasiHarmonicWorkflow(
             structure=bulk("Al", a=4.0, cubic=True),
             num_points=11,
             vol_range=0.05,

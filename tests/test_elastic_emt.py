@@ -1,15 +1,14 @@
-import unittest
-import numpy as np
-
 from ase.build import bulk
-from atomistics.elastic.calculator import ElasticMatrixCalculator
+import numpy as np
+import unittest
 
-from emt_helper import evaluate_with_emt
+from atomistics.calculators.emt_ase.calculator import evaluate_with_emt
+from atomistics.workflows.elastic.workflow import ElasticMatrixWorkflow
 
 
 class TestElastic(unittest.TestCase):
     def test_calc_elastic(self):
-        calculator = calculator = ElasticMatrixCalculator(
+        calculator = calculator = ElasticMatrixWorkflow(
             structure=bulk("Al", a=4.0, cubic=True),
             num_of_point=5,
             eps_range=0.005,

@@ -1,7 +1,7 @@
 from abc import ABC
 
 
-class Calculator(ABC):
+class Workflow(ABC):
     def generate_structures(self):
         raise NotImplementedError
 

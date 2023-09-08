@@ -1,0 +1,5 @@
+channels:
+- conda-forge
+dependencies:
+- lammps =2023.08.02
+- pylammpsmpi =0.2.2

@@ -1,9 +1,9 @@
-from atomistics.evcurve.calculator import EnergyVolumeCurveCalculator
-from atomistics.phonons.calculator import PhonopyCalculator
-from atomistics.phonons.units import VaspToTHz, kJ_mol_to_eV
+from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
+from atomistics.workflows.phonons.workflow import PhonopyWorkflow
+from atomistics.workflows.phonons.units import VaspToTHz
 
 
-class QuasiHarmonicCalculator(EnergyVolumeCurveCalculator):
+class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
     def __init__(
         self,
         structure,
@@ -37,7 +37,7 @@ class QuasiHarmonicCalculator(EnergyVolumeCurveCalculator):
         task_dict = super().generate_structures()
         task_dict["calc_forces"] = {}
         for strain, structure in task_dict["calc_energy"].items():
-            self._phonopy_dict[strain] = PhonopyCalculator(
+            self._phonopy_dict[strain] = PhonopyWorkflow(
                 structure=structure,
                 interaction_range=self._interaction_range,
                 factor=self._factor,
