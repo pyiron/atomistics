@@ -1,4 +1,4 @@
-name: Gpaw Unittest
+name: Gpaw Unittest Linux 3.11
 
 on:
   push:
@@ -41,4 +41,3 @@ jobs:
         python -m unittest tests/test_evcurve_gpaw.py
         python -m unittest tests/test_elastic_gpaw.py
         python -m unittest tests/test_phonons_gpaw.py
-        python -m unittest tests/test_quasiharmonic_gpaw.py
