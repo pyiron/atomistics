@@ -36,6 +36,7 @@ setup(
     ],
     extras_require={
         "phonopy": ['phonopy==2.20.0', 'seekpath==2.1.0', 'structuretoolkit==0.0.11'],
+        "gpaw": ['gpaw==23.6.1'],
     },
     cmdclass=versioneer.get_cmdclass(),
 )
