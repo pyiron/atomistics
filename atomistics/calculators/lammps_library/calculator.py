@@ -31,14 +31,24 @@ def _run_simulation(structure, potential_dataframe, input_template, lmp):
 
 
 def get_potential_energy_from_lammps(structure, lmp, potential_dataframe):
-    _run_simulation(structure=structure, potential_dataframe=potential_dataframe, input_template=lammps_input_template, lmp=lmp)
+    _run_simulation(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=lammps_input_template,
+        lmp=lmp,
+    )
     energy = lmp.interactive_energy_tot_getter()
     lmp.interactive_lib_command("clear")
     return energy
 
 
 def get_forces_from_lammps(structure, lmp, potential_dataframe):
-    _run_simulation(structure=structure, potential_dataframe=potential_dataframe, input_template=lammps_input_template, lmp=lmp)
+    _run_simulation(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=lammps_input_template,
+        lmp=lmp,
+    )
     forces = lmp.interactive_forces_getter()
     lmp.interactive_lib_command("clear")
     return forces
@@ -64,7 +74,17 @@ def get_lammps_engine(
     )
 
 
-def evaluate_with_lammps(task_dict, potential_dataframe, working_directory=None, cores=1, comm=None, logger=None, log_file=None, library=None, diable_log_file=True):
+def evaluate_with_lammps(
+    task_dict,
+    potential_dataframe,
+    working_directory=None,
+    cores=1,
+    comm=None,
+    logger=None,
+    log_file=None,
+    library=None,
+    diable_log_file=True,
+):
     result_dict = {}
     lmp = LammpsASELibrary(
         working_directory=working_directory,
@@ -78,13 +98,17 @@ def evaluate_with_lammps(task_dict, potential_dataframe, working_directory=None,
     if "calc_energy" in task_dict.keys():
         result_dict["energy"] = {
             k: get_potential_energy_from_lammps(
-                structure=v, lmp=lmp, potential_dataframe=potential_dataframe,
+                structure=v,
+                lmp=lmp,
+                potential_dataframe=potential_dataframe,
             )
             for k, v in task_dict["calc_energy"].items()
         }
     if "calc_forces" in task_dict.keys():
         result_dict["forces"] = {
-            k: get_forces_from_lammps(structure=v, lmp=lmp, potential_dataframe=potential_dataframe)
+            k: get_forces_from_lammps(
+                structure=v, lmp=lmp, potential_dataframe=potential_dataframe
+            )
             for k, v in task_dict["calc_forces"].items()
         }
     lmp.close()
