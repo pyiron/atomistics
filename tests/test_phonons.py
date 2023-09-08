@@ -1,15 +1,14 @@
-import unittest
-
 from ase.build import bulk
 from phonopy.units import VaspToTHz
-from atomistics.phonons.calculator import PhonopyCalculator
+import unittest
 
-from emt_helper import evaluate_with_emt
+from atomistics.calculators.emt_ase.calculator import evaluate_with_emt
+from atomistics.workflows.phonons.workflow import PhonopyWorkflow
 
 
 class TestPhonons(unittest.TestCase):
     def test_calc_phonons(self):
-        calculator = PhonopyCalculator(
+        calculator = PhonopyWorkflow(
             structure=bulk("Al", a=4.0, cubic=True),
             interaction_range=10,
             factor=VaspToTHz,

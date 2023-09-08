@@ -1,15 +1,14 @@
-import unittest
-import numpy as np
-
 from ase.build import bulk
-from atomistics.evcurve.calculator import EnergyVolumeCurveCalculator
+import numpy as np
+import unittest
 
-from emt_helper import evaluate_with_emt
+from atomistics.calculators.emt_ase.calculator import evaluate_with_emt
+from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
 
 
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
-        calculator = EnergyVolumeCurveCalculator(
+        calculator = EnergyVolumeCurveWorkflow(
             structure=bulk("Al", a=4.0, cubic=True),
             num_points=11,
             fit_type='polynomial',

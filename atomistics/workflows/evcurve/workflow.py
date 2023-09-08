@@ -3,8 +3,8 @@ from ase.atoms import Atoms
 from typing import Literal
 from collections import OrderedDict
 
-from atomistics.evcurve.fit import EnergyVolumeFit
-from atomistics.shared.calculator import Calculator
+from atomistics.workflows.evcurve.fit import EnergyVolumeFit
+from atomistics.workflows.shared.workflow import Workflow
 
 
 def _strain_axes(
@@ -67,7 +67,7 @@ def apply_strain(structure, epsilon, return_box=False, mode="linear"):
         return structure_copy
 
 
-class EnergyVolumeCurveCalculator(Calculator):
+class EnergyVolumeCurveWorkflow(Workflow):
     def __init__(
         self,
         structure,
