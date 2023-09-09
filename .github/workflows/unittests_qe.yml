@@ -38,6 +38,8 @@ jobs:
       shell: bash -l {0}
       timeout-minutes: 30
       run: |
+        mkdir -p ~/espresso/pseudo
+        cp -r tests/static/qe/Al.pbe-n-kjpaw_psl.1.0.0.UPF ~/espresso/pseudo/Al.pbe-n-kjpaw_psl.1.0.0.UPF
         python -m unittest tests/test_evcurve_qe.py
         python -m unittest tests/test_elastic_qe.py
         python -m unittest tests/test_phonons_qe.py
