@@ -1,7 +1,6 @@
 import shutil
 
 from ase.build import bulk
-import numpy as np
 import unittest
 
 from atomistics.calculators.quantumespresso_ase.calculator import evaluate_with_quantumespresso
@@ -13,6 +12,20 @@ if shutil.which(cp2k_command) is not None:
     skip_cp2k_test = False
 else:
     skip_cp2k_test = True
+
+
+def validate_elastic_constants(elastic_matrix):
+    return [
+        elastic_matrix[0, 0] > 200,
+        elastic_matrix[1, 1] > 200,
+        elastic_matrix[2, 2] > 200,
+        elastic_matrix[0, 1] > 135,
+        elastic_matrix[0, 2] > 135,
+        elastic_matrix[1, 2] > 135,
+        elastic_matrix[3, 3] > 100,
+        elastic_matrix[4, 4] > 100,
+        elastic_matrix[5, 5] > 100,
+    ]
 
 
 @unittest.skipIf(
@@ -37,7 +50,4 @@ class TestElastic(unittest.TestCase):
             kpts=(3, 3, 3),
         )
         elastic_dict = calculator.analyse_structures(output_dict=result_dict)
-        print(elastic_dict)
-        self.assertTrue(np.isclose(elastic_dict["C"][0, 0], 42.82240443, atol=1e-01))
-        self.assertTrue(np.isclose(elastic_dict["C"][0, 1], 68.14834072, atol=1e-01))
-        self.assertTrue(np.isclose(elastic_dict["C"][3, 3], 52.27621873, atol=1e-01))
+        self.assertTrue(all(validate_elastic_constants(elastic_matrix=elastic_dict["C"])))

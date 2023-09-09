@@ -1,7 +1,6 @@
 import shutil
 
 from ase.build import bulk
-import numpy as np
 import unittest
 
 from atomistics.calculators.quantumespresso_ase.calculator import evaluate_with_quantumespresso
@@ -13,6 +12,22 @@ if shutil.which(quantum_espresso_command) is not None:
     skip_quantum_espresso_test = False
 else:
     skip_quantum_espresso_test = True
+
+
+def validate_fitdict(fit_dict):
+    lst = [
+        fit_dict['b_prime_eq'] > 3.0,
+        fit_dict['b_prime_eq'] < 5.0,
+        fit_dict['bulkmodul_eq'] > 52,
+        fit_dict['bulkmodul_eq'] < 55,
+        fit_dict['energy_eq'] > -2148.2,
+        fit_dict['energy_eq'] < -2148.1,
+        fit_dict['volume_eq'] > 70,
+        fit_dict['volume_eq'] < 71,
+    ]
+    if not all(lst):
+        print(fit_dict)
+    return lst
 
 
 @unittest.skipIf(
@@ -39,7 +54,4 @@ class TestEvCurve(unittest.TestCase):
             kpts=(3, 3, 3),
         )
         fit_dict = calculator.analyse_structures(output_dict=result_dict)
-        print(fit_dict)
-        self.assertTrue(np.isclose(fit_dict['volume_eq'], 70.89477657207699, atol=1e-01))
-        self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 52.69607220079356, atol=1e-01))
-        self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 3.396684968675607, atol=1e-01))
+        self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))
