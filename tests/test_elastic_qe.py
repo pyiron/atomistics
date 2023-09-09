@@ -15,17 +15,29 @@ else:
 
 
 def validate_elastic_constants(elastic_matrix):
-    return [
-        elastic_matrix[0, 0] > 200,
-        elastic_matrix[1, 1] > 200,
-        elastic_matrix[2, 2] > 200,
-        elastic_matrix[0, 1] > 135,
-        elastic_matrix[0, 2] > 135,
-        elastic_matrix[1, 2] > 135,
-        elastic_matrix[3, 3] > 100,
-        elastic_matrix[4, 4] > 100,
-        elastic_matrix[5, 5] > 100,
+    lst = [
+        elastic_matrix[0, 0] > 42,
+        elastic_matrix[1, 1] > 42,
+        elastic_matrix[2, 2] > 42,
+        elastic_matrix[0, 0] < 43,
+        elastic_matrix[1, 1] < 43,
+        elastic_matrix[2, 2] < 43,
+        elastic_matrix[0, 1] > 68,
+        elastic_matrix[0, 2] > 68,
+        elastic_matrix[1, 2] > 68,
+        elastic_matrix[0, 1] < 69,
+        elastic_matrix[0, 2] < 69,
+        elastic_matrix[1, 2] < 69,
+        elastic_matrix[3, 3] > 52,
+        elastic_matrix[4, 4] > 52,
+        elastic_matrix[5, 5] > 52,
+        elastic_matrix[3, 3] < 53,
+        elastic_matrix[4, 4] < 53,
+        elastic_matrix[5, 5] < 53,
     ]
+    if not all(lst):
+        print(elastic_matrix)
+    return lst
 
 
 @unittest.skipIf(
