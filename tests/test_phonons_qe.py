@@ -1,4 +1,3 @@
-import os
 import shutil
 
 from ase.build import bulk
