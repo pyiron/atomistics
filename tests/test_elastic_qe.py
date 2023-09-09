@@ -1,4 +1,3 @@
-import os
 import shutil
 
 from ase.build import bulk
@@ -21,10 +20,9 @@ else:
 )
 class TestElastic(unittest.TestCase):
     def test_calc_elastic(self):
-        resource_path = os.path.join(os.path.dirname(__file__), "static", "qe")
-        pseudopotentials = {"Al": os.path.join(resource_path, "Al.pbe-n-kjpaw_psl.1.0.0.UPF")}
+        pseudopotentials = {"Al": "Al.pbe-n-kjpaw_psl.1.0.0.UPF"}
         calculator = ElasticMatrixWorkflow(
-            structure=bulk("Al", a=4.0, cubic=True),
+            structure=bulk("Al", a=4.15, cubic=True),
             num_of_point=5,
             eps_range=0.05,
             sqrt_eta=True,
@@ -40,6 +38,6 @@ class TestElastic(unittest.TestCase):
         )
         elastic_dict = calculator.analyse_structures(output_dict=result_dict)
         print(elastic_dict)
-        self.assertTrue(np.isclose(elastic_dict["C"][0, 0], 125.66807354, atol=1e-04))
-        self.assertTrue(np.isclose(elastic_dict["C"][0, 1], 68.41418321, atol=1e-04))
-        self.assertTrue(np.isclose(elastic_dict["C"][3, 3], 99.29916329, atol=1e-04))
+        self.assertTrue(np.isclose(elastic_dict["C"][0, 0], 42.82240443, atol=1e-04))
+        self.assertTrue(np.isclose(elastic_dict["C"][0, 1], 68.14834072, atol=1e-04))
+        self.assertTrue(np.isclose(elastic_dict["C"][3, 3], 52.27621873, atol=1e-04))

@@ -22,7 +22,7 @@ class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         pseudopotentials = {"Al": "Al.pbe-n-kjpaw_psl.1.0.0.UPF"}
         calculator = EnergyVolumeCurveWorkflow(
-            structure=bulk("Al", a=4.05, cubic=True),
+            structure=bulk("Al", a=4.15, cubic=True),
             num_points=11,
             fit_type='polynomial',
             fit_order=3,
@@ -40,6 +40,6 @@ class TestEvCurve(unittest.TestCase):
         )
         fit_dict = calculator.analyse_structures(output_dict=result_dict)
         print(fit_dict)
-        self.assertTrue(np.isclose(fit_dict['volume_eq'], 66.44252286131331, atol=1e-04))
-        self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 72.38919826652857, atol=1e-04))
-        self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 4.453836551712821, atol=1e-04))
+        self.assertTrue(np.isclose(fit_dict['volume_eq'], 70.86657718794973, atol=1e-04))
+        self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 55.28802217387117, atol=1e-04))
+        self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 5.3705786417858805, atol=1e-04))

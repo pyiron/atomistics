@@ -21,10 +21,9 @@ else:
 )
 class TestPhonons(unittest.TestCase):
     def test_calc_phonons(self):
-        resource_path = os.path.join(os.path.dirname(__file__), "static", "qe")
-        pseudopotentials = {"Al": os.path.join(resource_path, "Al.pbe-n-kjpaw_psl.1.0.0.UPF")}
+        pseudopotentials = {"Al": "Al.pbe-n-kjpaw_psl.1.0.0.UPF"}
         calculator = PhonopyWorkflow(
-            structure=bulk("Al", a=4.05, cubic=True),
+            structure=bulk("Al", a=4.15, cubic=True),
             interaction_range=10,
             factor=VaspToTHz,
             displacement=0.01,
