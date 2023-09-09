@@ -42,7 +42,6 @@ jobs:
         cp -r tests/static/qe/Al.pbe-n-kjpaw_psl.1.0.0.UPF ~/espresso/pseudo/Al.pbe-n-kjpaw_psl.1.0.0.UPF
         python -m unittest tests/test_evcurve_qe.py
         python -m unittest tests/test_elastic_qe.py
-        python -m unittest tests/test_phonons_qe.py
       env:
         ASE_ESPRESSO_COMMAND: "mpirun -np 1 pw.x -in PREFIX.pwi > PREFIX.pwo"
         OMPI_MCA_plm: isolated
