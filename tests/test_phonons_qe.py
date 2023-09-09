@@ -36,7 +36,7 @@ class TestPhonons(unittest.TestCase):
             pseudopotentials=pseudopotentials,
             tstress=True,
             tprnfor=True,
-            kpts=(3, 3, 3),
+            kpts=(1, 1, 1),
         )
         mesh_dict, dos_dict = calculator.analyse_structures(output_dict=result_dict)
         self.assertEqual((324, 324), calculator.get_hesse_matrix().shape)
