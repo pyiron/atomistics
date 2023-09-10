@@ -1,4 +1,4 @@
-name: Lammps Unittest Linux 3.11
+name: Quantum Espresso Unittest Linux 3.11
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Merge Notebook environment
       run: |
-        python .ci_support/condamerge.py --base .ci_support/environment.yml --add .ci_support/environment-lammps.yml > environment.yml
+        python .ci_support/condamerge.py --base .ci_support/environment.yml --add .ci_support/environment-coverage.yml > environment.yml
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v2
       with:
@@ -37,8 +37,23 @@ jobs:
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
+      run: coverage run --omit atomistics/_version.py -m unittest discover tests
+      env:
+        ASE_ESPRESSO_COMMAND: "mpirun -np 1 pw.x -in PREFIX.pwi > PREFIX.pwo"
+        ESPRESSO_PSEUDO: tests/static/qe
+        OMPI_MCA_plm: isolated
+        OMPI_MCA_btl_vader_single_copy_mechanism: none
+        OMPI_MCA_rmaps_base_oversubscribe: yes
+    - name: Coverage
+      continue-on-error: True
+      shell: bash -l {0}
       run: |
-        python -m unittest tests/test_evcurve_lammps.py
-        python -m unittest tests/test_elastic_lammps.py
-        python -m unittest tests/test_phonons_lammps.py
-        python -m unittest tests/test_quasiharmonic_lammps.py
+        coverage combine
+        coveralls
+        coverage xml
+    - name: Codacy
+      if: github.event_name != 'push'
+      continue-on-error: True
+      shell: bash -l {0}
+      run: |
+        python-codacy-coverage -r coverage.xml
