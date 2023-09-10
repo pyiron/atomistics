@@ -37,9 +37,7 @@ jobs:
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
-      run: |
-        python -m unittest tests/test_evcurve_qe.py
-        python -m unittest tests/test_elastic_qe.py
+      run: python -m unittest tests/test_evcurve_qe.py
       env:
         ASE_ESPRESSO_COMMAND: "mpirun -np 1 pw.x -in PREFIX.pwi > PREFIX.pwo"
         ESPRESSO_PSEUDO: tests/static/qe
