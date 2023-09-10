@@ -1,4 +1,4 @@
-name: Quantum Espresso Unittest Linux 3.11
+name: Coverage Linux Python 3.11
 
 on:
   push:
