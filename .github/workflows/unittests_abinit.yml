@@ -1,0 +1,44 @@
+name: Abinit Unittest Linux 3.11
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Merge Notebook environment
+      run: |
+        python .ci_support/condamerge.py --base .ci_support/environment.yml --add .ci_support/environment-abinit.yml > environment.yml
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        python-version: '3.11'
+        miniforge-variant: Mambaforge
+        channels: conda-forge
+        channel-priority: strict
+        activate-environment: my-env
+        use-mamba: true
+    - name: Update environment
+      run: mamba env update -n my-env -f environment.yml
+    - name: Setup
+      shell: bash -l {0}
+      run: |
+        pip install --no-deps .
+    - name: Test
+      shell: bash -l {0}
+      timeout-minutes: 30
+      run: python -m unittest tests/test_evcurve_abinit.py
+      env:
+        ABINIT_PP_PATH: '/usr/share/miniconda3/envs/my-env/share/abinit/LDA_FHI'
+        ABI_PSPDIR: '/usr/share/miniconda3/envs/my-env/share/abinit/LDA_FHI'
+        ASE_ABINIT_COMMAND: 'abinit PREFIX.in > PREFIX.log'
