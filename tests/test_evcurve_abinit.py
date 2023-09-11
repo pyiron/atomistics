@@ -52,6 +52,7 @@ class TestEvCurve(unittest.TestCase):
             ecut=10 * Ry,
             kpts=(3, 3, 3),
             toldfe=1.0e-2,
+            v8_legacy_format=False,
         )
         fit_dict = calculator.analyse_structures(output_dict=result_dict)
         self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))

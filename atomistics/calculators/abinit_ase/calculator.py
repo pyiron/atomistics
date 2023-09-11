@@ -9,6 +9,7 @@ def get_potential_energy_from_abinit(
     ecut=10 * Ry,
     kpts=(5, 5, 5),
     toldfe=1.0e-2,
+    v8_legacy_format=False,
 ):
     structure.calc = Abinit(
         label=label,
@@ -16,6 +17,7 @@ def get_potential_energy_from_abinit(
         ecut=ecut,
         kpts=kpts,
         toldfe=toldfe,
+        v8_legacy_format=v8_legacy_format,
     )
     return structure.get_potential_energy()
 
@@ -27,6 +29,7 @@ def get_forces_from_abinit(
     ecut=10 * Ry,
     kpts=(5, 5, 5),
     toldfe=1.0e-2,
+    v8_legacy_format=False,
 ):
     structure.calc = Abinit(
         label=label,
@@ -34,6 +37,7 @@ def get_forces_from_abinit(
         ecut=ecut,
         kpts=kpts,
         toldfe=toldfe,
+        v8_legacy_format=v8_legacy_format,
     )
     return structure.get_forces()
 
@@ -45,6 +49,7 @@ def evaluate_with_abinit(
     ecut=10 * Ry,
     kpts=(5, 5, 5),
     toldfe=1.0e-2,
+    v8_legacy_format=False,
 ):
     result_dict = {}
     if "calc_energy" in task_dict.keys():
@@ -56,6 +61,7 @@ def evaluate_with_abinit(
                 ecut=ecut,
                 kpts=kpts,
                 toldfe=toldfe,
+                v8_legacy_format=v8_legacy_format,
             )
             for k, v in task_dict["calc_energy"].items()
         }
@@ -68,6 +74,7 @@ def evaluate_with_abinit(
                 ecut=ecut,
                 kpts=kpts,
                 toldfe=toldfe,
+                v8_legacy_format=v8_legacy_format,
             )
             for k, v in task_dict["calc_forces"].items()
         }
