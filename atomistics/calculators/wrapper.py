@@ -5,11 +5,17 @@ that evaluate a task dictionary.
 
 from __future__ import annotations
 
-from typing import Any, TYPE_CHECKING
+from enum import Enum, auto
+from typing import NewType, Union, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ase import Atoms
 
+class TaskEnum(Enum):
+    calc_energy = "calc_energy"
+    calc_forces = "calc_forces"
+
+TaskName = NewType("TaskName", Union[str, TaskEnum])
 
 def _convert_task_dict(
     old_task_dict: dict[str, dict[str, Atoms]]
@@ -31,7 +37,6 @@ def _convert_task_dict(
             except KeyError:
                 task_dict[label] = (structure, [method_name])
     return task_dict
-
 
 def task_evaluation(
     calculate: callable[[Atoms, list[str], ...], dict[str, Any]],
