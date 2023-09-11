@@ -16,7 +16,8 @@ if TYPE_CHECKING:
             TaskSpec,
             TaskDict,
             TaskResults,
-            ResultsDict
+            ResultsDict,
+            SimpleEvaluator
     )
 
 
@@ -42,7 +43,7 @@ def _convert_task_dict(
     return task_dict
 
 def task_evaluation(
-    calculate: callable[[Atoms, list[TaskName], ...], TaskResults],
+    calculate: SimpleEvaluator,
 ) -> callable[[dict[TaskName, dict[str, Atoms]], ...], ResultsDict]:
     """
     Takes a callable that acts on a single structure and a (string) list of tasks to

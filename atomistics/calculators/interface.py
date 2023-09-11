@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import NewType, Union, TYPE_CHECKING
+from typing import NewType, Union, Any, TYPE_CHECKING
 
 # best would be StrEnum from py3.11
 import sys
@@ -16,9 +16,13 @@ class TaskEnum(StrEnum):
     calc_forces = "calc_forces"
 
 if TYPE_CHECKING:
-    TaskName = NewType("TaskName", Union[str, TaskEnum])
-    TaskSpec = NewType("TaskSpec", tuple[Atoms, list[TaskName]])
-    TaskDict = NewType("TaskDict", dict[str, TaskSpec])
+    from ase import Atoms
 
-    TaskResults = NewType("TaskResults", dict[TaskName, Any])
-    ResultsDict = NewType("ResultsDict", dict[str, TaskResults])
+    TaskName = Union[str, TaskEnum]
+    TaskSpec = tuple[Atoms, list[TaskName]]
+    TaskDict = dict[str, TaskSpec]
+
+    TaskResults = dict[TaskName, Any]
+    ResultsDict = dict[str, TaskResults]
+
+    SimpleEvaluator = callable[[Atoms, list[TaskName], ...], TaskResults]
