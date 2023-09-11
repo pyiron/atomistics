@@ -9,7 +9,16 @@ from enum import Enum, auto
 from typing import NewType, Union, Any, TYPE_CHECKING
 
 # best would be StrEnum from py3.11
-class TaskEnum(Enum):
+import sys
+if sys.version_info.minor < 11:
+    # official impl' is not significantly different
+    class StrEnum(str, Enum):
+        def __str__(self):
+            return str(self.value)
+else:
+    from enum import StrEnum
+
+class TaskEnum(StrEnum):
     calc_energy = "calc_energy"
     calc_forces = "calc_forces"
 
@@ -22,7 +31,6 @@ if TYPE_CHECKING:
 
     TaskResults = NewType("TaskResults", dict[TaskName, Any])
     ResultsDict = NewType("ResultsDict", dict[str, TaskResults])
-
 
 def _convert_task_dict(
     old_task_dict: dict[TaskName, dict[str, Atoms]]
@@ -71,11 +79,7 @@ def task_evaluation(
         task_dict = _convert_task_dict(task_dict)
         results_dict = {}
         for label, (structure, tasks) in task_dict.items():
-            invalid_tasks = [t for t in tasks if not hasattr(TaskEnum, t)]
-            if len(invalid_tasks) > 0:
-                raise ValueError(f"invalid tasks given: {invalid_tasks}!")
-            # convert TaskEnum back to str, because <py3.11 we don't have StrEnum yet
-            tasks = [str(t) for t in tasks]
+            tasks = [TaskEnum(t) for t in tasks]
             output = calculate(structure, tasks, *calculate_args, **calculate_kwargs)
             for task_name in tasks:
                 result_name = task_name.lstrip("calc_")
