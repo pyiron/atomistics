@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from pylammpsmpi import LammpsASELibrary
 
-from atomistics.calculators.wrapper import task_evaluation
+from atomistics.calculators.wrapper import task_evaluation, TaskName
 from atomistics.calculators.lammps_library.calculator import (
     _run_simulation,
     lammps_input_template as _lammps_input_template,
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 @task_evaluation
 def evaluate_with_lammps_library(
     structure: Atoms,
-    tasks: list[str],
+    tasks: list[TaskName],
     potential_dataframe: DataFrame,
     lmp: LammpsASELibrary,
 ):

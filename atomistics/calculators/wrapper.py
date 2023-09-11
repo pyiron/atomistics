@@ -18,8 +18,8 @@ class TaskEnum(Enum):
 TaskName = NewType("TaskName", Union[str, TaskEnum])
 
 def _convert_task_dict(
-    old_task_dict: dict[str, dict[str, Atoms]]
-) -> dict[str, tuple[Atoms, list[str]]]:
+    old_task_dict: dict[TaskName, dict[str, Atoms]]
+) -> dict[str, tuple[Atoms, list[TaskName]]]:
     """
     Converts the existing task dictionaries of the format
     `{result_type_string: {structure_label_string: structure, ...}, ...}`
@@ -39,8 +39,8 @@ def _convert_task_dict(
     return task_dict
 
 def task_evaluation(
-    calculate: callable[[Atoms, list[str], ...], dict[str, Any]],
-) -> callable[[dict[str, dict[str, Atoms]], ...], dict[str, dict[str, Any]]]:
+    calculate: callable[[Atoms, list[TaskName], ...], dict[TaskName, Any]],
+) -> callable[[dict[TaskName, dict[str, Atoms]], ...], dict[str, dict[TaskName, Any]]]:
     """
     Takes a callable that acts on a single structure and a (string) list of tasks to
     and maps it to a function that operates on a task-list dictionary of structures,
@@ -56,11 +56,11 @@ def task_evaluation(
         callable: The function operating on a different space.
     """
     def evaluate_with_calculator(
-        task_dict: dict[str, dict[str, Atoms]],
+        task_dict: dict[TaskName, dict[str, Atoms]],
         # TODO: Make workflows pass task dicts: dict[str, tuple[Atoms, list[str]]],
         *calculate_args,
         **calculate_kwargs,
-    ) -> dict[str, dict[str, Any]]:
+    ) -> dict[str, dict[TaskName, Any]]:
         task_dict = _convert_task_dict(task_dict)
         results_dict = {}
         for label, (structure, tasks) in task_dict.items():
