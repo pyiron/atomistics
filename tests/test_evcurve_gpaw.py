@@ -33,7 +33,7 @@ class TestEvCurve(unittest.TestCase):
             task_dict=structure_dict,
             ase_calculator_class=GPAW,
             xc="PBE",
-            encut=PW(300),
+            mode=PW(300),
             kpts=(3, 3, 3)
         )
         fit_dict = calculator.analyse_structures(output_dict=result_dict)
