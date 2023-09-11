@@ -7,7 +7,7 @@ import unittest
 from atomistics.workflows.phonons.workflow import PhonopyWorkflow
 
 try:
-    from atomistics.calculators.lammps_library.calculator import evaluate_with_lammps
+    from atomistics.calculators.lammps import evaluate_with_lammps
     from atomistics.calculators.lammps_library.potential import get_potential_dataframe
 
     skip_lammps_test = False

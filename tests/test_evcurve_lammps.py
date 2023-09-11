@@ -8,7 +8,7 @@ from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
 
 
 try:
-    from atomistics.calculators.lammps_library.calculator import evaluate_with_lammps
+    from atomistics.calculators.lammps import evaluate_with_lammps
     from atomistics.calculators.lammps_library.potential import get_potential_dataframe
 
     skip_lammps_test = False

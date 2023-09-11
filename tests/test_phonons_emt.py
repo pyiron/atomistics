@@ -3,7 +3,7 @@ from ase.calculators.emt import EMT
 from phonopy.units import VaspToTHz
 import unittest
 
-from atomistics.calculators.ase_interface.calculator import evaluate_with_ase
+from atomistics.calculators.ase import evaluate_with_ase
 from atomistics.workflows.phonons.workflow import PhonopyWorkflow
 
 
@@ -19,7 +19,7 @@ class TestPhonons(unittest.TestCase):
             number_of_snapshots=None,
         )
         structure_dict = calculator.generate_structures()
-        result_dict = evaluate_with_ase(task_dict=structure_dict, ase_calculator_class=EMT)
+        result_dict = evaluate_with_ase(task_dict=structure_dict, ase_calculator=EMT())
         mesh_dict, dos_dict = calculator.analyse_structures(output_dict=result_dict)
         self.assertEqual((324, 324), calculator.get_hesse_matrix().shape)
         self.assertTrue('qpoints' in mesh_dict.keys())
