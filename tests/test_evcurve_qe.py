@@ -1,9 +1,10 @@
 import shutil
 
 from ase.build import bulk
+from ase.calculators.espresso import Espresso
 import unittest
 
-from atomistics.calculators.quantumespresso_ase.calculator import evaluate_with_quantumespresso
+from atomistics.calculators.ase_interface.calculator import evaluate_with_ase
 from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
 
 
@@ -46,8 +47,9 @@ class TestEvCurve(unittest.TestCase):
             strains=None,
         )
         structure_dict = calculator.generate_structures()
-        result_dict = evaluate_with_quantumespresso(
+        result_dict = evaluate_with_ase(
             task_dict=structure_dict,
+            ase_calculator_class=Espresso,
             pseudopotentials=pseudopotentials,
             tstress=True,
             tprnfor=True,

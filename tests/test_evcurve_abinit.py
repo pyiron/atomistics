@@ -1,10 +1,11 @@
 import shutil
 
 from ase.build import bulk
+from ase.calculators.abinit import Abinit
 from ase.units import Ry
 import unittest
 
-from atomistics.calculators.abinit_ase.calculator import evaluate_with_abinit
+from atomistics.calculators.ase_interface.calculator import evaluate_with_ase
 from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
 
 
@@ -43,8 +44,9 @@ class TestEvCurve(unittest.TestCase):
             strains=None,
         )
         structure_dict = calculator.generate_structures()
-        result_dict = evaluate_with_abinit(
+        result_dict = evaluate_with_ase(
             task_dict=structure_dict,
+            ase_calculator_class=Abinit,
             label='abinit_evcurve',
             nbands=32,
             ecut=10 * Ry,

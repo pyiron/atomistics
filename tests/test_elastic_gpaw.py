@@ -2,10 +2,11 @@ from ase.build import bulk
 import numpy as np
 import unittest
 
+from atomistics.calculators.ase_interface.calculator import evaluate_with_ase
 from atomistics.workflows.elastic.workflow import ElasticMatrixWorkflow
 
 try:
-    from atomistics.calculators.gpaw_ase.calculator import evaluate_with_gpaw
+    from gpaw import GPAW, PW
 
     skip_gpaw_test = False
 except ImportError:
@@ -25,10 +26,11 @@ class TestElastic(unittest.TestCase):
             fit_order=2
         )
         structure_dict = calculator.generate_structures()
-        result_dict = evaluate_with_gpaw(
+        result_dict = evaluate_with_ase(
             task_dict=structure_dict,
+            ase_calculator_class=GPAW,
             xc="PBE",
-            encut=300,
+            mode=PW(300),
             kpts=(3, 3, 3)
         )
         elastic_dict = calculator.analyse_structures(output_dict=result_dict)
