@@ -3,7 +3,12 @@ from ase.units import Ry
 
 
 def get_potential_energy_from_abinit(
-    structure, label='abinit', nbands=32, ecut=10 * Ry, kpts=(5, 5, 5), toldfe=1.0e-2,
+    structure,
+    label="abinit",
+    nbands=32,
+    ecut=10 * Ry,
+    kpts=(5, 5, 5),
+    toldfe=1.0e-2,
 ):
     structure.calc = Abinit(
         label=label,
@@ -16,7 +21,12 @@ def get_potential_energy_from_abinit(
 
 
 def get_forces_from_abinit(
-    structure, label='abinit', nbands=32, ecut=10 * Ry, kpts=(5, 5, 5), toldfe=1.0e-2,
+    structure,
+    label="abinit",
+    nbands=32,
+    ecut=10 * Ry,
+    kpts=(5, 5, 5),
+    toldfe=1.0e-2,
 ):
     structure.calc = Abinit(
         label=label,
@@ -29,7 +39,12 @@ def get_forces_from_abinit(
 
 
 def evaluate_with_abinit(
-    task_dict, label='abinit', nbands=32, ecut=10 * Ry, kpts=(5, 5, 5), toldfe=1.0e-2,
+    task_dict,
+    label="abinit",
+    nbands=32,
+    ecut=10 * Ry,
+    kpts=(5, 5, 5),
+    toldfe=1.0e-2,
 ):
     result_dict = {}
     if "calc_energy" in task_dict.keys():
