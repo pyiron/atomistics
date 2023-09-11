@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from ase import Atoms
     from pandas import DataFrame
     from pylammpsmpi import LammpsASELibrary
-    from atomistics.calculators.wrapper import TaskName
+    from atomistics.calculators.interface import TaskName
 
 
 @task_evaluation

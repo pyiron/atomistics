@@ -5,32 +5,20 @@ that evaluate a task dictionary.
 
 from __future__ import annotations
 
-from enum import Enum, auto
 from typing import NewType, Union, Any, TYPE_CHECKING
 
-# best would be StrEnum from py3.11
-import sys
-if sys.version_info.minor < 11:
-    # official impl' is not significantly different
-    class StrEnum(str, Enum):
-        def __str__(self):
-            return str(self.value)
-else:
-    from enum import StrEnum
-
-class TaskEnum(StrEnum):
-    calc_energy = "calc_energy"
-    calc_forces = "calc_forces"
+from atomistics.calculators.interface import TaskEnum
 
 if TYPE_CHECKING:
     from ase import Atoms
+    from atomistics.calculators.interface import (
+            TaskName,
+            TaskSpec,
+            TaskDict,
+            TaskResults,
+            ResultsDict
+    )
 
-    TaskName = NewType("TaskName", Union[str, TaskEnum])
-    TaskSpec = NewType("TaskSpec", tuple[Atoms, list[TaskName]])
-    TaskDict = NewType("TaskDict", dict[str, TaskSpec])
-
-    TaskResults = NewType("TaskResults", dict[TaskName, Any])
-    ResultsDict = NewType("ResultsDict", dict[str, TaskResults])
 
 def _convert_task_dict(
     old_task_dict: dict[TaskName, dict[str, Atoms]]

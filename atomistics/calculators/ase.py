@@ -7,7 +7,7 @@ from atomistics.calculators.wrapper import task_evaluation
 if TYPE_CHECKING:
     from ase import Atoms
     from ase.calculators.calculator import Calculator as ASECalculator
-    from atomistics.calculators.wrapper import TaskName
+    from atomistics.calculators.interface import TaskName
 
 
 @task_evaluation
