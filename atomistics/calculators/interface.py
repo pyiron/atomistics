@@ -15,12 +15,17 @@ class TaskEnum(StrEnum):
     calc_energy = "calc_energy"
     calc_forces = "calc_forces"
 
+class TaskOutputEnum(Enum):
+    energy = "calc_energy"
+    forces = "calc_forces"
+
 if TYPE_CHECKING:
     from ase import Atoms
 
     TaskName = Union[str, TaskEnum]
     TaskSpec = tuple[Atoms, list[TaskName]]
     TaskDict = dict[str, TaskSpec]
+
 
     TaskResults = dict[TaskName, Any]
     ResultsDict = dict[str, TaskResults]

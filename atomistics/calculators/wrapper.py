@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import NewType, Union, Any, TYPE_CHECKING
 
-from atomistics.calculators.interface import TaskEnum
+from atomistics.calculators.interface import TaskEnum, TaskOutputEnum
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -71,7 +71,7 @@ def task_evaluation(
             tasks = [TaskEnum(t) for t in tasks]
             output = calculate(structure, tasks, *calculate_args, **calculate_kwargs)
             for task_name in tasks:
-                result_name = task_name.lstrip("calc_")
+                result_name = TaskOutputEnum(task_name).name
                 try:
                     results_dict[result_name][label] = output[result_name]
                 except KeyError:
