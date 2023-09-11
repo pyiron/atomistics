@@ -34,15 +34,9 @@ jobs:
       shell: bash -l {0}
       run: |
         pip install --no-deps .
-    - name: Download Pseudo Potentials
-      shell: bash -l {0}
-      run: |
-        wget https://wiki.fysik.dtu.dk/abinit-files/abinit-pseudopotentials-2.tar.gz
-        tar -xf abinit-pseudopotentials-2.tar.gz
-        rm abinit-pseudopotentials-2.tar.gz
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
       run: python -m unittest tests/test_evcurve_abinit.py
       env:
-        ABINIT_PP_PATH: '"~/abinit-pseudopotentials-2/LDA_FHI":"~/abinit-pseudopotentials-2/GGA_FHI":"~/abinit-pseudopotentials-2/LDA_HGH":"~/abinit-pseudopotentials-2/LDA_PAW":"~/abinit-pseudopotentials-2/LDA_TM":"~/abinit-pseudopotentials-2/GGA_FHI":"~/abinit-pseudopotentials-2/GGA_HGHK":"~/abinit-pseudopotentials-2/GGA_PAW"'
+        ABINIT_PP_PATH: '/usr/share/miniconda3/envs/my-env/share/abinit/LDA_FHI:/usr/share/miniconda3/envs/my-env/share/abinit/GGA_FHI:/usr/share/miniconda3/envs/my-env/share/abinit/LDA_HGH:/usr/share/miniconda3/envs/my-env/share/abinit/LDA_PAW:/usr/share/miniconda3/envs/my-env/share/abinit/LDA_TM:/usr/share/miniconda3/envs/my-env/share/abinit/GGA_FHI:/usr/share/miniconda3/envs/my-env/share/abinit/GGA_HGHK:/usr/share/miniconda3/envs/my-env/share/abinit/GGA_PAW'
