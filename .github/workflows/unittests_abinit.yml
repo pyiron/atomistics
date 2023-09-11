@@ -1,4 +1,4 @@
-name: Quantum Espresso Unittest Linux 3.11
+name: Abinit Unittest Linux 3.11
 
 on:
   push:
