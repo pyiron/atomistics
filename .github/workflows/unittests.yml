@@ -53,8 +53,17 @@ jobs:
         channel-priority: strict
         activate-environment: my-env
         use-mamba: true
+    - name: Setup environment (windows)
+      if: matrix.operating-system == 'windows-latest'
+      run: cp .ci_support/environment.yml environment.yml
+    - name: Setup environment (unix)
+      if: matrix.operating-system != 'windows-latest'
+      shell: bash -l {0}
+      run: |
+        mamba install -y pyyaml
+        python .ci_support/condamerge.py --base .ci_support/environment.yml --add .ci_support/environment-lammps.yml > environment.yml
     - name: Update environment
-      run: mamba env update -n my-env -f .ci_support/environment.yml
+      run: mamba env update -n my-env -f environment.yml
     - name: Setup
       shell: bash -l {0}
       run: |
