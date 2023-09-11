@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from pylammpsmpi import LammpsASELibrary
 
-from atomistics.calculators.wrapper import task_evaluation, TaskName
+from atomistics.calculators.wrapper import task_evaluation
 from atomistics.calculators.lammps_library.calculator import (
     _run_simulation,
     lammps_input_template as _lammps_input_template,
@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from ase import Atoms
     from pandas import DataFrame
     from pylammpsmpi import LammpsASELibrary
+    from atomistics.calculators.wrapper import TaskName
 
 
 @task_evaluation
