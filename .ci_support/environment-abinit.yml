@@ -1,0 +1,4 @@
+channels:
+- conda-forge
+dependencies:
+- abinit =9.8.4

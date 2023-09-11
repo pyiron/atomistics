@@ -1,0 +1,48 @@
+name: Quantum Espresso Unittest Linux 3.11
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Merge Notebook environment
+      run: |
+        python .ci_support/condamerge.py --base .ci_support/environment.yml --add .ci_support/environment-qe.yml > environment.yml
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        python-version: '3.11'
+        miniforge-variant: Mambaforge
+        channels: conda-forge
+        channel-priority: strict
+        activate-environment: my-env
+        use-mamba: true
+    - name: Update environment
+      run: mamba env update -n my-env -f environment.yml
+    - name: Setup
+      shell: bash -l {0}
+      run: |
+        pip install --no-deps .
+    - name: Download Pseudo Potentials
+      shell: bash -l {0}
+      run: |
+        wget https://wiki.fysik.dtu.dk/abinit-files/abinit-pseudopotentials-2.tar.gz
+        tar -xf abinit-pseudopotentials-2.tar.gz
+        rm abinit-pseudopotentials-2.tar.gz
+    - name: Test
+      shell: bash -l {0}
+      timeout-minutes: 30
+      run: python -m unittest tests/test_evcurve_abinit.py
+      env:
+        ABINIT_PP_PATH: '"~/abinit-pseudopotentials-2/LDA_FHI":"~/abinit-pseudopotentials-2/GGA_FHI":"~/abinit-pseudopotentials-2/LDA_HGH":"~/abinit-pseudopotentials-2/LDA_PAW":"~/abinit-pseudopotentials-2/LDA_TM":"~/abinit-pseudopotentials-2/GGA_FHI":"~/abinit-pseudopotentials-2/GGA_HGHK":"~/abinit-pseudopotentials-2/GGA_PAW"'
