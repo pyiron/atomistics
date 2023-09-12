@@ -42,6 +42,7 @@ def _convert_task_dict(
                 task_dict[label] = (structure, [method_name])
     return task_dict
 
+
 def task_evaluation(
     calculate: SimpleEvaluator,
 ) -> callable[[dict[TaskName, dict[str, Atoms]], ...], ResultsDict]:
