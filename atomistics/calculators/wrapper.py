@@ -5,15 +5,25 @@ that evaluate a task dictionary.
 
 from __future__ import annotations
 
-from typing import Any, TYPE_CHECKING
+from typing import NewType, Union, Any, TYPE_CHECKING
+
+from atomistics.calculators.interface import TaskEnum, TaskOutputEnum
 
 if TYPE_CHECKING:
     from ase import Atoms
+    from atomistics.calculators.interface import (
+            TaskName,
+            TaskSpec,
+            TaskDict,
+            TaskResults,
+            ResultsDict,
+            SimpleEvaluator
+    )
 
 
 def _convert_task_dict(
-    old_task_dict: dict[str, dict[str, Atoms]]
-) -> dict[str, tuple[Atoms, list[str]]]:
+    old_task_dict: dict[TaskName, dict[str, Atoms]]
+) -> TaskDict:
     """
     Converts the existing task dictionaries of the format
     `{result_type_string: {structure_label_string: structure, ...}, ...}`
@@ -32,10 +42,9 @@ def _convert_task_dict(
                 task_dict[label] = (structure, [method_name])
     return task_dict
 
-
 def task_evaluation(
-    calculate: callable[[Atoms, list[str], ...], dict[str, Any]],
-) -> callable[[dict[str, dict[str, Atoms]], ...], dict[str, dict[str, Any]]]:
+    calculate: SimpleEvaluator,
+) -> callable[[dict[TaskName, dict[str, Atoms]], ...], ResultsDict]:
     """
     Takes a callable that acts on a single structure and a (string) list of tasks to
     and maps it to a function that operates on a task-list dictionary of structures,
@@ -51,17 +60,18 @@ def task_evaluation(
         callable: The function operating on a different space.
     """
     def evaluate_with_calculator(
-        task_dict: dict[str, dict[str, Atoms]],
-        # TODO: Make workflows pass task dicts: dict[str, tuple[Atoms, list[str]]],
+        task_dict: dict[TaskName, dict[str, Atoms]],
+        # TODO: Make workflows pass task dicts: dict[str, TaskSpec] ~ TaskDict,
         *calculate_args,
         **calculate_kwargs,
-    ) -> dict[str, dict[str, Any]]:
+    ) -> ResultsDict:
         task_dict = _convert_task_dict(task_dict)
         results_dict = {}
         for label, (structure, tasks) in task_dict.items():
+            tasks = [TaskEnum(t) for t in tasks]
             output = calculate(structure, tasks, *calculate_args, **calculate_kwargs)
             for task_name in tasks:
-                result_name = task_name.lstrip("calc_")
+                result_name = TaskOutputEnum(task_name).name
                 try:
                     results_dict[result_name][label] = output[result_name]
                 except KeyError:

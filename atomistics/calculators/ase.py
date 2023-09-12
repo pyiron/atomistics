@@ -7,12 +7,13 @@ from atomistics.calculators.wrapper import task_evaluation
 if TYPE_CHECKING:
     from ase import Atoms
     from ase.calculators.calculator import Calculator as ASECalculator
+    from atomistics.calculators.interface import TaskName
 
 
 @task_evaluation
 def evaluate_with_ase(
     structure: Atoms,
-    tasks: list[str],
+    tasks: list[TaskName],
     ase_calculator: ASECalculator
 ):
     structure.calc = ase_calculator

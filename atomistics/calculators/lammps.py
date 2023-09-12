@@ -14,12 +14,13 @@ if TYPE_CHECKING:
     from ase import Atoms
     from pandas import DataFrame
     from pylammpsmpi import LammpsASELibrary
+    from atomistics.calculators.interface import TaskName
 
 
 @task_evaluation
 def evaluate_with_lammps_library(
     structure: Atoms,
-    tasks: list[str],
+    tasks: list[TaskName],
     potential_dataframe: DataFrame,
     lmp: LammpsASELibrary,
 ):
