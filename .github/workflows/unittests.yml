@@ -61,17 +61,32 @@ jobs:
       shell: bash -l {0}
       run: |
         mamba install -y pyyaml
-        python .ci_support/condamerge.py --base .ci_support/environment.yml --add .ci_support/environment-lammps.yml > environment.yml
+        python .ci_support/condamerge.py --base .ci_support/environment.yml --add .ci_support/environment-abinit.yml .ci_support/environment-gpaw.yml .ci_support/environment-lammps.yml .ci_support/environment-qe.yml > environment.yml
     - name: Update environment
       run: mamba env update -n my-env -f environment.yml
     - name: Setup
       shell: bash -l {0}
       run: |
         pip install --no-deps .
-    - name: Test
+    - name: Test classical (and I guess GPAW?)
+      if: matrix.label != 'linux-64-py-3-11'
       shell: bash -l {0}
       timeout-minutes: 30
       run: coverage run --omit atomistics/_version.py -m unittest discover tests
+    - name: Test with DFT too
+      if: matrix.label == 'linux-64-py-3-11'
+      shell: bash -l {0}
+      timeout-minutes: 30
+      run: coverage run --omit atomistics/_version.py -m unittest discover tests
+      env:
+        ABINIT_PP_PATH: '/usr/share/miniconda3/envs/my-env/share/abinit/LDA_FHI'
+        ABI_PSPDIR: '/usr/share/miniconda3/envs/my-env/share/abinit/LDA_FHI'
+        ASE_ABINIT_COMMAND: 'abinit PREFIX.in > PREFIX.log'
+        ASE_ESPRESSO_COMMAND: "mpirun -np 1 pw.x -in PREFIX.pwi > PREFIX.pwo"
+        ESPRESSO_PSEUDO: tests/static/qe
+        OMPI_MCA_plm: isolated
+        OMPI_MCA_btl_vader_single_copy_mechanism: none
+        OMPI_MCA_rmaps_base_oversubscribe: yes
     - name: Coverage
       if: matrix.label == 'linux-64-py-3-11'
       continue-on-error: True
