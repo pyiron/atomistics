@@ -9,7 +9,7 @@ if sys.version_info.minor < 11:
     class StrEnum(str, Enum):
         def __str__(self):
             return str(self.value)
-        
+
 else:
     from enum import StrEnum
 

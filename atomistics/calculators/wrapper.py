@@ -17,7 +17,7 @@ if TYPE_CHECKING:
         TaskDict,
         TaskResults,
         ResultsDict,
-        SimpleEvaluator
+        SimpleEvaluator,
     )
 
 

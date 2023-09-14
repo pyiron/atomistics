@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.lammps_potentials import (
-    update_potential_paths, view_potentials
+    update_potential_paths,
+    view_potentials,
 )
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 
