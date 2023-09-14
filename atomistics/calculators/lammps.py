@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from pylammpsmpi import LammpsASELibrary
 
-from atomistics.calculators.lammps_library.potential import (
+from atomistics.calculators.lammps_potentials import (
     update_potential_paths, view_potentials
 )
 from atomistics.calculators.wrapper import task_evaluation
