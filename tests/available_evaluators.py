@@ -45,6 +45,9 @@ def _evaluate_ase(ase_calculator: Calculator) -> TaskDictEvaluator:
     return with_set_calculator
 
 
+AL_UNIT = bulk("Al", a=4.05, cubic=True)
+
+
 EVALUATION_FUNCTIONS: dict[Calculators: TaskDictEvaluator | None] = {}
 
 # Ab Init
@@ -92,14 +95,13 @@ try:
     )
 
     def evaluate_with_lammps_Al_potential(task_dict):
-        potential = '1999--Mishin-Y--Al--LAMMPS--ipr1'
-        resource_path = os.path.join(os.path.dirname(__file__), "static", "lammps")
-        structure = bulk("Al", a=4.05, cubic=True)
         df_pot = get_potential_dataframe(
-            structure=structure,
-            resource_path=resource_path
+            structure=AL_UNIT,
+            resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps")
         )
-        df_pot_selected = df_pot[df_pot.Name == potential].iloc[0]
+        df_pot_selected = df_pot[
+            df_pot.Name == '1999--Mishin-Y--Al--LAMMPS--ipr1'
+        ].iloc[0]
 
         return evaluate_with_lammps(
             task_dict=task_dict,
