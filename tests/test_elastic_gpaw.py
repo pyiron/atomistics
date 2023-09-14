@@ -2,7 +2,7 @@ from ase.build import bulk
 import numpy as np
 import unittest
 
-from atomistics.calculators.ase_interface.calculator import evaluate_with_ase
+from atomistics.calculators.ase import evaluate_with_ase
 from atomistics.workflows.elastic.workflow import ElasticMatrixWorkflow
 
 try:
@@ -28,10 +28,11 @@ class TestElastic(unittest.TestCase):
         structure_dict = calculator.generate_structures()
         result_dict = evaluate_with_ase(
             task_dict=structure_dict,
-            ase_calculator_class=GPAW,
-            xc="PBE",
-            mode=PW(300),
-            kpts=(3, 3, 3)
+            ase_calculator=GPAW(
+                xc="PBE",
+                mode=PW(300),
+                kpts=(3, 3, 3)
+            )
         )
         elastic_dict = calculator.analyse_structures(output_dict=result_dict)
         print(elastic_dict)
