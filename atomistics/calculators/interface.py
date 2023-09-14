@@ -3,11 +3,13 @@ from typing import NewType, Union, Any, TYPE_CHECKING
 
 # best would be StrEnum from py3.11
 import sys
+
 if sys.version_info.minor < 11:
     # official impl' is not significantly different
     class StrEnum(str, Enum):
         def __str__(self):
             return str(self.value)
+        
 else:
     from enum import StrEnum
 

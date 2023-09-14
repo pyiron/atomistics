@@ -12,9 +12,7 @@ if TYPE_CHECKING:
 
 @as_task_dict_evaluator
 def evaluate_with_ase(
-    structure: Atoms,
-    tasks: list[TaskName],
-    ase_calculator: ASECalculator
+    structure: Atoms, tasks: list[TaskName], ase_calculator: ASECalculator
 ):
     structure.calc = ase_calculator
     results = {}

@@ -12,18 +12,16 @@ from atomistics.calculators.interface import TaskEnum, TaskOutputEnum
 if TYPE_CHECKING:
     from ase import Atoms
     from atomistics.calculators.interface import (
-            TaskName,
-            TaskSpec,
-            TaskDict,
-            TaskResults,
-            ResultsDict,
-            SimpleEvaluator
+        TaskName,
+        TaskSpec,
+        TaskDict,
+        TaskResults,
+        ResultsDict,
+        SimpleEvaluator
     )
 
 
-def _convert_task_dict(
-    old_task_dict: dict[TaskName, dict[str, Atoms]]
-) -> TaskDict:
+def _convert_task_dict(old_task_dict: dict[TaskName, dict[str, Atoms]]) -> TaskDict:
     """
     Converts the existing task dictionaries of the format
     `{result_type_string: {structure_label_string: structure, ...}, ...}`
@@ -60,6 +58,7 @@ def as_task_dict_evaluator(
     Returns:
         callable: The function operating on a different space.
     """
+
     def evaluate_with_calculator(
         task_dict: dict[TaskName, dict[str, Atoms]],
         # TODO: Make workflows pass task dicts: dict[str, TaskSpec] ~ TaskDict,
