@@ -4,6 +4,9 @@ from typing import TYPE_CHECKING
 
 from pylammpsmpi import LammpsASELibrary
 
+from atomistics.calculators.lammps_library.potential import (
+    update_potential_paths, view_potentials
+)
 from atomistics.calculators.wrapper import task_evaluation
 
 if TYPE_CHECKING:
@@ -82,3 +85,10 @@ def _run_simulation(structure, potential_dataframe, input_template, lmp):
         lmp.interactive_lib_command(l)
 
     return lmp
+
+
+def get_potential_dataframe(structure, resource_path):
+    return update_potential_paths(
+        df_pot=view_potentials(structure=structure, resource_path=resource_path),
+        resource_path=resource_path,
+    )

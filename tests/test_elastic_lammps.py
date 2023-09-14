@@ -7,9 +7,9 @@ import unittest
 from atomistics.workflows.elastic.workflow import ElasticMatrixWorkflow
 
 try:
-    # from atomistics.calculators.lammps_library.calculator import evaluate_with_lammps
-    from atomistics.calculators.lammps import evaluate_with_lammps
-    from atomistics.calculators.lammps_library.potential import get_potential_dataframe
+    from atomistics.calculators.lammps import (
+        evaluate_with_lammps, get_potential_dataframe
+    )
 
     skip_lammps_test = False
 except ImportError:
