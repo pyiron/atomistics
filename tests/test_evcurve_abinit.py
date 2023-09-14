@@ -5,7 +5,7 @@ from ase.calculators.abinit import Abinit
 from ase.units import Ry
 import unittest
 
-from atomistics.calculators.ase_interface.calculator import evaluate_with_ase
+from atomistics.calculators.ase import evaluate_with_ase
 from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
 
 
@@ -46,13 +46,14 @@ class TestEvCurve(unittest.TestCase):
         structure_dict = calculator.generate_structures()
         result_dict = evaluate_with_ase(
             task_dict=structure_dict,
-            ase_calculator_class=Abinit,
-            label='abinit_evcurve',
-            nbands=32,
-            ecut=10 * Ry,
-            kpts=(3, 3, 3),
-            toldfe=1.0e-2,
-            v8_legacy_format=False,
+            ase_calculator=Abinit(
+                label='abinit_evcurve',
+                nbands=32,
+                ecut=10 * Ry,
+                kpts=(3, 3, 3),
+                toldfe=1.0e-2,
+                v8_legacy_format=False,
+            )
         )
         fit_dict = calculator.analyse_structures(output_dict=result_dict)
         self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))
