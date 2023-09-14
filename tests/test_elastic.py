@@ -18,8 +18,8 @@ class TestElastic(unittest.TestCase):
 
         for calculator, expected in [
             (Calculators.emt, (46.08382141, 30.74709713, 30.22242313)),
-            (Calculators.lammps, (114.10393023, 60.51098897, 51.23931149)),
             (Calculators.gpaw, (125.66807354, 68.41418321, 99.29916329)),  # WILL FAIL -- data is for a=4.0
+            (Calculators.lammps, (114.10393023, 60.51098897, 51.23931149)),
         ]:
             evaluate = EVALUATION_FUNCTIONS[calculator]
             if evaluate is not None:
