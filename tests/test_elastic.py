@@ -26,6 +26,7 @@ class TestElastic(unittest.TestCase):
                 with self.subTest(f"Evaluating with {calculator}"):
                     result_dict = evaluate(structure_dict)
                     elastic_dict = workflow.analyse_structures(output_dict=result_dict)
+                    print(elastic_dict)
                     self.assertAlmostEqual(elastic_dict["C"][0, 0], expected[0])
                     self.assertAlmostEqual(elastic_dict["C"][0, 1], expected[1])
                     self.assertAlmostEqual(elastic_dict["C"][3, 3], expected[2])
