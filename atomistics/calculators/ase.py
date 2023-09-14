@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from atomistics.calculators.wrapper import task_evaluation
+from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from atomistics.calculators.interface import TaskName
 
 
-@task_evaluation
+@as_task_dict_evaluator
 def evaluate_with_ase(
     structure: Atoms,
     tasks: list[TaskName],

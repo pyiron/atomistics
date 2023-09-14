@@ -7,7 +7,7 @@ from pylammpsmpi import LammpsASELibrary
 from atomistics.calculators.lammps_potentials import (
     update_potential_paths, view_potentials
 )
-from atomistics.calculators.wrapper import task_evaluation
+from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -23,7 +23,7 @@ thermo 100
 run 0"""
 
 
-@task_evaluation
+@as_task_dict_evaluator
 def evaluate_with_lammps_library(
     structure: Atoms,
     tasks: list[TaskName],

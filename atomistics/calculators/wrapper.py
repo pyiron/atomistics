@@ -43,7 +43,7 @@ def _convert_task_dict(
     return task_dict
 
 
-def task_evaluation(
+def as_task_dict_evaluator(
     calculate: SimpleEvaluator,
 ) -> callable[[dict[TaskName, dict[str, Atoms]], ...], ResultsDict]:
     """
