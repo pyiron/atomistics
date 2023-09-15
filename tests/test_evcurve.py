@@ -25,11 +25,14 @@ class TestEvCurve(unittest.TestCase):
             (Calculators.quantum_espresso, (70, 52, 3.0)),  # WILL BE WRONG -- original tests a range and a=4.15
         ]:
             evaluate = EVALUATION_FUNCTIONS[calculator]
+            print(f"LOOKING FOR {calculator} CALCULATOR")
             if evaluate is not None:
                 with self.subTest(f"Evaluating with {calculator}"):
+                    print(f"RUNNING test_calc_evcurve WITH {calculator}")
                     result_dict = evaluate(structure_dict)
                     fit_dict = workflow.analyse_structures(output_dict=result_dict)
                     print(fit_dict)
                     self.assertAlmostEqual(fit_dict['volume_eq'], expected[0])
                     self.assertAlmostEqual(fit_dict['bulkmodul_eq'], expected[1])
                     self.assertAlmostEqual(fit_dict['b_prime_eq'], expected[2])
+                    print(f"RAN test_calc_evcurve WITH {calculator}")

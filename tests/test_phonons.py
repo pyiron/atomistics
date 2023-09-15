@@ -21,8 +21,10 @@ class TestPhonons(unittest.TestCase):
 
         for calculator in [Calculators.emt, Calculators.gpaw, Calculators.lammps]:
             evaluate = EVALUATION_FUNCTIONS[calculator]
+            print(f"LOOKING FOR {calculator} CALCULATOR")
             if evaluate is not None:
                 with self.subTest(f"Evaluating with {calculator}"):
+                    print(f"RUNNING test_phonons WITH {calculator}")
                     result_dict = evaluate(structure_dict)
                     mesh_dict, dos_dict = workflow.analyse_structures(
                         output_dict=result_dict
@@ -35,3 +37,4 @@ class TestPhonons(unittest.TestCase):
                     self.assertTrue('group_velocities' in mesh_dict.keys())
                     self.assertTrue('frequency_points' in dos_dict.keys())
                     self.assertTrue('total_dos' in dos_dict.keys())
+                    print(f"RAN test_phonons WITH {calculator}")

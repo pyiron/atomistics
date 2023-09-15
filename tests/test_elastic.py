@@ -21,11 +21,14 @@ class TestElastic(unittest.TestCase):
             (Calculators.lammps, (114.10393023, 60.51098897, 51.23931149)),
         ]:
             evaluate = EVALUATION_FUNCTIONS[calculator]
+            print(f"LOOKING FOR {calculator} CALCULATOR")
             if evaluate is not None:
                 with self.subTest(f"Evaluating with {calculator}"):
+                    print(f"RUNNING test_calc_elastic WITH {calculator}")
                     result_dict = evaluate(structure_dict)
                     elastic_dict = workflow.analyse_structures(output_dict=result_dict)
                     print(elastic_dict)
                     self.assertAlmostEqual(elastic_dict["C"][0, 0], expected[0])
                     self.assertAlmostEqual(elastic_dict["C"][0, 1], expected[1])
                     self.assertAlmostEqual(elastic_dict["C"][3, 3], expected[2])
+                    print(f"RAN test_calc_elastic WITH {calculator}")

@@ -23,8 +23,10 @@ class TestPhonons(unittest.TestCase):
 
         for calculator in [Calculators.emt, Calculators.gpaw, Calculators.lammps]:
             evaluate = EVALUATION_FUNCTIONS[calculator]
+            print(f"LOOKING FOR {calculator} CALCULATOR")
             if evaluate is not None:
                 with self.subTest(f"Evaluating with {calculator}"):
+                    print(f"RUNNING test_quasiharmonic WITH {calculator}")
                     result_dict = evaluate(structure_dict)
                     eng_internal_dict, mesh_collect_dict, dos_collect_dict = \
                         workflow.analyse_structures(output_dict=result_dict)
@@ -33,3 +35,4 @@ class TestPhonons(unittest.TestCase):
                     )
                     self.assertEqual(len(eng_internal_dict.keys()), 11)
                     self.assertEqual(len(tp_collect_dict.keys()), 11)
+                    print(f"RAN test_quasiharmonic WITH {calculator}")
