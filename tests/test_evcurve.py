@@ -1,8 +1,7 @@
 import unittest
 
+from atomistics._tests import AL_UNIT, Calculators, EVALUATION_FUNCTIONS
 from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
-
-from .available_evaluators import AL_UNIT, Calculators, EVALUATION_FUNCTIONS
 
 
 class TestEvCurve(unittest.TestCase):

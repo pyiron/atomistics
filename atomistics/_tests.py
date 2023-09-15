@@ -1,4 +1,6 @@
 """
+Infrastructure for supporting our tests.
+
 Defines (possibly) available calculator names, and gives access to evaluation functions
 that use them (if they're available).
 

@@ -2,9 +2,8 @@ import unittest
 
 from phonopy.units import VaspToTHz
 
+from atomistics._tests import AL_UNIT, Calculators, EVALUATION_FUNCTIONS
 from atomistics.workflows.phonons.workflow import PhonopyWorkflow
-
-from .available_evaluators import AL_UNIT, Calculators, EVALUATION_FUNCTIONS
 
 
 class TestPhonons(unittest.TestCase):

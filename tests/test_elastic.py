@@ -1,8 +1,7 @@
 import unittest
 
+from atomistics._tests import AL_UNIT, Calculators, EVALUATION_FUNCTIONS
 from atomistics.workflows.elastic.workflow import ElasticMatrixWorkflow
-
-from .available_evaluators import AL_UNIT, Calculators, EVALUATION_FUNCTIONS
 
 
 class TestElastic(unittest.TestCase):
