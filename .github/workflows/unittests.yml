@@ -61,7 +61,7 @@ jobs:
       shell: bash -l {0}
       run: |
         mamba install -y pyyaml
-        python .ci_support/condamerge.py --base .ci_support/environment.yml --add .ci_support/environment-abinit.yml .ci_support/environment-gpaw.yml .ci_support/environment-lammps.yml .ci_support/environment-qe.yml > environment.yml
+        python .ci_support/condamerge.py .ci_support/environment.yml .ci_support/environment-abinit.yml .ci_support/environment-gpaw.yml .ci_support/environment-lammps.yml .ci_support/environment-qe.yml > environment.yml
     - name: Update environment
       run: mamba env update -n my-env -f environment.yml
     - name: Setup
