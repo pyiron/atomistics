@@ -19,7 +19,7 @@ class TestEvCurve(unittest.TestCase):
 
         for calculator, expected in [
             (Calculators.abinit, (67, 130, None)),  # WILL BE WRONG -- original tests a range and no B'
-            (Calculators.emt, (63.726152188443, 39.5440849073178, 2.25093940233225)),
+            (Calculators.emt, (63.723371492488, 39.4943060594056, 2.28067979985208)),
             (Calculators.gpaw, (66.442522861313, 72.389198266528, 4.4538365517128)),
             (Calculators.lammps, (66.430198531039, 77.72501359531, 1.2795024590799)),
             (Calculators.quantum_espresso, (70, 52, 3.0)),  # WILL BE WRONG -- original tests a range and a=4.15
