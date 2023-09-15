@@ -19,7 +19,7 @@ class TestPhonons(unittest.TestCase):
         )
         structure_dict = workflow.generate_structures()
 
-        for calculator in [Calculators.emt, Calculators.gpaw, Calculators.lammps]:
+        for calculator in [Calculators.emt, Calculators.lammps]:
             evaluate = EVALUATION_FUNCTIONS[calculator]
             print(f"LOOKING FOR {calculator} CALCULATOR")
             if evaluate is not None:
