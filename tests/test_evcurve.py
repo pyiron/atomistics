@@ -22,7 +22,7 @@ class TestEvCurve(unittest.TestCase):
             (Calculators.emt, (63.726152188443, 39.5440849073178, 2.25093940233225)),
             (Calculators.gpaw, (66.442522861313, 72.389198266528, 4.4538365517128)),
             (Calculators.lammps, (66.430198531039, 77.72501359531, 1.2795024590799)),
-            (Calculators.qe, (70, 52, 3.0)),  # WILL BE WRONG -- original tests a range and a=4.15
+            (Calculators.quantum_espresso, (70, 52, 3.0)),  # WILL BE WRONG -- original tests a range and a=4.15
         ]:
             evaluate = EVALUATION_FUNCTIONS[calculator]
             if evaluate is not None:
