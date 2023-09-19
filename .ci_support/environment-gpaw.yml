@@ -1,4 +1,4 @@
 channels:
 - conda-forge
 dependencies:
-- gpaw =23.6.1
+- gpaw =23.9.1
