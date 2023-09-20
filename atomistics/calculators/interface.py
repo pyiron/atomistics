@@ -35,3 +35,4 @@ if TYPE_CHECKING:
     ResultsDict = dict[str, TaskResults]
 
     SimpleEvaluator = callable[[Atoms, list[TaskName], ...], TaskResults]
+    TaskDictEvaluator = callable[[dict[TaskName, dict[str, Atoms]], ...], ResultsDict]
