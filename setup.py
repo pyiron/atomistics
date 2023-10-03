@@ -32,7 +32,7 @@ setup(
         'ase==3.22.1',
         'numpy==1.23.5',
         'scipy==1.11.3',
-        'spglib==2.0.2',
+        'spglib==2.1.0',
     ],
     extras_require={
         "phonopy": ['phonopy==2.20.0', 'seekpath==2.1.0', 'structuretoolkit==0.0.11'],
