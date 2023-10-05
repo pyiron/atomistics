@@ -3,7 +3,7 @@ from ase.calculators.emt import EMT
 from phonopy.units import VaspToTHz
 import unittest
 
-from atomistics.calculators.ase_interface.calculator import evaluate_with_ase
+from atomistics.calculators.ase import evaluate_with_ase
 from atomistics.workflows.quasiharmonic.workflow import QuasiHarmonicWorkflow
 
 
@@ -21,7 +21,10 @@ class TestPhonons(unittest.TestCase):
             number_of_snapshots=None,
         )
         structure_dict = calculator.generate_structures()
-        result_dict = evaluate_with_ase(task_dict=structure_dict, ase_calculator_class=EMT)
+        result_dict = evaluate_with_ase(
+            task_dict=structure_dict,
+            ase_calculator=EMT()
+        )
         eng_internal_dict, mesh_collect_dict, dos_collect_dict = calculator.analyse_structures(output_dict=result_dict)
         tp_collect_dict = calculator.get_thermal_properties(t_min=1, t_max=1500, t_step=50, temperatures=None)
         self.assertEqual(len(eng_internal_dict.keys()), 11)

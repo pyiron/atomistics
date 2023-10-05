@@ -30,13 +30,13 @@ setup(
     packages=find_packages(exclude=["*tests*", "*docs*", "*binder*", "*conda*", "*notebooks*", "*.ci_support*"]),
     install_requires=[
         'ase==3.22.1',
-        'numpy==1.23.5',
-        'scipy==1.11.2',
-        'spglib==2.0.2',
+        'numpy==1.26.0',
+        'scipy==1.11.3',
+        'spglib==2.1.0',
     ],
     extras_require={
         "phonopy": ['phonopy==2.20.0', 'seekpath==2.1.0', 'structuretoolkit==0.0.11'],
-        "gpaw": ['gpaw==23.6.1'],
+        "gpaw": ['gpaw==23.9.1'],
     },
     cmdclass=versioneer.get_cmdclass(),
 )

@@ -3,7 +3,7 @@ from ase.calculators.emt import EMT
 import numpy as np
 import unittest
 
-from atomistics.calculators.ase_interface.calculator import evaluate_with_ase
+from atomistics.calculators.ase import evaluate_with_ase
 from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
 
 
@@ -19,7 +19,7 @@ class TestEvCurve(unittest.TestCase):
             strains=None,
         )
         structure_dict = calculator.generate_structures()
-        result_dict = evaluate_with_ase(task_dict=structure_dict, ase_calculator_class=EMT)
+        result_dict = evaluate_with_ase(task_dict=structure_dict, ase_calculator=EMT())
         fit_dict = calculator.analyse_structures(output_dict=result_dict)
         self.assertTrue(np.isclose(fit_dict['volume_eq'], 63.72615218844302))
         self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 39.544084907317895))
