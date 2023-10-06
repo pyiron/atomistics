@@ -71,18 +71,9 @@ jobs:
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
-      run: coverage run --omit atomistics/_version.py -m unittest discover tests
-    - name: Coverage
-      if: matrix.label == 'linux-64-py-3-11'
-      continue-on-error: True
-      shell: bash -l {0}
       run: |
+        coverage run --omit atomistics/_version.py -m unittest discover tests
         coverage combine
-        coveralls
-        coverage xml
-    - name: Codacy
-      if: matrix.label == 'linux-64-py-3-11' && github.event_name != 'push'
-      continue-on-error: True
-      shell: bash -l {0}
-      run: |
-        python-codacy-coverage -r coverage.xml
+    - name: Coveralls
+      if: matrix.label == 'linux-64-py-3-11'
+      uses: coverallsapp/github-action@v2
