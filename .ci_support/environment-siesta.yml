@@ -1,0 +1,4 @@
+channels:
+- conda-forge
+dependencies:
+- siesta =4.1.5
