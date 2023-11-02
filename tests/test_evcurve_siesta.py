@@ -58,7 +58,7 @@ class TestEvCurve(unittest.TestCase):
                 basis_set="DZ",
                 kpts=(5, 5, 5),
                 fdf_arguments={"DM.MixingWeight": 0.1, "MaxSCFIterations": 100},
-                pseudo_path=os.path.abspath("static/siesta"),
+                pseudo_path=os.path.abspath("tests/static/siesta"),
                 pseudo_qualifier="",
             )
         )
