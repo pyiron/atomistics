@@ -61,7 +61,7 @@ def evaluate_with_lammps_library(
     tasks: list[TaskName],
     potential_dataframe: DataFrame,
     lmp: LammpsASELibrary,
-    lmp_optimizer_kwargs: dict = None,
+    lmp_optimizer_kwargs: dict ,
 ):
     results = {}
     if "optimize_positions_and_volume" in tasks:
@@ -118,7 +118,7 @@ def evaluate_with_lammps(
     log_file=None,
     library=None,
     diable_log_file=True,
-    lmp_optimizer_kwargs=None,
+    lmp_optimizer_kwargs={},
 ):
     lmp = LammpsASELibrary(
         working_directory=working_directory,
