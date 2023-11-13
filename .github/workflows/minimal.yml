@@ -1,4 +1,4 @@
-name: Unittest
+name: Minimal
 
 on:
   push:
@@ -26,7 +26,7 @@ jobs:
         activate-environment: my-env
         use-mamba: true
     - name: Update environment
-      run: mamba env update -n my-env -f environment.yml
+      run: mamba env update -n my-env -f .ci_support/environment.yml
     - name: Setup
       shell: bash -l {0}
       run: |
