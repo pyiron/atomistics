@@ -67,9 +67,7 @@ def evaluate_with_lammps(
         diable_log_file=diable_log_file,
     )
     results_dict = evaluate_with_lammps_library(
-        task_dict=task_dict,
-        potential_dataframe=potential_dataframe,
-        lmp=lmp
+        task_dict=task_dict, potential_dataframe=potential_dataframe, lmp=lmp
     )
     lmp.close()
     return results_dict
