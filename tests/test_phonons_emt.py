@@ -18,8 +18,8 @@ class TestPhonons(unittest.TestCase):
             primitive_matrix=None,
             number_of_snapshots=None,
         )
-        structure_dict = calculator.generate_structures()
-        result_dict = evaluate_with_ase(task_dict=structure_dict, ase_calculator=EMT())
+        task_dict = calculator.generate_structures()
+        result_dict = evaluate_with_ase(task_dict=task_dict, ase_calculator=EMT())
         mesh_dict, dos_dict = calculator.analyse_structures(output_dict=result_dict)
         self.assertEqual((324, 324), calculator.get_hesse_matrix().shape)
         self.assertTrue('qpoints' in mesh_dict.keys())
