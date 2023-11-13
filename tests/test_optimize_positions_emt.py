@@ -8,7 +8,7 @@ from atomistics.calculators.ase import evaluate_with_ase
 from atomistics.workflows.structure_optimization.workflow import optimize_positions
 
 
-class TestOptimizePositions(unittest.TestCase):
+class TestOptimizePositionsEMT(unittest.TestCase):
     def test_optimize_positions(self):
         structure = bulk("Al", a=4.0, cubic=True)
         positions_before_displacement = structure.positions.copy()

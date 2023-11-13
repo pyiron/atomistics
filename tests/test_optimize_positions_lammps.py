@@ -20,7 +20,7 @@ except ImportError:
 @unittest.skipIf(
     skip_lammps_test, "LAMMPS is not installed, so the LAMMPS tests are skipped."
 )
-class TestOptimizePositions(unittest.TestCase):
+class TestOptimizePositionsLAMMPS(unittest.TestCase):
     def test_optimize_positions(self):
         potential = '1999--Mishin-Y--Al--LAMMPS--ipr1'
         resource_path = os.path.join(os.path.dirname(__file__), "static", "lammps")
