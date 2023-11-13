@@ -20,9 +20,9 @@ class TestPhonons(unittest.TestCase):
             primitive_matrix=None,
             number_of_snapshots=None,
         )
-        structure_dict = calculator.generate_structures()
+        task_dict = calculator.generate_structures()
         result_dict = evaluate_with_ase(
-            task_dict=structure_dict,
+            task_dict=task_dict,
             ase_calculator=EMT()
         )
         eng_internal_dict, mesh_collect_dict, dos_collect_dict = calculator.analyse_structures(output_dict=result_dict)

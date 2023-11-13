@@ -36,9 +36,9 @@ class TestElastic(unittest.TestCase):
             sqrt_eta=True,
             fit_order=2
         )
-        structure_dict = calculator.generate_structures()
+        task_dict = calculator.generate_structures()
         result_dict = evaluate_with_lammps(
-            task_dict=structure_dict,
+            task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
         elastic_dict = calculator.analyse_structures(output_dict=result_dict)
