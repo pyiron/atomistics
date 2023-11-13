@@ -5,11 +5,20 @@ import numpy as np
 import unittest
 
 from atomistics.workflows.structure_optimization.workflow import optimize_positions
-from atomistics.calculators.lammps import (
-    evaluate_with_lammps, get_potential_dataframe
+
+try:
+    from atomistics.calculators.lammps import (
+        evaluate_with_lammps, get_potential_dataframe
+    )
+
+    skip_lammps_test = False
+except ImportError:
+    skip_lammps_test = True
+
+
+@unittest.skipIf(
+    skip_lammps_test, "LAMMPS is not installed, so the LAMMPS tests are skipped."
 )
-
-
 class TestOptimizePositionsLAMMPS(unittest.TestCase):
     def test_optimize_positions(self):
         potential = '1999--Mishin-Y--Al--LAMMPS--ipr1'
