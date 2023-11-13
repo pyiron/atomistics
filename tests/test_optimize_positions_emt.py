@@ -18,14 +18,13 @@ class TestOptimizePositions(unittest.TestCase):
             task_dict=task_dict,
             ase_calculator=EMT(),
             ase_optimizer=BFGS,
-            ase_optimizer_kwargs={"fmax": 0.00005}
+            ase_optimizer_kwargs={"fmax": 0.000001}
         )
         structure_optimized = result_dict["structure_with_optimized_positions"]
         self.assertTrue(
             all(np.isclose(
                 positions_before_displacement,
                 structure_optimized.positions-structure_optimized.positions[0],
-                atol=1e-5
             ).flatten())
         )
 

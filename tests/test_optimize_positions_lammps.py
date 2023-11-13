@@ -36,13 +36,13 @@ class TestOptimizePositions(unittest.TestCase):
         result_dict = evaluate_with_lammps(
             task_dict=task_dict,
             potential_dataframe=df_pot_selected,
+            lmp_optimizer_kwargs={"ftol": 0.000001},
         )
         structure_optimized = result_dict["structure_with_optimized_positions"]
         self.assertTrue(
             all(np.isclose(
                 positions_before_displacement,
                 structure_optimized.positions-structure_optimized.positions[0],
-                atol=1e-5
             ).flatten())
         )
 

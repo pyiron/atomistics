@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from jinja2 import Template
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.lammps_potentials import (
@@ -28,8 +29,8 @@ LAMMPS_MINIMIZE_POSITIONS_INPUT_TEMPLATE = """\
 thermo_style custom step temp pe etotal pxx pxy pxz pyy pyz pzz vol
 thermo_modify format float %20.15g
 thermo 10
-min_style cg
-minimize 0.0 0.0001 100000 10000000"""
+min_style {{min_style}}
+minimize {{etol}} {{ftol}} {{maxiter}} {{maxeval}}"""
 
 
 LAMMPS_MINIMIZE_POSITIONS_AND_VOLUME_INPUT_TEMPLATE = """\
@@ -37,8 +38,21 @@ fix ensemble all box/relax iso 0.0
 thermo_style custom step temp pe etotal pxx pxy pxz pyy pyz pzz vol
 thermo_modify format float %20.15g
 thermo 10
-min_style cg
-minimize 0.0 0.0001 100000 10000000"""
+min_style {{min_style}}
+minimize {{etol}} {{ftol}} {{maxiter}} {{maxeval}}"""
+
+
+def template_render(
+    template_str,
+    min_style="cg",
+    etol=0.0,
+    ftol=0.0001,
+    maxiter=100000,
+    maxeval=10000000,
+):
+    return Template(template_str).render(
+        min_style=min_style, etol=etol, ftol=ftol, maxiter=maxiter, maxeval=maxeval
+    )
 
 
 @as_task_dict_evaluator
@@ -47,13 +61,17 @@ def evaluate_with_lammps_library(
     tasks: list[TaskName],
     potential_dataframe: DataFrame,
     lmp: LammpsASELibrary,
+    lmp_optimizer_kwargs: dict = None,
 ):
     results = {}
     if "optimize_positions_and_volume" in tasks:
         lmp = _run_simulation(
             structure=structure,
             potential_dataframe=potential_dataframe,
-            input_template=LAMMPS_MINIMIZE_POSITIONS_AND_VOLUME_INPUT_TEMPLATE,
+            input_template=template_render(
+                template_str=LAMMPS_MINIMIZE_POSITIONS_AND_VOLUME_INPUT_TEMPLATE,
+                **lmp_optimizer_kwargs,
+            ),
             lmp=lmp,
         )
         structure_copy = structure.copy()
@@ -64,7 +82,10 @@ def evaluate_with_lammps_library(
         lmp = _run_simulation(
             structure=structure,
             potential_dataframe=potential_dataframe,
-            input_template=LAMMPS_MINIMIZE_POSITIONS_INPUT_TEMPLATE,
+            input_template=template_render(
+                template_str=LAMMPS_MINIMIZE_POSITIONS_INPUT_TEMPLATE,
+                **lmp_optimizer_kwargs,
+            ),
             lmp=lmp,
         )
         structure_copy = structure.copy()
@@ -97,6 +118,7 @@ def evaluate_with_lammps(
     log_file=None,
     library=None,
     diable_log_file=True,
+    lmp_optimizer_kwargs=None,
 ):
     lmp = LammpsASELibrary(
         working_directory=working_directory,
@@ -107,7 +129,12 @@ def evaluate_with_lammps(
         library=library,
         diable_log_file=diable_log_file,
     )
-    results_dict = evaluate_with_lammps_library(task_dict, potential_dataframe, lmp)
+    results_dict = evaluate_with_lammps_library(
+        task_dict=task_dict,
+        potential_dataframe=potential_dataframe,
+        lmp=lmp,
+        lmp_optimizer_kwargs=lmp_optimizer_kwargs,
+    )
     lmp.close()
     return results_dict
 
