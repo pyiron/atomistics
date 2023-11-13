@@ -31,7 +31,12 @@ def evaluate_with_lammps_library(
     potential_dataframe: DataFrame,
     lmp: LammpsASELibrary,
 ):
-    lmp = _run_simulation(structure, potential_dataframe, LAMMPS_INPUT_TEMPLATE, lmp)
+    lmp = _run_simulation(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=LAMMPS_INPUT_TEMPLATE,
+        lmp=lmp,
+    )
     results = {}
     if "calc_energy" in tasks:
         results["energy"] = lmp.interactive_energy_pot_getter()
@@ -61,7 +66,11 @@ def evaluate_with_lammps(
         library=library,
         diable_log_file=diable_log_file,
     )
-    results_dict = evaluate_with_lammps_library(task_dict, potential_dataframe, lmp)
+    results_dict = evaluate_with_lammps_library(
+        task_dict=task_dict,
+        potential_dataframe=potential_dataframe,
+        lmp=lmp
+    )
     lmp.close()
     return results_dict
 
