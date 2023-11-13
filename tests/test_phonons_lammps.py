@@ -5,6 +5,7 @@ from phonopy.units import VaspToTHz
 import unittest
 
 from atomistics.workflows.phonons.workflow import PhonopyWorkflow
+from atomistics.workflows.structure_optimization.workflow import optimize_positions_and_volume
 
 try:
     from atomistics.calculators.lammps import (
@@ -23,14 +24,19 @@ class TestPhonons(unittest.TestCase):
     def test_calc_phonons(self):
         potential = '1999--Mishin-Y--Al--LAMMPS--ipr1'
         resource_path = os.path.join(os.path.dirname(__file__), "static", "lammps")
-        structure = bulk("Al", a=4.05, cubic=True)
+        structure = bulk("Al", cubic=True)
         df_pot = get_potential_dataframe(
             structure=structure,
             resource_path=resource_path
         )
         df_pot_selected = df_pot[df_pot.Name == potential].iloc[0]
+        task_dict = optimize_positions_and_volume(structure=structure)
+        result_dict = evaluate_with_lammps(
+            task_dict=task_dict,
+            potential_dataframe=df_pot_selected,
+        )
         calculator = PhonopyWorkflow(
-            structure=structure,
+            structure=result_dict["structure_with_optimized_positions_and_volume"],
             interaction_range=10,
             factor=VaspToTHz,
             displacement=0.01,

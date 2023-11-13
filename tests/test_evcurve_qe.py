@@ -46,9 +46,9 @@ class TestEvCurve(unittest.TestCase):
             axes=['x', 'y', 'z'],
             strains=None,
         )
-        structure_dict = calculator.generate_structures()
+        task_dict = calculator.generate_structures()
         result_dict = evaluate_with_ase(
-            task_dict=structure_dict,
+            task_dict=task_dict,
             ase_calculator=Espresso(
                 pseudopotentials=pseudopotentials,
                 tstress=True,

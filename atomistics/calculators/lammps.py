@@ -17,11 +17,28 @@ if TYPE_CHECKING:
     from atomistics.calculators.interface import TaskName
 
 
-LAMMPS_INPUT_TEMPLATE = """\
+LAMMPS_STATIC_RUN_INPUT_TEMPLATE = """\
 thermo_style custom step temp pe etotal pxx pxy pxz pyy pyz pzz vol
 thermo_modify format float %20.15g
 thermo 100
 run 0"""
+
+
+LAMMPS_MINIMIZE_POSITIONS_INPUT_TEMPLATE = """\
+thermo_style custom step temp pe etotal pxx pxy pxz pyy pyz pzz vol
+thermo_modify format float %20.15g
+thermo 10
+min_style cg
+minimize 0.0 0.0001 100000 10000000"""
+
+
+LAMMPS_MINIMIZE_POSITIONS_AND_VOLUME_INPUT_TEMPLATE = """\
+fix ensemble all box/relax iso 0.0
+thermo_style custom step temp pe etotal pxx pxy pxz pyy pyz pzz vol
+thermo_modify format float %20.15g
+thermo 10
+min_style cg
+minimize 0.0 0.0001 100000 10000000"""
 
 
 @as_task_dict_evaluator
@@ -31,12 +48,41 @@ def evaluate_with_lammps_library(
     potential_dataframe: DataFrame,
     lmp: LammpsASELibrary,
 ):
-    lmp = _run_simulation(structure, potential_dataframe, LAMMPS_INPUT_TEMPLATE, lmp)
     results = {}
-    if "calc_energy" in tasks:
-        results["energy"] = lmp.interactive_energy_pot_getter()
-    if "calc_forces" in tasks:
-        results["forces"] = lmp.interactive_forces_getter()
+    if "optimize_positions_and_volume" in tasks:
+        lmp = _run_simulation(
+            structure=structure,
+            potential_dataframe=potential_dataframe,
+            input_template=LAMMPS_MINIMIZE_POSITIONS_AND_VOLUME_INPUT_TEMPLATE,
+            lmp=lmp,
+        )
+        structure_copy = structure.copy()
+        structure_copy.set_cell(lmp.interactive_cells_getter(), scale_atoms=True)
+        structure_copy.positions = lmp.interactive_positions_getter()
+        results["structure_with_optimized_positions_and_volume"] = structure_copy
+    elif "optimize_positions" in tasks:
+        lmp = _run_simulation(
+            structure=structure,
+            potential_dataframe=potential_dataframe,
+            input_template=LAMMPS_MINIMIZE_POSITIONS_INPUT_TEMPLATE,
+            lmp=lmp,
+        )
+        structure_copy = structure.copy()
+        structure_copy.positions = lmp.interactive_positions_getter()
+        results["structure_with_optimized_positions"] = structure_copy
+    elif "calc_energy" in tasks or "calc_forces" in tasks:
+        lmp = _run_simulation(
+            structure=structure,
+            potential_dataframe=potential_dataframe,
+            input_template=LAMMPS_STATIC_RUN_INPUT_TEMPLATE,
+            lmp=lmp,
+        )
+        if "calc_energy" in tasks:
+            results["energy"] = lmp.interactive_energy_pot_getter()
+        if "calc_forces" in tasks:
+            results["forces"] = lmp.interactive_forces_getter()
+    else:
+        raise ValueError("The LAMMPS calculator does not implement:", tasks)
     lmp.interactive_lib_command("clear")
     return results
 

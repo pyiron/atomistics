@@ -5,6 +5,7 @@ from phonopy.units import VaspToTHz
 import unittest
 
 from atomistics.workflows.quasiharmonic.workflow import QuasiHarmonicWorkflow
+from atomistics.workflows.structure_optimization.workflow import optimize_positions_and_volume
 
 try:
     from atomistics.calculators.lammps import (
@@ -29,8 +30,13 @@ class TestPhonons(unittest.TestCase):
             resource_path=resource_path
         )
         df_pot_selected = df_pot[df_pot.Name == potential].iloc[0]
+        task_dict = optimize_positions_and_volume(structure=structure)
+        result_dict = evaluate_with_lammps(
+            task_dict=task_dict,
+            potential_dataframe=df_pot_selected,
+        )
         calculator = QuasiHarmonicWorkflow(
-            structure=structure,
+            structure=result_dict["structure_with_optimized_positions_and_volume"],
             num_points=11,
             vol_range=0.05,
             interaction_range=10,
