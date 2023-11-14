@@ -3,8 +3,8 @@ from ase.calculators.emt import EMT
 from phonopy.units import VaspToTHz
 import unittest
 
-from atomistics.calculators.ase import evaluate_with_ase
-from atomistics.workflows.quasiharmonic.workflow import QuasiHarmonicWorkflow
+from atomistics.calculators import evaluate_with_ase
+from atomistics.workflows import QuasiHarmonicWorkflow
 
 
 class TestPhonons(unittest.TestCase):

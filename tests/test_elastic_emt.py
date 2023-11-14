@@ -3,8 +3,8 @@ from ase.calculators.emt import EMT
 import numpy as np
 import unittest
 
-from atomistics.calculators.ase import evaluate_with_ase
-from atomistics.workflows.elastic.workflow import ElasticMatrixWorkflow
+from atomistics.calculators import evaluate_with_ase
+from atomistics.workflows import ElasticMatrixWorkflow
 
 
 class TestElastic(unittest.TestCase):

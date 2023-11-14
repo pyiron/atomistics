@@ -3,8 +3,8 @@ from ase.calculators.emt import EMT
 import numpy as np
 import unittest
 
-from atomistics.calculators.ase import evaluate_with_ase
-from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
+from atomistics.calculators import evaluate_with_ase
+from atomistics.workflows import EnergyVolumeCurveWorkflow
 
 
 class TestEvCurve(unittest.TestCase):

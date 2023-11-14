@@ -4,11 +4,11 @@ from ase.build import bulk
 import numpy as np
 import unittest
 
-from atomistics.workflows.langevin.workflow import LangevinWorkflow
+from atomistics.workflows import LangevinWorkflow
 
 
 try:
-    from atomistics.calculators.lammps import (
+    from atomistics.calculators import (
         evaluate_with_lammps_library, get_potential_dataframe, LammpsASELibrary
     )
 

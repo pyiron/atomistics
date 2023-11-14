@@ -4,8 +4,8 @@ from ase.calculators.emt import EMT
 from ase.optimize import BFGS
 import unittest
 
-from atomistics.calculators.ase import evaluate_with_ase
-from atomistics.workflows.structure_optimization.workflow import optimize_positions
+from atomistics.calculators import evaluate_with_ase
+from atomistics.workflows import optimize_positions
 
 
 class TestOptimizePositionsEMT(unittest.TestCase):
