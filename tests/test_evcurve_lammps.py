@@ -35,7 +35,7 @@ class TestEvCurve(unittest.TestCase):
             task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
-        calculator = EnergyVolumeCurveWorkflow(
+        workflow = EnergyVolumeCurveWorkflow(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             num_points=11,
             fit_type='polynomial',
@@ -44,12 +44,12 @@ class TestEvCurve(unittest.TestCase):
             axes=['x', 'y', 'z'],
             strains=None,
         )
-        task_dict = calculator.generate_structures()
+        task_dict = workflow.generate_structures()
         result_dict = evaluate_with_lammps(
             task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
-        fit_dict = calculator.analyse_structures(output_dict=result_dict)
+        fit_dict = workflow.analyse_structures(output_dict=result_dict)
         self.assertTrue(np.isclose(fit_dict['volume_eq'], 66.43019853103964))
         self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 77.7250135953191))
         self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 1.2795467367276832))

@@ -19,7 +19,7 @@ except ImportError:
 )
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
-        calculator = EnergyVolumeCurveWorkflow(
+        workflow = EnergyVolumeCurveWorkflow(
             structure=bulk("Al", a=4.05, cubic=True),
             num_points=11,
             fit_type='polynomial',
@@ -28,7 +28,7 @@ class TestEvCurve(unittest.TestCase):
             axes=['x', 'y', 'z'],
             strains=None,
         )
-        task_dict = calculator.generate_structures()
+        task_dict = workflow.generate_structures()
         result_dict = evaluate_with_ase(
             task_dict=task_dict,
             ase_calculator=GPAW(
@@ -37,8 +37,7 @@ class TestEvCurve(unittest.TestCase):
                 kpts=(3, 3, 3)
             )
         )
-        fit_dict = calculator.analyse_structures(output_dict=result_dict)
-        print(fit_dict)
+        fit_dict = workflow.analyse_structures(output_dict=result_dict)
         self.assertTrue(np.isclose(fit_dict['volume_eq'], 66.44252286131331, atol=1e-04))
         self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 72.38919826652857, atol=1e-04))
         self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 4.453836551712821, atol=1e-04))

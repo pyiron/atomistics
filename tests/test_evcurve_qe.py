@@ -37,7 +37,7 @@ def validate_fitdict(fit_dict):
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         pseudopotentials = {"Al": "Al.pbe-n-kjpaw_psl.1.0.0.UPF"}
-        calculator = EnergyVolumeCurveWorkflow(
+        workflow = EnergyVolumeCurveWorkflow(
             structure=bulk("Al", a=4.15, cubic=True),
             num_points=11,
             fit_type='polynomial',
@@ -46,7 +46,7 @@ class TestEvCurve(unittest.TestCase):
             axes=['x', 'y', 'z'],
             strains=None,
         )
-        task_dict = calculator.generate_structures()
+        task_dict = workflow.generate_structures()
         result_dict = evaluate_with_ase(
             task_dict=task_dict,
             ase_calculator=Espresso(
@@ -56,5 +56,5 @@ class TestEvCurve(unittest.TestCase):
                 kpts=(3, 3, 3),
             )
         )
-        fit_dict = calculator.analyse_structures(output_dict=result_dict)
+        fit_dict = workflow.analyse_structures(output_dict=result_dict)
         self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))

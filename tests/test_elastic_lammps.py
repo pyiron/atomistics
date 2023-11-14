@@ -34,19 +34,19 @@ class TestElastic(unittest.TestCase):
             task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
-        calculator = ElasticMatrixWorkflow(
+        workflow = ElasticMatrixWorkflow(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             num_of_point=5,
             eps_range=0.005,
             sqrt_eta=True,
             fit_order=2
         )
-        task_dict = calculator.generate_structures()
+        task_dict = workflow.generate_structures()
         result_dict = evaluate_with_lammps(
             task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
-        elastic_dict = calculator.analyse_structures(output_dict=result_dict)
+        elastic_dict = workflow.analyse_structures(output_dict=result_dict)
         self.assertTrue(np.isclose(elastic_dict["C"][0, 0], 114.10393023))
         self.assertTrue(np.isclose(elastic_dict["C"][0, 1], 60.51098897))
         self.assertTrue(np.isclose(elastic_dict["C"][3, 3], 51.23853765))
