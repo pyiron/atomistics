@@ -4,11 +4,10 @@ from ase.build import bulk
 import numpy as np
 import unittest
 
-from atomistics.workflows.elastic.workflow import ElasticMatrixWorkflow
-from atomistics.workflows.structure_optimization.workflow import optimize_positions_and_volume
+from atomistics.workflows import ElasticMatrixWorkflow, optimize_positions_and_volume
 
 try:
-    from atomistics.calculators.lammps import (
+    from atomistics.calculators import (
         evaluate_with_lammps, get_potential_dataframe
     )
 

@@ -2,8 +2,8 @@ from ase.build import bulk
 from phonopy.units import VaspToTHz
 import unittest
 
-from atomistics.calculators.ase import evaluate_with_ase
-from atomistics.workflows.phonons.workflow import PhonopyWorkflow
+from atomistics.calculators import evaluate_with_ase
+from atomistics.workflows import PhonopyWorkflow
 
 try:
     from gpaw import GPAW, PW

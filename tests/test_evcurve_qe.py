@@ -4,8 +4,8 @@ from ase.build import bulk
 from ase.calculators.espresso import Espresso
 import unittest
 
-from atomistics.calculators.ase import evaluate_with_ase
-from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
+from atomistics.calculators import evaluate_with_ase
+from atomistics.workflows import EnergyVolumeCurveWorkflow
 
 
 quantum_espresso_command = "pw.x"

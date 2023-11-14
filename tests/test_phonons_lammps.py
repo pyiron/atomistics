@@ -4,11 +4,10 @@ from ase.build import bulk
 from phonopy.units import VaspToTHz
 import unittest
 
-from atomistics.workflows.phonons.workflow import PhonopyWorkflow
-from atomistics.workflows.structure_optimization.workflow import optimize_positions_and_volume
+from atomistics.workflows import PhonopyWorkflow, optimize_positions_and_volume
 
 try:
-    from atomistics.calculators.lammps import (
+    from atomistics.calculators import (
         evaluate_with_lammps, get_potential_dataframe
     )
 
