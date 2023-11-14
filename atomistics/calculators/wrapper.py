@@ -33,6 +33,8 @@ def _convert_task_dict(old_task_dict: dict[TaskName, dict[str, Atoms]]) -> TaskD
     """
     task_dict = {}
     for method_name, subdict in old_task_dict.items():
+        if not isinstance(subdict, dict):
+            subdict = {"label_hidden": subdict}
         for label, structure in subdict.items():
             try:
                 task_dict[label][1].append(method_name)
@@ -72,10 +74,13 @@ def as_task_dict_evaluator(
             output = calculate(structure, tasks, *calculate_args, **calculate_kwargs)
             for task_name in tasks:
                 result_name = TaskOutputEnum(task_name).name
-                try:
-                    results_dict[result_name][label] = output[result_name]
-                except KeyError:
-                    results_dict[result_name] = {label: output[result_name]}
+                if label != "label_hidden":
+                    try:
+                        results_dict[result_name][label] = output[result_name]
+                    except KeyError:
+                        results_dict[result_name] = {label: output[result_name]}
+                else:
+                    results_dict[result_name] = output[result_name]
         return results_dict
 
     return evaluate_with_calculator

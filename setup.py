@@ -37,6 +37,7 @@ setup(
     extras_require={
         "phonopy": ['phonopy==2.20.0', 'seekpath==2.1.0', 'structuretoolkit==0.0.11'],
         "gpaw": ['gpaw==23.9.1'],
+        "lammps": ['pylammpsmpi==0.2.5', 'jinja2==3.1.2', 'pandas==2.1.3']
     },
     cmdclass=versioneer.get_cmdclass(),
 )

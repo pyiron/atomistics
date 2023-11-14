@@ -5,6 +5,7 @@ import numpy as np
 import unittest
 
 from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
+from atomistics.workflows.structure_optimization.workflow import optimize_positions_and_volume
 
 
 try:
@@ -24,14 +25,19 @@ class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         potential = '1999--Mishin-Y--Al--LAMMPS--ipr1'
         resource_path = os.path.join(os.path.dirname(__file__), "static", "lammps")
-        structure = bulk("Al", a=4.05, cubic=True)
+        structure = bulk("Al", cubic=True)
         df_pot = get_potential_dataframe(
             structure=structure,
             resource_path=resource_path
         )
         df_pot_selected = df_pot[df_pot.Name == potential].iloc[0]
+        task_dict = optimize_positions_and_volume(structure=structure)
+        result_dict = evaluate_with_lammps(
+            task_dict=task_dict,
+            potential_dataframe=df_pot_selected,
+        )
         calculator = EnergyVolumeCurveWorkflow(
-            structure=structure,
+            structure=result_dict["structure_with_optimized_positions_and_volume"],
             num_points=11,
             fit_type='polynomial',
             fit_order=3,
@@ -47,4 +53,4 @@ class TestEvCurve(unittest.TestCase):
         fit_dict = calculator.analyse_structures(output_dict=result_dict)
         self.assertTrue(np.isclose(fit_dict['volume_eq'], 66.43019853103964))
         self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 77.7250135953191))
-        self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 1.279502459079921))
+        self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 1.2795467367276832))
