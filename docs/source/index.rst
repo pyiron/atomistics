@@ -38,7 +38,7 @@ approximation.
 
 Example
 -------
-Use the equation of state to calculate the equilibrium properties like the equilibrium volume, equilibrium energy,
+Use the Equation of State to calculate the equilibrium properties like the equilibrium volume, equilibrium energy,
 equilibrium bulk modulus and its derivative using the `GPAW <https://wiki.fysik.dtu.dk/gpaw/>`_ simulation code::
 
     from ase.build import bulk
@@ -129,6 +129,42 @@ energies which were fitted to achieve these results. The important step here is 
 first and the second as well as between the second and the third step is clearly defined independent of the specific
 workflow, the initial parameters for the workflow to initialize the :code:`EnergyVolumeCurveWorkflow` object as well as
 the final output of the :code:`fit_dict` are workflow specific.
+
+Disclaimer
+----------
+While we try to develop a stable and reliable software library, the development remains a opensource project under the
+BSD 3-Clause License without any warranties::
+
+    BSD 3-Clause License
+
+    Copyright (c) 2023, Jan Janssen
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this
+      list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright notice,
+      this list of conditions and the following disclaimer in the documentation
+      and/or other materials provided with the distribution.
+
+    * Neither the name of the copyright holder nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 
 Documentation
 -------------
