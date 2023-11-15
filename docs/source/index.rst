@@ -6,7 +6,7 @@ atomistics - Interfaces for atomistic simulation codes and workflows
 :Contact: janssen@mpie.de
 
 The :code:`atomistics` package consists of two primary components. On the one hand it provides interfaces to atomistic
-simulation codes - named :code:`calculators`. In alphabetical order:
+simulation codes - named :code:`calculators`. The supported simulation codes in alphabetical order are:
 
 * `Abinit <https://www.abinit.org>`_ - Plane wave density functional theory
 * `EMT <https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html>`_ - Effective medium theory potential
