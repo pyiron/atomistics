@@ -17,7 +17,7 @@ from gpaw import GPAW, PW
 import numpy as np
 
 
-calculator = EnergyVolumeCurveWorkflow(
+workflow = EnergyVolumeCurveWorkflow(
     structure=bulk("Al", a=4.05, cubic=True),
     num_points=11,
     fit_type='polynomial',
@@ -26,7 +26,7 @@ calculator = EnergyVolumeCurveWorkflow(
     axes=['x', 'y', 'z'],
     strains=None,
 )
-task_dict = calculator.generate_structures()
+task_dict = workflow.generate_structures()
 result_dict = evaluate_with_ase(
     task_dict=task_dict,
     ase_calculator=GPAW(
@@ -35,7 +35,7 @@ result_dict = evaluate_with_ase(
         kpts=(3, 3, 3)
     )
 )
-fit_dict = calculator.analyse_structures(output_dict=result_dict)
+fit_dict = workflow.analyse_structures(output_dict=result_dict)
 print(fit_dict)
 ```
 
@@ -51,14 +51,14 @@ from gpaw import GPAW, PW
 import numpy as np
 
 
-calculator = ElasticMatrixWorkflow(
+workflow = ElasticMatrixWorkflow(
     structure=bulk("Al", a=4.0, cubic=True),
     num_of_point=5,
     eps_range=0.05,
     sqrt_eta=True,
     fit_order=2
 )
-task_dict = calculator.generate_structures()
+task_dict = workflow.generate_structures()
 result_dict = evaluate_with_ase(
     task_dict=task_dict,
     ase_calculator=GPAW(
@@ -67,7 +67,7 @@ result_dict = evaluate_with_ase(
         kpts=(3, 3, 3)
     )
 )
-elastic_dict = calculator.analyse_structures(output_dict=result_dict)
+elastic_dict = workflow.analyse_structures(output_dict=result_dict)
 print(elastic_dict)
 ```
 
@@ -135,7 +135,7 @@ pes.plot_contourf(show_min_erg_path=True)
 ```
 ### Quasi-Harmonic Approximation 
 ```
-calculator = QuasiHarmonicWorkflow(
+workflow = QuasiHarmonicWorkflow(
     structure=structure,
     num_points=11,
     vol_range=0.05,
@@ -146,13 +146,13 @@ calculator = QuasiHarmonicWorkflow(
     primitive_matrix=None,
     number_of_snapshots=None,
 )
-structure_dict = calculator.generate_structures()
+structure_dict = workflow.generate_structures()
 result_dict = evaluate_with_lammps(
     task_dict=structure_dict,
     potential_dataframe=potential_dataframe,
 )
-eng_internal_dict, mesh_collect_dict, dos_collect_dict = calculator.analyse_structures(output_dict=result_dict)
-tp_collect_dict = calculator.get_thermal_properties(t_min=1, t_max=1500, t_step=50, temperatures=None)  
+eng_internal_dict, mesh_collect_dict, dos_collect_dict = workflow.analyse_structures(output_dict=result_dict)
+tp_collect_dict = workflow.get_thermal_properties(t_min=1, t_max=1500, t_step=50, temperatures=None)  
 
 temperatures = tp_collect_dict[1.0]['temperatures']
 temperature_max = max(temperatures)
