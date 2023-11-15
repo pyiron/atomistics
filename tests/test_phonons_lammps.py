@@ -34,7 +34,7 @@ class TestPhonons(unittest.TestCase):
             task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
-        calculator = PhonopyWorkflow(
+        workflow = PhonopyWorkflow(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             interaction_range=10,
             factor=VaspToTHz,
@@ -43,13 +43,13 @@ class TestPhonons(unittest.TestCase):
             primitive_matrix=None,
             number_of_snapshots=None,
         )
-        task_dict = calculator.generate_structures()
+        task_dict = workflow.generate_structures()
         result_dict = evaluate_with_lammps(
             task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
-        mesh_dict, dos_dict = calculator.analyse_structures(output_dict=result_dict)
-        self.assertEqual((324, 324), calculator.get_hesse_matrix().shape)
+        mesh_dict, dos_dict = workflow.analyse_structures(output_dict=result_dict)
+        self.assertEqual((324, 324), workflow.get_hesse_matrix().shape)
         self.assertTrue('qpoints' in mesh_dict.keys())
         self.assertTrue('weights' in mesh_dict.keys())
         self.assertTrue('frequencies' in mesh_dict.keys())
