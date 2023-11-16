@@ -11,12 +11,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    environment:
+      name: pypi
+      url: https://pypi.org/p/atomistics
+    permissions:
+      id-token: write
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
       with:
-        python-version: "3.10"
+        python-version: "3.11"
 
     - name: Install dependencies
       run: >-
@@ -29,7 +33,4 @@ jobs:
         python setup.py sdist bdist_wheel
     - name: Publish distribution 📦 to PyPI
       if: startsWith(github.event.ref, 'refs/tags') || github.event_name == 'release'
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        user: __token__
-        password: ${{ secrets.pypi_password }}
+      uses: pypa/gh-action-pypi-publish@release/v1
