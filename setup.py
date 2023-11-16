@@ -2,6 +2,7 @@
 Setuptools based setup module
 """
 from setuptools import setup, find_packages
+from pathlib import Path
 import versioneer
 
 setup(
