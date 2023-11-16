@@ -8,8 +8,8 @@ setup(
     name='atomistics',
     version=versioneer.get_version(),
     description='atomistics - materials science workgflows to calculate material properties',
-    long_description='http://pyiron.org',
-
+    long_description=Path("README.md").read_text(),
+    long_description_content_type='text/markdown',
     url='https://github.com/pyiron/atomistics',
     author='Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department',
     author_email='janssen@mpie.de',
