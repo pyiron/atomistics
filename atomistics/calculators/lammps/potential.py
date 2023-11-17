@@ -287,3 +287,10 @@ def update_potential_paths(df_pot, resource_path):
         config_lst.append(potential_commands)
     df_pot["Config"] = config_lst
     return df_pot
+
+
+def get_potential_dataframe(structure, resource_path):
+    return update_potential_paths(
+        df_pot=view_potentials(structure=structure, resource_path=resource_path),
+        resource_path=resource_path,
+    )
