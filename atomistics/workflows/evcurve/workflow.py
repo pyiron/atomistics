@@ -1,6 +1,5 @@
 import numpy as np
 from ase.atoms import Atoms
-from typing import Literal
 from collections import OrderedDict
 
 from atomistics.workflows.evcurve.fit import EnergyVolumeFit
@@ -8,7 +7,7 @@ from atomistics.workflows.shared.workflow import Workflow
 
 
 def _strain_axes(
-    structure: Atoms, axes: Literal["x", "y", "z"], volume_strain: float
+    structure: Atoms, volume_strain: float, axes: tuple[str, str, str] = ("x", "y", "z")
 ) -> Atoms:
     """
     Strain box along given axes to achieve given *volumetric* strain.
@@ -75,7 +74,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         fit_type="polynomial",
         fit_order=3,
         vol_range=0.05,
-        axes=["x", "y", "z"],
+        axes=("x", "y", "z"),
         strains=None,
     ):
         self.structure = structure
@@ -106,7 +105,9 @@ class EnergyVolumeCurveWorkflow(Workflow):
                 int(self.num_points),
             )
         for strain in strains:
-            basis = _strain_axes(self.structure, self.axes, strain)
+            basis = _strain_axes(
+                structure=self.structure, axes=self.axes, volume_strain=strain
+            )
             self._structure_dict[1 + np.round(strain, 7)] = basis
         return {"calc_energy": self._structure_dict}
 

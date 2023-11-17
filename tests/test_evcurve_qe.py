@@ -43,7 +43,7 @@ class TestEvCurve(unittest.TestCase):
             fit_type='polynomial',
             fit_order=3,
             vol_range=0.05,
-            axes=['x', 'y', 'z'],
+            axes=('x', 'y', 'z'),
             strains=None,
         )
         task_dict = workflow.generate_structures()
