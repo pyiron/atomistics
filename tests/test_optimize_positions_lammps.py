@@ -8,7 +8,7 @@ from atomistics.workflows import optimize_positions
 
 try:
     from atomistics.calculators import (
-        evaluate_with_lammps, get_potential_dataframe
+        evaluate_with_lammps, get_potential_by_name
     )
 
     skip_lammps_test = False
@@ -17,11 +17,10 @@ except ImportError:
 
 
 def optimize_structure(structure, potential_name, resource_path=None):
-    df_pot = get_potential_dataframe(
-        structure=structure,
-        resource_path=resource_path
+    df_pot_selected = get_potential_by_name(
+        potential_name=potential_name,
+        resource_path=resource_path,
     )
-    df_pot_selected = df_pot[df_pot.Name == potential_name].iloc[0]
     task_dict = optimize_positions(structure=structure)
     result_dict = evaluate_with_lammps(
         task_dict=task_dict,
@@ -36,15 +35,13 @@ def optimize_structure(structure, potential_name, resource_path=None):
 )
 class TestOptimizePositionsLAMMPS(unittest.TestCase):
     def test_optimize_positions_with_resource_path(self):
-        potential_name = '1999--Mishin-Y--Al--LAMMPS--ipr1'
-        resource_path = os.path.join(os.path.dirname(__file__), "static", "lammps")
         structure = bulk("Al", cubic=True)
         positions_before_displacement = structure.positions.copy()
         structure.positions[0] += [0.01, 0.01, 0.01]
         structure_optimized = optimize_structure(
             structure=structure,
-            potential_name=potential_name,
-            resource_path=resource_path,
+            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         self.assertTrue(
             all(np.isclose(
@@ -54,13 +51,12 @@ class TestOptimizePositionsLAMMPS(unittest.TestCase):
         )
 
     def test_optimize_positions_without_resource_path(self):
-        potential_name = '1999--Mishin-Y--Al--LAMMPS--ipr1'
         structure = bulk("Al", cubic=True)
         positions_before_displacement = structure.positions.copy()
         structure.positions[0] += [0.01, 0.01, 0.01]
         structure_optimized = optimize_structure(
             structure=structure,
-            potential_name=potential_name,
+            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
             resource_path=None,
         )
         self.assertTrue(

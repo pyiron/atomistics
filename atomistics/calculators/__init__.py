@@ -5,6 +5,7 @@ try:
         evaluate_with_lammps,
         evaluate_with_lammps_library,
         get_potential_dataframe,
+        get_potential_by_name,
     )
 except ImportError:
     pass

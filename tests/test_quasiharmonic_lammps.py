@@ -8,7 +8,7 @@ from atomistics.workflows import QuasiHarmonicWorkflow, optimize_positions_and_v
 
 try:
     from atomistics.calculators import (
-        evaluate_with_lammps, get_potential_dataframe
+        evaluate_with_lammps, get_potential_by_name
     )
 
     skip_lammps_test = False
@@ -21,14 +21,11 @@ except ImportError:
 )
 class TestPhonons(unittest.TestCase):
     def test_calc_phonons(self):
-        potential = '1999--Mishin-Y--Al--LAMMPS--ipr1'
-        resource_path = os.path.join(os.path.dirname(__file__), "static", "lammps")
         structure = bulk("Al", a=4.05, cubic=True)
-        df_pot = get_potential_dataframe(
-            structure=structure,
-            resource_path=resource_path
+        df_pot_selected = get_potential_by_name(
+            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
-        df_pot_selected = df_pot[df_pot.Name == potential].iloc[0]
         task_dict = optimize_positions_and_volume(structure=structure)
         result_dict = evaluate_with_lammps(
             task_dict=task_dict,

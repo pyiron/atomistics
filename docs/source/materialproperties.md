@@ -283,7 +283,7 @@ potential_dataframe = pandas.DataFrame({
     "Model": ["Morse"],
     "Name": ["Morse"],
     "Species": [["Al"]],
-}).iloc[0]
+})
 
 structure = bulk("Al", a=4.05, cubic=True)
 ```
@@ -485,16 +485,17 @@ run {{ steps }}
 """
 
     lmp = LammpsASELibrary()
+    potential_series = potential_dataframe.iloc[0]
     lmp.interactive_structure_setter(
         structure=structure,
         units="metal",
         dimension=3,
         boundary=" ".join(["p" if coord else "f" for coord in structure.pbc]),
         atom_style="atomic",
-        el_eam_lst=potential_dataframe.Species,
+        el_eam_lst=potential_series.Species,
         calc_md=False,
     )
-    for c in potential_dataframe.Config:
+    for c in potential_series.Config:
         lmp.interactive_lib_command(c)
     init_str_rendered = Template(init_str).render(
         thermotime=100,

@@ -305,3 +305,12 @@ def get_potential_dataframe(structure, resource_path=None):
         df_pot=view_potentials(structure=structure, resource_path=resource_path),
         resource_path=resource_path,
     )
+
+
+def get_potential_by_name(potential_name, resource_path=None):
+    if resource_path is None:
+        resource_path = get_resource_path_from_conda()
+    df = LammpsPotentialFile(resource_path=resource_path).list()
+    return update_potential_paths(
+        df_pot=df[df.Name == potential_name], resource_path=resource_path
+    ).iloc[0]

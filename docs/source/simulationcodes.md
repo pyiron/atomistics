@@ -63,16 +63,12 @@ website.
 [LAMMPS](https://www.lammps.org) - Molecular Dynamics:
 ```
 from ase.build import bulk
-from atomistics.calculators import evaluate_with_lammps, get_potential_dataframe
+from atomistics.calculators import evaluate_with_lammps, get_potential_by_name
 
-potential = '1999--Mishin-Y--Al--LAMMPS--ipr1'
-resource_path = os.path.join("tests", "static", "lammps")
 structure = bulk("Al", cubic=True)
-df_pot = get_potential_dataframe(
-    structure=structure,
-    resource_path=resource_path
+potential_dataframe = get_potential_by_name(
+    potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1'
 )
-potential_dataframe = df_pot[df_pot.Name == potential].iloc[0]
 
 result_dict = evaluate_with_lammps(
     task_dict={},
@@ -82,10 +78,33 @@ result_dict = evaluate_with_lammps(
 The [LAMMPS](https://www.lammps.org) interface is based on the [pylammpsmpi](https://github.com/pyiron/pylammpsmpi)
 package which couples a [LAMMPS](https://www.lammps.org) instance which is parallelized via the Message Passing Interface
 (MPI) with a serial python process or jupyter notebook. The challenging part about molecular dynamics simulation is 
-identifying a suitable interatomic potential. To address this challenge the `atomistics` package is leveraging the
-[NIST database for interatomic potentials](https://www.ctcms.nist.gov/potentials). It is recommended to install this 
-database via the `conda` package manager, then the `resource_path` can be set to `${CONDA_PREFIX}/share/iprpy`. In this 
-example the Aluminium potential included in the `tests/static` folder is used just for demonstration. 
+identifying a suitable interatomic potential. 
+
+To address this challenge the `atomistics` package is leveraging the [NIST database of interatomic potentials](https://www.ctcms.nist.gov/potentials). 
+It is recommended to install this database `iprpy-data` via the `conda` package manager, then the `resource_path` is
+automatically set to `${CONDA_PREFIX}/share/iprpy`. Alternatively, the `resource_path` can be specified manually as an
+optional parameter of the `get_potential_by_name()` function.
+
+In addition, the `get_potential_dataframe(structure)` function which takes an `ase.atoms.Atoms` object as input can be
+used to query the [NIST database of interatomic potentials](https://www.ctcms.nist.gov/potentials) for potentials, which
+include the interatomic interactions required to simulate the atomic structure defined by the `ase.atoms.Atoms` object. 
+It returns a `pandas.DataFrame` with all the available potentials and the `resource_path` can again be specified as 
+optional parameter.
+
+Finally, another option to specify the interatomic potential for a LAMMPS simulation is by defining the `potential_dataframe`
+directly: 
+```
+potential_dataframe = pandas.DataFrame({
+    "Config": [[
+        "pair_style morse/smooth/linear 9.0",
+        "pair_coeff * * 0.5 1.8 2.95"
+    ]],
+    "Filename": [[]],
+    "Model": ["Morse"],
+    "Name": ["Morse"],
+    "Species": [["Al"]],
+})
+```
 
 ## Quantum Espresso 
 [Quantum Espresso](https://www.quantum-espresso.org) - Integrated suite of Open-Source computer codes for 

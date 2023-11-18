@@ -9,7 +9,7 @@ from atomistics.workflows import LangevinWorkflow
 
 try:
     from atomistics.calculators import (
-        evaluate_with_lammps_library, get_potential_dataframe, LammpsASELibrary
+        evaluate_with_lammps_library, get_potential_by_name, LammpsASELibrary
     )
 
     skip_lammps_test = False
@@ -23,14 +23,11 @@ except ImportError:
 class TestLangevin(unittest.TestCase):
     def test_langevin(self):
         steps = 300
-        potential = '1999--Mishin-Y--Al--LAMMPS--ipr1'
-        resource_path = os.path.join(os.path.dirname(__file__), "static", "lammps")
         structure = bulk("Al", cubic=True).repeat([2, 2, 2])
-        df_pot = get_potential_dataframe(
-            structure=structure,
-            resource_path=resource_path
+        df_pot_selected = get_potential_by_name(
+            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
-        df_pot_selected = df_pot[df_pot.Name == potential].iloc[0]
         workflow = LangevinWorkflow(
             structure=structure,
             temperature=1000.0,

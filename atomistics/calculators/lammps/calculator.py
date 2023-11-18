@@ -3,12 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from jinja2 import Template
+import pandas
 from pylammpsmpi import LammpsASELibrary
 
-from atomistics.calculators.lammps.potential import (
-    update_potential_paths,
-    view_potentials,
-)
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 if TYPE_CHECKING:
@@ -139,7 +136,34 @@ def evaluate_with_lammps(
     return results_dict
 
 
+def validate_potential_dataframe(potential_dataframe):
+    if isinstance(potential_dataframe, pandas.Series):
+        return potential_dataframe
+    elif isinstance(potential_dataframe, pandas.DataFrame):
+        if len(potential_dataframe) == 1:
+            return potential_dataframe.iloc[0]
+        elif len(potential_dataframe) == 0:
+            raise ValueError(
+                "The potential_dataframe is an empty pandas.DataFrame:",
+                potential_dataframe,
+            )
+        else:
+            raise ValueError(
+                "The potential_dataframe contains more than one interatomic potential, please select one:",
+                potential_dataframe,
+            )
+    else:
+        raise TypeError(
+            "The potential_dataframe should be a pandas.DataFrame or pandas.Series, but instead it is of type:",
+            type(potential_dataframe),
+        )
+
+
 def _run_simulation(structure, potential_dataframe, input_template, lmp):
+    potential_dataframe = validate_potential_dataframe(
+        potential_dataframe=potential_dataframe
+    )
+
     # write structure to LAMMPS
     lmp.interactive_structure_setter(
         structure=structure,
