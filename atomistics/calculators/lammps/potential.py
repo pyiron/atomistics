@@ -294,3 +294,8 @@ def get_potential_dataframe(structure, resource_path):
         df_pot=view_potentials(structure=structure, resource_path=resource_path),
         resource_path=resource_path,
     )
+
+
+def get_potential_by_name(potential_name, resource_path):
+    df = LammpsPotentialFile(resource_path=resource_path).list()
+    return df[df.Name == potential_name].iloc[0]

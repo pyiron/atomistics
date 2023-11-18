@@ -8,7 +8,7 @@ from atomistics.workflows import optimize_positions
 
 try:
     from atomistics.calculators import (
-        evaluate_with_lammps, get_potential_dataframe
+        evaluate_with_lammps, get_potential_by_name
     )
 
     skip_lammps_test = False
@@ -21,16 +21,13 @@ except ImportError:
 )
 class TestOptimizePositionsLAMMPS(unittest.TestCase):
     def test_optimize_positions(self):
-        potential = '1999--Mishin-Y--Al--LAMMPS--ipr1'
-        resource_path = os.path.join(os.path.dirname(__file__), "static", "lammps")
         structure = bulk("Al", cubic=True)
         positions_before_displacement = structure.positions.copy()
         structure.positions[0] += [0.01, 0.01, 0.01]
-        df_pot = get_potential_dataframe(
-            structure=structure,
-            resource_path=resource_path
+        df_pot_selected = get_potential_by_name(
+            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
-        df_pot_selected = df_pot[df_pot.Name == potential].iloc[0]
         task_dict = optimize_positions(structure=structure)
         result_dict = evaluate_with_lammps(
             task_dict=task_dict,
