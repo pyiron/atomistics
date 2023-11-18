@@ -66,6 +66,32 @@ def apply_strain(structure, epsilon, return_box=False, mode="linear"):
         return structure_copy
 
 
+def get_energy_lst(output_dict, structure_dict):
+    return [output_dict["energy"][k] for k in structure_dict.keys()]
+
+
+def get_volume_lst(structure_dict):
+    return [structure.get_volume() for structure in structure_dict.values()]
+
+
+def fit_ev_curve_internal(volume_lst, energy_lst, fit_type, fit_order):
+    fit_module = EnergyVolumeFit(
+        volume_lst=volume_lst,
+        energy_lst=energy_lst,
+    )
+    fit_module.fit(fit_type=fit_type, fit_order=fit_order)
+    return fit_module
+
+
+def fit_ev_curve(volume_lst, energy_lst, fit_type, fit_order):
+    return fit_ev_curve_internal(
+        volume_lst=volume_lst,
+        energy_lst=energy_lst,
+        fit_type=fit_type,
+        fit_order=fit_order,
+    ).fit_dict
+
+
 class EnergyVolumeCurveWorkflow(Workflow):
     def __init__(
         self,
@@ -112,16 +138,15 @@ class EnergyVolumeCurveWorkflow(Workflow):
         return {"calc_energy": self._structure_dict}
 
     def analyse_structures(self, output_dict):
-        if "energy" in output_dict.keys():
-            output_dict = output_dict["energy"]
-        self.fit_module = EnergyVolumeFit(
-            volume_lst=self.get_volume_lst(),
-            energy_lst=[output_dict[k] for k in self._structure_dict.keys()],
+        self.fit_module = fit_ev_curve_internal(
+            volume_lst=get_volume_lst(structure_dict=self._structure_dict),
+            energy_lst=get_energy_lst(
+                output_dict=output_dict, structure_dict=self._structure_dict
+            ),
+            fit_type=self.fit_type,
+            fit_order=self.fit_order,
         )
-        self.fit_module.fit(fit_type=self.fit_type, fit_order=self.fit_order)
         return self.fit_dict
 
     def get_volume_lst(self):
-        return [
-            self._structure_dict[k].get_volume() for k in self._structure_dict.keys()
-        ]
+        return get_volume_lst(structure_dict=self._structure_dict)
