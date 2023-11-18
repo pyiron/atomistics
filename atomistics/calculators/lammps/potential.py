@@ -289,7 +289,18 @@ def update_potential_paths(df_pot, resource_path):
     return df_pot
 
 
-def get_potential_dataframe(structure, resource_path):
+def get_resource_path_from_conda(env_variables=("CONDA_PREFIX", "CONDA_DIR")):
+    env = os.environ
+    for conda_var in env_variables:
+        resource_path = os.path.join(env[conda_var], "share", "iprpy")
+        if os.path.exists(resource_path):
+            return resource_path
+    raise ValueError("No resource_path found")
+
+
+def get_potential_dataframe(structure, resource_path=None):
+    if resource_path is None:
+        resource_path = get_resource_path_from_conda()
     return update_potential_paths(
         df_pot=view_potentials(structure=structure, resource_path=resource_path),
         resource_path=resource_path,
