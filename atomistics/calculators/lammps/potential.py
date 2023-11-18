@@ -307,6 +307,8 @@ def get_potential_dataframe(structure, resource_path=None):
     )
 
 
-def get_potential_by_name(potential_name, resource_path):
+def get_potential_by_name(potential_name, resource_path=None):
+    if resource_path is None:
+        resource_path = get_resource_path_from_conda()
     df = LammpsPotentialFile(resource_path=resource_path).list()
     return df[df.Name == potential_name].iloc[0]
