@@ -147,3 +147,6 @@ class EnergyVolumeCurveWorkflow(Workflow):
             fit_order=self.fit_order,
         )
         return self.fit_dict
+
+    def get_volume_lst(self):
+        return get_volume_lst(structure_dict=self._structure_dict)
