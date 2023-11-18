@@ -312,5 +312,5 @@ def get_potential_by_name(potential_name, resource_path=None):
         resource_path = get_resource_path_from_conda()
     df = LammpsPotentialFile(resource_path=resource_path).list()
     return update_potential_paths(
-        df_pot=df[df.Name == potential_name].iloc[0], resource_path=resource_path
-    )
+        df_pot=df[df.Name == potential_name], resource_path=resource_path
+    ).iloc[0]
