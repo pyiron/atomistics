@@ -293,16 +293,41 @@ the `pair_style` and `pair_coeff` commands, this extended format enables referen
 potentials `"Filename": [[]],` as well as the atomic species `"Species": [["Al"]],` to enable consistency checks if the 
 interatomic potential implements all the interactions to simulate a given atomic structure. 
 
+Finally, the last step of the preparation before starting the actual calculation is optimizing the interatomic structure. 
+While for the Morse potential used in this example this is not necessary, it is essential for extending this example to
+other interactomic potentials. For the structure optimization the `optimize_positions_and_volume()` function is imported
+and applied on the `ase.atoms.Atoms` bulk structure for Aluminium:
+```
+from atomistics.workflows import optimize_positions_and_volume
+
+task_dict = optimize_positions_and_volume(structure=structure)
+task_dict
+>>> {'optimize_positions_and_volume': Atoms(symbols='Al4', pbc=True, cell=[4.05, 4.05, 4.05])}
+```
+It returns a `task_dict` with a single task, the optimization of the positions and the volume of the Aluminium structure.
+This task is executed with the [LAMMPS](https://www.lammps.org/) molecular dynamics simulation code using the 
+`evaluate_with_lammps()` function:
+```
+from atomistics.calculators import evaluate_with_lammps
+
+result_dict = evaluate_with_lammps(
+    task_dict=task_dict,
+    potential_dataframe=potential_dataframe,
+)
+structure_opt = result_dict["structure_with_optimized_positions_and_volume"]
+```
+The `result_dict` just contains a single element, the `ase.atoms.Atoms` structure object with optimized positions and 
+volume. After this step the preparation is completed and the three different approximations can be compared in the following.
+
 ### Equation of State 
 The first approximation to calculate the thermal expansion is based on the Equation of State derived by [Moruzzi, V. L. et al.](https://link.aps.org/doi/10.1103/PhysRevB.37.790).
 So in analogy to the previous example of calculating the elastic properties from the Equation of State, the `EnergyVolumeCurveWorkflow`
 is initialized with the default parameters: 
 ```
-from atomistics.calculators import evaluate_with_lammps, get_potential_dataframe
 from atomistics.workflows import EnergyVolumeCurveWorkflow
 
 workflow = EnergyVolumeCurveWorkflow(
-    structure=structure,
+    structure=structure_opt,
     num_points=11,
     fit_type='polynomial',
     fit_order=3,
@@ -382,7 +407,7 @@ from atomistics.workflows import QuasiHarmonicWorkflow
 from phonopy.units import VaspToTHz
 
 calculator = QuasiHarmonicWorkflow(
-    structure=structure,
+    structure=structure_opt,
     num_points=11,
     vol_range=0.05,
     interaction_range=10,
@@ -525,7 +550,7 @@ is on the one hand related to the large number of force and energy calls and on 
 structure, as these simulations are typically executed with >5000 atoms rather than the 4 or 108 atoms in the other 
 approximations. 
 ```
-structure_md = structure.repeat(11)
+structure_md = structure_opt.repeat(11)
 temperature_md_lst = np.linspace(15, 1400, 278)
 volume_md_lst = calc_thermal_expansion_md(
     structure=structure_md, 
