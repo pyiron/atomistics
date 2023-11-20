@@ -36,7 +36,7 @@ setup(
         'spglib==2.1.0',
     ],
     extras_require={
-        "phonopy": ['phonopy==2.20.0', 'seekpath==2.1.0', 'structuretoolkit==0.0.11'],
+        "phonopy": ['phonopy==2.20.0', 'seekpath==2.1.0', 'structuretoolkit==0.0.12'],
         "gpaw": ['gpaw==23.9.1'],
         "lammps": ['pylammpsmpi==0.2.5', 'jinja2==3.1.2', 'pandas==2.1.3']
     },
