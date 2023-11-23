@@ -2,7 +2,7 @@ channels:
 - conda-forge
 dependencies:
 - ase =3.22.1
-- numpy =1.21.6
+- numpy =1.23.5
 - scipy =1.11.1
 - spglib =2.0.2
 - phonopy =2.20.0
