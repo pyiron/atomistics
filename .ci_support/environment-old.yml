@@ -7,9 +7,9 @@ dependencies:
 - spglib =2.0.2
 - phonopy =2.20.0
 - structuretoolkit =0.0.10
-- seekpath
-- lammps
-- pandas
-- pylammpsmpi
-- jinja2
+- seekpath =1.9.0
+- lammps =2022.06.23
+- pandas =1.5.3
+- pylammpsmpi =0.2.1
+- jinja2 =2.11.3
 - iprpy-data =2023.07.25
