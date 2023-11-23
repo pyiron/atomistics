@@ -565,7 +565,7 @@ To visually compare the thermal expansion predicted by the three different appro
 is used to plot the temperature over the volume:
 ```
 import matplotlib.pyplot as plt
-plt.plot(np.array(volume_md_lst)/len(structure_md) * 4, temperature_md_lst, label="Molecular Dynamics", color="C2")
+plt.plot(np.array(volume_md_lst)/len(structure_md) * len(structure_opt), temperature_md_lst, label="Molecular Dynamics", color="C2")
 plt.plot(vol_lst, temperatures, label="Quasi-Harmonic", color="C0")
 plt.plot(pes.get_minimum_energy_path(), pes.temperatures, label="Moruzzi Model", color="C1")
 plt.legend()
