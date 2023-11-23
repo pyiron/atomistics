@@ -1,0 +1,15 @@
+channels:
+- conda-forge
+dependencies:
+- ase =3.22.1
+- numpy =1.23.5
+- scipy =1.11.1
+- spglib =2.0.2
+- phonopy =2.20.0
+- structuretoolkit =0.0.1
+- seekpath
+- lammps
+- pandas
+- pylammpsmpi
+- jinja2
+- iprpy-data =2023.07.25
