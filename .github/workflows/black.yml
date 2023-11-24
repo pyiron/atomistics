@@ -16,4 +16,4 @@ jobs:
     - uses: psf/black@stable
       with:
         options: "--check --diff"
-        src: "./atomistics"
+        src: ./${{ github.event.repository.name }}
