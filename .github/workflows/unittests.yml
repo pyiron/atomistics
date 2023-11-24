@@ -38,7 +38,7 @@ jobs:
           prefix: /usr/share/miniconda3/envs/my-env
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Setup environment (windows)
       if: matrix.operating-system == 'windows-latest'
       run: cp .ci_support/environment.yml environment.yml
