@@ -32,7 +32,7 @@ setup(
     install_requires=[
         'ase==3.22.1',
         'numpy==1.26.0',
-        'scipy==1.11.3',
+        'scipy==1.11.4',
         'spglib==2.1.0',
     ],
     extras_require={
