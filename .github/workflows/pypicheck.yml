@@ -10,9 +10,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Setup Mambaforge
@@ -23,9 +21,8 @@ jobs:
         channels: conda-forge
         channel-priority: strict
         activate-environment: my-env
+        environment-file: .ci_support/environment.yml
         use-mamba: true
-    - name: Update environment
-      run: mamba env update -n my-env -f .ci_support/environment.yml
     - name: Pip check
       shell: bash -l {0}
       run: |
