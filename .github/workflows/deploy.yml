@@ -27,7 +27,7 @@ jobs:
     - name: Convert dependencies
       run: |
         cp .ci_support/environment-old.yml environment.yml
-        python .ci_support/release.py; cat setup.py
+        python .ci_support/release.py; cat pyproject.toml
     - name: Build
       run: python setup.py sdist bdist_wheel
     - name: Publish distribution 📦 to PyPI
