@@ -109,7 +109,7 @@ def plot_band_structure(
     axis=None,
     *args,
     label: Optional[str] = None,
-    **kwargs
+    **kwargs,
 ):
     """
     Plot bandstructure calculated with :meth:`.get_bandstructure`.

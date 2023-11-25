@@ -207,7 +207,7 @@ class PhonopyWorkflow(Workflow):
             axis=axis,
             *args,
             label=label,
-            **kwargs
+            **kwargs,
         )
 
     def plot_dos(self, *args, axis=None, **kwargs):
@@ -216,5 +216,5 @@ class PhonopyWorkflow(Workflow):
             dos_total=self._dos_dict["total_dos"],
             *args,
             axis=axis,
-            **kwargs
+            **kwargs,
         )
