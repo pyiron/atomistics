@@ -23,13 +23,12 @@ jobs:
       with:
         python-version: "3.11"
     - name: Install dependencies
-      run: >-
-        python -m pip install --user --upgrade setuptools wheel
+      run: python -m pip install --user --upgrade setuptools wheel
     - name: Convert dependencies
-      run: >-
-        sed -i 's/==/>=/g' pyproject.toml; cat pyproject.toml
+      run: |
+        cp .ci_support/environment-old.yml environment.yml
+        python .ci_support/release.py; cat pyproject.toml
     - name: Build
-      run: >-
-        python setup.py sdist bdist_wheel
+      run: python setup.py sdist bdist_wheel
     - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
