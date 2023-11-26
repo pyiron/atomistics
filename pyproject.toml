@@ -55,6 +55,9 @@ lammps = [
 [tool.setuptools]
 packages = ["atomistics"]
 
+[tool.setuptools.dynamic]
+version = {attr = "atomistics.__version__"}
+
 [tool.versioneer]
 VCS = "git"
 style = "pep440"
