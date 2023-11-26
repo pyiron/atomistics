@@ -60,7 +60,7 @@ version = {attr = "atomistics.__version__"}
 
 [tool.versioneer]
 VCS = "git"
-style = "pep440"
+style = "pep440-pre"
 versionfile_source = "atomistics/_version.py"
 parentdir_prefix = "atomistics"
 tag_prefix = "atomistics-"
