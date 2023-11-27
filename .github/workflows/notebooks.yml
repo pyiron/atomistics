@@ -16,7 +16,7 @@ jobs:
       - name: Merge Notebook environment
         run: |
           cp .ci_support/environment.yml environment.yml
-        tail --lines=+4 .ci_support/environment-abinit.yml >> environment.yml
+          tail --lines=+4 .ci_support/environment-notebooks.yml >> environment.yml
       - name: Setup Mambaforge
         uses: conda-incubator/setup-miniconda@v2
         with:
@@ -30,5 +30,6 @@ jobs:
       - name: Test
         shell: bash -l {0}
         run: |
-          pip install --no-deps .
+          pip install versioneer[toml]==0.29
+          pip install . --no-deps --no-build-isolation
           ./.ci_support/build_notebooks.sh
