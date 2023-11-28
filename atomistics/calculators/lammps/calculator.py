@@ -7,6 +7,13 @@ import pandas
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.wrapper import as_task_dict_evaluator
+from atomistics.calculators.lammps.commands import (
+    LAMMPS_THERMO_STYLE,
+    LAMMPS_THERMO,
+    LAMMPS_MINIMIZE,
+    LAMMPS_RUN,
+    LAMMPS_MINIMIZE_VOLUME,
+)
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -15,40 +22,33 @@ if TYPE_CHECKING:
     from atomistics.calculators.interface import TaskName
 
 
-LAMMPS_STATIC_RUN_INPUT_TEMPLATE = """\
-thermo_style custom step temp pe etotal pxx pxy pxz pyy pyz pzz vol
-thermo_modify format float %20.15g
-thermo 100
-run 0"""
-
-
-LAMMPS_MINIMIZE_POSITIONS_INPUT_TEMPLATE = """\
-thermo_style custom step temp pe etotal pxx pxy pxz pyy pyz pzz vol
-thermo_modify format float %20.15g
-thermo 10
-min_style {{min_style}}
-minimize {{etol}} {{ftol}} {{maxiter}} {{maxeval}}"""
-
-
-LAMMPS_MINIMIZE_POSITIONS_AND_VOLUME_INPUT_TEMPLATE = """\
-fix ensemble all box/relax iso 0.0
-thermo_style custom step temp pe etotal pxx pxy pxz pyy pyz pzz vol
-thermo_modify format float %20.15g
-thermo 10
-min_style {{min_style}}
-minimize {{etol}} {{ftol}} {{maxiter}} {{maxeval}}"""
-
-
-def template_render(
+def template_render_minimize(
     template_str,
     min_style="cg",
     etol=0.0,
     ftol=0.0001,
     maxiter=100000,
     maxeval=10000000,
+    thermo=10,
 ):
     return Template(template_str).render(
-        min_style=min_style, etol=etol, ftol=ftol, maxiter=maxiter, maxeval=maxeval
+        min_style=min_style,
+        etol=etol,
+        ftol=ftol,
+        maxiter=maxiter,
+        maxeval=maxeval,
+        thermo=thermo,
+    )
+
+
+def template_render_run(
+    template_str,
+    run=0,
+    thermo=100,
+):
+    return Template(template_str).render(
+        run=run,
+        thermo=thermo,
     )
 
 
@@ -62,11 +62,20 @@ def evaluate_with_lammps_library(
 ):
     results = {}
     if "optimize_positions_and_volume" in tasks:
+        template_str = (
+            LAMMPS_MINIMIZE_VOLUME
+            + "\n"
+            + LAMMPS_THERMO_STYLE
+            + "\n"
+            + LAMMPS_THERMO
+            + "\n"
+            + LAMMPS_MINIMIZE
+        )
         lmp = _run_simulation(
             structure=structure,
             potential_dataframe=potential_dataframe,
-            input_template=template_render(
-                template_str=LAMMPS_MINIMIZE_POSITIONS_AND_VOLUME_INPUT_TEMPLATE,
+            input_template=template_render_minimize(
+                template_str=template_str,
                 **lmp_optimizer_kwargs,
             ),
             lmp=lmp,
@@ -76,11 +85,14 @@ def evaluate_with_lammps_library(
         structure_copy.positions = lmp.interactive_positions_getter()
         results["structure_with_optimized_positions_and_volume"] = structure_copy
     elif "optimize_positions" in tasks:
+        template_str = (
+            LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_MINIMIZE
+        )
         lmp = _run_simulation(
             structure=structure,
             potential_dataframe=potential_dataframe,
-            input_template=template_render(
-                template_str=LAMMPS_MINIMIZE_POSITIONS_INPUT_TEMPLATE,
+            input_template=template_render_minimize(
+                template_str=template_str,
                 **lmp_optimizer_kwargs,
             ),
             lmp=lmp,
@@ -89,10 +101,15 @@ def evaluate_with_lammps_library(
         structure_copy.positions = lmp.interactive_positions_getter()
         results["structure_with_optimized_positions"] = structure_copy
     elif "calc_energy" in tasks or "calc_forces" in tasks:
+        template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
         lmp = _run_simulation(
             structure=structure,
             potential_dataframe=potential_dataframe,
-            input_template=LAMMPS_STATIC_RUN_INPUT_TEMPLATE,
+            input_template=template_render_run(
+                template_str=template_str,
+                thermo=100,
+                run=0,
+            ),
             lmp=lmp,
         )
         if "calc_energy" in tasks:
