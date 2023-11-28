@@ -19,6 +19,9 @@ class TaskEnum(StrEnum):
     calc_forces = "calc_forces"
     optimize_positions = "optimize_positions"
     optimize_positions_and_volume = "optimize_positions_and_volume"
+    calc_molecular_dynamics_thermal_expansion = (
+        "calc_molecular_dynamics_thermal_expansion"
+    )
 
 
 class TaskOutputEnum(Enum):
@@ -26,6 +29,7 @@ class TaskOutputEnum(Enum):
     forces = "calc_forces"
     structure_with_optimized_positions = "optimize_positions"
     structure_with_optimized_positions_and_volume = "optimize_positions_and_volume"
+    volume_over_temperature = "calc_molecular_dynamics_thermal_expansion"
 
 
 if TYPE_CHECKING:

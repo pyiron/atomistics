@@ -15,3 +15,12 @@ minimize {{etol}} {{ftol}} {{maxiter}} {{maxeval}}"""
 
 
 LAMMPS_MINIMIZE_VOLUME = "fix ensemble all box/relax iso 0.0"
+
+
+LAMMPS_TIMESTEP = "timestep {{timestep}}"
+
+
+LAMMPS_VELOCITY = "velocity all create $(2 * {{ temp }}) {{seed}} dist {{dist}}"
+
+
+LAMMPS_ENSEMBLE_NPT = "fix ensemble all npt temp {{Tstart}} {{Tstop}} {{Tdamp}} iso {{Pstart}} {{Pstop}} {{Pdamp}}"
