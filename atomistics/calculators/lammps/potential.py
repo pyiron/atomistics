@@ -314,3 +314,26 @@ def get_potential_by_name(potential_name, resource_path=None):
     return update_potential_paths(
         df_pot=df[df.Name == potential_name], resource_path=resource_path
     ).iloc[0]
+
+
+def validate_potential_dataframe(potential_dataframe):
+    if isinstance(potential_dataframe, pandas.Series):
+        return potential_dataframe
+    elif isinstance(potential_dataframe, pandas.DataFrame):
+        if len(potential_dataframe) == 1:
+            return potential_dataframe.iloc[0]
+        elif len(potential_dataframe) == 0:
+            raise ValueError(
+                "The potential_dataframe is an empty pandas.DataFrame:",
+                potential_dataframe,
+            )
+        else:
+            raise ValueError(
+                "The potential_dataframe contains more than one interatomic potential, please select one:",
+                potential_dataframe,
+            )
+    else:
+        raise TypeError(
+            "The potential_dataframe should be a pandas.DataFrame or pandas.Series, but instead it is of type:",
+            type(potential_dataframe),
+        )

@@ -2,7 +2,7 @@ import unittest
 
 try:
     import pandas
-    from atomistics.calculators.lammps.calculator import (
+    from atomistics.calculators.lammps.potential import (
         validate_potential_dataframe
     )
 
