@@ -488,77 +488,35 @@ The optimal volume at the different `temperatures` is stored in the `vol_lst` in
 ### Molecular Dynamics
 Finally, the third and most commonly used method to determine the volume expansion is using a molecular dynamics 
 calculation. While the `atomistics` package already includes a `LangevinWorkflow` at this point we use the [Nose-Hoover
-thermostat implemented in LAMMPS](https://docs.lammps.org/fix_nh.html) directly via the [pylammpsmpi](https://github.com/pyiron/pylammpsmpi)
-interface. 
+thermostat implemented in LAMMPS](https://docs.lammps.org/fix_nh.html) directly via the LAMMPS calculator interface. 
 ```
-from jinja2 import Template
-from pylammpsmpi import LammpsASELibrary
-from tqdm import tqdm
+from atomistics.calculators import calc_molecular_dynamics_thermal_expansion_with_lammps
 
-def calc_thermal_expansion_md(structure, potential_dataframe, temperature_lst):
-    init_str = """\
-thermo_style custom step temp pe etotal pxx pxy pxz pyy pyz pzz vol
-thermo_modify format float %20.15g
-timestep 0.001
-thermo {{ thermotime }}
-velocity all create $(2 * {{ lowtemp }}) 4928459 dist gaussian
-"""
-
-    run_str = """\
-fix ensemble all npt temp {{ lowtemp }} {{ hightemp }} 0.1 iso 0.0 0.0 1.0
-run {{ steps }}
-"""
-
-    lmp = LammpsASELibrary()
-    potential_series = potential_dataframe.iloc[0]
-    lmp.interactive_structure_setter(
-        structure=structure,
-        units="metal",
-        dimension=3,
-        boundary=" ".join(["p" if coord else "f" for coord in structure.pbc]),
-        atom_style="atomic",
-        el_eam_lst=potential_series.Species,
-        calc_md=False,
-    )
-    for c in potential_series.Config:
-        lmp.interactive_lib_command(c)
-    init_str_rendered = Template(init_str).render(
-        thermotime=100,
-        lowtemp=10
-    )
-    for l in init_str_rendered.split("\n"):
-        lmp.interactive_lib_command(l)
-    
-    volume_md_lst = []
-    for temp in tqdm(temperature_lst):
-        run_str_rendered = Template(run_str).render(
-            steps=100,
-            lowtemp=temp-5,
-            hightemp=temp,
-        )
-        for l in run_str_rendered.split("\n"):
-            lmp.interactive_lib_command(l)
-        volume_md_lst.append(lmp.interactive_volume_getter())
-    lmp.close()
-    return volume_md_lst
-```
-The `calc_thermal_expansion_md()` function defines a loop over a vector of temperatures in 5K steps. For each step 100
-molecular dynamics steps are executed before the temperature is again increased by 5K. For ~280 steps with the Morse 
-Pair Potential this takes approximately 5 minutes on a single core. These simulations can be further accelerated by 
-adding the `cores` parameter during the initialization of the `LammpsASELibrary()`. The increase in computational cost
-is on the one hand related to the large number of force and energy calls and on the other hand to the size of the atomistic
-structure, as these simulations are typically executed with >5000 atoms rather than the 4 or 108 atoms in the other 
-approximations. 
-```
 structure_md = structure_opt.repeat(11)
-temperature_md_lst = np.linspace(15, 1400, 278)
-volume_md_lst = calc_thermal_expansion_md(
-    structure=structure_md, 
-    potential_dataframe=potential_dataframe, 
-    temperature_lst=temperature_md_lst, 
+temperature_md_lst, volume_md_lst = calc_molecular_dynamics_thermal_expansion_with_lammps(
+    structure=structure,                       # atomistic structure
+    potential_dataframe=potential_dataframe,   # interatomic potential defined as pandas.DataFrame 
+    Tstart=15,                                 # temperature to for initial velocity distribution
+    Tstop=1500,                                # final temperature
+    Tstep=5,                                   # temperature step
+    Tdamp=0.1,                                 # temperature damping of the thermostat 
+    run=100,                                   # number of MD steps for each temperature
+    thermo=100,                                # print out from the thermostat
+    timestep=0.001,                            # time step for molecular dynamics 
+    Pstart=0.0,                                # initial pressure
+    Pstop=0.0,                                 # final pressure 
+    Pdamp=1.0,                                 # barostat damping 
+    seed=4928459,                              # random seed 
+    dist="gaussian",                           # Gaussian velocity distribution 
 )
 ```
-The volume for the individual temperatures is stored in the `volume_md_lst` list. 
+The `calc_molecular_dynamics_thermal_expansion_with_lammps()` function defines a loop over a vector of temperatures in 
+5K steps. For each step 100 molecular dynamics steps are executed before the temperature is again increased by 5K. For 
+~280 steps with the Morse Pair Potential this takes approximately 5 minutes on a single core. These simulations can be 
+further accelerated by adding the `cores` parameter. The increase in computational cost is on the one hand related to 
+the large number of force and energy calls and on the other hand to the size of the atomistic structure, as these 
+simulations are typically executed with >5000 atoms rather than the 4 or 108 atoms in the other approximations. The 
+volume for the individual temperatures is stored in the `volume_md_lst` list. 
 
 ### Summary
 To visually compare the thermal expansion predicted by the three different approximations, the [matplotlib](https://matplotlib.org)

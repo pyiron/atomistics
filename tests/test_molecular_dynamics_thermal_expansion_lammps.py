@@ -55,6 +55,15 @@ class TestMolecularDynamicsThermalExpansion(unittest.TestCase):
             Tstart=50,
             Tstop=500,
             Tstep=50,
+            Tdamp=0.1,
+            run=100,
+            thermo=100,
+            timestep=0.001,
+            Pstart=0.0,
+            Pstop=0.0,
+            Pdamp=1.0,
+            seed=4928459,
+            dist="gaussian",
             lmp=None,
         )
         self.assertEqual(temperature_lst, [50, 100, 150, 200, 250, 300, 350, 400, 450, 500])
