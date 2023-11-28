@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import numpy as np
 from typing import TYPE_CHECKING
 
 from pylammpsmpi import LammpsASELibrary
@@ -7,6 +8,7 @@ from pylammpsmpi import LammpsASELibrary
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.calculators.lammps.helpers import (
     lammps_run,
+    lammps_thermal_expansion_loop,
     lammps_shutdown,
     template_render_minimize,
     template_render_run,
@@ -156,8 +158,8 @@ def optimize_positions_with_lammps(
     return structure_copy
 
 
-def calc_thermal_expansion_md(
-    structure, potential_dataframe, lmp, Tstart=15, Tstop=1500, Tstep=5
+def calc_molecular_dynamics_thermal_expansion_with_lammps(
+    structure, potential_dataframe, Tstart=15, Tstop=1500, Tstep=5, lmp=None
 ):
     init_str = (
         LAMMPS_THERMO_STYLE
@@ -170,31 +172,15 @@ def calc_thermal_expansion_md(
         + "\n"
     )
     run_str = LAMMPS_ENSEMBLE_NPT + "\n" + LAMMPS_RUN
-
-    lmp = _run_simulation(
+    temperature_lst = np.arange(Tstart, Tstop + Tstep, Tstep).tolist()
+    volume_md_lst = lammps_thermal_expansion_loop(
         structure=structure,
         potential_dataframe=potential_dataframe,
-        input_template=Template(init_str).render(
-            thermo=100, temp=Tstart, timestep=0.001, seed=4928459, dist="gaussian"
-        ),
+        init_str=init_str,
+        run_str=run_str,
+        temperature_lst=temperature_lst,
         lmp=lmp,
     )
-
-    volume_md_lst = []
-    temperature_lst = np.arange(Tstart, Tstop + Tstep, Tstep).tolist()
-    for temp in temperature_lst:
-        run_str_rendered = Template(run_str).render(
-            run=100,
-            Tstart=temp - 5,
-            Tstop=temp,
-            Tdamp=0.1,
-            Pstart=0.0,
-            Pstop=0.0,
-            Pdamp=1.0,
-        )
-        for l in run_str_rendered.split("\n"):
-            lmp.interactive_lib_command(l)
-        volume_md_lst.append(lmp.interactive_volume_getter())
     return temperature_lst, volume_md_lst
 
 
@@ -224,7 +210,10 @@ def evaluate_with_lammps_library(
             **lmp_optimizer_kwargs,
         )
     elif "calc_molecular_dynamics_thermal_expansion" in tasks:
-        temperature_lst, volume_md_lst = calc_thermal_expansion_md(
+        (
+            temperature_lst,
+            volume_md_lst,
+        ) = calc_molecular_dynamics_thermal_expansion_with_lammps(
             structure=structure,
             potential_dataframe=potential_dataframe,
             lmp=lmp,

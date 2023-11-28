@@ -1,19 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from jinja2 import Template
-import pandas
 from pylammpsmpi import LammpsASELibrary
 
-from atomistics.calculators.wrapper import as_task_dict_evaluator
-from atomistics.calculators.lammps.commands import (
-    LAMMPS_THERMO_STYLE,
-    LAMMPS_THERMO,
-    LAMMPS_MINIMIZE,
-    LAMMPS_RUN,
-    LAMMPS_MINIMIZE_VOLUME,
-)
 from atomistics.calculators.lammps.potential import validate_potential_dataframe
 
 
@@ -73,6 +62,40 @@ def lammps_run(structure, potential_dataframe, input_template, lmp=None):
         lmp.interactive_lib_command(l)
 
     return lmp
+
+
+def lammps_thermal_expansion_loop(
+    structure, potential_dataframe, init_str, run_str, temperature_lst, lmp=None
+):
+    lmp_instance = lammps_run(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=Template(init_str).render(
+            thermo=100,
+            temp=temperature_lst[0],
+            timestep=0.001,
+            seed=4928459,
+            dist="gaussian",
+        ),
+        lmp=lmp,
+    )
+
+    volume_md_lst = []
+    for temp in temperature_lst:
+        run_str_rendered = Template(run_str).render(
+            run=100,
+            Tstart=temp - 5,
+            Tstop=temp,
+            Tdamp=0.1,
+            Pstart=0.0,
+            Pstop=0.0,
+            Pdamp=1.0,
+        )
+        for l in run_str_rendered.split("\n"):
+            lmp_instance.interactive_lib_command(l)
+        volume_md_lst.append(lmp_instance.interactive_volume_getter())
+    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
+    return volume_md_lst
 
 
 def lammps_shutdown(lmp_instance, close_instance=True):
