@@ -2,11 +2,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from jinja2 import Template
-import pandas
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.wrapper import as_task_dict_evaluator
+from atomistics.calculators.lammps.helpers import (
+    lammps_run,
+    lammps_shutdown,
+    template_render_minimize,
+    template_render_run,
+)
 from atomistics.calculators.lammps.commands import (
     LAMMPS_THERMO_STYLE,
     LAMMPS_THERMO,
@@ -22,34 +26,131 @@ if TYPE_CHECKING:
     from atomistics.calculators.interface import TaskName
 
 
-def template_render_minimize(
-    template_str,
+def calc_energy_with_lammps(structure: Atoms, potential_dataframe: DataFrame, lmp=None):
+    template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
+    lmp_instance = lammps_run(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=template_render_run(
+            template_str=template_str,
+            thermo=100,
+            run=0,
+        ),
+        lmp=lmp,
+    )
+    energy_pot = lmp_instance.interactive_energy_pot_getter()
+    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
+    return energy_pot
+
+
+def calc_forces_with_lammps(structure: Atoms, potential_dataframe: DataFrame, lmp=None):
+    template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
+    lmp_instance = lammps_run(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=template_render_run(
+            template_str=template_str,
+            thermo=100,
+            run=0,
+        ),
+        lmp=lmp,
+    )
+    forces = lmp_instance.interactive_forces_getter()
+    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
+    return forces
+
+
+def calc_energy_and_forces_with_lammps(
+    structure, potential_dataframe: DataFrame, lmp=None
+):
+    template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
+    lmp_instance = lammps_run(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=template_render_run(
+            template_str=template_str,
+            thermo=100,
+            run=0,
+        ),
+        lmp=lmp,
+    )
+    energy_pot = lmp_instance.interactive_energy_pot_getter()
+    forces = lmp_instance.interactive_forces_getter()
+    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
+    return energy_pot, forces
+
+
+def optimize_positions_and_volume_with_lammps(
+    structure: Atoms,
+    potential_dataframe: DataFrame,
     min_style="cg",
     etol=0.0,
     ftol=0.0001,
     maxiter=100000,
     maxeval=10000000,
     thermo=10,
+    lmp=None,
 ):
-    return Template(template_str).render(
-        min_style=min_style,
-        etol=etol,
-        ftol=ftol,
-        maxiter=maxiter,
-        maxeval=maxeval,
-        thermo=thermo,
+    template_str = (
+        LAMMPS_MINIMIZE_VOLUME
+        + "\n"
+        + LAMMPS_THERMO_STYLE
+        + "\n"
+        + LAMMPS_THERMO
+        + "\n"
+        + LAMMPS_MINIMIZE
     )
+    lmp_instance = lammps_run(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=template_render_minimize(
+            template_str=template_str,
+            min_style=min_style,
+            etol=etol,
+            ftol=ftol,
+            maxiter=maxiter,
+            maxeval=maxeval,
+            thermo=thermo,
+        ),
+        lmp=lmp,
+    )
+    structure_copy = structure.copy()
+    structure_copy.set_cell(lmp_instance.interactive_cells_getter(), scale_atoms=True)
+    structure_copy.positions = lmp_instance.interactive_positions_getter()
+    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
+    return structure_copy
 
 
-def template_render_run(
-    template_str,
-    run=0,
-    thermo=100,
+def optimize_positions_with_lammps(
+    structure: Atoms,
+    potential_dataframe: DataFrame,
+    min_style="cg",
+    etol=0.0,
+    ftol=0.0001,
+    maxiter=100000,
+    maxeval=10000000,
+    thermo=10,
+    lmp=None,
 ):
-    return Template(template_str).render(
-        run=run,
-        thermo=thermo,
+    template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_MINIMIZE
+    lmp_instance = lammps_run(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=template_render_minimize(
+            template_str=template_str,
+            min_style=min_style,
+            etol=etol,
+            ftol=ftol,
+            maxiter=maxiter,
+            maxeval=maxeval,
+            thermo=thermo,
+        ),
+        lmp=lmp,
     )
+    structure_copy = structure.copy()
+    structure_copy.positions = lmp_instance.interactive_positions_getter()
+    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
+    return structure_copy
 
 
 @as_task_dict_evaluator
@@ -62,63 +163,41 @@ def evaluate_with_lammps_library(
 ):
     results = {}
     if "optimize_positions_and_volume" in tasks:
-        template_str = (
-            LAMMPS_MINIMIZE_VOLUME
-            + "\n"
-            + LAMMPS_THERMO_STYLE
-            + "\n"
-            + LAMMPS_THERMO
-            + "\n"
-            + LAMMPS_MINIMIZE
-        )
-        lmp = _run_simulation(
+        results[
+            "structure_with_optimized_positions_and_volume"
+        ] = optimize_positions_and_volume_with_lammps(
             structure=structure,
             potential_dataframe=potential_dataframe,
-            input_template=template_render_minimize(
-                template_str=template_str,
-                **lmp_optimizer_kwargs,
-            ),
             lmp=lmp,
+            **lmp_optimizer_kwargs,
         )
-        structure_copy = structure.copy()
-        structure_copy.set_cell(lmp.interactive_cells_getter(), scale_atoms=True)
-        structure_copy.positions = lmp.interactive_positions_getter()
-        results["structure_with_optimized_positions_and_volume"] = structure_copy
     elif "optimize_positions" in tasks:
-        template_str = (
-            LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_MINIMIZE
-        )
-        lmp = _run_simulation(
+        results["structure_with_optimized_positions"] = optimize_positions_with_lammps(
             structure=structure,
             potential_dataframe=potential_dataframe,
-            input_template=template_render_minimize(
-                template_str=template_str,
-                **lmp_optimizer_kwargs,
-            ),
             lmp=lmp,
+            **lmp_optimizer_kwargs,
         )
-        structure_copy = structure.copy()
-        structure_copy.positions = lmp.interactive_positions_getter()
-        results["structure_with_optimized_positions"] = structure_copy
-    elif "calc_energy" in tasks or "calc_forces" in tasks:
-        template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
-        lmp = _run_simulation(
+    elif "calc_energy" in tasks and "calc_forces" in tasks:
+        results["energy"], results["forces"] = calc_energy_and_forces_with_lammps(
             structure=structure,
             potential_dataframe=potential_dataframe,
-            input_template=template_render_run(
-                template_str=template_str,
-                thermo=100,
-                run=0,
-            ),
             lmp=lmp,
         )
-        if "calc_energy" in tasks:
-            results["energy"] = lmp.interactive_energy_pot_getter()
-        if "calc_forces" in tasks:
-            results["forces"] = lmp.interactive_forces_getter()
+    elif "calc_energy" in tasks:
+        results["energy"] = calc_energy_with_lammps(
+            structure=structure,
+            potential_dataframe=potential_dataframe,
+            lmp=lmp,
+        )
+    elif "calc_forces" in tasks:
+        results["forces"] = calc_forces_with_lammps(
+            structure=structure,
+            potential_dataframe=potential_dataframe,
+            lmp=lmp,
+        )
     else:
         raise ValueError("The LAMMPS calculator does not implement:", tasks)
-    lmp.interactive_lib_command("clear")
     return results
 
 
@@ -151,52 +230,3 @@ def evaluate_with_lammps(
     )
     lmp.close()
     return results_dict
-
-
-def validate_potential_dataframe(potential_dataframe):
-    if isinstance(potential_dataframe, pandas.Series):
-        return potential_dataframe
-    elif isinstance(potential_dataframe, pandas.DataFrame):
-        if len(potential_dataframe) == 1:
-            return potential_dataframe.iloc[0]
-        elif len(potential_dataframe) == 0:
-            raise ValueError(
-                "The potential_dataframe is an empty pandas.DataFrame:",
-                potential_dataframe,
-            )
-        else:
-            raise ValueError(
-                "The potential_dataframe contains more than one interatomic potential, please select one:",
-                potential_dataframe,
-            )
-    else:
-        raise TypeError(
-            "The potential_dataframe should be a pandas.DataFrame or pandas.Series, but instead it is of type:",
-            type(potential_dataframe),
-        )
-
-
-def _run_simulation(structure, potential_dataframe, input_template, lmp):
-    potential_dataframe = validate_potential_dataframe(
-        potential_dataframe=potential_dataframe
-    )
-
-    # write structure to LAMMPS
-    lmp.interactive_structure_setter(
-        structure=structure,
-        units="metal",
-        dimension=3,
-        boundary=" ".join(["p" if coord else "f" for coord in structure.pbc]),
-        atom_style="atomic",
-        el_eam_lst=potential_dataframe.Species,
-        calc_md=False,
-    )
-
-    # execute calculation
-    for c in potential_dataframe.Config:
-        lmp.interactive_lib_command(c)
-
-    for l in input_template.split("\n"):
-        lmp.interactive_lib_command(l)
-
-    return lmp
