@@ -41,9 +41,7 @@ def lammps_run(structure, potential_dataframe, input_template, lmp=None, **kwarg
         potential_dataframe=potential_dataframe
     )
     if lmp is None:
-        lmp = LammpsASELibrary(
-            **kwargs
-        )
+        lmp = LammpsASELibrary(**kwargs)
 
     # write structure to LAMMPS
     lmp.interactive_structure_setter(

@@ -31,7 +31,9 @@ if TYPE_CHECKING:
     from atomistics.calculators.interface import TaskName
 
 
-def calc_energy_with_lammps(structure: Atoms, potential_dataframe: DataFrame, lmp=None, **kwargs):
+def calc_energy_with_lammps(
+    structure: Atoms, potential_dataframe: DataFrame, lmp=None, **kwargs
+):
     template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
     lmp_instance = lammps_run(
         structure=structure,
@@ -49,7 +51,9 @@ def calc_energy_with_lammps(structure: Atoms, potential_dataframe: DataFrame, lm
     return energy_pot
 
 
-def calc_forces_with_lammps(structure: Atoms, potential_dataframe: DataFrame, lmp=None, **kwargs):
+def calc_forces_with_lammps(
+    structure: Atoms, potential_dataframe: DataFrame, lmp=None, **kwargs
+):
     template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
     lmp_instance = lammps_run(
         structure=structure,
@@ -98,7 +102,7 @@ def optimize_positions_and_volume_with_lammps(
     maxeval=10000000,
     thermo=10,
     lmp=None,
-    **kwargs
+    **kwargs,
 ):
     template_str = (
         LAMMPS_MINIMIZE_VOLUME
@@ -141,7 +145,7 @@ def optimize_positions_with_lammps(
     maxeval=10000000,
     thermo=10,
     lmp=None,
-    **kwargs
+    **kwargs,
 ):
     template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_MINIMIZE
     lmp_instance = lammps_run(
@@ -181,7 +185,7 @@ def calc_molecular_dynamics_thermal_expansion_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    **kwargs
+    **kwargs,
 ):
     init_str = (
         LAMMPS_THERMO_STYLE
