@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ase.constraints import UnitCellFilter
 from typing import TYPE_CHECKING
 
 from atomistics.calculators.wrapper import as_task_dict_evaluator
@@ -17,11 +18,20 @@ def evaluate_with_ase(
     tasks: list[TaskName],
     ase_calculator: ASECalculator,
     ase_optimizer: Optimizer = None,
-    ase_optimizer_kwargs: dict = None,
+    ase_optimizer_kwargs: dict = {},
 ):
     results = {}
     if "optimize_positions" in tasks:
         results["structure_with_optimized_positions"] = optimize_positions_with_ase(
+            structure=structure,
+            ase_calculator=ase_calculator,
+            ase_optimizer=ase_optimizer,
+            ase_optimizer_kwargs=ase_optimizer_kwargs,
+        )
+    elif "optimize_positions_and_volume" in tasks:
+        results[
+            "structure_with_optimized_positions_and_volume"
+        ] = optimize_positions_and_volume_with_ase(
             structure=structure,
             ase_calculator=ase_calculator,
             ase_optimizer=ase_optimizer,
@@ -66,5 +76,15 @@ def optimize_positions_with_ase(
     structure_optimized = structure.copy()
     structure_optimized.calc = ase_calculator
     ase_optimizer_obj = ase_optimizer(structure_optimized)
+    ase_optimizer_obj.run(**ase_optimizer_kwargs)
+    return structure_optimized
+
+
+def optimize_positions_and_volume_with_ase(
+    structure, ase_calculator, ase_optimizer, ase_optimizer_kwargs
+):
+    structure_optimized = structure.copy()
+    structure_optimized.calc = ase_calculator
+    ase_optimizer_obj = ase_optimizer(UnitCellFilter(structure_optimized))
     ase_optimizer_obj.run(**ase_optimizer_kwargs)
     return structure_optimized

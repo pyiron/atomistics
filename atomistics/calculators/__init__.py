@@ -4,6 +4,7 @@ from atomistics.calculators.ase import (
     calc_forces_with_ase,
     evaluate_with_ase,
     optimize_positions_with_ase,
+    optimize_positions_and_volume_with_ase,
 )
 
 try:

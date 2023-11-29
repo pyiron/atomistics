@@ -1,16 +1,25 @@
 from ase.build import bulk
 from ase.calculators.emt import EMT
+from ase.optimize import LBFGS
 from phonopy.units import VaspToTHz
 import unittest
 
 from atomistics.calculators import evaluate_with_ase
-from atomistics.workflows import QuasiHarmonicWorkflow
+from atomistics.workflows import QuasiHarmonicWorkflow, optimize_positions_and_volume
 
 
 class TestPhonons(unittest.TestCase):
     def test_calc_phonons(self):
+        structure = bulk("Al", cubic=True)
+        task_dict = optimize_positions_and_volume(structure=structure)
+        result_dict = evaluate_with_ase(
+            task_dict=task_dict,
+            ase_calculator=EMT(),
+            ase_optimizer=LBFGS,
+            ase_optimizer_kwargs={"fmax": 0.000001}
+        )
         workflow = QuasiHarmonicWorkflow(
-            structure=bulk("Al", a=4.0, cubic=True),
+            structure=result_dict["structure_with_optimized_positions_and_volume"],
             num_points=11,
             vol_range=0.05,
             interaction_range=10,
