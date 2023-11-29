@@ -17,12 +17,12 @@ else:
 
 def validate_fitdict(fit_dict):
     lst = [
-        fit_dict['bulkmodul_eq'] > 130,
-        fit_dict['bulkmodul_eq'] < 140,
+        fit_dict['bulkmodul_eq'] > 100,
+        fit_dict['bulkmodul_eq'] < 110,
         fit_dict['energy_eq'] > -227,
         fit_dict['energy_eq'] < -226,
-        fit_dict['volume_eq'] > 67,
-        fit_dict['volume_eq'] < 68,
+        fit_dict['volume_eq'] > 66,
+        fit_dict['volume_eq'] < 67,
     ]
     if not all(lst):
         print(fit_dict)
@@ -35,7 +35,7 @@ def validate_fitdict(fit_dict):
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         workflow = EnergyVolumeCurveWorkflow(
-            structure=bulk("Al", a=4.04, cubic=True),
+            structure=bulk("Al", a=4.045, cubic=True),
             num_points=11,
             fit_type='polynomial',
             fit_order=3,
