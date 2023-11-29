@@ -29,7 +29,9 @@ def evaluate_with_ase(
             ase_optimizer_kwargs=ase_optimizer_kwargs,
         )
     elif "optimize_positions_and_volume" in tasks:
-        results["structure_with_optimized_positions_and_volume"] = optimize_positions_and_volume_with_ase(
+        results[
+            "structure_with_optimized_positions_and_volume"
+        ] = optimize_positions_and_volume_with_ase(
             structure=structure,
             ase_calculator=ase_calculator,
             ase_optimizer=ase_optimizer,
