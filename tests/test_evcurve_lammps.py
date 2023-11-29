@@ -47,6 +47,10 @@ class TestEvCurve(unittest.TestCase):
             potential_dataframe=df_pot_selected,
         )
         fit_dict = workflow.analyse_structures(output_dict=result_dict)
+        temperatures_ev, volumes_ev = workflow.get_thermal_expansion(output_dict=result_dict, temperatures=[100, 1000])
         self.assertTrue(np.isclose(fit_dict['volume_eq'], 66.43019853103964))
         self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 77.7250135953191))
         self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 1.2795467367276832))
+        self.assertEqual(len(temperatures_ev), 2)
+        self.assertEqual(len(volumes_ev), 2)
+        self.assertTrue(volumes_ev[0] < volumes_ev[-1])
