@@ -60,3 +60,4 @@ class TestEvCurve(unittest.TestCase):
         self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))
         self.assertEqual(len(temperatures_ev), 2)
         self.assertEqual(len(volumes_ev), 2)
+        print(result_dict, temperatures_ev, volumes_ev)
