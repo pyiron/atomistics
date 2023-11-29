@@ -35,7 +35,7 @@ def validate_fitdict(fit_dict):
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         workflow = EnergyVolumeCurveWorkflow(
-            structure=bulk("Al", a=4.05, cubic=True),
+            structure=bulk("Al", a=4.04, cubic=True),
             num_points=11,
             fit_type='polynomial',
             fit_order=3,
