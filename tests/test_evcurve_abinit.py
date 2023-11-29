@@ -57,7 +57,7 @@ class TestEvCurve(unittest.TestCase):
         )
         fit_dict = workflow.analyse_structures(output_dict=result_dict)
         temperatures_ev, volumes_ev = workflow.get_thermal_expansion(output_dict=result_dict, temperatures=[100, 1000])
-        print(result_dict, temperatures_ev, volumes_ev)
         self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))
         self.assertEqual(len(temperatures_ev), 2)
         self.assertEqual(len(volumes_ev), 2)
+        self.assertTrue(volumes_ev[0] < volumes_ev[-1])
