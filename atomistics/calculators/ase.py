@@ -27,6 +27,13 @@ def evaluate_with_ase(
             ase_optimizer=ase_optimizer,
             ase_optimizer_kwargs=ase_optimizer_kwargs,
         )
+    elif "optimize_positions_and_volume" in tasks:
+        results["structure_with_optimized_positions_and_volume"] = optimize_positions_and_volume_with_ase(
+            structure=structure,
+            ase_calculator=ase_calculator,
+            ase_optimizer=ase_optimizer,
+            ase_optimizer_kwargs=ase_optimizer_kwargs,
+        )
     elif "calc_energy" in tasks or "calc_forces" in tasks:
         if "calc_energy" in tasks and "calc_forces" in tasks:
             results["energy"], results["forces"] = calc_energy_and_forces_with_ase(
@@ -66,5 +73,15 @@ def optimize_positions_with_ase(
     structure_optimized = structure.copy()
     structure_optimized.calc = ase_calculator
     ase_optimizer_obj = ase_optimizer(structure_optimized)
+    ase_optimizer_obj.run(**ase_optimizer_kwargs)
+    return structure_optimized
+
+
+def optimize_positions_and_volume_with_ase(
+    structure, ase_calculator, ase_optimizer, ase_optimizer_kwargs
+):
+    structure_optimized = structure.copy()
+    structure_optimized.calc = ase_calculator
+    ase_optimizer_obj = ase_optimizer(UnitCellFilter(structure_optimized))
     ase_optimizer_obj.run(**ase_optimizer_kwargs)
     return structure_optimized
