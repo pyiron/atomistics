@@ -326,7 +326,7 @@ is initialized with the default parameters:
 ```
 from atomistics.workflows import EnergyVolumeCurveWorkflow
 
-workflow = EnergyVolumeCurveWorkflow(
+workflow_ev = EnergyVolumeCurveWorkflow(
     structure=structure_opt,
     num_points=11,
     fit_type='polynomial',
@@ -335,7 +335,7 @@ workflow = EnergyVolumeCurveWorkflow(
     axes=['x', 'y', 'z'],
     strains=None,
 )
-structure_dict = workflow.generate_structures()
+structure_dict = workflow_ev.generate_structures()
 print(structure_dict)
 >>> {'calc_energy': OrderedDict([
 >>>     (0.95, Atoms(symbols='Al4', pbc=True, cell=[3.9813426685908118, 3.9813426685908118, 3.9813426685908118])),
@@ -374,26 +374,18 @@ print(result_dict):
 >>>     1.05: -14.628355511604163
 >>> }}
 ```
-While in the previous example the fit of the energy volume curve was used directly, there the output of the fit, in
+While in the previous example the fit of the energy volume curve was used directly, here the output of the fit, in
 particular the derived equilibrium properties are the input for the Debye model as defined by [Moruzzi, V. L. et al.](https://link.aps.org/doi/10.1103/PhysRevB.37.790):
 ```
-from atomistics.shared.thermo.debye import get_debye_model
-from atomistics.shared.thermo.thermo import get_thermo_bulk_model
 import numpy as np
 
-debye_model = get_debye_model(
-    fit_dict=workflow.analyse_structures(output_dict=result_dict), 
-    masses=structure.get_masses(), 
-    num_steps=50
-)
-T_debye_low, T_debye_high = debye_model.debye_temperature
-pes = get_thermo_bulk_model(
-    temperatures=np.linspace(1, 1500, 200),
-    debye_model=debye_model,
+temperatures_ev, volume_ev = workflow_ev.get_thermal_expansion(
+    output_dict=result_dict, 
+    temperatures=np.arange(1, 1500, 50),
 )
 ```
-The output of the Debye model provides the change of the temperature specific optimal volume `pes.get_minimum_energy_path()`
-which can be plotted over the temperature `pes.temperatures` to determine the thermal expansion. 
+The output of the Debye model provides the change of the temperature specific optimal volume `volume_ev` which can be 
+plotted over the temperature `temperatures_ev` to determine the thermal expansion. 
 
 ### Quasi-Harmonic Approximation 
 While the [Moruzzi, V. L. et al.](https://link.aps.org/doi/10.1103/PhysRevB.37.790) approach based on the Einstein crystal
@@ -406,7 +398,7 @@ which combines the `PhonopyWorkflow` with the `EnergyVolumeCurveWorkflow`:
 from atomistics.workflows import QuasiHarmonicWorkflow
 from phonopy.units import VaspToTHz
 
-calculator = QuasiHarmonicWorkflow(
+workflow_qh = QuasiHarmonicWorkflow(
     structure=structure_opt,
     num_points=11,
     vol_range=0.05,
@@ -417,7 +409,7 @@ calculator = QuasiHarmonicWorkflow(
     primitive_matrix=None,
     number_of_snapshots=None,
 )
-structure_dict = calculator.generate_structures()
+structure_dict = workflow_qh.generate_structures()
 print(structure_dict)
 >>> {
 >>>     'calc_energy': OrderedDict([
@@ -461,29 +453,14 @@ The `structure_dict` is evaluated with the [LAMMPS](https://www.lammps.org/) mol
 calculate the corresponding energies and forces. The output is not plotted here as the forces for the 108 atom cells 
 result in 3x108 outputs per cell. Still the structure of the `result_dict` again follows the labels of the `structure_dict`
 as explained before. Finally, in the third step the individual free energy curves at the different temperatures are 
-fitted to determine the equilibrium volume at the given temperature. 
+fitted to determine the equilibrium volume at the given temperature using the `get_thermal_expansion()` function: 
 ```
-eng_internal_dict, mesh_collect_dict, dos_collect_dict = calculator.analyse_structures(output_dict=result_dict)
-tp_collect_dict = calculator.get_thermal_properties(t_min=1, t_max=1500, t_step=50, temperatures=None)  
-
-temperatures = tp_collect_dict[1.0]['temperatures']
-temperature_max = max(temperatures)
-strain_lst = eng_internal_dict.keys()
-volume_lst = calculator.get_volume_lst()
-eng_int_lst = np.array(list(eng_internal_dict.values()))
-
-fit_deg = 4
-vol_best = volume_lst[int(len(volume_lst)/2)]
-vol_lst, eng_lst = [], []
-for i, temp in enumerate(temperatures):
-    free_eng_lst = np.array([tp_collect_dict[s]['free_energy'][i] for s in strain_lst]) + eng_int_lst
-    p = np.polyfit(volume_lst, free_eng_lst, deg=fit_deg)
-    extrema = np.roots(np.polyder(p, m=1)).real
-    vol_select = extrema[np.argmin(np.abs(extrema - vol_best))]
-    eng_lst.append(np.poly1d(p)(vol_select))
-    vol_lst.append(vol_select)
+temperatures_qh, volume_qh = workflow_qh.get_thermal_expansion(
+    output_dict=result_dict, 
+    temperatures=np.arange(1, 1500, 50),
+)
 ```
-The optimal volume at the different `temperatures` is stored in the `vol_lst` in analogy to the previous section. 
+The optimal volume at the different `temperatures` is stored in the `volume_qh` in analogy to the previous section.
 
 ### Molecular Dynamics
 Finally, the third and most commonly used method to determine the volume expansion is using a molecular dynamics 
@@ -524,11 +501,11 @@ is used to plot the temperature over the volume:
 ```
 import matplotlib.pyplot as plt
 plt.plot(np.array(volume_md_lst)/len(structure_md) * len(structure_opt), temperature_md_lst, label="Molecular Dynamics", color="C2")
-plt.plot(vol_lst, temperatures, label="Quasi-Harmonic", color="C0")
-plt.plot(pes.get_minimum_energy_path(), pes.temperatures, label="Moruzzi Model", color="C1")
+plt.plot(volume_qh, temperatures_qh, label="Quasi-Harmonic", color="C0")
+plt.plot(volume_ev, temperatures_ev, label="Moruzzi Model", color="C1")
 plt.legend()
-plt.xlabel("Volume")
-plt.ylabel("Temperature")
+plt.xlabel("Volume ($\AA^3$)")
+plt.ylabel("Temperature (K)")
 ```
 The result is visualized in the following graph:
 

@@ -1,3 +1,5 @@
+import numpy as np
+
 from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
 from atomistics.workflows.phonons.workflow import PhonopyWorkflow
 from atomistics.workflows.phonons.units import VaspToTHz
@@ -91,3 +93,35 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
                 t_step=t_step, t_max=t_max, t_min=t_min, temperatures=temperatures
             )
         return tp_collect_dict
+
+    def get_thermal_expansion(
+        self, output_dict, t_min=1, t_max=1500, t_step=50, temperatures=None
+    ):
+        (
+            eng_internal_dict,
+            mesh_collect_dict,
+            dos_collect_dict,
+        ) = self.analyse_structures(output_dict=output_dict)
+        tp_collect_dict = self.get_thermal_properties(
+            t_min=t_min, t_max=t_max, t_step=t_step, temperatures=temperatures
+        )
+
+        temperatures = tp_collect_dict[1.0]["temperatures"]
+        strain_lst = eng_internal_dict.keys()
+        volume_lst = self.get_volume_lst()
+        eng_int_lst = np.array(list(eng_internal_dict.values()))
+
+        fit_deg = 4
+        vol_best = volume_lst[int(len(volume_lst) / 2)]
+        vol_lst, eng_lst = [], []
+        for i, temp in enumerate(temperatures):
+            free_eng_lst = (
+                np.array([tp_collect_dict[s]["free_energy"][i] for s in strain_lst])
+                + eng_int_lst
+            )
+            p = np.polyfit(volume_lst, free_eng_lst, deg=fit_deg)
+            extrema = np.roots(np.polyder(p, m=1)).real
+            vol_select = extrema[np.argmin(np.abs(extrema - vol_best))]
+            eng_lst.append(np.poly1d(p)(vol_select))
+            vol_lst.append(vol_select)
+        return temperatures, vol_lst
