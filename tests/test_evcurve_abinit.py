@@ -17,12 +17,12 @@ else:
 
 def validate_fitdict(fit_dict):
     lst = [
-        fit_dict['bulkmodul_eq'] > 130,
-        fit_dict['bulkmodul_eq'] < 140,
+        fit_dict['bulkmodul_eq'] > 120,
+        fit_dict['bulkmodul_eq'] < 130,
         fit_dict['energy_eq'] > -227,
         fit_dict['energy_eq'] < -226,
-        fit_dict['volume_eq'] > 67,
-        fit_dict['volume_eq'] < 68,
+        fit_dict['volume_eq'] > 66,
+        fit_dict['volume_eq'] < 67,
     ]
     if not all(lst):
         print(fit_dict)
@@ -35,7 +35,7 @@ def validate_fitdict(fit_dict):
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         workflow = EnergyVolumeCurveWorkflow(
-            structure=bulk("Al", a=4.05, cubic=True),
+            structure=bulk("Al", a=4.045, cubic=True),
             num_points=11,
             fit_type='polynomial',
             fit_order=3,
@@ -56,4 +56,8 @@ class TestEvCurve(unittest.TestCase):
             )
         )
         fit_dict = workflow.analyse_structures(output_dict=result_dict)
+        temperatures_ev, volumes_ev = workflow.get_thermal_expansion(output_dict=result_dict, temperatures=[100, 1000])
         self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))
+        self.assertEqual(len(temperatures_ev), 2)
+        self.assertEqual(len(volumes_ev), 2)
+        self.assertTrue(volumes_ev[0] < volumes_ev[-1])
