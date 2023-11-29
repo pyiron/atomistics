@@ -218,3 +218,8 @@ class PhonopyWorkflow(Workflow):
             axis=axis,
             **kwargs,
         )
+
+    def get_thermal_expansion(
+        self, output_dict, t_min=1, t_max=1500, t_step=50, temperatures=None
+    ):
+        raise NotImplementedError()
