@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ase.constraints import UnitCellFilter
 from typing import TYPE_CHECKING
 
 from atomistics.calculators.wrapper import as_task_dict_evaluator
@@ -17,7 +18,7 @@ def evaluate_with_ase(
     tasks: list[TaskName],
     ase_calculator: ASECalculator,
     ase_optimizer: Optimizer = None,
-    ase_optimizer_kwargs: dict = None,
+    ase_optimizer_kwargs: dict = {},
 ):
     results = {}
     if "optimize_positions" in tasks:
