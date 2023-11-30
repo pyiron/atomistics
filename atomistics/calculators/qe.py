@@ -169,8 +169,7 @@ def calc_energy_with_qe(
         **kwargs,
     )
     pseudopotentials = set_pseudo_potentials(
-        pseudopotentials=pseudopotentials,
-        structure=structure
+        pseudopotentials=pseudopotentials, structure=structure
     )
     write(
         calculation_name + ".pwi",
@@ -203,8 +202,7 @@ def calc_energy_and_forces_with_qe(
         **kwargs,
     )
     pseudopotentials = set_pseudo_potentials(
-        pseudopotentials=pseudopotentials,
-        structure=structure
+        pseudopotentials=pseudopotentials, structure=structure
     )
     write(
         calculation_name + ".pwi",
@@ -238,8 +236,7 @@ def calc_forces_with_qe(
         **kwargs,
     )
     pseudopotentials = set_pseudo_potentials(
-        pseudopotentials=pseudopotentials,
-        structure=structure
+        pseudopotentials=pseudopotentials, structure=structure
     )
     write(
         calculation_name + ".pwi",
