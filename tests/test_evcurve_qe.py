@@ -1,3 +1,4 @@
+import os
 import shutil
 
 from ase.build import bulk
@@ -49,7 +50,7 @@ class TestEvCurve(unittest.TestCase):
         result_dict = evaluate_with_qe(
             task_dict=task_dict,
             calculation_name="espresso",
-            working_directory=".",
+            working_directory=os.path.abspath("."),
             kpts=(3, 3, 3),
             pseudopotentials=pseudopotentials,
             tstress=True,
