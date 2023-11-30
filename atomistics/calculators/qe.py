@@ -2,7 +2,6 @@ import os
 import subprocess
 
 from ase.io import write
-from typing import TYPE_CHECKING
 
 try:
     from pwtools import io
@@ -10,11 +9,6 @@ except ImportError:
     pass
 
 from atomistics.calculators.wrapper import as_task_dict_evaluator
-
-
-if TYPE_CHECKING:
-    from ase.atoms import Atoms
-    from atomistics.calculators.interface import TaskName
 
 
 def call_qe_via_ase_command(calculation_name, working_directory):
@@ -54,6 +48,7 @@ def optimize_positions_and_volume_with_qe(
     **kwargs,
 ):
     input_data = generate_input_data(
+        calculation='vc-relax',
         ecutwfc=ecutwfc,
         conv_thr=conv_thr,
         diagonalization=diagonalization,
@@ -97,6 +92,7 @@ def calc_energy_with_qe(
     **kwargs,
 ):
     input_data = generate_input_data(
+        calculation='scf',
         ecutwfc=ecutwfc,
         conv_thr=conv_thr,
         diagonalization=diagonalization,
@@ -137,6 +133,7 @@ def calc_energy_and_forces_with_qe(
     **kwargs,
 ):
     input_data = generate_input_data(
+        calculation='scf',
         ecutwfc=ecutwfc,
         conv_thr=conv_thr,
         diagonalization=diagonalization,
@@ -178,6 +175,7 @@ def calc_forces_with_qe(
     **kwargs,
 ):
     input_data = generate_input_data(
+        calculation='scf',
         ecutwfc=ecutwfc,
         conv_thr=conv_thr,
         diagonalization=diagonalization,
