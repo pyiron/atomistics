@@ -48,7 +48,7 @@ def optimize_positions_and_volume_with_qe(
     **kwargs,
 ):
     input_data = generate_input_data(
-        calculation='vc-relax',
+        calculation="vc-relax",
         ecutwfc=ecutwfc,
         conv_thr=conv_thr,
         diagonalization=diagonalization,
@@ -92,7 +92,7 @@ def calc_energy_with_qe(
     **kwargs,
 ):
     input_data = generate_input_data(
-        calculation='scf',
+        calculation="scf",
         ecutwfc=ecutwfc,
         conv_thr=conv_thr,
         diagonalization=diagonalization,
@@ -133,7 +133,7 @@ def calc_energy_and_forces_with_qe(
     **kwargs,
 ):
     input_data = generate_input_data(
-        calculation='scf',
+        calculation="scf",
         ecutwfc=ecutwfc,
         conv_thr=conv_thr,
         diagonalization=diagonalization,
@@ -175,7 +175,7 @@ def calc_forces_with_qe(
     **kwargs,
 ):
     input_data = generate_input_data(
-        calculation='scf',
+        calculation="scf",
         ecutwfc=ecutwfc,
         conv_thr=conv_thr,
         diagonalization=diagonalization,
