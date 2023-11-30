@@ -13,7 +13,7 @@ from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 
 if TYPE_CHECKING:
-    from ase import Atoms
+    from ase.atoms import Atoms
     from atomistics.calculators.interface import TaskName
 
 
