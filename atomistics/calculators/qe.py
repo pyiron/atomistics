@@ -129,6 +129,8 @@ def optimize_positions_and_volume_with_qe(
     tprnfor=True,
     **kwargs,
 ):
+    input_file_name = os.path.join(working_directory, calculation_name + ".pwi")
+    output_file_name = os.path.join(working_directory, calculation_name + ".pwo")
     input_data = generate_input_data(
         calculation="vc-relax",
         cell_dofree="ibrav",
@@ -139,7 +141,7 @@ def optimize_positions_and_volume_with_qe(
         structure=structure,
     )
     write(
-        calculation_name + ".pwi",
+        input_file_name,
         structure,
         Crystal=True,
         kpts=kpts,
@@ -151,7 +153,7 @@ def optimize_positions_and_volume_with_qe(
     call_qe_via_ase_command(
         calculation_name=calculation_name, working_directory=working_directory
     )
-    return io.read_pw_md(calculation_name + ".pwo")[-1].get_ase_atoms()
+    return io.read_pw_md(output_file_name)[-1].get_ase_atoms()
 
 
 def calc_energy_with_qe(
@@ -164,6 +166,9 @@ def calc_energy_with_qe(
     tprnfor=True,
     **kwargs,
 ):
+    input_file_name = os.path.join(working_directory, calculation_name + ".pwi")
+    output_file_name = os.path.join(working_directory, calculation_name + ".pwo")
+    os.makedirs(working_directory, exist_ok=True)
     input_data = generate_input_data(
         calculation="scf",
         **kwargs,
@@ -172,7 +177,7 @@ def calc_energy_with_qe(
         pseudopotentials=pseudopotentials, structure=structure
     )
     write(
-        calculation_name + ".pwi",
+        input_file_name,
         structure,
         Crystal=True,
         kpts=kpts,
@@ -184,7 +189,7 @@ def calc_energy_with_qe(
     call_qe_via_ase_command(
         calculation_name=calculation_name, working_directory=working_directory
     )
-    return io.read_pw_scf(calculation_name + ".pwo").etot
+    return io.read_pw_scf(output_file_name).etot
 
 
 def calc_energy_and_forces_with_qe(
@@ -197,6 +202,9 @@ def calc_energy_and_forces_with_qe(
     tprnfor=True,
     **kwargs,
 ):
+    input_file_name = os.path.join(working_directory, calculation_name + ".pwi")
+    output_file_name = os.path.join(working_directory, calculation_name + ".pwo")
+    os.makedirs(working_directory, exist_ok=True)
     input_data = generate_input_data(
         calculation="scf",
         **kwargs,
@@ -205,7 +213,7 @@ def calc_energy_and_forces_with_qe(
         pseudopotentials=pseudopotentials, structure=structure
     )
     write(
-        calculation_name + ".pwi",
+        input_file_name,
         structure,
         Crystal=True,
         kpts=kpts,
@@ -217,7 +225,7 @@ def calc_energy_and_forces_with_qe(
     call_qe_via_ase_command(
         calculation_name=calculation_name, working_directory=working_directory
     )
-    output = io.read_pw_scf(calculation_name + ".pwo")
+    output = io.read_pw_scf(output_file_name)
     return output.etot, output.forces
 
 
@@ -231,6 +239,9 @@ def calc_forces_with_qe(
     tprnfor=True,
     **kwargs,
 ):
+    input_file_name = os.path.join(working_directory, calculation_name + ".pwi")
+    output_file_name = os.path.join(working_directory, calculation_name + ".pwo")
+    os.makedirs(working_directory, exist_ok=True)
     input_data = generate_input_data(
         calculation="scf",
         **kwargs,
@@ -239,7 +250,7 @@ def calc_forces_with_qe(
         pseudopotentials=pseudopotentials, structure=structure
     )
     write(
-        calculation_name + ".pwi",
+        input_file_name,
         structure,
         Crystal=True,
         kpts=kpts,
@@ -251,7 +262,7 @@ def calc_forces_with_qe(
     call_qe_via_ase_command(
         calculation_name=calculation_name, working_directory=working_directory
     )
-    return io.read_pw_scf(calculation_name + ".pwo").forces
+    return io.read_pw_scf(output_file_name).forces
 
 
 @as_task_dict_evaluator
