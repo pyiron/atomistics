@@ -36,7 +36,7 @@ def generate_input_data(**kwargs):
 
 
 def optimize_positions_and_volume_with_qe(
-    structure: Atoms,
+    structure,
     calculation_name="espresso",
     working_directory=".",
     kpts=(3, 3, 3),
@@ -82,7 +82,7 @@ def optimize_positions_and_volume_with_qe(
 
 
 def calc_energy_with_qe(
-    structure: Atoms,
+    structure,
     calculation_name="espresso",
     working_directory=".",
     kpts=(3, 3, 3),
@@ -122,7 +122,7 @@ def calc_energy_with_qe(
 
 
 def calc_energy_and_forces_with_qe(
-    structure: Atoms,
+    structure,
     calculation_name="espresso",
     working_directory=".",
     kpts=(3, 3, 3),
@@ -163,7 +163,7 @@ def calc_energy_and_forces_with_qe(
 
 
 def calc_forces_with_qe(
-    structure: Atoms,
+    structure,
     calculation_name="espresso",
     working_directory=".",
     kpts=(3, 3, 3),
@@ -204,8 +204,8 @@ def calc_forces_with_qe(
 
 @as_task_dict_evaluator
 def evaluate_with_qe(
-    structure: Atoms,
-    tasks: list[TaskName],
+    structure,
+    tasks,
     calculation_name="espresso",
     working_directory=".",
     kpts=(3, 3, 3),
