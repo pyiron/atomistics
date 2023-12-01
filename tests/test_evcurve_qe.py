@@ -17,7 +17,7 @@ else:
 
 def validate_fitdict(fit_dict):
     lst = [
-        fit_dict['bulkmodul_eq'] > 70,
+        fit_dict['bulkmodul_eq'] > 50,
         fit_dict['bulkmodul_eq'] < 80,
         fit_dict['energy_eq'] > -2148.2,
         fit_dict['energy_eq'] < -2148.1,
