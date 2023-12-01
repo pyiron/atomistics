@@ -48,7 +48,7 @@ class TestEvCurve(unittest.TestCase):
         )
         workflow = EnergyVolumeCurveWorkflow(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
-            num_points=5,
+            num_points=7,
             fit_type='polynomial',
             fit_order=3,
             vol_range=0.05,
