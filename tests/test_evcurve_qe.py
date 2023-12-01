@@ -35,7 +35,7 @@ def validate_fitdict(fit_dict):
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         pseudopotentials = {"Al": "Al.pbe-n-kjpaw_psl.1.0.0.UPF"}
-        structure = bulk("Al", cubic=True)
+        structure = bulk("Al", a=4.15, cubic=True)
         task_dict = optimize_positions_and_volume(structure=structure)
         result_dict = evaluate_with_qe(
             task_dict=task_dict,
