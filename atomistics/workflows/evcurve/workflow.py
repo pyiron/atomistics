@@ -4,7 +4,7 @@ from collections import OrderedDict
 
 from atomistics.workflows.evcurve.fit import EnergyVolumeFit
 from atomistics.workflows.shared.workflow import Workflow
-from atomistics.shared.thermo.thermalexpansion import get_thermal_expansion_with_evcurve
+from atomistics.workflows.evcurve.debye import get_thermal_expansion_with_evcurve
 
 
 def _strain_axes(
