@@ -51,6 +51,9 @@ lammps = [
     "jinja2==3.1.2",
     "pandas==2.1.3",
 ]
+qe = [
+    "pwtools==1.2.3"
+]
 
 [tool.setuptools.packages.find]
 include = ["atomistics*"]

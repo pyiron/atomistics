@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 if TYPE_CHECKING:
-    from ase import Atoms
+    from ase.atoms import Atoms
     from ase.calculators.calculator import Calculator as ASECalculator
     from ase.optimize.optimize import Optimizer
     from atomistics.calculators.interface import TaskName

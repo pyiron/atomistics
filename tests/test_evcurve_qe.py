@@ -1,11 +1,11 @@
+import os
 import shutil
 
 from ase.build import bulk
-from ase.calculators.espresso import Espresso
 import unittest
 
-from atomistics.calculators import evaluate_with_ase
-from atomistics.workflows import EnergyVolumeCurveWorkflow
+from atomistics.calculators import evaluate_with_qe
+from atomistics.workflows import EnergyVolumeCurveWorkflow, optimize_positions_and_volume
 
 
 quantum_espresso_command = "pw.x"
@@ -21,7 +21,7 @@ def validate_fitdict(fit_dict):
         fit_dict['bulkmodul_eq'] < 80,
         fit_dict['energy_eq'] > -2148.2,
         fit_dict['energy_eq'] < -2148.1,
-        fit_dict['volume_eq'] > 70,
+        fit_dict['volume_eq'] > 71,
         fit_dict['volume_eq'] < 72,
     ]
     if not all(lst):
@@ -45,14 +45,14 @@ class TestEvCurve(unittest.TestCase):
             strains=None,
         )
         task_dict = workflow.generate_structures()
-        result_dict = evaluate_with_ase(
+        result_dict = evaluate_with_qe(
             task_dict=task_dict,
-            ase_calculator=Espresso(
-                pseudopotentials=pseudopotentials,
-                tstress=True,
-                tprnfor=True,
-                kpts=(3, 3, 3),
-            )
+            calculation_name="espresso",
+            working_directory=os.path.abspath("."),
+            kpts=(3, 3, 3),
+            pseudopotentials=pseudopotentials,
+            tstress=True,
+            tprnfor=True,
         )
         fit_dict = workflow.analyse_structures(output_dict=result_dict)
         self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))
