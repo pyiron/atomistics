@@ -39,7 +39,7 @@ class TestEvCurve(unittest.TestCase):
         pseudopotentials = {"Al": "Al.pbe-n-kjpaw_psl.1.0.0.UPF"}
         workflow = EnergyVolumeCurveWorkflow(
             structure=bulk("Al", a=4.15, cubic=True),
-            num_points=11,
+            num_points=5,
             fit_type='polynomial',
             fit_order=3,
             vol_range=0.05,

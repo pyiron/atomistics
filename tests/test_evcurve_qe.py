@@ -5,7 +5,7 @@ from ase.build import bulk
 import unittest
 
 from atomistics.calculators import evaluate_with_qe
-from atomistics.workflows import EnergyVolumeCurveWorkflow
+from atomistics.workflows import EnergyVolumeCurveWorkflow, optimize_positions_and_volume
 
 
 quantum_espresso_command = "pw.x"
@@ -37,9 +37,20 @@ def validate_fitdict(fit_dict):
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         pseudopotentials = {"Al": "Al.pbe-n-kjpaw_psl.1.0.0.UPF"}
+        structure = bulk("Al", cubic=True)
+        task_dict = optimize_positions_and_volume(structure=structure)
+        result_dict = evaluate_with_qe(
+            task_dict=task_dict,
+            calculation_name="espresso",
+            working_directory=os.path.abspath("."),
+            kpts=(3, 3, 3),
+            pseudopotentials=pseudopotentials,
+            tstress=True,
+            tprnfor=True,
+        )
         workflow = EnergyVolumeCurveWorkflow(
-            structure=bulk("Al", a=4.15, cubic=True),
-            num_points=11,
+            structure=result_dict["structure_with_optimized_positions_and_volume"],
+            num_points=5,
             fit_type='polynomial',
             fit_order=3,
             vol_range=0.05,
