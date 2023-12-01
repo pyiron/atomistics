@@ -17,7 +17,7 @@ def call_qe_via_ase_command(calculation_name, working_directory):
         env["ASE_ESPRESSO_COMMAND"].replace("PREFIX", calculation_name), 
         shell=True, 
         universal_newlines=True, 
-        cwd=working_directory.
+        cwd=working_directory,
         env=env,
     )
 
