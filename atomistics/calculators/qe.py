@@ -12,9 +12,13 @@ from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 
 def call_qe_via_ase_command(calculation_name, working_directory):
-    qe_command = os.environ["ASE_ESPRESSO_COMMAND"].replace("PREFIX", calculation_name)
+    env = os.environ
     subprocess.check_output(
-        qe_command, shell=True, universal_newlines=True, cwd=working_directory
+        env["ASE_ESPRESSO_COMMAND"].replace("PREFIX", calculation_name), 
+        shell=True, 
+        universal_newlines=True, 
+        cwd=working_directory.
+        env=env,
     )
 
 
