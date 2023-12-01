@@ -14,9 +14,9 @@ from atomistics.calculators.wrapper import as_task_dict_evaluator
 def call_qe_via_ase_command(calculation_name, working_directory):
     env = os.environ
     subprocess.check_output(
-        env["ASE_ESPRESSO_COMMAND"].replace("PREFIX", calculation_name), 
-        shell=True, 
-        universal_newlines=True, 
+        env["ASE_ESPRESSO_COMMAND"].replace("PREFIX", calculation_name),
+        shell=True,
+        universal_newlines=True,
         cwd=working_directory,
         env=env,
     )
