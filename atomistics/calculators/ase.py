@@ -37,9 +37,21 @@ def evaluate_with_ase(
             ase_optimizer=ase_optimizer,
             ase_optimizer_kwargs=ase_optimizer_kwargs,
         )
-    elif "calc_energy" in tasks or "calc_forces" in tasks:
-        if "calc_energy" in tasks and "calc_forces" in tasks:
+    elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
+        if "calc_energy" in tasks and "calc_forces" in tasks and "calc_stress" in tasks:
+            results["energy"], results["forces"], results["stress"] = calc_energy_forces_and_stress_with_ase(
+                structure=structure, ase_calculator=ase_calculator
+            )
+        elif "calc_energy" in tasks and "calc_forces" in tasks:
             results["energy"], results["forces"] = calc_energy_and_forces_with_ase(
+                structure=structure, ase_calculator=ase_calculator
+            )
+        elif "calc_energy" in tasks and "calc_stress" in tasks:
+            results["energy"], results["forces"] = calc_energy_and_stress_with_ase(
+                structure=structure, ase_calculator=ase_calculator
+            )
+        elif "calc_forces" in tasks and "calc_stress" in tasks:
+            results["energy"], results["forces"] = calc_forces_and_stress_with_ase(
                 structure=structure, ase_calculator=ase_calculator
             )
         elif "calc_energy" in tasks:
@@ -48,6 +60,10 @@ def evaluate_with_ase(
             )
         elif "calc_forces" in tasks:
             results["forces"] = calc_forces_with_ase(
+                structure=structure, ase_calculator=ase_calculator
+            )
+        elif "calc_stress" in tasks:
+            results["stress"] = calc_stress_with_ase(
                 structure=structure, ase_calculator=ase_calculator
             )
     else:
@@ -65,9 +81,29 @@ def calc_energy_and_forces_with_ase(structure: Atoms, ase_calculator: ASECalcula
     return structure.get_potential_energy(), structure.get_forces()
 
 
+def calc_energy_forces_and_stress_with_ase(structure: Atoms, ase_calculator: ASECalculator):
+    structure.calc = ase_calculator
+    return structure.get_potential_energy(), structure.get_forces(), structure.get_stress()
+
+
+def calc_forces_and_stress_with_ase(structure: Atoms, ase_calculator: ASECalculator):
+    structure.calc = ase_calculator
+    return structure.get_forces(), structure.get_stress()
+
+
+def calc_energy_and_stress_with_ase(structure: Atoms, ase_calculator: ASECalculator):
+    structure.calc = ase_calculator
+    return structure.get_potential_energy(), structure.get_stress()
+
+
 def calc_forces_with_ase(structure: Atoms, ase_calculator: ASECalculator):
     structure.calc = ase_calculator
     return structure.get_forces()
+
+
+def calc_stress_with_ase(structure: Atoms, ase_calculator: ASECalculator):
+    structure.calc = ase_calculator
+    return structure.get_stress()
 
 
 def optimize_positions_with_ase(
