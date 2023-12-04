@@ -341,7 +341,11 @@ def evaluate_with_lammps_library(
         )
         results["volume_over_temperature"] = (temperature_lst, volume_md_lst)
     elif "calc_energy" in tasks and "calc_forces" in tasks and "calc_stress" in tasks:
-        results["energy"], results["forces"], results["stress"] = calc_energy_forces_and_stress_with_lammps(
+        (
+            results["energy"],
+            results["forces"],
+            results["stress"],
+        ) = calc_energy_forces_and_stress_with_lammps(
             structure=structure,
             potential_dataframe=potential_dataframe,
             lmp=lmp,

@@ -39,7 +39,11 @@ def evaluate_with_ase(
         )
     elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
         if "calc_energy" in tasks and "calc_forces" in tasks and "calc_stress" in tasks:
-            results["energy"], results["forces"], results["stress"] = calc_energy_forces_and_stress_with_ase(
+            (
+                results["energy"],
+                results["forces"],
+                results["stress"],
+            ) = calc_energy_forces_and_stress_with_ase(
                 structure=structure, ase_calculator=ase_calculator
             )
         elif "calc_energy" in tasks and "calc_forces" in tasks:
@@ -81,9 +85,15 @@ def calc_energy_and_forces_with_ase(structure: Atoms, ase_calculator: ASECalcula
     return structure.get_potential_energy(), structure.get_forces()
 
 
-def calc_energy_forces_and_stress_with_ase(structure: Atoms, ase_calculator: ASECalculator):
+def calc_energy_forces_and_stress_with_ase(
+    structure: Atoms, ase_calculator: ASECalculator
+):
     structure.calc = ase_calculator
-    return structure.get_potential_energy(), structure.get_forces(), structure.get_stress()
+    return (
+        structure.get_potential_energy(),
+        structure.get_forces(),
+        structure.get_stress(),
+    )
 
 
 def calc_forces_and_stress_with_ase(structure: Atoms, ase_calculator: ASECalculator):
