@@ -96,7 +96,7 @@ def lammps_thermal_expansion_loop(
         **kwargs,
     )
 
-    volume_md_lst = []
+    volume_md_lst, temperature_md_lst = [], []
     for temp in temperature_lst:
         run_str_rendered = Template(run_str).render(
             run=run,
@@ -110,8 +110,9 @@ def lammps_thermal_expansion_loop(
         for l in run_str_rendered.split("\n"):
             lmp_instance.interactive_lib_command(l)
         volume_md_lst.append(lmp_instance.interactive_volume_getter())
+        temperature_md_lst.append(lmp_instance.interactive_temperatures_getter())
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
-    return volume_md_lst
+    return temperature_md_lst, volume_md_lst
 
 
 def lammps_shutdown(lmp_instance, close_instance=True):
