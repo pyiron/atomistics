@@ -1,6 +1,6 @@
 import numpy as np
 
-from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
+from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow, fit_ev_curve
 from atomistics.workflows.phonons.workflow import PhonopyWorkflow
 from atomistics.workflows.phonons.units import VaspToTHz
 
@@ -11,6 +11,8 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         structure,
         num_points=11,
         vol_range=0.05,
+        fit_type="polynomial",
+        fit_order=3,
         interaction_range=10,
         factor=VaspToTHz,
         displacement=0.01,
@@ -21,8 +23,8 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         super().__init__(
             structure=structure,
             num_points=num_points,
-            fit_type="polynomial",
-            fit_order=3,
+            fit_type=fit_type,
+            fit_order=fit_order,
             vol_range=vol_range,
             axes=["x", "y", "z"],
             strains=None,
@@ -111,17 +113,18 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         volume_lst = self.get_volume_lst()
         eng_int_lst = np.array(list(eng_internal_dict.values()))
 
-        fit_deg = 4
-        vol_best = volume_lst[int(len(volume_lst) / 2)]
         vol_lst, eng_lst = [], []
         for i, temp in enumerate(temperatures):
             free_eng_lst = (
                 np.array([tp_collect_dict[s]["free_energy"][i] for s in strain_lst])
                 + eng_int_lst
             )
-            p = np.polyfit(volume_lst, free_eng_lst, deg=fit_deg)
-            extrema = np.roots(np.polyder(p, m=1)).real
-            vol_select = extrema[np.argmin(np.abs(extrema - vol_best))]
-            eng_lst.append(np.poly1d(p)(vol_select))
-            vol_lst.append(vol_select)
+            fit_dict = fit_ev_curve(
+                volume_lst=volume_lst,
+                energy_lst=free_eng_lst,
+                fit_type=self.fit_type,
+                fit_order=self.fit_order
+            )
+            eng_lst.append(fit_dict["energy_eq"])
+            vol_lst.append(fit_dict["volume_eq"])
         return temperatures, vol_lst
