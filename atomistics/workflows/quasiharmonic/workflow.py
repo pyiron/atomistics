@@ -72,7 +72,17 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             dos_collect_dict[strain] = dos_dict
         return eng_internal_dict, mesh_collect_dict, dos_collect_dict
 
-    def get_thermal_properties(self, t_min=1, t_max=1500, t_step=50, temperatures=None):
+    def get_thermal_properties(
+        self,
+        t_min=1,
+        t_max=1500,
+        t_step=50,
+        temperatures=None,
+        cutoff_frequency=None,
+        pretend_real=False,
+        band_indices=None,
+        is_projection=False
+    ):
         """
         Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
         successfully ran.
@@ -90,12 +100,28 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         tp_collect_dict = {}
         for strain, phono in self._phonopy_dict.items():
             tp_collect_dict[strain] = phono.get_thermal_properties(
-                t_step=t_step, t_max=t_max, t_min=t_min, temperatures=temperatures
+                t_step=t_step,
+                t_max=t_max,
+                t_min=t_min,
+                temperatures=temperatures,
+                cutoff_frequency=cutoff_frequency,
+                pretend_real=pretend_real,
+                band_indices=band_indices,
+                is_projection=is_projection,
             )
         return tp_collect_dict
 
     def get_thermal_expansion(
-        self, output_dict, t_min=1, t_max=1500, t_step=50, temperatures=None
+        self,
+        output_dict,
+        t_min=1,
+        t_max=1500,
+        t_step=50,
+        temperatures=None,
+        cutoff_frequency=None,
+        pretend_real=False,
+        band_indices=None,
+        is_projection=False
     ):
         (
             eng_internal_dict,
@@ -103,7 +129,14 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             dos_collect_dict,
         ) = self.analyse_structures(output_dict=output_dict)
         tp_collect_dict = self.get_thermal_properties(
-            t_min=t_min, t_max=t_max, t_step=t_step, temperatures=temperatures
+            t_min=t_min,
+            t_max=t_max,
+            t_step=t_step,
+            temperatures=temperatures,
+            cutoff_frequency=cutoff_frequency,
+            pretend_real=pretend_real,
+            band_indices=band_indices,
+            is_projection=is_projection,
         )
 
         temperatures = tp_collect_dict[1.0]["temperatures"]

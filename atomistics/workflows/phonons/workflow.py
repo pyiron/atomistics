@@ -119,7 +119,17 @@ class PhonopyWorkflow(Workflow):
         self._dos_dict = self.phonopy.get_total_dos_dict()
         return self._mesh_dict, self._dos_dict
 
-    def get_thermal_properties(self, t_min=1, t_max=1500, t_step=50, temperatures=None):
+    def get_thermal_properties(
+        self,
+        t_min=1,
+        t_max=1500,
+        t_step=50,
+        temperatures=None,
+        cutoff_frequency=None,
+        pretend_real=False,
+        band_indices=None,
+        is_projection=False
+    ):
         """
         Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
         successfully ran.
@@ -135,7 +145,14 @@ class PhonopyWorkflow(Workflow):
             :class:`Thermal`: thermal properties as returned by Phonopy
         """
         self.phonopy.run_thermal_properties(
-            t_step=t_step, t_max=t_max, t_min=t_min, temperatures=temperatures
+            t_step=t_step,
+            t_max=t_max,
+            t_min=t_min,
+            temperatures=temperatures,
+            cutoff_frequency=cutoff_frequency,
+            pretend_real=pretend_real,
+            band_indices=band_indices,
+            is_projection=is_projection,
         )
         tp_dict = self.phonopy.get_thermal_properties_dict()
         tp_dict["free_energy"] *= kJ_mol_to_eV
