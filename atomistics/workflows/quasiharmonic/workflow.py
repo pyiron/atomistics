@@ -1,6 +1,9 @@
 import numpy as np
 
-from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow, fit_ev_curve
+from atomistics.workflows.evcurve.workflow import (
+    EnergyVolumeCurveWorkflow,
+    fit_ev_curve,
+)
 from atomistics.workflows.phonons.workflow import PhonopyWorkflow
 from atomistics.workflows.phonons.units import VaspToTHz
 
@@ -123,7 +126,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
                 volume_lst=volume_lst,
                 energy_lst=free_eng_lst,
                 fit_type=self.fit_type,
-                fit_order=self.fit_order
+                fit_order=self.fit_order,
             )
             eng_lst.append(fit_dict["energy_eq"])
             vol_lst.append(fit_dict["volume_eq"])
