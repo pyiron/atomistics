@@ -283,7 +283,7 @@ def calc_molecular_dynamics_thermal_expansion_with_lammps(
     )
     run_str = LAMMPS_ENSEMBLE_NPT + "\n" + LAMMPS_RUN
     temperature_lst = np.arange(Tstart, Tstop + Tstep, Tstep).tolist()
-    volume_md_lst = lammps_thermal_expansion_loop(
+    temperature_md_lst, volume_md_lst = lammps_thermal_expansion_loop(
         structure=structure,
         potential_dataframe=potential_dataframe,
         init_str=init_str,
@@ -301,7 +301,7 @@ def calc_molecular_dynamics_thermal_expansion_with_lammps(
         lmp=lmp,
         **kwargs,
     )
-    return temperature_lst, volume_md_lst
+    return temperature_md_lst, volume_md_lst
 
 
 @as_task_dict_evaluator

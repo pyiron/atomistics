@@ -21,7 +21,7 @@ class TestPhonons(unittest.TestCase):
         workflow = QuasiHarmonicWorkflow(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             num_points=11,
-            vol_range=0.05,
+            vol_range=0.10,
             interaction_range=10,
             factor=VaspToTHz,
             displacement=0.01,
