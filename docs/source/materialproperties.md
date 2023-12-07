@@ -455,12 +455,22 @@ result in 3x108 outputs per cell. Still the structure of the `result_dict` again
 as explained before. Finally, in the third step the individual free energy curves at the different temperatures are 
 fitted to determine the equilibrium volume at the given temperature using the `get_thermal_expansion()` function: 
 ```
-temperatures_qh, volume_qh = workflow_qh.get_thermal_expansion(
+temperatures_qh_qm, volume_qh_qm = workflow_qh.get_thermal_expansion(
     output_dict=result_dict, 
     temperatures=np.arange(1, 1500, 50),
+    quantum_mechanical=True,
 )
 ```
-The optimal volume at the different `temperatures` is stored in the `volume_qh` in analogy to the previous section.
+The optimal volume at the different `temperatures` is stored in the `volume_qh_qm` in analogy to the previous section. 
+Here the extension `_qm` indicates that the quantum-mechanical harmonic oszillator is used. 
+```
+temperatures_qh_cl, volume_qh_cl = workflow_qh.get_thermal_expansion(
+    output_dict=result_dict, 
+    temperatures=np.arange(1, 1500, 50),
+    quantum_mechanical=False,
+)
+```
+For the classical harmonic oszillator the resulting volumes are stored as `volume_qh_cl`. 
 
 ### Molecular Dynamics
 Finally, the third and most commonly used method to determine the volume expansion is using a molecular dynamics 
@@ -501,8 +511,10 @@ is used to plot the temperature over the volume:
 ```
 import matplotlib.pyplot as plt
 plt.plot(np.array(volume_md_lst)/len(structure_md) * len(structure_opt), temperature_md_lst, label="Molecular Dynamics", color="C2")
-plt.plot(volume_qh, temperatures_qh, label="Quasi-Harmonic", color="C0")
+plt.plot(volume_qh_qm, temperatures_qh_qm, label="Quasi-Harmonic (qm)", color="C3")
+plt.plot(volume_qh_cl, temperatures_qh_cl, label="Quasi-Harmonic (classic)", color="C0")
 plt.plot(volume_ev, temperatures_ev, label="Moruzzi Model", color="C1")
+plt.axvline(structure_opt.get_volume(), linestyle="--", color="red")
 plt.legend()
 plt.xlabel("Volume ($\AA^3$)")
 plt.ylabel("Temperature (K)")
@@ -511,9 +523,11 @@ The result is visualized in the following graph:
 
 ![Compare Thermal Expansion](../pictures/thermalexpansion.png)
 
-While the both the [Moruzzi, V. L. et al.](https://link.aps.org/doi/10.1103/PhysRevB.37.790) and the quasi-harmonic 
-approach over-predict the volume expansion with increasing temperature the overall result is in reasonable agreement for
-the Morse Pair Potential. 
+Both the [Moruzzi, V. L. et al.](https://link.aps.org/doi/10.1103/PhysRevB.37.790) and the quantum mechanical version of
+the quasi-harmonic approach start at a larger equilibrium volume as they include the zero point vibrations, resulting in
+an over-prediction of the volume expansion with increasing temperature. The equilibrium volume is indicated by the 
+dashed red line. Finally, the quasi-harmonic approach with the classical harmonic oscillator agrees very well with the 
+thermal expansion calculated from molecular dynamics for this example of using the Morse Pair Potential. 
 
 ## Phase Diagram 
 One of the goals of the `atomistics` package is to be able to calculate phase diagrams with ab-initio precision. Coming 
