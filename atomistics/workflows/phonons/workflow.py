@@ -128,7 +128,7 @@ class PhonopyWorkflow(Workflow):
         cutoff_frequency=None,
         pretend_real=False,
         band_indices=None,
-        is_projection=False
+        is_projection=False,
     ):
         """
         Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
