@@ -5,7 +5,13 @@ from atomistics.workflows.evcurve.workflow import (
     fit_ev_curve,
 )
 from atomistics.workflows.phonons.workflow import PhonopyWorkflow
-from atomistics.workflows.phonons.units import VaspToTHz, kJ_mol_to_eV, THzToEv, kb, EvTokJmol
+from atomistics.workflows.phonons.units import (
+    VaspToTHz,
+    kJ_mol_to_eV,
+    THzToEv,
+    kb,
+    EvTokJmol,
+)
 
 
 def get_free_energy(frequency, temperature):
@@ -139,11 +145,18 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             t_property_lst = []
             for t in temperatures:
                 t_property = 0.0
-                for freqs, w in zip(phono.phonopy.mesh.frequencies, phono.phonopy.mesh.weights):
+                for freqs, w in zip(
+                    phono.phonopy.mesh.frequencies, phono.phonopy.mesh.weights
+                ):
                     freqs = np.array(freqs) * THzToEv
                     cond = freqs > cutoff_frequency
-                    t_property += np.sum(get_free_energy(frequency=freqs[cond], temperature=t)) * w
-                t_property_lst.append(t_property / np.sum(phono.phonopy.mesh.weights) * EvTokJmol)
+                    t_property += (
+                        np.sum(get_free_energy(frequency=freqs[cond], temperature=t))
+                        * w
+                    )
+                t_property_lst.append(
+                    t_property / np.sum(phono.phonopy.mesh.weights) * EvTokJmol
+                )
             tp_collect_dict[strain] = {
                 "temperatures": temperatures,
                 "free_energy": np.array(t_property_lst) * kJ_mol_to_eV,
@@ -181,11 +194,17 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             )
         else:
             if is_projection:
-                raise ValueError("is_projection!=False is incompatible to quantum_mechanical=False.")
+                raise ValueError(
+                    "is_projection!=False is incompatible to quantum_mechanical=False."
+                )
             if pretend_real:
-                raise ValueError("pretend_real!=False is incompatible to quantum_mechanical=False.")
+                raise ValueError(
+                    "pretend_real!=False is incompatible to quantum_mechanical=False."
+                )
             if band_indices is not None:
-                raise ValueError("band_indices!=None is incompatible to quantum_mechanical=False.")
+                raise ValueError(
+                    "band_indices!=None is incompatible to quantum_mechanical=False."
+                )
 
             tp_collect_dict = self.get_thermal_properties_classical(
                 t_min=t_min,
