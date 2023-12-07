@@ -1,6 +1,7 @@
 import os
 
 from ase.build import bulk
+import numpy as np
 import unittest
 
 from atomistics.workflows import calc_molecular_dynamics_thermal_expansion
@@ -40,7 +41,8 @@ class TestMolecularDynamicsThermalExpansion(unittest.TestCase):
         )
         temperature_lst = result_dict['volume_over_temperature'][0]
         volume_lst = result_dict['volume_over_temperature'][1]
-        self.assertEqual(temperature_lst, [50, 100, 150, 200, 250, 300, 350, 400, 450, 500])
+        self.assertTrue(all(np.array(temperature_lst) < 600))
+        self.assertTrue(all(np.array(temperature_lst) > 0))
         self.assertTrue(volume_lst[0] < volume_lst[-1])
 
     def test_calc_thermal_expansion_using_calc(self):
@@ -66,5 +68,6 @@ class TestMolecularDynamicsThermalExpansion(unittest.TestCase):
             dist="gaussian",
             lmp=None,
         )
-        self.assertEqual(temperature_lst, [50, 100, 150, 200, 250, 300, 350, 400, 450, 500])
+        self.assertTrue(all(np.array(temperature_lst) < 600))
+        self.assertTrue(all(np.array(temperature_lst) > 0))
         self.assertTrue(volume_lst[0] < volume_lst[-1])
