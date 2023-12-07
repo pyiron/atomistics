@@ -92,18 +92,18 @@ def calc_energy_forces_and_stress_with_ase(
     return (
         structure.get_potential_energy(),
         structure.get_forces(),
-        structure.get_stress(),
+        structure.get_stress(voigt=False),
     )
 
 
 def calc_forces_and_stress_with_ase(structure: Atoms, ase_calculator: ASECalculator):
     structure.calc = ase_calculator
-    return structure.get_forces(), structure.get_stress()
+    return structure.get_forces(), structure.get_stress(voigt=False)
 
 
 def calc_energy_and_stress_with_ase(structure: Atoms, ase_calculator: ASECalculator):
     structure.calc = ase_calculator
-    return structure.get_potential_energy(), structure.get_stress()
+    return structure.get_potential_energy(), structure.get_stress(voigt=False)
 
 
 def calc_forces_with_ase(structure: Atoms, ase_calculator: ASECalculator):
@@ -113,7 +113,7 @@ def calc_forces_with_ase(structure: Atoms, ase_calculator: ASECalculator):
 
 def calc_stress_with_ase(structure: Atoms, ase_calculator: ASECalculator):
     structure.calc = ase_calculator
-    return structure.get_stress()
+    return structure.get_stress(voigt=False)
 
 
 def optimize_positions_with_ase(
