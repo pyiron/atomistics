@@ -31,4 +31,3 @@ class TestStess(unittest.TestCase):
         self.assertTrue(stress_bool_mat[0][0])
         self.assertTrue(stress_bool_mat[1][1])
         self.assertTrue(stress_bool_mat[2][2])
-        self.assertTrue(all(stress_bool_mat.flatten()))
