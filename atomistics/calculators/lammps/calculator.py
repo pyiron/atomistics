@@ -9,6 +9,9 @@ from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.calculators.lammps.helpers import (
     lammps_run,
     lammps_thermal_expansion_loop,
+    lammps_md_nph,
+    lammps_md_npt,
+    lammps_md_nvt,
     lammps_shutdown,
     template_render_minimize,
     template_render_run,
@@ -17,6 +20,8 @@ from atomistics.calculators.lammps.commands import (
     LAMMPS_THERMO_STYLE,
     LAMMPS_THERMO,
     LAMMPS_ENSEMBLE_NPT,
+    LAMMPS_ENSEMBLE_NPH,
+    LAMMPS_ENSEMBLE_NVT,
     LAMMPS_VELOCITY,
     LAMMPS_TIMESTEP,
     LAMMPS_MINIMIZE,
@@ -251,6 +256,152 @@ def optimize_positions_with_lammps(
     structure_copy.positions = lmp_instance.interactive_positions_getter()
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return structure_copy
+
+
+def calc_molecular_dynamics_nvt_with_lammps(
+    structure,
+    potential_dataframe,
+    Tstart=100,
+    Tstop=100,
+    Tdamp=0.1,
+    run=100,
+    thermo=10,
+    timestep=0.001,
+    seed=4928459,
+    dist="gaussian",
+    lmp=None,
+    quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure"),
+    **kwargs,
+):
+    init_str = (
+            LAMMPS_THERMO_STYLE
+            + "\n"
+            + LAMMPS_TIMESTEP
+            + "\n"
+            + LAMMPS_THERMO
+            + "\n"
+            + LAMMPS_VELOCITY
+            + "\n"
+            + LAMMPS_ENSEMBLE_NVT
+    )
+    run_str = LAMMPS_RUN + "\n"
+    return lammps_md_nvt(
+        structure,
+        potential_dataframe,
+        init_str=init_str,
+        run_str=run_str,
+        Tstart=Tstart,
+        Tstop=Tstop,
+        Tdamp=Tdamp,
+        run=run,
+        thermo=thermo,
+        timestep=timestep,
+        seed=seed,
+        dist=dist,
+        lmp=lmp,
+        quantities=quantities,
+        **kwargs,
+    )
+
+
+def calc_molecular_dynamics_npt_with_lammps(
+    structure,
+    potential_dataframe,
+    Tstart=100,
+    Tstop=100,
+    Tdamp=0.1,
+    run=100,
+    thermo=100,
+    timestep=0.001,
+    Pstart=0.0,
+    Pstop=0.0,
+    Pdamp=1.0,
+    seed=4928459,
+    dist="gaussian",
+    lmp=None,
+    quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure"),
+    **kwargs,
+):
+    init_str = (
+            LAMMPS_THERMO_STYLE
+            + "\n"
+            + LAMMPS_TIMESTEP
+            + "\n"
+            + LAMMPS_THERMO
+            + "\n"
+            + LAMMPS_VELOCITY
+            + "\n"
+            + LAMMPS_ENSEMBLE_NPT
+    )
+    run_str = LAMMPS_RUN + "\n"
+    return lammps_md_npt(
+        structure,
+        potential_dataframe,
+        init_str=init_str,
+        run_str=run_str,
+        Tstart=Tstart,
+        Tstop=Tstop,
+        Tdamp=Tdamp,
+        Pstart=Pstart,
+        Pstop=Pstop,
+        Pdamp=Pdamp,
+        run=run,
+        thermo=thermo,
+        timestep=timestep,
+        seed=seed,
+        dist=dist,
+        lmp=lmp,
+        quantities=quantities,
+        **kwargs,
+    )
+
+
+def calc_molecular_dynamics_nph_with_lammps(
+    structure,
+    potential_dataframe,
+    run=100,
+    thermo=100,
+    timestep=0.001,
+    Tstart=100,
+    Pstart=0.0,
+    Pstop=0.0,
+    Pdamp=1.0,
+    seed=4928459,
+    dist="gaussian",
+    lmp=None,
+    quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure"),
+    **kwargs,
+):
+    init_str = (
+            LAMMPS_THERMO_STYLE
+            + "\n"
+            + LAMMPS_TIMESTEP
+            + "\n"
+            + LAMMPS_THERMO
+            + "\n"
+            + LAMMPS_VELOCITY
+            + "\n"
+            + LAMMPS_ENSEMBLE_NPH
+    )
+    run_str = LAMMPS_RUN + "\n"
+    return lammps_md_nph(
+        structure,
+        potential_dataframe,
+        init_str=init_str,
+        run_str=run_str,
+        Tstart=Tstart,
+        Pstart=Pstart,
+        Pstop=Pstop,
+        Pdamp=Pdamp,
+        run=run,
+        thermo=thermo,
+        timestep=timestep,
+        seed=seed,
+        dist=dist,
+        lmp=lmp,
+        quantities=quantities,
+        **kwargs,
+    )
 
 
 def calc_molecular_dynamics_thermal_expansion_with_lammps(
