@@ -131,7 +131,7 @@ def calc_static_with_lammps(
         "energy": lmp_instance.interactive_energy_pot_getter,
         "stress": lmp_instance.interactive_pressures_getter,
     }
-    result_dict = {interactive_getter_dict[q]() for q in quantities}
+    result_dict = {q: interactive_getter_dict[q]() for q in quantities}
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 
