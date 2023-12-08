@@ -48,6 +48,19 @@ electronic-structure calculations:
 ```
 conda install -c conda-forge qe
 ```
+To support the structure optimization inside quantum espresso the `pwtools` are required as output parser:
+```
+conda install -c conda-forge pwtools
+```
+Finally, the [Standard solid-state pseudopotentials (SSSP)](https://www.materialscloud.org/discover/sssp/table/efficiency) 
+can also be installed via conda-forge using:
+```
+conda install -c conda-forge sssp
+```
+To use these inside quantum espresso, the `ESPRESSO_PSEUDO` environment variable has to be set to: 
+```
+export ESPRESSO_PSEUDO=${PREFIX}/share/sssp
+```
 
 ### Siesta
 [Siesta](https://siesta-project.org) - Electronic structure calculations and ab initio molecular dynamics:
