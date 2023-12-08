@@ -33,144 +33,6 @@ if TYPE_CHECKING:
     from atomistics.calculators.interface import TaskName
 
 
-def calc_energy_with_lammps(
-    structure: Atoms, potential_dataframe: DataFrame, lmp=None, **kwargs
-):
-    template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
-    lmp_instance = lammps_run(
-        structure=structure,
-        potential_dataframe=potential_dataframe,
-        input_template=Template(template_str).render(
-            run=0,
-            thermo=100,
-        ),
-        lmp=lmp,
-        **kwargs,
-    )
-    energy_pot = lmp_instance.interactive_energy_pot_getter()
-    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
-    return energy_pot
-
-
-def calc_forces_with_lammps(
-    structure: Atoms, potential_dataframe: DataFrame, lmp=None, **kwargs
-):
-    template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
-    lmp_instance = lammps_run(
-        structure=structure,
-        potential_dataframe=potential_dataframe,
-        input_template=Template(template_str).render(
-            run=0,
-            thermo=100,
-        ),
-        lmp=lmp,
-        **kwargs,
-    )
-    forces = lmp_instance.interactive_forces_getter()
-    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
-    return forces
-
-
-def calc_energy_and_forces_with_lammps(
-    structure, potential_dataframe: DataFrame, lmp=None, **kwargs
-):
-    template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
-    lmp_instance = lammps_run(
-        structure=structure,
-        potential_dataframe=potential_dataframe,
-        input_template=Template(template_str).render(
-            run=0,
-            thermo=100,
-        ),
-        lmp=lmp,
-        **kwargs,
-    )
-    energy_pot = lmp_instance.interactive_energy_pot_getter()
-    forces = lmp_instance.interactive_forces_getter()
-    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
-    return energy_pot, forces
-
-
-def calc_energy_forces_and_stress_with_lammps(
-    structure, potential_dataframe: DataFrame, lmp=None, **kwargs
-):
-    template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
-    lmp_instance = lammps_run(
-        structure=structure,
-        potential_dataframe=potential_dataframe,
-        input_template=Template(template_str).render(
-            run=0,
-            thermo=100,
-        ),
-        lmp=lmp,
-        **kwargs,
-    )
-    energy_pot = lmp_instance.interactive_energy_pot_getter()
-    forces = lmp_instance.interactive_forces_getter()
-    stress = lmp_instance.interactive_pressures_getter()
-    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
-    return energy_pot, forces, stress
-
-
-def calc_energy_and_stress_with_lammps(
-    structure, potential_dataframe: DataFrame, lmp=None, **kwargs
-):
-    template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
-    lmp_instance = lammps_run(
-        structure=structure,
-        potential_dataframe=potential_dataframe,
-        input_template=Template(template_str).render(
-            run=0,
-            thermo=100,
-        ),
-        lmp=lmp,
-        **kwargs,
-    )
-    energy_pot = lmp_instance.interactive_energy_pot_getter()
-    stress = lmp_instance.interactive_pressures_getter()
-    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
-    return energy_pot, stress
-
-
-def calc_forces_and_stress_with_lammps(
-    structure, potential_dataframe: DataFrame, lmp=None, **kwargs
-):
-    template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
-    lmp_instance = lammps_run(
-        structure=structure,
-        potential_dataframe=potential_dataframe,
-        input_template=Template(template_str).render(
-            run=0,
-            thermo=100,
-        ),
-        lmp=lmp,
-        **kwargs,
-    )
-    forces = lmp_instance.interactive_forces_getter()
-    stress = lmp_instance.interactive_pressures_getter()
-    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
-    return forces, stress
-
-
-def calc_stress_with_lammps(
-    structure, potential_dataframe: DataFrame, lmp=None, **kwargs
-):
-    template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
-    lmp_instance = lammps_run(
-        structure=structure,
-        potential_dataframe=potential_dataframe,
-        input_template=Template(template_str).render(
-            run=0,
-            thermo=100,
-        ),
-        lmp=lmp,
-        **kwargs,
-    )
-    stress = lmp_instance.interactive_pressures_getter()
-    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
-    return stress
-
-
 def optimize_positions_and_volume_with_lammps(
     structure: Atoms,
     potential_dataframe: DataFrame,
@@ -244,6 +106,34 @@ def optimize_positions_with_lammps(
     structure_copy.positions = lmp_instance.interactive_positions_getter()
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return structure_copy
+
+
+def calc_static_with_lammps(
+    structure,
+    potential_dataframe,
+    lmp=None,
+    quantities=("energy", "forces", "stress"),
+    **kwargs,
+):
+    template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
+    lmp_instance = lammps_run(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=Template(template_str).render(
+            run=0,
+            thermo=100,
+        ),
+        lmp=lmp,
+        **kwargs,
+    )
+    interactive_getter_dict = {
+        "forces": lmp_instance.interactive_forces_getter,
+        "energy": lmp_instance.interactive_energy_pot_getter,
+        "stress": lmp_instance.interactive_pressures_getter,
+    }
+    result_dict = {interactive_getter_dict[q]() for q in quantities}
+    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
+    return result_dict
 
 
 def calc_molecular_dynamics_nvt_with_lammps(
@@ -526,51 +416,19 @@ def evaluate_with_lammps_library(
             **lmp_optimizer_kwargs,
         )
         results["volume_over_temperature"] = (temperature_lst, volume_md_lst)
-    elif "calc_energy" in tasks and "calc_forces" in tasks and "calc_stress" in tasks:
-        (
-            results["energy"],
-            results["forces"],
-            results["stress"],
-        ) = calc_energy_forces_and_stress_with_lammps(
+    elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
+        quantities = []
+        if "calc_energy" in tasks:
+            quantities.append("energy")
+        if "calc_forces" in tasks:
+            quantities.append("forces")
+        if "calc_stress" in tasks:
+            quantities.append("stress")
+        return calc_static_with_lammps(
             structure=structure,
             potential_dataframe=potential_dataframe,
             lmp=lmp,
-        )
-    elif "calc_energy" in tasks and "calc_forces" in tasks:
-        results["energy"], results["forces"] = calc_energy_and_forces_with_lammps(
-            structure=structure,
-            potential_dataframe=potential_dataframe,
-            lmp=lmp,
-        )
-    elif "calc_energy" in tasks and "calc_stress" in tasks:
-        results["energy"], results["stress"] = calc_energy_and_stress_with_lammps(
-            structure=structure,
-            potential_dataframe=potential_dataframe,
-            lmp=lmp,
-        )
-    elif "calc_forces" in tasks and "calc_stress" in tasks:
-        results["forces"], results["stress"] = calc_forces_and_stress_with_lammps(
-            structure=structure,
-            potential_dataframe=potential_dataframe,
-            lmp=lmp,
-        )
-    elif "calc_energy" in tasks:
-        results["energy"] = calc_energy_with_lammps(
-            structure=structure,
-            potential_dataframe=potential_dataframe,
-            lmp=lmp,
-        )
-    elif "calc_forces" in tasks:
-        results["forces"] = calc_forces_with_lammps(
-            structure=structure,
-            potential_dataframe=potential_dataframe,
-            lmp=lmp,
-        )
-    elif "calc_stress" in tasks:
-        results["stress"] = calc_stress_with_lammps(
-            structure=structure,
-            potential_dataframe=potential_dataframe,
-            lmp=lmp,
+            quantities=quantities,
         )
     else:
         raise ValueError("The LAMMPS calculator does not implement:", tasks)
