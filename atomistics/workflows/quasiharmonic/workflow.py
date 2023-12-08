@@ -1,8 +1,21 @@
 import numpy as np
 
-from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
+from atomistics.workflows.evcurve.workflow import (
+    EnergyVolumeCurveWorkflow,
+    fit_ev_curve,
+)
 from atomistics.workflows.phonons.workflow import PhonopyWorkflow
-from atomistics.workflows.phonons.units import VaspToTHz
+from atomistics.workflows.phonons.units import (
+    VaspToTHz,
+    kJ_mol_to_eV,
+    THzToEv,
+    kb,
+    EvTokJmol,
+)
+
+
+def get_free_energy(frequency, temperature):
+    return kb * temperature * np.log(frequency / (kb * temperature))
 
 
 class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
@@ -11,6 +24,8 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         structure,
         num_points=11,
         vol_range=0.05,
+        fit_type="polynomial",
+        fit_order=3,
         interaction_range=10,
         factor=VaspToTHz,
         displacement=0.01,
@@ -21,8 +36,8 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         super().__init__(
             structure=structure,
             num_points=num_points,
-            fit_type="polynomial",
-            fit_order=3,
+            fit_type=fit_type,
+            fit_order=fit_order,
             vol_range=vol_range,
             axes=["x", "y", "z"],
             strains=None,
@@ -72,7 +87,17 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             dos_collect_dict[strain] = dos_dict
         return eng_internal_dict, mesh_collect_dict, dos_collect_dict
 
-    def get_thermal_properties(self, t_min=1, t_max=1500, t_step=50, temperatures=None):
+    def get_thermal_properties(
+        self,
+        t_min=1,
+        t_max=1500,
+        t_step=50,
+        temperatures=None,
+        cutoff_frequency=None,
+        pretend_real=False,
+        band_indices=None,
+        is_projection=False,
+    ):
         """
         Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
         successfully ran.
@@ -90,38 +115,122 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         tp_collect_dict = {}
         for strain, phono in self._phonopy_dict.items():
             tp_collect_dict[strain] = phono.get_thermal_properties(
-                t_step=t_step, t_max=t_max, t_min=t_min, temperatures=temperatures
+                t_step=t_step,
+                t_max=t_max,
+                t_min=t_min,
+                temperatures=temperatures,
+                cutoff_frequency=cutoff_frequency,
+                pretend_real=pretend_real,
+                band_indices=band_indices,
+                is_projection=is_projection,
             )
         return tp_collect_dict
 
+    def get_thermal_properties_classical(
+        self,
+        t_min=1,
+        t_max=1500,
+        t_step=50,
+        temperatures=None,
+        cutoff_frequency=None,
+    ):
+        if temperatures is None:
+            temperatures = np.arange(t_min, t_max, t_step)
+        if cutoff_frequency is None or cutoff_frequency < 0:
+            cutoff_frequency = 0.0
+        else:
+            cutoff_frequency = cutoff_frequency * THzToEv
+        tp_collect_dict = {}
+        for strain, phono in self._phonopy_dict.items():
+            t_property_lst = []
+            for t in temperatures:
+                t_property = 0.0
+                for freqs, w in zip(
+                    phono.phonopy.mesh.frequencies, phono.phonopy.mesh.weights
+                ):
+                    freqs = np.array(freqs) * THzToEv
+                    cond = freqs > cutoff_frequency
+                    t_property += (
+                        np.sum(get_free_energy(frequency=freqs[cond], temperature=t))
+                        * w
+                    )
+                t_property_lst.append(
+                    t_property / np.sum(phono.phonopy.mesh.weights) * EvTokJmol
+                )
+            tp_collect_dict[strain] = {
+                "temperatures": temperatures,
+                "free_energy": np.array(t_property_lst) * kJ_mol_to_eV,
+            }
+        return tp_collect_dict
+
     def get_thermal_expansion(
-        self, output_dict, t_min=1, t_max=1500, t_step=50, temperatures=None
+        self,
+        output_dict,
+        t_min=1,
+        t_max=1500,
+        t_step=50,
+        temperatures=None,
+        cutoff_frequency=None,
+        pretend_real=False,
+        band_indices=None,
+        is_projection=False,
+        quantum_mechanical=True,
     ):
         (
             eng_internal_dict,
             mesh_collect_dict,
             dos_collect_dict,
         ) = self.analyse_structures(output_dict=output_dict)
-        tp_collect_dict = self.get_thermal_properties(
-            t_min=t_min, t_max=t_max, t_step=t_step, temperatures=temperatures
-        )
+        if quantum_mechanical:
+            tp_collect_dict = self.get_thermal_properties(
+                t_min=t_min,
+                t_max=t_max,
+                t_step=t_step,
+                temperatures=temperatures,
+                cutoff_frequency=cutoff_frequency,
+                pretend_real=pretend_real,
+                band_indices=band_indices,
+                is_projection=is_projection,
+            )
+        else:
+            if is_projection:
+                raise ValueError(
+                    "is_projection!=False is incompatible to quantum_mechanical=False."
+                )
+            if pretend_real:
+                raise ValueError(
+                    "pretend_real!=False is incompatible to quantum_mechanical=False."
+                )
+            if band_indices is not None:
+                raise ValueError(
+                    "band_indices!=None is incompatible to quantum_mechanical=False."
+                )
+
+            tp_collect_dict = self.get_thermal_properties_classical(
+                t_min=t_min,
+                t_max=t_max,
+                t_step=t_step,
+                temperatures=temperatures,
+                cutoff_frequency=cutoff_frequency,
+            )
 
         temperatures = tp_collect_dict[1.0]["temperatures"]
         strain_lst = eng_internal_dict.keys()
         volume_lst = self.get_volume_lst()
         eng_int_lst = np.array(list(eng_internal_dict.values()))
 
-        fit_deg = 4
-        vol_best = volume_lst[int(len(volume_lst) / 2)]
         vol_lst, eng_lst = [], []
         for i, temp in enumerate(temperatures):
             free_eng_lst = (
                 np.array([tp_collect_dict[s]["free_energy"][i] for s in strain_lst])
                 + eng_int_lst
             )
-            p = np.polyfit(volume_lst, free_eng_lst, deg=fit_deg)
-            extrema = np.roots(np.polyder(p, m=1)).real
-            vol_select = extrema[np.argmin(np.abs(extrema - vol_best))]
-            eng_lst.append(np.poly1d(p)(vol_select))
-            vol_lst.append(vol_select)
+            fit_dict = fit_ev_curve(
+                volume_lst=volume_lst,
+                energy_lst=free_eng_lst,
+                fit_type=self.fit_type,
+                fit_order=self.fit_order,
+            )
+            eng_lst.append(fit_dict["energy_eq"])
+            vol_lst.append(fit_dict["volume_eq"])
         return temperatures, vol_lst
