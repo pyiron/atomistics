@@ -39,6 +39,7 @@ result_dict = evaluate_with_lammps(
     potential_dataframe=potential_dataframe,
 )
 fit_dict = workflow.analyse_structures(output_dict=result_dict)
+print(fit_dict)
 ```
 The `ElasticMatrixWorkflow` takes an `ase.atoms.Atoms` object as `structure` input as well as the number of points 
 `num_of_point` for each compression direction. Depending on the symmetry of the input `structure` the number of 
@@ -72,6 +73,7 @@ result_dict = evaluate_with_lammps(
     potential_dataframe=potential_dataframe,
 )
 fit_dict = workflow.analyse_structures(output_dict=result_dict)
+print(fit_dict)
 ```
 The input parameters for the `EnergyVolumeCurveWorkflow` in addition to the `ase.atoms.Atoms` object defined 
 as `structure` are: 
@@ -120,8 +122,8 @@ from atomistics.calculators import (
 potential_dataframe = get_potential_by_name(
     potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1'
 )
-temperatures, volumes = calc_molecular_dynamics_thermal_expansion_with_lammps(
-    structure=bulk("Al", cubic=True).repeat([10, 10, 10])
+temperatures_md, volumes_md = calc_molecular_dynamics_thermal_expansion_with_lammps(
+    structure=bulk("Al", cubic=True).repeat([10, 10, 10]),
     potential_dataframe=potential_dataframe,
     Tstart=15,
     Tstop=1500,
@@ -164,15 +166,16 @@ In addition to the molecular dynamics implemented in the LAMMPS simulation code,
 the `LangevinWorkflow` which implements molecular dynamics independent of the specific simulation code. 
 ```
 from ase.build import bulk
-from atomistics.calculators import evaluate_with_lammps, get_potential_by_name, LammpsASELibrary
+from atomistics.calculators import evaluate_with_lammps_library, get_potential_by_name
 from atomistics.workflows import LangevinWorkflow
+from pylammpsmpi import LammpsASELibrary
 
 steps = 300
 potential_dataframe = get_potential_by_name(
     potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1'
 )
 workflow = LangevinWorkflow(
-    structure=bulk("Al", cubic=True).repeat([2, 2, 2], 
+    structure=bulk("Al", cubic=True).repeat([2, 2, 2]), 
     temperature=1000.0,
     overheat_fraction=2.0,
     damping_timescale=100.0,
@@ -192,7 +195,7 @@ for i in range(steps):
     task_dict = workflow.generate_structures()
     result_dict = evaluate_with_lammps_library(
         task_dict=task_dict,
-        potential_dataframe=df_pot_selected,
+        potential_dataframe=potential_dataframe,
         lmp=lmp,
     )
     eng_pot, eng_kin = workflow.analyse_structures(output_dict=result_dict)
@@ -211,8 +214,12 @@ parameters of the `LangevinWorkflow` are:
 * `time_step` the time steps of the Langevin thermostat
 
 ## Harmonic Approximation 
+The harmonic approximation is implemented in two variations, once with constant volume and once including the volume 
+expansion at finite temperature also known as quasi-harmonic approximation. Both of these are based on the [phonopy](https://phonopy.github.io/phonopy/)
+package. 
 
 ### Phonons 
+To calculate the phonons at a fixed volume the `PhonopyWorkflow` is used:
 ```
 from ase.build import bulk
 from atomistics.calculators import evaluate_with_lammps, get_potential_by_name
@@ -236,34 +243,76 @@ result_dict = evaluate_with_lammps(
     task_dict=task_dict,
     potential_dataframe=potential_dataframe,
 )
-fit_dict = workflow.analyse_structures(output_dict=result_dict)
+mesh_dict, dos_dict = workflow.analyse_structures(output_dict=result_dict)
 ```
+The `PhonopyWorkflow` takes the following inputs: 
 
-```
-tp_dict = workflow.get_thermal_properties(t_min=1, t_max=1500, t_step=50, temperatures=None)
-```
+* `structure` the `ase.atoms.Atoms` object to calculate the phonon spectrum
+* `interaction_range` the cutoff radius to consider for identifying the interaction between the atoms
+* `factor` conversion factor, typically just `phonopy.units.VaspToTHz` 
+* `displacement` displacement to calculate the forces 
+* `dos_mesh` mesh for the density of states 
+* `primitive_matrix` primitive matrix
+* `number_of_snapshots` number of snapshots to calculate
 
+In addition to the phonon properties, the `PhonopyWorkflow` also enables the calculation of thermal properties: 
+```
+tp_dict = workflow.get_thermal_properties(
+    t_min=1, 
+    t_max=1500, 
+    t_step=50, 
+    temperatures=None,
+    cutoff_frequency=None,
+    pretend_real=False,
+    band_indices=None,
+    is_projection=False,
+)
+print(tp_dict)
+```
+The calculation of the thermal properties takes additional inputs: 
+
+* `t_min` minimum temperature
+* `t_max` maximum temperature
+* `t_step` temperature step 
+* `temperatures` alternative to `t_min`, `t_max` and `t_step` the array of temperatures can be defined directly
+* `cutoff_frequency` cutoff frequency to exclude the contributions of frequencies below a certain cut off
+* `pretend_real` use the absolute values of the phonon frequencies
+* `band_indices` select bands based on their indices 
+* `is_projection` multiplies the squared eigenvectors - not recommended
+
+Furthermore, also the dynamical matrix can be directly calculated with the `PhonopyWorkflow`:
 ```
 mat = workflow.get_dynamical_matrix()
 ```
 
+Or alternatively the hesse matrix: 
 ```
 mat = workflow.get_hesse_matrix()
 ```
 
+Finally, also the function to calculate the band structure is directly available on the `PhonopyWorkflow`: 
 ```
-band_structure = workflow.get_band_structure(npoints=101, with_eigenvectors=False, with_group_velocities=False)
+band_structure = workflow.get_band_structure(
+    npoints=101, 
+    with_eigenvectors=False, 
+    with_group_velocities=False
+)
 ```
 
-Plotting:
+This band structure can also be visualised using the built-in plotting function: 
 ```
 workflow.plot_band_structure()
 ```
+![band_structure](../pictures/phonon_bands_al.png)
 
+Just like the desnsity of states which can be plotted using: 
 ```
 workflow.plot_dos()
 ```
+![density of states](../pictures/phonon_dos_al.png)
+
 ### Quasi-harmonic Approximation 
+To include the volume expansion with finite temperature the `atomistics` package implements the `QuasiHarmonicWorkflow`:
 ```
 from ase.build import bulk
 from atomistics.calculators import evaluate_with_lammps, get_potential_by_name
@@ -290,11 +339,13 @@ result_dict = evaluate_with_lammps(
 )
 fit_dict = workflow.analyse_structures(output_dict=result_dict)
 ```
+The `QuasiHarmonicWorkflow` is a combination of the `EnergyVolumeCurveWorkflow` and the `PhonopyWorkflow`. Consequently, 
+the inputs are a superset of the inputs of these two workflows. 
 
-Thermal Expansion:
+Based on the `QuasiHarmonicWorkflow` the thermal expansion can be calculated:
 ```
 temperatures, volumes = workflow.get_thermal_expansion(
-    output_dict=output_dict, 
+    output_dict=result_dict, 
     t_min=1, 
     t_max=1500, 
     t_step=50, 
@@ -306,6 +357,9 @@ temperatures, volumes = workflow.get_thermal_expansion(
     quantum_mechanical=True,
 )
 ```
+This requires the same inputs as the calculation of the thermal properties `get_thermal_properties()` with the 
+`PhonopyWorkflow`. The additional parameter `quantum_mechanical` specifies whether the classical harmonic oscillator or 
+the quantum mechanical harmonic oscillator is used to calculate the free energy. 
 
 ## Structure Optimization 
 In analogy to the molecular dynamics calculation also the structure optimization could in principle be defined inside 
@@ -313,6 +367,8 @@ the simulation code or on the python level. Still currently the `atomistics` pac
 optimization defined inside the simulation codes. 
 
 ### Volume and Positions 
+To optimize both the volume of the supercell as well as the positions inside the supercell the `atomistics` package
+implements the `optimize_positions_and_volume()` workflow:
 ```
 from ase.build import bulk
 from atomistics.calculators import evaluate_with_lammps, get_potential_by_name
@@ -328,8 +384,11 @@ result_dict = evaluate_with_lammps(
 )
 structure_opt = result_dict["structure_with_optimized_positions_and_volume"]
 ```
+The result is the optimized atomistic structure as part of the result dictionary. 
 
 ### Positions 
+The optimization of the positions inside the supercell without the optimization of the supercell volume is possible with
+the `optimize_positions()` workflow:
 ```
 from ase.build import bulk
 from atomistics.calculators import evaluate_with_lammps, get_potential_by_name
@@ -345,3 +404,4 @@ result_dict = evaluate_with_lammps(
 )
 structure_opt = result_dict["structure_with_optimized_positions"]
 ```
+The result is the optimized atomistic structure as part of the result dictionary. 
