@@ -292,9 +292,10 @@ def update_potential_paths(df_pot, resource_path):
 def get_resource_path_from_conda(env_variables=("CONDA_PREFIX", "CONDA_DIR")):
     env = os.environ
     for conda_var in env_variables:
-        resource_path = os.path.join(env[conda_var], "share", "iprpy")
-        if os.path.exists(resource_path):
-            return resource_path
+        if conda_var in env.keys():
+            resource_path = os.path.join(env[conda_var], "share", "iprpy")
+            if os.path.exists(resource_path):
+                return resource_path
     raise ValueError("No resource_path found")
 
 
