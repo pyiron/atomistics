@@ -156,6 +156,7 @@ def calc_molecular_dynamics_nvt_with_lammps(
         "energy_pot",
         "energy_tot",
         "pressure",
+        "velocities",
     ),
     **kwargs,
 ):
@@ -221,6 +222,7 @@ def calc_molecular_dynamics_npt_with_lammps(
         "energy_pot",
         "energy_tot",
         "pressure",
+        "velocities",
     ),
     **kwargs,
 ):
@@ -287,6 +289,7 @@ def calc_molecular_dynamics_nph_with_lammps(
         "energy_pot",
         "energy_tot",
         "pressure",
+        "velocities",
     ),
     **kwargs,
 ):
