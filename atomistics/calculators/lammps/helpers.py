@@ -1,39 +1,10 @@
 from __future__ import annotations
 
 from jinja2 import Template
+import numpy as np
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.lammps.potential import validate_potential_dataframe
-
-
-def template_render_minimize(
-    template_str,
-    min_style="cg",
-    etol=0.0,
-    ftol=0.0001,
-    maxiter=100000,
-    maxeval=10000000,
-    thermo=10,
-):
-    return Template(template_str).render(
-        min_style=min_style,
-        etol=etol,
-        ftol=ftol,
-        maxiter=maxiter,
-        maxeval=maxeval,
-        thermo=thermo,
-    )
-
-
-def template_render_run(
-    template_str,
-    run=0,
-    thermo=100,
-):
-    return Template(template_str).render(
-        run=run,
-        thermo=thermo,
-    )
 
 
 def lammps_run(structure, potential_dataframe, input_template, lmp=None, **kwargs):
@@ -62,6 +33,61 @@ def lammps_run(structure, potential_dataframe, input_template, lmp=None, **kwarg
         lmp.interactive_lib_command(l)
 
     return lmp
+
+
+def lammps_calc_md_step(
+    lmp_instance,
+    run_str,
+    run,
+    quantities=(
+        "positions",
+        "cell",
+        "forces",
+        "temperature",
+        "energy_pot",
+        "energy_tot",
+        "pressure",
+    ),
+):
+    run_str_rendered = Template(run_str).render(run=run)
+    lmp_instance.interactive_lib_command(run_str_rendered)
+    interactive_getter_dict = {
+        "positions": lmp_instance.interactive_positions_getter,
+        "cell": lmp_instance.interactive_cells_getter,
+        "forces": lmp_instance.interactive_forces_getter,
+        "temperature": lmp_instance.interactive_temperatures_getter,
+        "energy_pot": lmp_instance.interactive_energy_pot_getter,
+        "energy_tot": lmp_instance.interactive_energy_tot_getter,
+        "pressure": lmp_instance.interactive_pressures_getter,
+    }
+    return {q: interactive_getter_dict[q]() for q in quantities}
+
+
+def lammps_calc_md(
+    lmp_instance,
+    run_str,
+    run,
+    thermo,
+    quantities=(
+        "positions",
+        "cell",
+        "forces",
+        "temperature",
+        "energy_pot",
+        "energy_tot",
+        "pressure",
+    ),
+):
+    results_lst = [
+        lammps_calc_md_step(
+            lmp_instance=lmp_instance,
+            run_str=run_str,
+            run=thermo,
+            quantities=quantities,
+        )
+        for _ in range(run // thermo)
+    ]
+    return {q: np.array([d[q] for d in results_lst]) for q in quantities}
 
 
 def lammps_thermal_expansion_loop(

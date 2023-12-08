@@ -24,3 +24,9 @@ LAMMPS_VELOCITY = "velocity all create $(2 * {{ temp }}) {{seed}} dist {{dist}}"
 
 
 LAMMPS_ENSEMBLE_NPT = "fix ensemble all npt temp {{Tstart}} {{Tstop}} {{Tdamp}} iso {{Pstart}} {{Pstop}} {{Pdamp}}"
+
+
+LAMMPS_ENSEMBLE_NPH = "fix ensemble all nph iso {{Pstart}} {{Pstop}} {{Pdamp}}"
+
+
+LAMMPS_ENSEMBLE_NVT = "fix ensemble all nvt temp {{Tstart}} {{Tstop}} {{Tdamp}}"
