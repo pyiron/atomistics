@@ -125,9 +125,9 @@ potential_dataframe = get_potential_by_name(
 temperatures_md, volumes_md = calc_molecular_dynamics_thermal_expansion_with_lammps(
     structure=bulk("Al", cubic=True).repeat([10, 10, 10]),
     potential_dataframe=potential_dataframe,
-    Tstart=15,
-    Tstop=1500,
-    Tstep=5,
+    Tstart=100,
+    Tstop=1000,
+    Tstep=100,
     Tdamp=0.1,
     run=100,
     thermo=100,
