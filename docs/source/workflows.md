@@ -106,16 +106,122 @@ the same as the equilibrium volume calculated by fitting the equation of state.
 ## Molecular Dynamics 
 Just like the structure optimization also the molecular dynamics calculation can either be implemented inside the
 simulation code or in the `atomistics` package. The latter has the advantage that it is the same implementation for all
-different simulation codes, while the prior has the advantage that it is usually faster and computationally more efficient.
+different simulation codes, while the prior has the advantage that it is usually faster and computationally more 
+efficient.
 
 ### Implemented in Simulation Code 
+The [LAMMPS](https://lammps.org/) simulation code implements a wide range of different simulation workflows, this 
+includes molecular dynamics. In the `atomistics` package these can be directly accessed via the python interface. 
+
+#### Nose Hoover Thermostat
+Canonical ensemble (nvt) - volume and temperature constraints molecular dynamics:
+```
+from ase.build import bulk
+from atomistics.calculators import (
+    calc_molecular_dynamics_nvt_with_lammps, 
+    get_potential_by_name,
+)
+
+potential_dataframe = get_potential_by_name(
+    potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1'
+)
+result_dict = calc_molecular_dynamics_nvt_with_lammps(
+    structure=bulk("Al", cubic=True).repeat([10, 10, 10]),
+    potential_dataframe=potential_dataframe,
+    Tstart=100,
+    Tstop=100,
+    Tdamp=0.1,
+    run=100,
+    thermo=10,
+    timestep=0.001,
+    seed=4928459,
+    dist="gaussian",
+    quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure"),
+)
+```
+In addition to the typical LAMMPS input parameters like the atomistic structure `structure` as `ase.atoms.Atoms` object
+and the `pandas.DataFrame` for the interatomic potential `potential_dataframe` are: 
+
+* `Tstart` start temperature 
+* `Tstop` end temperature
+* `Tdamp` temperature damping parameter 
+* `run` number of molecular dynamics steps to be executed during one temperature step
+* `thermo` refresh rate for the thermo dynamic properties, this should typically be the same as the number of molecular
+  dynamics steps. 
+* `timestep` time step - typically 1fs defined as `0.001`.
+* `seed` random seed for the molecular dynamics 
+* `dist` initial velocity distribution 
+* `lmp` Lammps library instance as `pylammpsmpi.LammpsASELibrary` object 
+* `quantities` the quantities which are extracted from the molecular dynamics simulation
+
+Isothermal-isobaric ensemble (npt) - pressure and temperature constraints molecular dynamics:
+```
+from ase.build import bulk
+from atomistics.calculators import (
+    calc_molecular_dynamics_npt_with_lammps, 
+    get_potential_by_name,
+)
+
+potential_dataframe = get_potential_by_name(
+    potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1'
+)
+result_dict = calc_molecular_dynamics_npt_with_lammps(
+    structure=bulk("Al", cubic=True).repeat([10, 10, 10]),
+    potential_dataframe=potential_dataframe,
+    Tstart=100,
+    Tstop=100,
+    Tdamp=0.1,
+    run=100,
+    thermo=100,
+    timestep=0.001,
+    Pstart=0.0,
+    Pstop=0.0,
+    Pdamp=1.0,
+    seed=4928459,
+    dist="gaussian",
+    quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure"),
+)
+```
+The input parameters for the isothermal-isobaric ensemble (npt) are the same as for the canonical ensemble (nvt) plus:
+
+* `Pstart` start pressure 
+* `Pstop` end pressure 
+* `Pdamp` pressure damping parameter 
+
+Isenthalpic ensemble (nph) - pressure and helmholtz-energy constraints molecular dynamics:
+```
+from ase.build import bulk
+from atomistics.calculators import (
+    calc_molecular_dynamics_nph_with_lammps, 
+    get_potential_by_name,
+)
+
+potential_dataframe = get_potential_by_name(
+    potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1'
+)
+result_dict = calc_molecular_dynamics_nph_with_lammps(
+    structure=bulk("Al", cubic=True).repeat([10, 10, 10]),
+    potential_dataframe=potential_dataframe,
+    run=100,
+    thermo=100,
+    timestep=0.001,
+    Tstart=100,
+    Pstart=0.0,
+    Pstop=0.0,
+    Pdamp=1.0,
+    seed=4928459,
+    dist="gaussian",
+    quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure"),
+)
+```
+
+#### Thermal Expansion
 One example of a molecular dynamics calculation with the LAMMPS simulation code is the calculation of the thermal 
 expansion: 
 ```
 from ase.build import bulk
 from atomistics.calculators import (
-    calc_molecular_dynamics_thermal_expansion_with_lammps, 
-    evaluate_with_lammps, 
+    calc_molecular_dynamics_thermal_expansion_with_lammps,  
     get_potential_by_name,
 )
 
@@ -159,7 +265,7 @@ and the `pandas.DataFrame` for the interatomic potential `potential_dataframe` a
 * `lmp` Lammps library instance as `pylammpsmpi.LammpsASELibrary` object 
 
 These input parameters are based on the LAMMPS fix `nvt/npt`, you can read more about the specific implementation on the
-[LAMMPS website](https://docs.lammps.org/fix_nh.html). 
+[LAMMPS website](https://docs.lammps.org/fix_nh.html).
 
 ### Langevin Thermostat 
 In addition to the molecular dynamics implemented in the LAMMPS simulation code, the `atomistics` package also provides
