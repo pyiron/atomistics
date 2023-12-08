@@ -5,7 +5,7 @@ from ase.build import bulk
 import unittest
 
 from atomistics.calculators import evaluate_with_qe
-from atomistics.workflows import EnergyVolumeCurveWorkflow, optimize_positions_and_volume
+from atomistics.workflows import EnergyVolumeCurveWorkflow
 
 
 quantum_espresso_command = "pw.x"

@@ -1,7 +1,11 @@
 # Simulation Codes
-At the current stage the majority of simulation codes are interfaced using the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/)
 
-## Abinit
+## ASE
+At the current stage the majority of simulation codes are interfaced using the [Atomic Simulation Environment (ASE)](https://wiki.fysik.dtu.dk/ase/).
+The limitation of the ASE based interfaces is that the simulation codes are only used to calculate energies, forces and
+stresses, while more complex computations like structure optimization or molecular dynamics are implemented in python.
+
+### Abinit
 [Abinit](https://www.abinit.org) - Plane wave density functional theory:
 ```
 from ase.calculators.abinit import Abinit
@@ -20,11 +24,10 @@ result_dict = evaluate_with_ase(
     )
 )
 ```
-The [Abinit](https://www.abinit.org) interface is based on the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/ase/calculators/abinit.html).
 The full documentation of the corresponding interface is available on the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/ase/calculators/abinit.html)
 website. 
 
-## EMT
+### EMT
 [EMT](https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html) - Effective medium theory: 
 ```
 from ase.calculators.emt import EMT
@@ -35,11 +38,10 @@ result_dict = evaluate_with_ase(
     ase_calculator=EMT()
 )
 ```
-The [EMT](https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html) interface is based on the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html).
 The full documentation of the corresponding interface is available on the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html)
 website. 
 
-## GPAW
+### GPAW
 [GPAW](https://wiki.fysik.dtu.dk/gpaw/) - Density functional theory Python code based on the projector-augmented wave 
 method:
 ```
@@ -55,9 +57,53 @@ result_dict = evaluate_with_ase(
     )
 )
 ```
-The [GPAW](https://wiki.fysik.dtu.dk/gpaw/) interface is based on the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/).
 The full documentation of the corresponding interface is available on the [GPAW](https://wiki.fysik.dtu.dk/gpaw/)
+website.
+
+### Quantum Espresso 
+[Quantum Espresso](https://www.quantum-espresso.org) - Integrated suite of Open-Source computer codes for 
+electronic-structure calculations:
+```
+from ase.calculators.espresso import Espresso
+from atomistics.calculators import evaluate_with_ase
+
+result_dict = evaluate_with_ase(
+    task_dict={}, 
+    ase_calculator=Espresso(
+        pseudopotentials={"Al": "Al.pbe-n-kjpaw_psl.1.0.0.UPF"},
+        tstress=True,
+        tprnfor=True,
+        kpts=(3, 3, 3),
+    )
+)
+```
+The full documentation of the corresponding interface is available on the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/ase/calculators/espresso.html)
 website. 
+
+### Siesta
+[Siesta](https://siesta-project.org) - Electronic structure calculations and ab initio molecular dynamics:
+```
+from ase.calculators.siesta import Siesta
+from ase.units import Ry
+from atomistics.calculators import evaluate_with_ase
+
+result_dict = evaluate_with_ase(
+    task_dict={}, 
+    ase_calculator=Siesta(
+        label="siesta",
+        xc="PBE",
+        mesh_cutoff=200 * Ry,
+        energy_shift=0.01 * Ry,
+        basis_set="DZ",
+        kpts=(5, 5, 5),
+        fdf_arguments={"DM.MixingWeight": 0.1, "MaxSCFIterations": 100},
+        pseudo_path=os.path.abspath("tests/static/siesta"),
+        pseudo_qualifier="",
+    )
+)
+```
+The full documentation of the corresponding interface is available on the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/ase/calculators/siesta.html)
+website.
 
 ## LAMMPS
 [LAMMPS](https://www.lammps.org) - Molecular Dynamics:
@@ -106,49 +152,38 @@ potential_dataframe = pandas.DataFrame({
 })
 ```
 
-## Quantum Espresso 
+## Quantum Espresso
 [Quantum Espresso](https://www.quantum-espresso.org) - Integrated suite of Open-Source computer codes for 
 electronic-structure calculations:
 ```
-from ase.calculators.espresso import Espresso
-from atomistics.calculators import evaluate_with_ase
+from atomistics.calculators import evaluate_with_qe
 
-result_dict = evaluate_with_ase(
-    task_dict={}, 
-    ase_calculator=Espresso(
-        pseudopotentials={"Al": "Al.pbe-n-kjpaw_psl.1.0.0.UPF"},
-        tstress=True,
-        tprnfor=True,
-        kpts=(3, 3, 3),
-    )
+result_dict = evaluate_with_qe(
+    task_dict={},
+    calculation_name="espresso",
+    working_directory=".",
+    kpts=(3, 3, 3),
+    pseudopotentials={
+        "Al": "Al.pbe-n-kjpaw_psl.1.0.0.UPF"
+    },
+    tstress=True,
+    tprnfor=True,
+    ecutwfc=40.0,          # kinetic energy cutoff (Ry) for wavefunctions
+    conv_thr=1e-06,        # Convergence threshold for selfconsistency
+    diagonalization='david',  
+    electron_maxstep=100,  # maximum number of iterations in a scf step. 
+    nstep=200,             # number of molecular-dynamics or structural optimization steps performed in this run.
+    etot_conv_thr=1e-4,    # Convergence threshold on total energy (a.u) for ionic minimization
+    forc_conv_thr=1e-3,    # Convergence threshold on forces (a.u) for ionic minimization
+    smearing='gaussian',   # ordinary Gaussian spreading (Default)
 )
 ```
-The [Quantum Espresso](https://www.quantum-espresso.org) interface is based on the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/ase/calculators/espresso.html).
-The full documentation of the corresponding interface is available on the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/ase/calculators/espresso.html)
-website. 
-
-## Siesta
-[Siesta](https://siesta-project.org) - Electronic structure calculations and ab initio molecular dynamics:
+This secondary interface for [Quantum Espresso](https://www.quantum-espresso.org) is based on the input writer from the
+[Atomic Simulation Environment (ASE)](https://wiki.fysik.dtu.dk/ase/) and the output is parsed using the [pwtools](https://elcorto.github.io/pwtools/).
+The executable can be set using the `ASE_ESPRESSO_COMMAND` environment variable:
 ```
-from ase.calculators.siesta import Siesta
-from ase.units import Ry
-from atomistics.calculators import evaluate_with_ase
-
-result_dict = evaluate_with_ase(
-    task_dict={}, 
-    ase_calculator=Siesta(
-        label="siesta",
-        xc="PBE",
-        mesh_cutoff=200 * Ry,
-        energy_shift=0.01 * Ry,
-        basis_set="DZ",
-        kpts=(5, 5, 5),
-        fdf_arguments={"DM.MixingWeight": 0.1, "MaxSCFIterations": 100},
-        pseudo_path=os.path.abspath("tests/static/siesta"),
-        pseudo_qualifier="",
-    )
-)
+export ASE_ESPRESSO_COMMAND="pw.x -in PREFIX.pwi > PREFIX.pwo"
 ```
-The [Siesta](https://siesta-project.org) interface is based on the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/ase/calculators/siesta.html).
-The full documentation of the corresponding interface is available on the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/ase/calculators/siesta.html)
-website. 
+The full list of possible keyword arguments is available in the [Quantum Espresso Documentation](https://www.quantum-espresso.org/Doc/INPUT_PW.html).
+Finally, the [Standard solid-state pseudopotentials (SSSP)](https://www.materialscloud.org/discover/sssp/table/efficiency) 
+for quantum espresso are distributed via the materials cloud.

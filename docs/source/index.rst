@@ -174,6 +174,7 @@ Documentation
 
    installation
    simulationcodes
+   workflows
    materialproperties
 
 * :ref:`modindex`
