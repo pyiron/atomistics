@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from jinja2 import Template
 import numpy as np
 from typing import TYPE_CHECKING
 
@@ -7,14 +8,10 @@ from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.calculators.lammps.helpers import (
+    lammps_calc_md,
     lammps_run,
     lammps_thermal_expansion_loop,
-    lammps_md_nph,
-    lammps_md_npt,
-    lammps_md_nvt,
     lammps_shutdown,
-    template_render_minimize,
-    template_render_run,
 )
 from atomistics.calculators.lammps.commands import (
     LAMMPS_THERMO_STYLE,
@@ -43,10 +40,9 @@ def calc_energy_with_lammps(
     lmp_instance = lammps_run(
         structure=structure,
         potential_dataframe=potential_dataframe,
-        input_template=template_render_run(
-            template_str=template_str,
-            thermo=100,
+        input_template=Template(template_str).render(
             run=0,
+            thermo=100,
         ),
         lmp=lmp,
         **kwargs,
@@ -63,10 +59,9 @@ def calc_forces_with_lammps(
     lmp_instance = lammps_run(
         structure=structure,
         potential_dataframe=potential_dataframe,
-        input_template=template_render_run(
-            template_str=template_str,
-            thermo=100,
+        input_template=Template(template_str).render(
             run=0,
+            thermo=100,
         ),
         lmp=lmp,
         **kwargs,
@@ -83,10 +78,9 @@ def calc_energy_and_forces_with_lammps(
     lmp_instance = lammps_run(
         structure=structure,
         potential_dataframe=potential_dataframe,
-        input_template=template_render_run(
-            template_str=template_str,
-            thermo=100,
+        input_template=Template(template_str).render(
             run=0,
+            thermo=100,
         ),
         lmp=lmp,
         **kwargs,
@@ -104,10 +98,9 @@ def calc_energy_forces_and_stress_with_lammps(
     lmp_instance = lammps_run(
         structure=structure,
         potential_dataframe=potential_dataframe,
-        input_template=template_render_run(
-            template_str=template_str,
-            thermo=100,
+        input_template=Template(template_str).render(
             run=0,
+            thermo=100,
         ),
         lmp=lmp,
         **kwargs,
@@ -126,10 +119,9 @@ def calc_energy_and_stress_with_lammps(
     lmp_instance = lammps_run(
         structure=structure,
         potential_dataframe=potential_dataframe,
-        input_template=template_render_run(
-            template_str=template_str,
-            thermo=100,
+        input_template=Template(template_str).render(
             run=0,
+            thermo=100,
         ),
         lmp=lmp,
         **kwargs,
@@ -147,10 +139,9 @@ def calc_forces_and_stress_with_lammps(
     lmp_instance = lammps_run(
         structure=structure,
         potential_dataframe=potential_dataframe,
-        input_template=template_render_run(
-            template_str=template_str,
-            thermo=100,
+        input_template=Template(template_str).render(
             run=0,
+            thermo=100,
         ),
         lmp=lmp,
         **kwargs,
@@ -168,10 +159,9 @@ def calc_stress_with_lammps(
     lmp_instance = lammps_run(
         structure=structure,
         potential_dataframe=potential_dataframe,
-        input_template=template_render_run(
-            template_str=template_str,
-            thermo=100,
+        input_template=Template(template_str).render(
             run=0,
+            thermo=100,
         ),
         lmp=lmp,
         **kwargs,
@@ -205,8 +195,7 @@ def optimize_positions_and_volume_with_lammps(
     lmp_instance = lammps_run(
         structure=structure,
         potential_dataframe=potential_dataframe,
-        input_template=template_render_minimize(
-            template_str=template_str,
+        input_template=Template(template_str).render(
             min_style=min_style,
             etol=etol,
             ftol=ftol,
@@ -240,8 +229,7 @@ def optimize_positions_with_lammps(
     lmp_instance = lammps_run(
         structure=structure,
         potential_dataframe=potential_dataframe,
-        input_template=template_render_minimize(
-            template_str=template_str,
+        input_template=Template(template_str).render(
             min_style=min_style,
             etol=etol,
             ftol=ftol,
@@ -293,23 +281,31 @@ def calc_molecular_dynamics_nvt_with_lammps(
         + LAMMPS_ENSEMBLE_NVT
     )
     run_str = LAMMPS_RUN + "\n"
-    return lammps_md_nvt(
-        structure,
-        potential_dataframe,
-        init_str=init_str,
-        run_str=run_str,
-        Tstart=Tstart,
-        Tstop=Tstop,
-        Tdamp=Tdamp,
-        run=run,
-        thermo=thermo,
-        timestep=timestep,
-        seed=seed,
-        dist=dist,
+    lmp_instance = lammps_run(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=Template(init_str).render(
+            thermo=thermo,
+            Tstart=Tstart,
+            temp=Tstart,
+            Tstop=Tstop,
+            Tdamp=Tdamp,
+            timestep=timestep,
+            seed=seed,
+            dist=dist,
+        ),
         lmp=lmp,
-        quantities=quantities,
         **kwargs,
     )
+    result_dict = lammps_calc_md(
+        lmp_instance=lmp_instance,
+        run_str=run_str,
+        run=run,
+        thermo=thermo,
+        quantities=quantities,
+    )
+    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
+    return result_dict
 
 
 def calc_molecular_dynamics_npt_with_lammps(
@@ -350,26 +346,34 @@ def calc_molecular_dynamics_npt_with_lammps(
         + LAMMPS_ENSEMBLE_NPT
     )
     run_str = LAMMPS_RUN + "\n"
-    return lammps_md_npt(
-        structure,
-        potential_dataframe,
-        init_str=init_str,
-        run_str=run_str,
-        Tstart=Tstart,
-        Tstop=Tstop,
-        Tdamp=Tdamp,
-        Pstart=Pstart,
-        Pstop=Pstop,
-        Pdamp=Pdamp,
-        run=run,
-        thermo=thermo,
-        timestep=timestep,
-        seed=seed,
-        dist=dist,
+    lmp_instance = lammps_run(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=Template(init_str).render(
+            thermo=thermo,
+            Tstart=Tstart,
+            temp=Tstart,
+            Tstop=Tstop,
+            Tdamp=Tdamp,
+            Pstart=Pstart,
+            Pstop=Pstop,
+            Pdamp=Pdamp,
+            timestep=timestep,
+            seed=seed,
+            dist=dist,
+        ),
         lmp=lmp,
-        quantities=quantities,
         **kwargs,
     )
+    result_dict = lammps_calc_md(
+        lmp_instance=lmp_instance,
+        run_str=run_str,
+        run=run,
+        thermo=thermo,
+        quantities=quantities,
+    )
+    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
+    return result_dict
 
 
 def calc_molecular_dynamics_nph_with_lammps(
@@ -408,24 +412,31 @@ def calc_molecular_dynamics_nph_with_lammps(
         + LAMMPS_ENSEMBLE_NPH
     )
     run_str = LAMMPS_RUN + "\n"
-    return lammps_md_nph(
-        structure,
-        potential_dataframe,
-        init_str=init_str,
-        run_str=run_str,
-        Tstart=Tstart,
-        Pstart=Pstart,
-        Pstop=Pstop,
-        Pdamp=Pdamp,
-        run=run,
-        thermo=thermo,
-        timestep=timestep,
-        seed=seed,
-        dist=dist,
+    lmp_instance = lammps_run(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=Template(init_str).render(
+            thermo=thermo,
+            temp=Tstart,
+            Pstart=Pstart,
+            Pstop=Pstop,
+            Pdamp=Pdamp,
+            timestep=timestep,
+            seed=seed,
+            dist=dist,
+        ),
         lmp=lmp,
-        quantities=quantities,
         **kwargs,
     )
+    result_dict = lammps_calc_md(
+        lmp_instance=lmp_instance,
+        run_str=run_str,
+        run=run,
+        thermo=thermo,
+        quantities=quantities,
+    )
+    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
+    return result_dict
 
 
 def calc_molecular_dynamics_thermal_expansion_with_lammps(
