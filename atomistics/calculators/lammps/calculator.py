@@ -270,19 +270,27 @@ def calc_molecular_dynamics_nvt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure"),
+    quantities=(
+        "positions",
+        "cell",
+        "forces",
+        "temperature",
+        "energy_pot",
+        "energy_tot",
+        "pressure",
+    ),
     **kwargs,
 ):
     init_str = (
-            LAMMPS_THERMO_STYLE
-            + "\n"
-            + LAMMPS_TIMESTEP
-            + "\n"
-            + LAMMPS_THERMO
-            + "\n"
-            + LAMMPS_VELOCITY
-            + "\n"
-            + LAMMPS_ENSEMBLE_NVT
+        LAMMPS_THERMO_STYLE
+        + "\n"
+        + LAMMPS_TIMESTEP
+        + "\n"
+        + LAMMPS_THERMO
+        + "\n"
+        + LAMMPS_VELOCITY
+        + "\n"
+        + LAMMPS_ENSEMBLE_NVT
     )
     run_str = LAMMPS_RUN + "\n"
     return lammps_md_nvt(
@@ -319,19 +327,27 @@ def calc_molecular_dynamics_npt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure"),
+    quantities=(
+        "positions",
+        "cell",
+        "forces",
+        "temperature",
+        "energy_pot",
+        "energy_tot",
+        "pressure",
+    ),
     **kwargs,
 ):
     init_str = (
-            LAMMPS_THERMO_STYLE
-            + "\n"
-            + LAMMPS_TIMESTEP
-            + "\n"
-            + LAMMPS_THERMO
-            + "\n"
-            + LAMMPS_VELOCITY
-            + "\n"
-            + LAMMPS_ENSEMBLE_NPT
+        LAMMPS_THERMO_STYLE
+        + "\n"
+        + LAMMPS_TIMESTEP
+        + "\n"
+        + LAMMPS_THERMO
+        + "\n"
+        + LAMMPS_VELOCITY
+        + "\n"
+        + LAMMPS_ENSEMBLE_NPT
     )
     run_str = LAMMPS_RUN + "\n"
     return lammps_md_npt(
@@ -369,19 +385,27 @@ def calc_molecular_dynamics_nph_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure"),
+    quantities=(
+        "positions",
+        "cell",
+        "forces",
+        "temperature",
+        "energy_pot",
+        "energy_tot",
+        "pressure",
+    ),
     **kwargs,
 ):
     init_str = (
-            LAMMPS_THERMO_STYLE
-            + "\n"
-            + LAMMPS_TIMESTEP
-            + "\n"
-            + LAMMPS_THERMO
-            + "\n"
-            + LAMMPS_VELOCITY
-            + "\n"
-            + LAMMPS_ENSEMBLE_NPH
+        LAMMPS_THERMO_STYLE
+        + "\n"
+        + LAMMPS_TIMESTEP
+        + "\n"
+        + LAMMPS_THERMO
+        + "\n"
+        + LAMMPS_VELOCITY
+        + "\n"
+        + LAMMPS_ENSEMBLE_NPH
     )
     run_str = LAMMPS_RUN + "\n"
     return lammps_md_nph(

@@ -79,7 +79,15 @@ def lammps_md_nvt(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure"),
+    quantities=(
+        "positions",
+        "cell",
+        "forces",
+        "temperature",
+        "energy_pot",
+        "energy_tot",
+        "pressure",
+    ),
     **kwargs,
 ):
     lmp_instance = lammps_run(
@@ -126,7 +134,15 @@ def lammps_md_npt(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure"),
+    quantities=(
+        "positions",
+        "cell",
+        "forces",
+        "temperature",
+        "energy_pot",
+        "energy_tot",
+        "pressure",
+    ),
     **kwargs,
 ):
     lmp_instance = lammps_run(
@@ -174,7 +190,15 @@ def lammps_md_nph(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure"),
+    quantities=(
+        "positions",
+        "cell",
+        "forces",
+        "temperature",
+        "energy_pot",
+        "energy_tot",
+        "pressure",
+    ),
     **kwargs,
 ):
     lmp_instance = lammps_run(
@@ -198,13 +222,26 @@ def lammps_md_nph(
         run_str=run_str,
         run=run,
         thermo=thermo,
-        quantities=quantities
+        quantities=quantities,
     )
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 
 
-def lammps_calc_md_step(lmp_instance, run_str, run, quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure")):
+def lammps_calc_md_step(
+    lmp_instance,
+    run_str,
+    run,
+    quantities=(
+        "positions",
+        "cell",
+        "forces",
+        "temperature",
+        "energy_pot",
+        "energy_tot",
+        "pressure",
+    ),
+):
     run_str_rendered = Template(run_str).render(run=run)
     lmp_instance.interactive_lib_command(run_str_rendered)
     interactive_getter_dict = {
@@ -219,20 +256,31 @@ def lammps_calc_md_step(lmp_instance, run_str, run, quantities=("positions", "ce
     return {q: interactive_getter_dict[q]() for q in quantities}
 
 
-def lammps_calc_md(lmp_instance, run_str, run, thermo, quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure")):
+def lammps_calc_md(
+    lmp_instance,
+    run_str,
+    run,
+    thermo,
+    quantities=(
+        "positions",
+        "cell",
+        "forces",
+        "temperature",
+        "energy_pot",
+        "energy_tot",
+        "pressure",
+    ),
+):
     results_lst = [
         lammps_calc_md_step(
             lmp_instance=lmp_instance,
             run_str=run_str,
             run=thermo,
-            quantities=quantities
+            quantities=quantities,
         )
         for _ in range(run // thermo)
     ]
-    return {
-        q: np.array([d[q] for d in results_lst])
-        for q in quantities
-    }
+    return {q: np.array([d[q] for d in results_lst]) for q in quantities}
 
 
 def lammps_thermal_expansion_loop(
