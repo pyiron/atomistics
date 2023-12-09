@@ -7,7 +7,7 @@ from pylammpsmpi import LammpsASELibrary
 from atomistics.calculators.lammps.potential import validate_potential_dataframe
 
 
-def lammps_run(structure, potential_dataframe, input_template, lmp=None, **kwargs):
+def lammps_run(structure, potential_dataframe, input_template=None, lmp=None, **kwargs):
     potential_dataframe = validate_potential_dataframe(
         potential_dataframe=potential_dataframe
     )
@@ -48,6 +48,7 @@ def lammps_calc_md_step(
         "energy_pot",
         "energy_tot",
         "pressure",
+        "velocities",
     ),
 ):
     run_str_rendered = Template(run_str).render(run=run)
@@ -60,6 +61,7 @@ def lammps_calc_md_step(
         "energy_pot": lmp_instance.interactive_energy_pot_getter,
         "energy_tot": lmp_instance.interactive_energy_tot_getter,
         "pressure": lmp_instance.interactive_pressures_getter,
+        "velocities": lmp_instance.interactive_velocities_getter,
     }
     return {q: interactive_getter_dict[q]() for q in quantities}
 
@@ -77,6 +79,7 @@ def lammps_calc_md(
         "energy_pot",
         "energy_tot",
         "pressure",
+        "velocities",
     ),
 ):
     results_lst = [

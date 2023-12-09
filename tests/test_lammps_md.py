@@ -36,9 +36,10 @@ class TestLammpsMD(unittest.TestCase):
             seed=4928459,
             dist="gaussian",
             lmp=None,
-            quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure"),
+            quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
         )
         self.assertEqual(result_dict["positions"].shape, (10, 32, 3))
+        self.assertEqual(result_dict["velocities"].shape, (10, 32, 3))
         self.assertEqual(result_dict["cell"].shape, (10, 3, 3))
         self.assertEqual(result_dict["forces"].shape, (10, 32, 3))
         self.assertEqual(result_dict["temperature"].shape, (10, ))
@@ -94,9 +95,10 @@ class TestLammpsMD(unittest.TestCase):
             seed=4928459,
             dist="gaussian",
             lmp=None,
-            quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure"),
+            quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
         )
         self.assertEqual(result_dict["positions"].shape, (10, 32, 3))
+        self.assertEqual(result_dict["velocities"].shape, (10, 32, 3))
         self.assertEqual(result_dict["cell"].shape, (10, 3, 3))
         self.assertEqual(result_dict["forces"].shape, (10, 32, 3))
         self.assertEqual(result_dict["temperature"].shape, (10, ))
@@ -125,9 +127,10 @@ class TestLammpsMD(unittest.TestCase):
             seed=4928459,
             dist="gaussian",
             lmp=None,
-            quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure"),
+            quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
         )
         self.assertEqual(result_dict["positions"].shape, (10, 32, 3))
+        self.assertEqual(result_dict["velocities"].shape, (10, 32, 3))
         self.assertEqual(result_dict["cell"].shape, (10, 3, 3))
         self.assertEqual(result_dict["forces"].shape, (10, 32, 3))
         self.assertEqual(result_dict["temperature"].shape, (10, ))
