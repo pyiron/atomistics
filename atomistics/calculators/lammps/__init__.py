@@ -13,7 +13,10 @@ from atomistics.calculators.lammps.potential import (
     get_potential_dataframe,
     get_potential_by_name,
 )
+
 try:
-    from atomistics.calculators.lammps.phonon import calc_molecular_dynamics_phonons_with_lammps
+    from atomistics.calculators.lammps.phonon import (
+        calc_molecular_dynamics_phonons_with_lammps,
+    )
 except ImportError:
     pass
