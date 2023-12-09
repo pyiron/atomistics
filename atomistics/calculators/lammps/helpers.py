@@ -29,8 +29,9 @@ def lammps_run(structure, potential_dataframe, input_template, lmp=None, **kwarg
     for c in potential_dataframe.Config:
         lmp.interactive_lib_command(c)
 
-    for l in input_template.split("\n"):
-        lmp.interactive_lib_command(l)
+    if input_template is not None:
+        for l in input_template.split("\n"):
+            lmp.interactive_lib_command(l)
 
     return lmp
 
