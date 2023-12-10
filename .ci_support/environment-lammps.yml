@@ -6,3 +6,4 @@ dependencies:
 - pylammpsmpi =0.2.10
 - jinja2 =3.1.2
 - iprpy-data =2023.07.25
+- dynaphopy =1.17.15

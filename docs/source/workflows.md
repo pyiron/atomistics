@@ -267,6 +267,112 @@ and the `pandas.DataFrame` for the interatomic potential `potential_dataframe` a
 These input parameters are based on the LAMMPS fix `nvt/npt`, you can read more about the specific implementation on the
 [LAMMPS website](https://docs.lammps.org/fix_nh.html).
 
+#### Phonons from Molecular Dynamics
+The softening of the phonon modes is calculated for Silicon using the [Tersoff interatomic potential](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.38.9902) 
+which is available via the [NIST potentials repository](https://www.ctcms.nist.gov/potentials/entry/1988--Tersoff-J--Si-c/). 
+Silicon is chosen based on its diamond crystal lattice which requires less calculation than the face centered cubic (fcc)
+crystal of Aluminium. The simulation workflow consists of three distinct steps:
+
+* Starting with the optimization of the equilibrium structure. 
+* Followed by the calculation of the 0K phonon spectrum. 
+* Finally, the finite temperature phonon spectrum is calculated using molecular dynamics. 
+
+The finite temperature phonon spectrum is calculated using the [DynaPhoPy](https://abelcarreras.github.io/DynaPhoPy/)
+package, which is integrated inside the `atomistics` package. As a prerequisite the dependencies, imported and the bulk 
+silicon diamond structure is created and the Tersoff interatomic potential is loaded: 
+```
+from ase.build import bulk
+from atomistics.calculators import (
+    calc_molecular_dynamics_phonons_with_lammps,
+    evaluate_with_lammps, 
+)
+from atomistics.workflows import optimize_positions_and_volume, PhonopyWorkflow
+from dynaphopy import Quasiparticle
+import pandas
+from phonopy.units import VaspToTHz
+import spglib
+
+structure_bulk = bulk("Si", cubic=True)
+potential_dataframe = get_potential_by_name(
+    potential_name='1988--Tersoff-J--Si-c--LAMMPS--ipr1'
+)
+```
+
+The first step is optimizing the Silicon diamond structure to match the lattice specifications implemented in the Tersoff 
+interatomic potential:
+```
+task_dict = optimize_positions_and_volume(structure=structure_bulk)
+result_dict = evaluate_with_lammps(
+    task_dict=task_dict,
+    potential_dataframe=potential_dataframe,
+)
+structure_ase = result_dict["structure_with_optimized_positions_and_volume"]
+```
+
+As a second step the 0K phonons are calculated using the `PhonopyWorkflow` which is explained in more detail below in 
+the section on [Phonons](https://atomistics.readthedocs.io/en/latest/workflows.html#phonons). 
+```
+cell = (structure_ase.cell.array, structure_ase.get_scaled_positions(), structure_ase.numbers)
+primitive_matrix = spglib.standardize_cell(cell=cell, to_primitive=True)[0] / structure_ase.get_volume() ** (1/3)
+workflow = PhonopyWorkflow(
+    structure=structure_ase,
+    interaction_range=10,
+    factor=VaspToTHz,
+    displacement=0.01,
+    dos_mesh=20,
+    primitive_matrix=primitive_matrix,
+    number_of_snapshots=None,
+)
+task_dict = workflow.generate_structures()
+result_dict = evaluate_with_lammps(
+    task_dict=task_dict,
+    potential_dataframe=potential_dataframe,
+)
+workflow.analyse_structures(output_dict=result_dict)
+```
+
+The calcualtion of the finite temperature phonons starts by computing the molecular dynamics trajectory using the 
+`calc_molecular_dynamics_phonons_with_lammps()` function. This function is internally linked to [DynaPhoPy](https://abelcarreras.github.io/DynaPhoPy/)
+to return an `dynaphopy.dynamics.Dynamics` object: 
+```
+trajectory = calc_molecular_dynamics_phonons_with_lammps(
+    structure_ase=structure_ase,
+    potential_dataframe=potential_dataframe,
+    force_constants=workflow.phonopy.get_force_constants(), 
+    phonopy_unitcell=workflow.phonopy.get_unitcell(),
+    phonopy_primitive_matrix=workflow.phonopy.get_primitive_matrix(),
+    phonopy_supercell_matrix=workflow.phonopy.get_supercell_matrix(),
+    total_time=2,       # ps
+    time_step=0.001,    # ps
+    relaxation_time=5,  # ps
+    silent=True,
+    supercell=[2, 2, 2],
+    memmap=False,
+    velocity_only=True,
+    temperature=100,
+)
+```
+When a total of 2 picoseconds is selected to compute the finite temperature phonons with a timestep of 1 femto second
+then this results in a total of 2000 molecular dynamics steps. While more molecular dynamics steps result in more precise
+predictions they also require more computational resources. 
+
+The postprocessing is executed using the [DynaPhoPy](https://abelcarreras.github.io/DynaPhoPy/) package: 
+```
+calculation = Quasiparticle(trajectory)
+calculation.select_power_spectra_algorithm(2)  # select FFT algorithm
+calculation.get_renormalized_phonon_dispersion_bands()
+renormalized_force_constants = calculation.get_renormalized_force_constants().get_array()
+renormalized_force_constants
+```
+It calculates the re-normalized force constants which can then be used to calculate the finite temperature properties. 
+
+In addition the [DynaPhoPy](https://abelcarreras.github.io/DynaPhoPy/) package can be used to directly compare the 
+finite temperature phonon spectrum with the 0K phonon spectrum calulated with the finite displacement method: 
+```
+calculation.plot_renormalized_phonon_dispersion_bands()
+```
+![finite temperature band_structure](../pictures/lammps_md_phonons.png)
+
 ### Langevin Thermostat 
 In addition to the molecular dynamics implemented in the LAMMPS simulation code, the `atomistics` package also provides
 the `LangevinWorkflow` which implements molecular dynamics independent of the specific simulation code. 
