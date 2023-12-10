@@ -1,6 +1,6 @@
 from ase.build import bulk
 from ase.calculators.emt import EMT
-from ase.optimize import  LBFGS
+from ase.optimize import LBFGS
 from phonopy.units import VaspToTHz
 import unittest
 
