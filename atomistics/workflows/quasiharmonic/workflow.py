@@ -43,6 +43,11 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             ),
             dtype=int,
         )
+        # Phonopy internally repeats structures that are "too small"
+        # Here we manually guarantee that all structures passed are big enough
+        # This provides some computational efficiency for classical calculations
+        # And for quantum calculations _ensures_ that force matrices and energy/atom
+        # get treated with the same kmesh
         super().__init__(
             structure=structure.repeat(repeat_vector),
             num_points=num_points,
