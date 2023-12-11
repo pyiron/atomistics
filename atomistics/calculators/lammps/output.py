@@ -9,6 +9,10 @@ class LammpsOutput:
     def fields(cls):
         return tuple(field.name for field in dataclasses.fields(cls))
 
+    @classmethod
+    def get(cls, engine: LammpsASELibrary, *quantities: str) -> dict:
+        return {q: getattr(cls, q)(engine) for q in quantities}
+
     def __call__(self, engine: LammpsASELibrary, quantity: str):
         return getattr(self, quantity)(engine)
 
