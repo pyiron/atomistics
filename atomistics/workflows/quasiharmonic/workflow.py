@@ -34,10 +34,15 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         primitive_matrix=None,
         number_of_snapshots=None,
     ):
-        repeat_vector = np.array(np.diag(get_supercell_matrix(
-            interaction_range=interaction_range,
-            cell=structure.cell.array,
-        )), dtype=int)
+        repeat_vector = np.array(
+            np.diag(
+                get_supercell_matrix(
+                    interaction_range=interaction_range,
+                    cell=structure.cell.array,
+                )
+            ),
+            dtype=int,
+        )
         super().__init__(
             structure=structure.repeat(repeat_vector),
             num_points=num_points,
