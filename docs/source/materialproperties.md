@@ -507,7 +507,7 @@ volume for the individual temperatures is stored in the `volume_md_lst` list.
 
 ### Summary
 To visually compare the thermal expansion predicted by the three different approximations, the [matplotlib](https://matplotlib.org)
-is used to plot the temperature over the volume:
+is used to plot the volume over the temperature:
 ```
 import matplotlib.pyplot as plt
 plt.plot(np.array(volume_md_lst)/len(structure_md) * len(structure_opt), temperature_md_lst, label="Molecular Dynamics", color="C2")
