@@ -15,7 +15,7 @@ class LammpsOutput:
 
 
 @dataclasses.dataclass
-class LammpsMDQuantityGetter(LammpsOutput):
+class LammpsMDOutput(LammpsOutput):
     positions: callable = LammpsASELibrary.interactive_positions_getter
     cell: callable = LammpsASELibrary.interactive_cells_getter
     forces: callable = LammpsASELibrary.interactive_forces_getter
@@ -27,7 +27,7 @@ class LammpsMDQuantityGetter(LammpsOutput):
 
 
 @dataclasses.dataclass
-class LammpsStaticQuantityGetter(LammpsOutput):
+class LammpsStaticOutput(LammpsOutput):
     forces: callable = LammpsASELibrary.interactive_forces_getter
     energy: callable = LammpsASELibrary.interactive_energy_pot_getter
     stress: callable = LammpsASELibrary.interactive_pressures_getter
