@@ -45,7 +45,7 @@ def get_quantity(lmp_instance, quantity_getter, quantities):
 def get_static_output(lmp_instance, quantities=quantities_static):
     return get_quantity(
         lmp_instance=lmp_instance,
-        quantity_getter=LammpsStaticQuantityGetter,
+        quantity_getter=quantity_getter_static,
         quantities=quantities,
     )
 
@@ -53,6 +53,6 @@ def get_static_output(lmp_instance, quantities=quantities_static):
 def get_md_output(lmp_instance, quantities=quantities_md):
     return get_quantity(
         lmp_instance=lmp_instance,
-        quantity_getter=LammpsMDQuantityGetter,
+        quantity_getter=quantity_getter_md,
         quantities=quantities,
     )
