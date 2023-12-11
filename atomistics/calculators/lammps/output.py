@@ -13,9 +13,6 @@ class LammpsOutput:
     def get(cls, engine: LammpsASELibrary, *quantities: str) -> dict:
         return {q: getattr(cls, q)(engine) for q in quantities}
 
-    def __call__(self, engine: LammpsASELibrary, quantity: str):
-        return getattr(self, quantity)(engine)
-
 
 @dataclasses.dataclass
 class LammpsMDQuantityGetter(LammpsOutput):
@@ -34,29 +31,3 @@ class LammpsStaticQuantityGetter(LammpsOutput):
     forces: callable = LammpsASELibrary.interactive_forces_getter
     energy: callable = LammpsASELibrary.interactive_energy_pot_getter
     stress: callable = LammpsASELibrary.interactive_pressures_getter
-
-
-quantity_getter_md = LammpsMDQuantityGetter()
-quantities_md = quantity_getter_md.fields()
-quantity_getter_static = LammpsStaticQuantityGetter()
-quantities_static = quantity_getter_static.fields()
-
-
-def get_quantity(lmp_instance, quantity_getter, quantities):
-    return {q: quantity_getter(lmp_instance, q) for q in quantities}
-
-
-def get_static_output(lmp_instance, quantities=quantities_static):
-    return get_quantity(
-        lmp_instance=lmp_instance,
-        quantity_getter=quantity_getter_static,
-        quantities=quantities,
-    )
-
-
-def get_md_output(lmp_instance, quantities=quantities_md):
-    return get_quantity(
-        lmp_instance=lmp_instance,
-        quantity_getter=quantity_getter_md,
-        quantities=quantities,
-    )

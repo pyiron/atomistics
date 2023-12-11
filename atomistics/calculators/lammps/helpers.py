@@ -5,7 +5,7 @@ import numpy as np
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.lammps.potential import validate_potential_dataframe
-from atomistics.calculators.lammps.output import get_md_output, quantities_md
+from atomistics.calculators.lammps.output import LammpsMDQuantityGetter
 
 
 def lammps_run(structure, potential_dataframe, input_template=None, lmp=None, **kwargs):
@@ -41,14 +41,11 @@ def lammps_calc_md_step(
     lmp_instance,
     run_str,
     run,
-    quantities=quantities_md,
+    quantities=LammpsMDQuantityGetter.fields(),
 ):
     run_str_rendered = Template(run_str).render(run=run)
     lmp_instance.interactive_lib_command(run_str_rendered)
-    return get_md_output(
-        lmp_instance=lmp_instance,
-        quantities=quantities,
-    )
+    return LammpsMDQuantityGetter.get(lmp_instance, *quantities)
 
 
 def lammps_calc_md(
@@ -56,7 +53,7 @@ def lammps_calc_md(
     run_str,
     run,
     thermo,
-    quantities=quantities_md,
+    quantities=LammpsMDQuantityGetter.fields(),
 ):
     results_lst = [
         lammps_calc_md_step(

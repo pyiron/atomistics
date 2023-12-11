@@ -25,11 +25,7 @@ from atomistics.calculators.lammps.commands import (
     LAMMPS_RUN,
     LAMMPS_MINIMIZE_VOLUME,
 )
-from atomistics.calculators.lammps.output import (
-    get_static_output,
-    quantities_md,
-    quantities_static,
-)
+from atomistics.calculators.lammps.output import LammpsMDQuantityGetter, LammpsStaticQuantityGetter
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -117,7 +113,7 @@ def calc_static_with_lammps(
     structure,
     potential_dataframe,
     lmp=None,
-    quantities=quantities_static,
+    quantities=LammpsStaticQuantityGetter.fields(),
     **kwargs,
 ):
     template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
@@ -131,10 +127,7 @@ def calc_static_with_lammps(
         lmp=lmp,
         **kwargs,
     )
-    result_dict = get_static_output(
-        lmp_instance=lmp_instance,
-        quantities=quantities,
-    )
+    result_dict = LammpsStaticQuantityGetter.get(lmp_instance, *quantities)
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 
@@ -151,7 +144,7 @@ def calc_molecular_dynamics_nvt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=quantities_md,
+    quantities=LammpsMDQuantityGetter.fields(),
     **kwargs,
 ):
     init_str = (
@@ -208,7 +201,7 @@ def calc_molecular_dynamics_npt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=quantities_md,
+    quantities=LammpsMDQuantityGetter.fields(),
     **kwargs,
 ):
     init_str = (
@@ -266,7 +259,7 @@ def calc_molecular_dynamics_nph_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=quantities_md,
+    quantities=LammpsMDQuantityGetter.fields(),
     **kwargs,
 ):
     init_str = (
