@@ -1,35 +1,11 @@
 from __future__ import annotations
 
-import dataclasses
-
 from jinja2 import Template
 import numpy as np
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.lammps.potential import validate_potential_dataframe
-
-
-@dataclasses.dataclass
-class LammpsQuantityGetter:
-    positions: callable = LammpsASELibrary.interactive_positions_getter
-    cell: callable = LammpsASELibrary.interactive_cells_getter
-    forces: callable = LammpsASELibrary.interactive_forces_getter
-    temperature: callable = LammpsASELibrary.interactive_temperatures_getter
-    energy_pot: callable = LammpsASELibrary.interactive_energy_pot_getter
-    energy_tot: callable = LammpsASELibrary.interactive_energy_tot_getter
-    pressure: callable = LammpsASELibrary.interactive_pressures_getter
-    velocities: callable = LammpsASELibrary.interactive_velocities_getter
-
-    @classmethod
-    def fields(cls):
-        return tuple(field.name for field in dataclasses.fields(cls))
-
-    def __call__(self, engine: LammpsASELibrary, quantity: str):
-        return getattr(self, quantity)(engine)
-
-
-quantity_getter = LammpsQuantityGetter()
-quantities = quantity_getter.fields()
+from atomistics.calculators.lammps.output import get_md_output, quantities_md
 
 
 def lammps_run(structure, potential_dataframe, input_template=None, lmp=None, **kwargs):
@@ -65,12 +41,14 @@ def lammps_calc_md_step(
     lmp_instance,
     run_str,
     run,
-    quantities=quantities,
+    quantities=quantities_md,
 ):
     run_str_rendered = Template(run_str).render(run=run)
     lmp_instance.interactive_lib_command(run_str_rendered)
-    # return {q: getattr(LammpsQuantityGetter, q)(lmp_instance) for q in quantities}
-    return {q: quantity_getter(lmp_instance, q) for q in quantities}
+    return get_md_output(
+        lmp_instance=lmp_instance,
+        quantities=quantities,
+    )
 
 
 def lammps_calc_md(
@@ -78,7 +56,7 @@ def lammps_calc_md(
     run_str,
     run,
     thermo,
-    quantities=quantities,
+    quantities=quantities_md,
 ):
     results_lst = [
         lammps_calc_md_step(
