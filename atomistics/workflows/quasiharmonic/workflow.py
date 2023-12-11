@@ -5,6 +5,7 @@ from atomistics.workflows.evcurve.workflow import (
     fit_ev_curve,
 )
 from atomistics.workflows.phonons.workflow import PhonopyWorkflow
+from atomistics.workflows.phonons.helper import get_supercell_matrix
 from atomistics.workflows.phonons.units import (
     VaspToTHz,
     kJ_mol_to_eV,
@@ -33,8 +34,12 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         primitive_matrix=None,
         number_of_snapshots=None,
     ):
+        repeat_vector = np.array(np.diag(get_supercell_matrix(
+            interaction_range=interaction_range,
+            cell=structure.cell.array,
+        )), dtype=int)
         super().__init__(
-            structure=structure,
+            structure=structure.repeat(repeat_vector),
             num_points=num_points,
             fit_type=fit_type,
             fit_order=fit_order,
