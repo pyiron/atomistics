@@ -25,6 +25,7 @@ from atomistics.calculators.lammps.commands import (
     LAMMPS_RUN,
     LAMMPS_MINIMIZE_VOLUME,
 )
+from atomistics.calculators.lammps.helpers import quantities
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -148,16 +149,7 @@ def calc_molecular_dynamics_nvt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=(
-        "positions",
-        "cell",
-        "forces",
-        "temperature",
-        "energy_pot",
-        "energy_tot",
-        "pressure",
-        "velocities",
-    ),
+    quantities=quantities,
     **kwargs,
 ):
     init_str = (
@@ -214,16 +206,7 @@ def calc_molecular_dynamics_npt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=(
-        "positions",
-        "cell",
-        "forces",
-        "temperature",
-        "energy_pot",
-        "energy_tot",
-        "pressure",
-        "velocities",
-    ),
+    quantities=quantities,
     **kwargs,
 ):
     init_str = (
@@ -281,16 +264,7 @@ def calc_molecular_dynamics_nph_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=(
-        "positions",
-        "cell",
-        "forces",
-        "temperature",
-        "energy_pot",
-        "energy_tot",
-        "pressure",
-        "velocities",
-    ),
+    quantities=quantities,
     **kwargs,
 ):
     init_str = (
