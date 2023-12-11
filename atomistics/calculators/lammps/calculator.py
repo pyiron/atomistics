@@ -25,7 +25,11 @@ from atomistics.calculators.lammps.commands import (
     LAMMPS_RUN,
     LAMMPS_MINIMIZE_VOLUME,
 )
-from atomistics.calculators.lammps.output import get_static_output, quantities_md, quantities_static
+from atomistics.calculators.lammps.output import (
+    get_static_output,
+    quantities_md,
+    quantities_static,
+)
 
 if TYPE_CHECKING:
     from ase import Atoms
