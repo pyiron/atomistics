@@ -25,7 +25,7 @@ from atomistics.calculators.lammps.commands import (
     LAMMPS_RUN,
     LAMMPS_MINIMIZE_VOLUME,
 )
-from atomistics.calculators.lammps.helpers import quantities
+from atomistics.calculators.lammps.output import LammpsMDOutput, LammpsStaticOutput
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -113,7 +113,7 @@ def calc_static_with_lammps(
     structure,
     potential_dataframe,
     lmp=None,
-    quantities=("energy", "forces", "stress"),
+    quantities=LammpsStaticOutput.fields(),
     **kwargs,
 ):
     template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
@@ -127,12 +127,7 @@ def calc_static_with_lammps(
         lmp=lmp,
         **kwargs,
     )
-    interactive_getter_dict = {
-        "forces": lmp_instance.interactive_forces_getter,
-        "energy": lmp_instance.interactive_energy_pot_getter,
-        "stress": lmp_instance.interactive_pressures_getter,
-    }
-    result_dict = {q: interactive_getter_dict[q]() for q in quantities}
+    result_dict = LammpsStaticOutput.get(lmp_instance, *quantities)
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 
@@ -149,7 +144,7 @@ def calc_molecular_dynamics_nvt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=quantities,
+    quantities=LammpsMDOutput.fields(),
     **kwargs,
 ):
     init_str = (
@@ -206,7 +201,7 @@ def calc_molecular_dynamics_npt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=quantities,
+    quantities=LammpsMDOutput.fields(),
     **kwargs,
 ):
     init_str = (
@@ -264,7 +259,7 @@ def calc_molecular_dynamics_nph_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=quantities,
+    quantities=LammpsMDOutput.fields(),
     **kwargs,
 ):
     init_str = (
