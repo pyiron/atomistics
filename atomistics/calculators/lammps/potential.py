@@ -104,16 +104,18 @@ class PotentialAbstract(object):
                         os.path.join(path, periodic_table_file_name),
                         index_col=0,
                         converters={
-                            "Species": lambda x: x.replace("'", "")
-                            .strip("[]")
-                            .split(", "),
-                            "Config": lambda x: x.replace("'", "")
-                            .replace("\\n", "\n")
-                            .strip("[]")
-                            .split(", "),
-                            "Filename": lambda x: x.replace("'", "")
-                            .strip("[]")
-                            .split(", "),
+                            "Species": (
+                                lambda x: x.replace("'", "").strip("[]").split(", ")
+                            ),
+                            "Config": (
+                                lambda x: x.replace("'", "")
+                                .replace("\\n", "\n")
+                                .strip("[]")
+                                .split(", ")
+                            ),
+                            "Filename": (
+                                lambda x: x.replace("'", "").strip("[]").split(", ")
+                            ),
                         },
                     )
         raise ValueError("Was not able to locate the potential files.")
