@@ -28,7 +28,7 @@ class ASEExecutor(object):
         return self.structure.get_stress(voigt=False)
 
 
-ASEStaticOutput = OutputStatic(
+ASEOutputStatic = OutputStatic(
     forces=ASEExecutor.get_forces,
     energy=ASEExecutor.get_energy,
     stress=ASEExecutor.get_stress,
@@ -81,7 +81,7 @@ def calc_static_with_ase(
     ase_calculator,
     quantities=OutputStatic.fields(),
 ):
-    return ASEStaticOutput.get(
+    return ASEOutputStatic.get(
         ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator), *quantities
     )
 

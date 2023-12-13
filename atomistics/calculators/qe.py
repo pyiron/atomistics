@@ -22,7 +22,7 @@ class QEStaticParser(object):
         return self.parser.stress
 
 
-QEStaticOutput = OutputStatic(
+QuantumEspressoOutputStatic = OutputStatic(
     forces=QEStaticParser.get_forces,
     energy=QEStaticParser.get_energy,
     stress=QEStaticParser.get_stress,
@@ -210,7 +210,7 @@ def calc_static_with_qe(
     call_qe_via_ase_command(
         calculation_name=calculation_name, working_directory=working_directory
     )
-    return QEStaticOutput.get(QEStaticParser(filename=output_file_name), *quantities)
+    return QuantumEspressoOutputStatic.get(QEStaticParser(filename=output_file_name), *quantities)
 
 
 @as_task_dict_evaluator
