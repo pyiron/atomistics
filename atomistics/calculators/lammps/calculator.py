@@ -25,7 +25,10 @@ from atomistics.calculators.lammps.commands import (
     LAMMPS_RUN,
     LAMMPS_MINIMIZE_VOLUME,
 )
-from atomistics.calculators.lammps.output import LammpsOutputMolecularDynamics, LammpsOutputStatic
+from atomistics.calculators.lammps.output import (
+    LammpsOutputMolecularDynamics,
+    LammpsOutputStatic,
+)
 
 if TYPE_CHECKING:
     from ase import Atoms

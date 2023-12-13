@@ -210,7 +210,9 @@ def calc_static_with_qe(
     call_qe_via_ase_command(
         calculation_name=calculation_name, working_directory=working_directory
     )
-    return QuantumEspressoOutputStatic.get(QEStaticParser(filename=output_file_name), *quantities)
+    return QuantumEspressoOutputStatic.get(
+        QEStaticParser(filename=output_file_name), *quantities
+    )
 
 
 @as_task_dict_evaluator
