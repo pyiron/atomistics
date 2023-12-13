@@ -45,3 +45,14 @@ if TYPE_CHECKING:
     ResultsDict = dict[str, TaskResults]
 
     SimpleEvaluator = callable[[Atoms, list[TaskName], ...], TaskResults]
+
+
+def get_quantities_from_tasks(tasks):
+    quantities = []
+    if "calc_energy" in tasks:
+        quantities.append("energy")
+    if "calc_forces" in tasks:
+        quantities.append("forces")
+    if "calc_stress" in tasks:
+        quantities.append("stress")
+    return quantities

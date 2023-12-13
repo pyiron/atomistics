@@ -3,6 +3,8 @@ from __future__ import annotations
 from ase.constraints import UnitCellFilter
 from typing import TYPE_CHECKING
 
+from atomistics.calculators.interface import get_quantities_from_tasks
+from atomistics.calculators.output import OutputStatic
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 if TYPE_CHECKING:
@@ -10,6 +12,28 @@ if TYPE_CHECKING:
     from ase.calculators.calculator import Calculator as ASECalculator
     from ase.optimize.optimize import Optimizer
     from atomistics.calculators.interface import TaskName
+
+
+class ASEExecutor(object):
+    def __init__(self, ase_structure, ase_calculator):
+        self.structure = ase_structure
+        self.structure.calc = ase_calculator
+
+    def get_forces(self):
+        return self.structure.get_forces()
+
+    def get_energy(self):
+        return self.structure.get_potential_energy()
+
+    def get_stress(self):
+        return self.structure.get_stress(voigt=False)
+
+
+ASEOutputStatic = OutputStatic(
+    forces=ASEExecutor.get_forces,
+    energy=ASEExecutor.get_energy,
+    stress=ASEExecutor.get_stress,
+)
 
 
 @as_task_dict_evaluator
@@ -29,91 +53,33 @@ def evaluate_with_ase(
             ase_optimizer_kwargs=ase_optimizer_kwargs,
         )
     elif "optimize_positions_and_volume" in tasks:
-        results["structure_with_optimized_positions_and_volume"] = (
-            optimize_positions_and_volume_with_ase(
-                structure=structure,
-                ase_calculator=ase_calculator,
-                ase_optimizer=ase_optimizer,
-                ase_optimizer_kwargs=ase_optimizer_kwargs,
-            )
+        results[
+            "structure_with_optimized_positions_and_volume"
+        ] = optimize_positions_and_volume_with_ase(
+            structure=structure,
+            ase_calculator=ase_calculator,
+            ase_optimizer=ase_optimizer,
+            ase_optimizer_kwargs=ase_optimizer_kwargs,
         )
     elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
-        if "calc_energy" in tasks and "calc_forces" in tasks and "calc_stress" in tasks:
-            (
-                results["energy"],
-                results["forces"],
-                results["stress"],
-            ) = calc_energy_forces_and_stress_with_ase(
-                structure=structure, ase_calculator=ase_calculator
-            )
-        elif "calc_energy" in tasks and "calc_forces" in tasks:
-            results["energy"], results["forces"] = calc_energy_and_forces_with_ase(
-                structure=structure, ase_calculator=ase_calculator
-            )
-        elif "calc_energy" in tasks and "calc_stress" in tasks:
-            results["energy"], results["forces"] = calc_energy_and_stress_with_ase(
-                structure=structure, ase_calculator=ase_calculator
-            )
-        elif "calc_forces" in tasks and "calc_stress" in tasks:
-            results["energy"], results["forces"] = calc_forces_and_stress_with_ase(
-                structure=structure, ase_calculator=ase_calculator
-            )
-        elif "calc_energy" in tasks:
-            results["energy"] = calc_energy_with_ase(
-                structure=structure, ase_calculator=ase_calculator
-            )
-        elif "calc_forces" in tasks:
-            results["forces"] = calc_forces_with_ase(
-                structure=structure, ase_calculator=ase_calculator
-            )
-        elif "calc_stress" in tasks:
-            results["stress"] = calc_stress_with_ase(
-                structure=structure, ase_calculator=ase_calculator
-            )
+        return calc_static_with_ase(
+            structure=structure,
+            ase_calculator=ase_calculator,
+            quantities=get_quantities_from_tasks(tasks=tasks),
+        )
     else:
         raise ValueError("The ASE calculator does not implement:", tasks)
     return results
 
 
-def calc_energy_with_ase(structure: Atoms, ase_calculator: ASECalculator):
-    structure.calc = ase_calculator
-    return structure.get_potential_energy()
-
-
-def calc_energy_and_forces_with_ase(structure: Atoms, ase_calculator: ASECalculator):
-    structure.calc = ase_calculator
-    return structure.get_potential_energy(), structure.get_forces()
-
-
-def calc_energy_forces_and_stress_with_ase(
-    structure: Atoms, ase_calculator: ASECalculator
+def calc_static_with_ase(
+    structure,
+    ase_calculator,
+    quantities=OutputStatic.fields(),
 ):
-    structure.calc = ase_calculator
-    return (
-        structure.get_potential_energy(),
-        structure.get_forces(),
-        structure.get_stress(voigt=False),
+    return ASEOutputStatic.get(
+        ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator), *quantities
     )
-
-
-def calc_forces_and_stress_with_ase(structure: Atoms, ase_calculator: ASECalculator):
-    structure.calc = ase_calculator
-    return structure.get_forces(), structure.get_stress(voigt=False)
-
-
-def calc_energy_and_stress_with_ase(structure: Atoms, ase_calculator: ASECalculator):
-    structure.calc = ase_calculator
-    return structure.get_potential_energy(), structure.get_stress(voigt=False)
-
-
-def calc_forces_with_ase(structure: Atoms, ase_calculator: ASECalculator):
-    structure.calc = ase_calculator
-    return structure.get_forces()
-
-
-def calc_stress_with_ase(structure: Atoms, ase_calculator: ASECalculator):
-    structure.calc = ase_calculator
-    return structure.get_stress(voigt=False)
 
 
 def optimize_positions_with_ase(
