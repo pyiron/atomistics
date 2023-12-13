@@ -5,7 +5,7 @@ import numpy as np
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.lammps.potential import validate_potential_dataframe
-from atomistics.calculators.lammps.output import LammpsMDOutput
+from atomistics.calculators.lammps.output import LammpsOutputMolecularDynamics
 
 
 def lammps_run(structure, potential_dataframe, input_template=None, lmp=None, **kwargs):
@@ -41,11 +41,11 @@ def lammps_calc_md_step(
     lmp_instance,
     run_str,
     run,
-    quantities=LammpsMDOutput.fields(),
+    quantities=LammpsOutputMolecularDynamics.fields(),
 ):
     run_str_rendered = Template(run_str).render(run=run)
     lmp_instance.interactive_lib_command(run_str_rendered)
-    return LammpsMDOutput.get(lmp_instance, *quantities)
+    return LammpsOutputMolecularDynamics.get(lmp_instance, *quantities)
 
 
 def lammps_calc_md(
@@ -53,7 +53,7 @@ def lammps_calc_md(
     run_str,
     run,
     thermo,
-    quantities=LammpsMDOutput.fields(),
+    quantities=LammpsOutputMolecularDynamics.fields(),
 ):
     results_lst = [
         lammps_calc_md_step(
