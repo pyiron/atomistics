@@ -4,6 +4,7 @@ import subprocess
 from ase.io import write
 from pwtools import io
 
+from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.output import OutputStatic
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 
@@ -242,13 +243,6 @@ def evaluate_with_qe(
             **kwargs,
         )
     elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
-        quantities = []
-        if "calc_energy" in tasks:
-            quantities.append("energy")
-        if "calc_forces" in tasks:
-            quantities.append("forces")
-        if "calc_stress" in tasks:
-            quantities.append("stress")
         results = calc_static_with_qe(
             structure=structure,
             calculation_name=calculation_name,
@@ -257,7 +251,7 @@ def evaluate_with_qe(
             pseudopotentials=pseudopotentials,
             tstress=tstress,
             tprnfor=tprnfor,
-            quantities=quantities,
+            quantities=get_quantities_from_tasks(tasks=tasks),
             **kwargs,
         )
     else:

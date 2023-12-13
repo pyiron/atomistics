@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from pylammpsmpi import LammpsASELibrary
 
-from atomistics.calculators.wrapper import as_task_dict_evaluator
+from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.lammps.helpers import (
     lammps_calc_md,
     lammps_run,
@@ -29,6 +29,7 @@ from atomistics.calculators.lammps.output import (
     LammpsOutputMolecularDynamics,
     LammpsOutputStatic,
 )
+from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -392,18 +393,11 @@ def evaluate_with_lammps_library(
         )
         results["volume_over_temperature"] = (temperature_lst, volume_md_lst)
     elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
-        quantities = []
-        if "calc_energy" in tasks:
-            quantities.append("energy")
-        if "calc_forces" in tasks:
-            quantities.append("forces")
-        if "calc_stress" in tasks:
-            quantities.append("stress")
         return calc_static_with_lammps(
             structure=structure,
             potential_dataframe=potential_dataframe,
             lmp=lmp,
-            quantities=quantities,
+            quantities=get_quantities_from_tasks(tasks=tasks),
         )
     else:
         raise ValueError("The LAMMPS calculator does not implement:", tasks)

@@ -3,6 +3,7 @@ from __future__ import annotations
 from ase.constraints import UnitCellFilter
 from typing import TYPE_CHECKING
 
+from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.output import OutputStatic
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 
@@ -61,15 +62,11 @@ def evaluate_with_ase(
             ase_optimizer_kwargs=ase_optimizer_kwargs,
         )
     elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
-        quantities = []
-        if "calc_energy" in tasks:
-            quantities.append("energy")
-        if "calc_forces" in tasks:
-            quantities.append("forces")
-        if "calc_stress" in tasks:
-            quantities.append("stress")
+
         return calc_static_with_ase(
-            structure=structure, ase_calculator=ase_calculator, quantities=quantities
+            structure=structure,
+            ase_calculator=ase_calculator,
+            quantities=get_quantities_from_tasks(tasks=tasks)
         )
     else:
         raise ValueError("The ASE calculator does not implement:", tasks)
