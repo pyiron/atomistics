@@ -275,17 +275,17 @@ def evaluate_with_qe(
 ):
     results = {}
     if "optimize_positions_and_volume" in tasks:
-        results["structure_with_optimized_positions_and_volume"] = (
-            optimize_positions_and_volume_with_qe(
-                structure=structure,
-                calculation_name=calculation_name,
-                working_directory=working_directory,
-                kpts=kpts,
-                pseudopotentials=pseudopotentials,
-                tstress=tstress,
-                tprnfor=tprnfor,
-                **kwargs,
-            )
+        results[
+            "structure_with_optimized_positions_and_volume"
+        ] = optimize_positions_and_volume_with_qe(
+            structure=structure,
+            calculation_name=calculation_name,
+            working_directory=working_directory,
+            kpts=kpts,
+            pseudopotentials=pseudopotentials,
+            tstress=tstress,
+            tprnfor=tprnfor,
+            **kwargs,
         )
     elif "calc_energy" in tasks or "calc_forces" in tasks:
         if "calc_energy" in tasks and "calc_forces" in tasks:

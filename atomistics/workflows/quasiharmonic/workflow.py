@@ -132,7 +132,9 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             :class:`Thermal`: thermal properties as returned by Phonopy
         """
         if self._eng_internal_dict is None:
-            raise ValueError("Please first execute analyse_output() before calling get_thermal_properties().")
+            raise ValueError(
+                "Please first execute analyse_output() before calling get_thermal_properties()."
+            )
         if quantum_mechanical:
             tp_collect_dict = self._get_thermal_properties_quantum_mechanical(
                 t_min=t_min,
@@ -169,7 +171,10 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         quantities = tp_collect_dict[1.0].keys()
         strain_lst = self._eng_internal_dict.keys()
         volume_lst = np.array(self.get_volume_lst()) / self._volume_rescale_factor
-        eng_int_lst = np.array(list(self._eng_internal_dict.values())) / self._volume_rescale_factor
+        eng_int_lst = (
+            np.array(list(self._eng_internal_dict.values()))
+            / self._volume_rescale_factor
+        )
 
         vol_lst, eng_lst = [], []
         for i, temp in enumerate(temperatures):
@@ -189,13 +194,15 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         mat_dict = {}
         for k in quantities:
             if k != "temperatures":
-                mat_dict[k] = np.array([
-                    np.poly1d(np.polyfit(volume_lst, q_over_v, 1))(vol_opt)
-                    for q_over_v, vol_opt in zip(
-                        np.array([tp_collect_dict[s][k] for s in strain_lst]).T,
-                        vol_lst
-                    )
-                ])
+                mat_dict[k] = np.array(
+                    [
+                        np.poly1d(np.polyfit(volume_lst, q_over_v, 1))(vol_opt)
+                        for q_over_v, vol_opt in zip(
+                            np.array([tp_collect_dict[s][k] for s in strain_lst]).T,
+                            vol_lst,
+                        )
+                    ]
+                )
         mat_dict["volumes"] = vol_lst
         mat_dict["temperatures"] = temperatures
         return mat_dict
@@ -238,7 +245,8 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
                     pretend_real=pretend_real,
                     band_indices=band_indices,
                     is_projection=is_projection,
-                ).items()}
+                ).items()
+            }
         return tp_collect_dict
 
     def _get_thermal_properties_classical(
@@ -288,7 +296,9 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
                 )
             tp_collect_dict[strain] = {
                 "temperatures": temperatures,
-                "free_energy": np.array(t_property_lst) * kJ_mol_to_eV / self._volume_rescale_factor,
+                "free_energy": np.array(t_property_lst)
+                * kJ_mol_to_eV
+                / self._volume_rescale_factor,
             }
         return tp_collect_dict
 
