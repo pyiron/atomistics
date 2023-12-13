@@ -62,11 +62,10 @@ def evaluate_with_ase(
             ase_optimizer_kwargs=ase_optimizer_kwargs,
         )
     elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
-
         return calc_static_with_ase(
             structure=structure,
             ase_calculator=ase_calculator,
-            quantities=get_quantities_from_tasks(tasks=tasks)
+            quantities=get_quantities_from_tasks(tasks=tasks),
         )
     else:
         raise ValueError("The ASE calculator does not implement:", tasks)
