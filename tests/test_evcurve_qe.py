@@ -1,17 +1,15 @@
 import os
-import shutil
 
 from ase.build import bulk
 import unittest
 
-from atomistics.calculators import evaluate_with_qe
 from atomistics.workflows import EnergyVolumeCurveWorkflow
 
+try:
+    from atomistics.calculators import evaluate_with_qe
 
-quantum_espresso_command = "pw.x"
-if shutil.which(quantum_espresso_command) is not None:
     skip_quantum_espresso_test = False
-else:
+except ImportError:
     skip_quantum_espresso_test = True
 
 
@@ -30,7 +28,7 @@ def validate_fitdict(fit_dict):
 
 
 @unittest.skipIf(
-    skip_quantum_espresso_test, "quantum_espresso is not installed, so the quantum_espresso tests are skipped."
+    skip_quantum_espresso_test, "pwtools is not installed, so the pwtools based quantum espresso tests are skipped."
 )
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):

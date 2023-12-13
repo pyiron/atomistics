@@ -1,18 +1,18 @@
 from atomistics.calculators.ase import (
-    calc_energy_and_forces_with_ase,
-    calc_energy_with_ase,
-    calc_forces_with_ase,
+    calc_static_with_ase,
     evaluate_with_ase,
     optimize_positions_with_ase,
     optimize_positions_and_volume_with_ase,
 )
-from atomistics.calculators.qe import (
-    calc_energy_and_forces_with_qe,
-    calc_energy_with_qe,
-    calc_forces_with_qe,
-    evaluate_with_qe,
-    optimize_positions_and_volume_with_qe,
-)
+
+try:
+    from atomistics.calculators.qe import (
+        calc_static_with_qe,
+        evaluate_with_qe,
+        optimize_positions_and_volume_with_qe,
+    )
+except ImportError:
+    pass
 
 try:
     from atomistics.calculators.lammps import (

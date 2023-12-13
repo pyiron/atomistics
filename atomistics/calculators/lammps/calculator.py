@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from pylammpsmpi import LammpsASELibrary
 
-from atomistics.calculators.wrapper import as_task_dict_evaluator
+from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.lammps.helpers import (
     lammps_calc_md,
     lammps_run,
@@ -25,7 +25,11 @@ from atomistics.calculators.lammps.commands import (
     LAMMPS_RUN,
     LAMMPS_MINIMIZE_VOLUME,
 )
-from atomistics.calculators.lammps.output import LammpsMDOutput, LammpsStaticOutput
+from atomistics.calculators.lammps.output import (
+    LammpsOutputMolecularDynamics,
+    LammpsOutputStatic,
+)
+from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -113,7 +117,7 @@ def calc_static_with_lammps(
     structure,
     potential_dataframe,
     lmp=None,
-    quantities=LammpsStaticOutput.fields(),
+    quantities=LammpsOutputStatic.fields(),
     **kwargs,
 ):
     template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
@@ -127,7 +131,7 @@ def calc_static_with_lammps(
         lmp=lmp,
         **kwargs,
     )
-    result_dict = LammpsStaticOutput.get(lmp_instance, *quantities)
+    result_dict = LammpsOutputStatic.get(lmp_instance, *quantities)
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 
@@ -144,7 +148,7 @@ def calc_molecular_dynamics_nvt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=LammpsMDOutput.fields(),
+    quantities=LammpsOutputMolecularDynamics.fields(),
     **kwargs,
 ):
     init_str = (
@@ -201,7 +205,7 @@ def calc_molecular_dynamics_npt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=LammpsMDOutput.fields(),
+    quantities=LammpsOutputMolecularDynamics.fields(),
     **kwargs,
 ):
     init_str = (
@@ -259,7 +263,7 @@ def calc_molecular_dynamics_nph_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=LammpsMDOutput.fields(),
+    quantities=LammpsOutputMolecularDynamics.fields(),
     **kwargs,
 ):
     init_str = (
@@ -389,18 +393,11 @@ def evaluate_with_lammps_library(
         )
         results["volume_over_temperature"] = (temperature_lst, volume_md_lst)
     elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
-        quantities = []
-        if "calc_energy" in tasks:
-            quantities.append("energy")
-        if "calc_forces" in tasks:
-            quantities.append("forces")
-        if "calc_stress" in tasks:
-            quantities.append("stress")
         return calc_static_with_lammps(
             structure=structure,
             potential_dataframe=potential_dataframe,
             lmp=lmp,
-            quantities=quantities,
+            quantities=get_quantities_from_tasks(tasks=tasks),
         )
     else:
         raise ValueError("The LAMMPS calculator does not implement:", tasks)
