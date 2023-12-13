@@ -4,17 +4,30 @@ import subprocess
 
 from ase.io import write
 from pwtools import io
-from pwtools.parse import PwSCFOutputFile
 
 from atomistics.calculators.output import AtomisticsOutput
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 
+class QEStaticParser(object):
+    def __init__(self, filename):
+        self.parser = io.read_pw_scf(filename=filename, use_alat=True)
+
+    def get_forces(self):
+        return self.parser.forces
+
+    def get_energy(self):
+        return self.parser.etot
+
+    def get_stress(self):
+        return self.parser.stress
+
+
 @dataclasses.dataclass
 class QEStaticOutput(AtomisticsOutput):
-    forces: callable = PwSCFOutputFile.get_forces
-    energy: callable = PwSCFOutputFile.get_etot
-    stress: callable = PwSCFOutputFile.get_stress
+    forces: callable = QEStaticParser.get_forces
+    energy: callable = QEStaticParser.get_energy
+    stress: callable = QEStaticParser.get_stress
 
 
 def call_qe_via_ase_command(calculation_name, working_directory):
@@ -198,7 +211,7 @@ def calc_static_with_qe(
     call_qe_via_ase_command(
         calculation_name=calculation_name, working_directory=working_directory
     )
-    return QEStaticOutput.get(io.read_pw_scf(output_file_name), *quantities)
+    return QEStaticOutput.get(QEStaticParser(filename=output_file_name), *quantities)
 
 
 @as_task_dict_evaluator
