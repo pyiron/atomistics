@@ -1,3 +1,4 @@
+import dataclasses
 import os
 import subprocess
 
@@ -5,10 +6,19 @@ from ase.io import write
 
 try:
     from pwtools import io
+    from pwtools.io import ReadFactory
 except ImportError:
     pass
 
+from atomistics.calculators.output import AtomisticsOutput
 from atomistics.calculators.wrapper import as_task_dict_evaluator
+
+
+@dataclasses.dataclass
+class QEStaticOutput(AtomisticsOutput):
+    forces: callable = ReadFactory.forces
+    energy: callable = ReadFactory.etot
+    stress: callable = ReadFactory.stress
 
 
 def call_qe_via_ase_command(calculation_name, working_directory):
@@ -158,7 +168,7 @@ def optimize_positions_and_volume_with_qe(
     return io.read_pw_md(output_file_name)[-1].get_ase_atoms()
 
 
-def calc_static(
+def calc_static_with_qe(
     structure,
     calculation_name="espresso",
     working_directory=".",
@@ -166,6 +176,7 @@ def calc_static(
     pseudopotentials=None,
     tstress=True,
     tprnfor=True,
+    quantities=QEStaticOutput.fields(),
     **kwargs,
 ):
     input_file_name = os.path.join(working_directory, calculation_name + ".pwi")
@@ -191,74 +202,10 @@ def calc_static(
     call_qe_via_ase_command(
         calculation_name=calculation_name, working_directory=working_directory
     )
-    return io.read_pw_scf(output_file_name)
-
-
-def calc_energy_with_qe(
-    structure,
-    calculation_name="espresso",
-    working_directory=".",
-    kpts=(3, 3, 3),
-    pseudopotentials=None,
-    tstress=True,
-    tprnfor=True,
-    **kwargs,
-):
-    return calc_static(
-        structure=structure,
-        calculation_name=calculation_name,
-        working_directory=working_directory,
-        kpts=kpts,
-        pseudopotentials=pseudopotentials,
-        tstress=tstress,
-        tprnfor=tprnfor,
-        **kwargs,
-    ).etot
-
-
-def calc_energy_and_forces_with_qe(
-    structure,
-    calculation_name="espresso",
-    working_directory=".",
-    kpts=(3, 3, 3),
-    pseudopotentials=None,
-    tstress=True,
-    tprnfor=True,
-    **kwargs,
-):
-    output = calc_static(
-        structure=structure,
-        calculation_name=calculation_name,
-        working_directory=working_directory,
-        kpts=kpts,
-        pseudopotentials=pseudopotentials,
-        tstress=tstress,
-        tprnfor=tprnfor,
-        **kwargs,
+    return QEStaticOutput.get(
+        io.read_pw_scf(output_file_name),
+        *quantities
     )
-    return output.etot, output.forces
-
-
-def calc_forces_with_qe(
-    structure,
-    calculation_name="espresso",
-    working_directory=".",
-    kpts=(3, 3, 3),
-    pseudopotentials=None,
-    tstress=True,
-    tprnfor=True,
-    **kwargs,
-):
-    return calc_static(
-        structure=structure,
-        calculation_name=calculation_name,
-        working_directory=working_directory,
-        kpts=kpts,
-        pseudopotentials=pseudopotentials,
-        tstress=tstress,
-        tprnfor=tprnfor,
-        **kwargs,
-    ).forces
 
 
 @as_task_dict_evaluator
@@ -288,39 +235,24 @@ def evaluate_with_qe(
             )
         )
     elif "calc_energy" in tasks or "calc_forces" in tasks:
-        if "calc_energy" in tasks and "calc_forces" in tasks:
-            results["energy"], results["forces"] = calc_energy_and_forces_with_qe(
-                structure=structure,
-                calculation_name=calculation_name,
-                working_directory=working_directory,
-                kpts=kpts,
-                pseudopotentials=pseudopotentials,
-                tstress=tstress,
-                tprnfor=tprnfor,
-                **kwargs,
-            )
-        elif "calc_energy" in tasks:
-            results["energy"] = calc_energy_with_qe(
-                structure=structure,
-                calculation_name=calculation_name,
-                working_directory=working_directory,
-                kpts=kpts,
-                pseudopotentials=pseudopotentials,
-                tstress=tstress,
-                tprnfor=tprnfor,
-                **kwargs,
-            )
-        elif "calc_forces" in tasks:
-            results["forces"] = calc_forces_with_qe(
-                structure=structure,
-                calculation_name=calculation_name,
-                working_directory=working_directory,
-                kpts=kpts,
-                pseudopotentials=pseudopotentials,
-                tstress=tstress,
-                tprnfor=tprnfor,
-                **kwargs,
-            )
+        quantities = []
+        if "calc_energy" in tasks:
+            quantities.append("energy")
+        if "calc_forces" in tasks:
+            quantities.append("forces")
+        if "calc_stress" in tasks:
+            quantities.append("stress")
+        results = calc_static_with_qe(
+            structure=structure,
+            calculation_name=calculation_name,
+            working_directory=working_directory,
+            kpts=kpts,
+            pseudopotentials=pseudopotentials,
+            tstress=tstress,
+            tprnfor=tprnfor,
+            quantities=quantities,
+            **kwargs,
+        )
     else:
         raise ValueError("The Quantum Espresso calculator does not implement:", tasks)
     return results
