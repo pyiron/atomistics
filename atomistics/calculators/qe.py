@@ -1,11 +1,10 @@
-import dataclasses
 import os
 import subprocess
 
 from ase.io import write
 from pwtools import io
 
-from atomistics.calculators.output import AtomisticsOutput
+from atomistics.calculators.output import OutputStatic
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 
@@ -23,11 +22,11 @@ class QEStaticParser(object):
         return self.parser.stress
 
 
-@dataclasses.dataclass
-class QEStaticOutput(AtomisticsOutput):
-    forces: callable = QEStaticParser.get_forces
-    energy: callable = QEStaticParser.get_energy
-    stress: callable = QEStaticParser.get_stress
+QEStaticOutput = OutputStatic(
+    forces=QEStaticParser.get_forces,
+    energy=QEStaticParser.get_energy,
+    stress=QEStaticParser.get_stress,
+)
 
 
 def call_qe_via_ase_command(calculation_name, working_directory):
@@ -185,7 +184,7 @@ def calc_static_with_qe(
     pseudopotentials=None,
     tstress=True,
     tprnfor=True,
-    quantities=QEStaticOutput.fields(),
+    quantities=OutputStatic.fields(),
     **kwargs,
 ):
     input_file_name = os.path.join(working_directory, calculation_name + ".pwi")

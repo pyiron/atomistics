@@ -1,10 +1,9 @@
 from __future__ import annotations
-import dataclasses
 
 from ase.constraints import UnitCellFilter
 from typing import TYPE_CHECKING
 
-from atomistics.calculators.output import AtomisticsOutput
+from atomistics.calculators.output import OutputStatic
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 if TYPE_CHECKING:
@@ -29,11 +28,11 @@ class ASEExecutor(object):
         return self.structure.get_stress(voigt=False)
 
 
-@dataclasses.dataclass
-class ASEStaticOutput(AtomisticsOutput):
-    forces: callable = ASEExecutor.get_forces
-    energy: callable = ASEExecutor.get_energy
-    stress: callable = ASEExecutor.get_stress
+ASEStaticOutput = OutputStatic(
+    forces=ASEExecutor.get_forces,
+    energy=ASEExecutor.get_energy,
+    stress=ASEExecutor.get_stress,
+)
 
 
 @as_task_dict_evaluator
@@ -80,7 +79,7 @@ def evaluate_with_ase(
 def calc_static_with_ase(
     structure,
     ase_calculator,
-    quantities=ASEStaticOutput.fields(),
+    quantities=OutputStatic.fields(),
 ):
     return ASEStaticOutput.get(
         ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator), *quantities
