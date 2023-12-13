@@ -4,7 +4,7 @@ import subprocess
 
 from ase.io import write
 from pwtools import io
-from pwtools.io import ReadFactory
+from pwtools.parse import PwSCFOutputFile
 
 from atomistics.calculators.output import AtomisticsOutput
 from atomistics.calculators.wrapper import as_task_dict_evaluator
@@ -12,9 +12,9 @@ from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 @dataclasses.dataclass
 class QEStaticOutput(AtomisticsOutput):
-    forces: callable = ReadFactory.forces
-    energy: callable = ReadFactory.etot
-    stress: callable = ReadFactory.stress
+    forces: callable = PwSCFOutputFile.get_forces
+    energy: callable = PwSCFOutputFile.get_etot
+    stress: callable = PwSCFOutputFile.get_stress
 
 
 def call_qe_via_ase_command(calculation_name, working_directory):
