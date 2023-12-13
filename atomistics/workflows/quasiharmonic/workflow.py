@@ -48,8 +48,9 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         # This provides some computational efficiency for classical calculations
         # And for quantum calculations _ensures_ that force matrices and energy/atom
         # get treated with the same kmesh
+        structure_repeated = structure.repeat(repeat_vector)
         super().__init__(
-            structure=structure.repeat(repeat_vector),
+            structure=structure_repeated,
             num_points=num_points,
             fit_type=fit_type,
             fit_order=fit_order,
@@ -64,6 +65,8 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         self._factor = factor
         self._primitive_matrix = primitive_matrix
         self._phonopy_dict = {}
+        self._volume_rescale_factor = len(structure_repeated) / len(structure)
+        self._eng_internal_dict = None
 
     def generate_structures(self):
         task_dict = super().generate_structures()
@@ -90,7 +93,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         return task_dict
 
     def analyse_structures(self, output_dict):
-        eng_internal_dict = output_dict["energy"]
+        self._eng_internal_dict = output_dict["energy"]
         mesh_collect_dict, dos_collect_dict = {}, {}
         for strain, phono in self._phonopy_dict.items():
             mesh_dict, dos_dict = phono.analyse_structures(
@@ -100,9 +103,111 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             )
             mesh_collect_dict[strain] = mesh_dict
             dos_collect_dict[strain] = dos_dict
-        return eng_internal_dict, mesh_collect_dict, dos_collect_dict
+        return self._eng_internal_dict, mesh_collect_dict, dos_collect_dict
 
     def get_thermal_properties(
+        self,
+        t_min=1,
+        t_max=1500,
+        t_step=50,
+        temperatures=None,
+        cutoff_frequency=None,
+        pretend_real=False,
+        band_indices=None,
+        is_projection=False,
+        quantum_mechanical=True,
+    ):
+        """
+        Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
+        successfully ran.
+
+        Args:
+            t_min (float): minimum sample temperature
+            t_max (float): maximum sample temperature
+            t_step (int):  temperature sample interval
+            temperatures (array_like, float):  custom array of temperature samples, if given t_min, t_max, t_step are
+                                               ignored.
+
+        Returns:
+            :class:`Thermal`: thermal properties as returned by Phonopy
+        """
+        if self._eng_internal_dict is None:
+            raise ValueError(
+                "Please first execute analyse_output() before calling get_thermal_properties()."
+            )
+        if quantum_mechanical:
+            tp_collect_dict = self._get_thermal_properties_quantum_mechanical(
+                t_min=t_min,
+                t_max=t_max,
+                t_step=t_step,
+                temperatures=temperatures,
+                cutoff_frequency=cutoff_frequency,
+                pretend_real=pretend_real,
+                band_indices=band_indices,
+                is_projection=is_projection,
+            )
+        else:
+            if is_projection:
+                raise ValueError(
+                    "is_projection!=False is incompatible to quantum_mechanical=False."
+                )
+            if pretend_real:
+                raise ValueError(
+                    "pretend_real!=False is incompatible to quantum_mechanical=False."
+                )
+            if band_indices is not None:
+                raise ValueError(
+                    "band_indices!=None is incompatible to quantum_mechanical=False."
+                )
+            tp_collect_dict = self._get_thermal_properties_classical(
+                t_min=t_min,
+                t_max=t_max,
+                t_step=t_step,
+                temperatures=temperatures,
+                cutoff_frequency=cutoff_frequency,
+            )
+
+        temperatures = tp_collect_dict[1.0]["temperatures"]
+        quantities = tp_collect_dict[1.0].keys()
+        strain_lst = self._eng_internal_dict.keys()
+        volume_lst = np.array(self.get_volume_lst()) / self._volume_rescale_factor
+        eng_int_lst = (
+            np.array(list(self._eng_internal_dict.values()))
+            / self._volume_rescale_factor
+        )
+
+        vol_lst, eng_lst = [], []
+        for i, temp in enumerate(temperatures):
+            free_eng_lst = (
+                np.array([tp_collect_dict[s]["free_energy"][i] for s in strain_lst])
+                + eng_int_lst
+            )
+            fit_dict = fit_ev_curve(
+                volume_lst=volume_lst,
+                energy_lst=free_eng_lst,
+                fit_type=self.fit_type,
+                fit_order=self.fit_order,
+            )
+            eng_lst.append(fit_dict["energy_eq"])
+            vol_lst.append(fit_dict["volume_eq"])
+
+        mat_dict = {}
+        for k in quantities:
+            if k != "temperatures":
+                mat_dict[k] = np.array(
+                    [
+                        np.poly1d(np.polyfit(volume_lst, q_over_v, 1))(vol_opt)
+                        for q_over_v, vol_opt in zip(
+                            np.array([tp_collect_dict[s][k] for s in strain_lst]).T,
+                            vol_lst,
+                        )
+                    ]
+                )
+        mat_dict["volumes"] = vol_lst
+        mat_dict["temperatures"] = temperatures
+        return mat_dict
+
+    def _get_thermal_properties_quantum_mechanical(
         self,
         t_min=1,
         t_max=1500,
@@ -129,19 +234,22 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         """
         tp_collect_dict = {}
         for strain, phono in self._phonopy_dict.items():
-            tp_collect_dict[strain] = phono.get_thermal_properties(
-                t_step=t_step,
-                t_max=t_max,
-                t_min=t_min,
-                temperatures=temperatures,
-                cutoff_frequency=cutoff_frequency,
-                pretend_real=pretend_real,
-                band_indices=band_indices,
-                is_projection=is_projection,
-            )
+            tp_collect_dict[strain] = {
+                k: v if k == "temperatures" else v / self._volume_rescale_factor
+                for k, v in phono.get_thermal_properties(
+                    t_step=t_step,
+                    t_max=t_max,
+                    t_min=t_min,
+                    temperatures=temperatures,
+                    cutoff_frequency=cutoff_frequency,
+                    pretend_real=pretend_real,
+                    band_indices=band_indices,
+                    is_projection=is_projection,
+                ).items()
+            }
         return tp_collect_dict
 
-    def get_thermal_properties_classical(
+    def _get_thermal_properties_classical(
         self,
         t_min=1,
         t_max=1500,
@@ -149,6 +257,20 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         temperatures=None,
         cutoff_frequency=None,
     ):
+        """
+        Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
+        successfully ran.
+
+        Args:
+            t_min (float): minimum sample temperature
+            t_max (float): maximum sample temperature
+            t_step (int):  temperature sample interval
+            temperatures (array_like, float):  custom array of temperature samples, if given t_min, t_max, t_step are
+                                               ignored.
+
+        Returns:
+            :class:`Thermal`: thermal properties as returned by Phonopy
+        """
         if temperatures is None:
             temperatures = np.arange(t_min, t_max, t_step)
         if cutoff_frequency is None or cutoff_frequency < 0:
@@ -174,7 +296,9 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
                 )
             tp_collect_dict[strain] = {
                 "temperatures": temperatures,
-                "free_energy": np.array(t_property_lst) * kJ_mol_to_eV,
+                "free_energy": np.array(t_property_lst)
+                * kJ_mol_to_eV
+                / self._volume_rescale_factor,
             }
         return tp_collect_dict
 
@@ -191,61 +315,16 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         is_projection=False,
         quantum_mechanical=True,
     ):
-        (
-            eng_internal_dict,
-            mesh_collect_dict,
-            dos_collect_dict,
-        ) = self.analyse_structures(output_dict=output_dict)
-        if quantum_mechanical:
-            tp_collect_dict = self.get_thermal_properties(
-                t_min=t_min,
-                t_max=t_max,
-                t_step=t_step,
-                temperatures=temperatures,
-                cutoff_frequency=cutoff_frequency,
-                pretend_real=pretend_real,
-                band_indices=band_indices,
-                is_projection=is_projection,
-            )
-        else:
-            if is_projection:
-                raise ValueError(
-                    "is_projection!=False is incompatible to quantum_mechanical=False."
-                )
-            if pretend_real:
-                raise ValueError(
-                    "pretend_real!=False is incompatible to quantum_mechanical=False."
-                )
-            if band_indices is not None:
-                raise ValueError(
-                    "band_indices!=None is incompatible to quantum_mechanical=False."
-                )
-
-            tp_collect_dict = self.get_thermal_properties_classical(
-                t_min=t_min,
-                t_max=t_max,
-                t_step=t_step,
-                temperatures=temperatures,
-                cutoff_frequency=cutoff_frequency,
-            )
-
-        temperatures = tp_collect_dict[1.0]["temperatures"]
-        strain_lst = eng_internal_dict.keys()
-        volume_lst = self.get_volume_lst()
-        eng_int_lst = np.array(list(eng_internal_dict.values()))
-
-        vol_lst, eng_lst = [], []
-        for i, temp in enumerate(temperatures):
-            free_eng_lst = (
-                np.array([tp_collect_dict[s]["free_energy"][i] for s in strain_lst])
-                + eng_int_lst
-            )
-            fit_dict = fit_ev_curve(
-                volume_lst=volume_lst,
-                energy_lst=free_eng_lst,
-                fit_type=self.fit_type,
-                fit_order=self.fit_order,
-            )
-            eng_lst.append(fit_dict["energy_eq"])
-            vol_lst.append(fit_dict["volume_eq"])
-        return temperatures, vol_lst
+        self.analyse_structures(output_dict=output_dict)
+        tp_collect_dict = self.get_thermal_properties(
+            t_min=t_min,
+            t_max=t_max,
+            t_step=t_step,
+            temperatures=temperatures,
+            cutoff_frequency=cutoff_frequency,
+            pretend_real=pretend_real,
+            band_indices=band_indices,
+            is_projection=is_projection,
+            quantum_mechanical=quantum_mechanical,
+        )
+        return tp_collect_dict["temperatures"], tp_collect_dict["volumes"]
