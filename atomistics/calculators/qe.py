@@ -3,12 +3,8 @@ import os
 import subprocess
 
 from ase.io import write
-
-try:
-    from pwtools import io
-    from pwtools.io import ReadFactory
-except ImportError:
-    pass
+from pwtools import io
+from pwtools.io import ReadFactory
 
 from atomistics.calculators.output import AtomisticsOutput
 from atomistics.calculators.wrapper import as_task_dict_evaluator
