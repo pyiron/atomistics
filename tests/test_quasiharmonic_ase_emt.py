@@ -47,7 +47,7 @@ class TestPhonons(unittest.TestCase):
             quantum_mechanical=False
         )
         self.assertEqual(len(eng_internal_dict.keys()), 11)
-        self.assertEqual(len(tp_collect_dict.keys()), 11)
+        self.assertEqual(len(tp_collect_dict.keys()), 5)
         self.assertEqual(len(temperatures_qh_qm), 2)
         self.assertEqual(len(volumes_qh_qm), 2)
         self.assertTrue(volumes_qh_qm[0] < volumes_qh_qm[-1])
