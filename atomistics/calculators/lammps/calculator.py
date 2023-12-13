@@ -362,13 +362,13 @@ def evaluate_with_lammps_library(
 ):
     results = {}
     if "optimize_positions_and_volume" in tasks:
-        results["structure_with_optimized_positions_and_volume"] = (
-            optimize_positions_and_volume_with_lammps(
-                structure=structure,
-                potential_dataframe=potential_dataframe,
-                lmp=lmp,
-                **lmp_optimizer_kwargs,
-            )
+        results[
+            "structure_with_optimized_positions_and_volume"
+        ] = optimize_positions_and_volume_with_lammps(
+            structure=structure,
+            potential_dataframe=potential_dataframe,
+            lmp=lmp,
+            **lmp_optimizer_kwargs,
         )
     elif "optimize_positions" in tasks:
         results["structure_with_optimized_positions"] = optimize_positions_with_lammps(
