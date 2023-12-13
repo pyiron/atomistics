@@ -231,7 +231,7 @@ def evaluate_with_qe(
             tprnfor=tprnfor,
             **kwargs,
         )
-    elif "calc_energy" in tasks or "calc_forces" in tasks:
+    elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
         quantities = []
         if "calc_energy" in tasks:
             quantities.append("energy")
