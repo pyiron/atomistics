@@ -2,6 +2,7 @@ from __future__ import print_function
 
 from copy import copy
 import numpy as np
+import scipy.constants
 
 
 class ThermoBulk(object):
@@ -15,8 +16,8 @@ class ThermoBulk(object):
 
     """
 
-    eV_to_J_per_mol = 1.60217662e-19 * 6.022e23
-    kB = 1 / 8.6173303e-5
+    eV_to_J_per_mol = scipy.constants.electron_volt * scipy.constants.Avogadro
+    kB = 1 / scipy.constants.physical_constants["Boltzmann constant in eV/K"][0]
 
     def __init__(self):
         self._volumes = None
