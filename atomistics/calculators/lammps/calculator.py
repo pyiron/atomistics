@@ -19,6 +19,8 @@ from atomistics.calculators.lammps.commands import (
     LAMMPS_ENSEMBLE_NPT,
     LAMMPS_ENSEMBLE_NPH,
     LAMMPS_ENSEMBLE_NVT,
+    LAMMPS_LANGEVIN,
+    LAMMPS_NVE,
     LAMMPS_VELOCITY,
     LAMMPS_TIMESTEP,
     LAMMPS_MINIMIZE,
@@ -287,6 +289,62 @@ def calc_molecular_dynamics_nph_with_lammps(
             Pstart=Pstart,
             Pstop=Pstop,
             Pdamp=Pdamp,
+            timestep=timestep,
+            seed=seed,
+            dist=dist,
+        ),
+        lmp=lmp,
+        **kwargs,
+    )
+    result_dict = lammps_calc_md(
+        lmp_instance=lmp_instance,
+        run_str=run_str,
+        run=run,
+        thermo=thermo,
+        quantities=quantities,
+    )
+    lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
+    return result_dict
+
+
+def calc_molecular_dynamics_langevin_with_lammps(
+    structure,
+    potential_dataframe,
+    run=100,
+    thermo=100,
+    timestep=0.001,
+    Tstart=100,
+    Tstop=100,
+    Tdamp=0.1,
+    seed=4928459,
+    dist="gaussian",
+    lmp=None,
+    quantities=LammpsOutputMolecularDynamics.fields(),
+    **kwargs,
+):
+    init_str = (
+        LAMMPS_THERMO_STYLE
+        + "\n"
+        + LAMMPS_TIMESTEP
+        + "\n"
+        + LAMMPS_THERMO
+        + "\n"
+        + LAMMPS_VELOCITY
+        + "\n"
+        + LAMMPS_NVE
+        + "\n"
+        + LAMMPS_LANGEVIN
+    )
+    run_str = LAMMPS_RUN + "\n"
+    lmp_instance = lammps_run(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=Template(init_str).render(
+            thermo=thermo,
+            temp=Tstart,
+            Tstart=Tstart,
+            Tstop=Tstop,
+            Tdamp=Tdamp,
             timestep=timestep,
             seed=seed,
             dist=dist,

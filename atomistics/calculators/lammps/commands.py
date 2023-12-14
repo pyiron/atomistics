@@ -30,3 +30,9 @@ LAMMPS_ENSEMBLE_NPH = "fix ensemble all nph iso {{Pstart}} {{Pstop}} {{Pdamp}}"
 
 
 LAMMPS_ENSEMBLE_NVT = "fix ensemble all nvt temp {{Tstart}} {{Tstop}} {{Tdamp}}"
+
+
+LAMMPS_LANGEVIN = "fix ensemble all langevin {{Tstart}} {{Tstop}} {{Tdamp}} {{seed}}"
+
+
+LAMMPS_NVE = "fix integration all nve"
