@@ -4,6 +4,7 @@ from atomistics.calculators.ase import (
     optimize_positions_with_ase,
     optimize_positions_and_volume_with_ase,
 )
+from atomistics.calculators.hessian import evaluate_with_hessian
 
 try:
     from atomistics.calculators.qe import (
