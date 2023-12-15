@@ -227,7 +227,6 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             )
 
         temperatures = tp_collect_dict[1.0]["temperatures"]
-        quantities = tp_collect_dict[1.0].keys()
         strain_lst = self._eng_internal_dict.keys()
         volume_lst = np.array(self.get_volume_lst()) / self._volume_rescale_factor
         eng_int_lst = (
