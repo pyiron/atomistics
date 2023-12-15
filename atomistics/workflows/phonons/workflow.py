@@ -6,6 +6,7 @@ from phonopy import Phonopy
 from phonopy.file_IO import write_FORCE_CONSTANTS
 import structuretoolkit
 
+from atomistics.shared.output import OutputThermodynamic
 from atomistics.workflows.shared.workflow import Workflow
 from atomistics.workflows.phonons.helper import (
     get_supercell_matrix,
@@ -15,6 +16,39 @@ from atomistics.workflows.phonons.helper import (
     plot_dos,
 )
 from atomistics.workflows.phonons.units import VaspToTHz, kJ_mol_to_eV
+
+
+class PhonopyThermalProperties(object):
+    def __init__(self, phonopy_instance):
+        self._phonopy = phonopy_instance
+        self._thermal_properties = phonopy_instance.get_thermal_properties_dict()
+
+    def get_free_energy(self):
+        return self._thermal_properties["free_energy"] * kJ_mol_to_eV
+
+    def get_temperatures(self):
+        return self._thermal_properties["temperatures"]
+
+    def get_entropy(self):
+        return self._thermal_properties["entropy"]
+
+    def get_heat_capacity(self):
+        return self._thermal_properties["heat_capacity"]
+
+    def get_volumes(self):
+        return np.array(
+            [self._phonopy.unitcell.get_volume()]
+            * len(self._thermal_properties["temperatures"])
+        )
+
+
+PhonopyOutputThermodynamic = OutputThermodynamic(
+    temperatures=PhonopyThermalProperties.get_temperatures,
+    free_energy=PhonopyThermalProperties.get_free_energy,
+    entropy=PhonopyThermalProperties.get_entropy,
+    heat_capacity=PhonopyThermalProperties.get_heat_capacity,
+    volumes=PhonopyThermalProperties.get_volumes,
+)
 
 
 class PhonopyWorkflow(Workflow):
@@ -129,6 +163,7 @@ class PhonopyWorkflow(Workflow):
         pretend_real=False,
         band_indices=None,
         is_projection=False,
+        quantities=OutputThermodynamic.fields(),
     ):
         """
         Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
@@ -154,9 +189,9 @@ class PhonopyWorkflow(Workflow):
             band_indices=band_indices,
             is_projection=is_projection,
         )
-        tp_dict = self.phonopy.get_thermal_properties_dict()
-        tp_dict["free_energy"] *= kJ_mol_to_eV
-        return tp_dict
+        return PhonopyOutputThermodynamic.get(
+            PhonopyThermalProperties(phonopy_instance=self.phonopy), *quantities
+        )
 
     def get_dynamical_matrix(self):
         """
@@ -235,8 +270,3 @@ class PhonopyWorkflow(Workflow):
             axis=axis,
             **kwargs,
         )
-
-    def get_thermal_expansion(
-        self, output_dict, t_min=1, t_max=1500, t_step=50, temperatures=None
-    ):
-        raise NotImplementedError()

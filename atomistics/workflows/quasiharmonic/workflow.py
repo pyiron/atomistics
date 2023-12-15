@@ -1,5 +1,6 @@
 import numpy as np
 
+from atomistics.shared.output import OutputThermodynamic
 from atomistics.workflows.evcurve.workflow import (
     EnergyVolumeCurveWorkflow,
     fit_ev_curve,
@@ -15,8 +16,64 @@ from atomistics.workflows.phonons.units import (
 )
 
 
-def get_free_energy(frequency, temperature):
+def get_free_energy_classical(frequency, temperature):
     return kb * temperature * np.log(frequency / (kb * temperature))
+
+
+class QuasiHarmonicThermalProperties(object):
+    def __init__(
+        self,
+        temperatures,
+        thermal_properties_dict,
+        strain_lst,
+        volumes_lst,
+        volumes_selected_lst,
+    ):
+        self._temperatures = temperatures
+        self._thermal_properties_dict = thermal_properties_dict
+        self._strain_lst = strain_lst
+        self._volumes_lst = volumes_lst
+        self._volumes_selected_lst = volumes_selected_lst
+
+    def get_property(self, thermal_property):
+        return np.array(
+            [
+                np.poly1d(np.polyfit(self._volumes_lst, q_over_v, 1))(vol_opt)
+                for q_over_v, vol_opt in zip(
+                    np.array(
+                        [
+                            self._thermal_properties_dict[s][thermal_property]
+                            for s in self._strain_lst
+                        ]
+                    ).T,
+                    self._volumes_selected_lst,
+                )
+            ]
+        )
+
+    def get_free_energy(self):
+        return self.get_property(thermal_property="free_energy") * kJ_mol_to_eV
+
+    def get_temperatures(self):
+        return self._temperatures
+
+    def get_entropy(self):
+        return self.get_property(thermal_property="entropy")
+
+    def get_heat_capacity(self):
+        return self.get_property(thermal_property="heat_capacity")
+
+    def get_volumes(self):
+        return self._volumes_selected_lst
+
+
+QuasiHarmonicOutputThermodynamic = OutputThermodynamic(
+    temperatures=QuasiHarmonicThermalProperties.get_temperatures,
+    free_energy=QuasiHarmonicThermalProperties.get_free_energy,
+    entropy=QuasiHarmonicThermalProperties.get_entropy,
+    heat_capacity=QuasiHarmonicThermalProperties.get_heat_capacity,
+    volumes=QuasiHarmonicThermalProperties.get_volumes,
+)
 
 
 class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
@@ -116,6 +173,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         band_indices=None,
         is_projection=False,
         quantum_mechanical=True,
+        quantities=OutputThermodynamic.fields(),
     ):
         """
         Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
@@ -145,6 +203,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
                 pretend_real=pretend_real,
                 band_indices=band_indices,
                 is_projection=is_projection,
+                quantities=quantities,
             )
         else:
             if is_projection:
@@ -168,7 +227,6 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             )
 
         temperatures = tp_collect_dict[1.0]["temperatures"]
-        quantities = tp_collect_dict[1.0].keys()
         strain_lst = self._eng_internal_dict.keys()
         volume_lst = np.array(self.get_volume_lst()) / self._volume_rescale_factor
         eng_int_lst = (
@@ -191,21 +249,20 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             eng_lst.append(fit_dict["energy_eq"])
             vol_lst.append(fit_dict["volume_eq"])
 
-        mat_dict = {}
-        for k in quantities:
-            if k != "temperatures":
-                mat_dict[k] = np.array(
-                    [
-                        np.poly1d(np.polyfit(volume_lst, q_over_v, 1))(vol_opt)
-                        for q_over_v, vol_opt in zip(
-                            np.array([tp_collect_dict[s][k] for s in strain_lst]).T,
-                            vol_lst,
-                        )
-                    ]
-                )
-        mat_dict["volumes"] = np.array(vol_lst)
-        mat_dict["temperatures"] = temperatures
-        return mat_dict
+        if (
+            not quantum_mechanical
+        ):  # heat capacity and entropy are not yet implemented for the classical approach.
+            quantities = ["free_energy", "temperatures", "volumes"]
+        return QuasiHarmonicOutputThermodynamic.get(
+            QuasiHarmonicThermalProperties(
+                temperatures=temperatures,
+                thermal_properties_dict=tp_collect_dict,
+                strain_lst=strain_lst,
+                volumes_lst=volume_lst,
+                volumes_selected_lst=vol_lst,
+            ),
+            *quantities,
+        )
 
     def _get_thermal_properties_quantum_mechanical(
         self,
@@ -217,6 +274,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         pretend_real=False,
         band_indices=None,
         is_projection=False,
+        quantities=OutputThermodynamic.fields(),
     ):
         """
         Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
@@ -245,6 +303,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
                     pretend_real=pretend_real,
                     band_indices=band_indices,
                     is_projection=is_projection,
+                    quantities=quantities,
                 ).items()
             }
         return tp_collect_dict
@@ -288,7 +347,11 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
                     freqs = np.array(freqs) * THzToEv
                     cond = freqs > cutoff_frequency
                     t_property += (
-                        np.sum(get_free_energy(frequency=freqs[cond], temperature=t))
+                        np.sum(
+                            get_free_energy_classical(
+                                frequency=freqs[cond], temperature=t
+                            )
+                        )
                         * w
                     )
                 t_property_lst.append(
@@ -326,5 +389,6 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             band_indices=band_indices,
             is_projection=is_projection,
             quantum_mechanical=quantum_mechanical,
+            quantities=["free_energy", "temperatures", "volumes"],
         )
         return tp_collect_dict["temperatures"], tp_collect_dict["volumes"]
