@@ -123,7 +123,7 @@ class DebyeModel(object):
         return self._debye_T
 
     def energy_vib(self, T, debye_T=None, low_T_limit=True):
-        kB = 0.086173422 / 1000  # eV/K
+        kB = scipy.constants.physical_constants["Boltzmann constant in eV/K"][0]
         if debye_T is None:
             if low_T_limit:
                 debye_T = self.debye_temperature[0]  # low

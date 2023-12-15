@@ -4,7 +4,7 @@ from ase.constraints import UnitCellFilter
 from typing import TYPE_CHECKING
 
 from atomistics.calculators.interface import get_quantities_from_tasks
-from atomistics.calculators.output import OutputStatic
+from atomistics.shared.output import OutputStatic
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 if TYPE_CHECKING:
