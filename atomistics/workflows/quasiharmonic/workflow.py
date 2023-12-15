@@ -385,6 +385,6 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             band_indices=band_indices,
             is_projection=is_projection,
             quantum_mechanical=quantum_mechanical,
-            quantities=["temperatures", "volumes"],
+            quantities=["free_energy", "temperatures", "volumes"],
         )
         return tp_collect_dict["temperatures"], tp_collect_dict["volumes"]
