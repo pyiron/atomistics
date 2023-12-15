@@ -181,5 +181,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * [Materials Properties](https://atomistics.readthedocs.io/en/latest/materialproperties.html)
   * [Elastic Properties](https://atomistics.readthedocs.io/en/docs/materialproperties.html#elastic-properties)
   * [Thermal Expansion](https://atomistics.readthedocs.io/en/docs/materialproperties.html#thermal-expansion)
+  * [Helmholtz Free Energy](https://atomistics.readthedocs.io/en/docs/materialproperties.html#helmholtz-free-energy)
   * [Phase Diagram](https://atomistics.readthedocs.io/en/docs/materialproperties.html#phase-diagram)
 * [Module Index](https://atomistics.readthedocs.io/en/latest/py-modindex.html)
