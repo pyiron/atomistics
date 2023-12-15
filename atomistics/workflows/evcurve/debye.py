@@ -33,8 +33,8 @@ class DebyeThermalProperties(object):
 
     def get_free_energy(self):
         return (
-              self._pes.get_free_energy_p()
-              - self._debye_model.interpolate(volumes=self._pes.get_minimum_energy_path())
+            self._pes.get_free_energy_p()
+            - self._debye_model.interpolate(volumes=self._pes.get_minimum_energy_path())
         ) / self._pes.num_atoms
 
     def get_temperatures(self):
