@@ -66,7 +66,6 @@ class TestPhonons(unittest.TestCase):
         )
         for key in ["temperatures", "free_energy", "volumes", "entropy", "heat_capacity"]:
             self.assertTrue(len(thermal_dict[key]), 31)
-        print(thermal_dict)
         self.assertEqual(thermal_dict["temperatures"][0], 1.0)
         self.assertEqual(thermal_dict["temperatures"][-1], 1501.0)
         self.assertTrue(thermal_dict["free_energy"][0] < 0.2)
@@ -96,7 +95,6 @@ class TestPhonons(unittest.TestCase):
             is_projection=False,
             quantities=["temperatures", "free_energy"]
         )
-        print(thermal_dict)
         self.assertEqual(len(thermal_dict.keys()), 2)
         self.assertEqual(thermal_dict["temperatures"][0], 1.0)
         self.assertEqual(thermal_dict["temperatures"][-1], 1501.0)

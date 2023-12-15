@@ -21,7 +21,7 @@ except ImportError:
 )
 class TestPhonons(unittest.TestCase):
     def test_calc_phonons(self):
-        structure = bulk("Al", a=4.05, cubic=True)
+        structure = bulk("Al", cubic=True)
         df_pot_selected = get_potential_by_name(
             potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
@@ -59,6 +59,7 @@ class TestPhonons(unittest.TestCase):
             temperatures=[100, 1000],
             quantum_mechanical=False
         )
+        print(tp_collect_dict)
         self.assertEqual(len(eng_internal_dict.keys()), 11)
         self.assertEqual(len(tp_collect_dict.keys()), 5)
         self.assertEqual(len(temperatures_qh_qm), 2)
@@ -71,19 +72,19 @@ class TestPhonons(unittest.TestCase):
             self.assertTrue(len(tp_collect_dict[key]), 31)
         self.assertEqual(tp_collect_dict["temperatures"][0], 1.0)
         self.assertEqual(tp_collect_dict["temperatures"][-1], 1501.0)
-        self.assertTrue(tp_collect_dict["free_energy"][-1] < -2.6)
-        self.assertTrue(tp_collect_dict["free_energy"][-1] > -2.7)
-        self.assertTrue(tp_collect_dict["free_energy"][0] < -1.4)
-        self.assertTrue(tp_collect_dict["free_energy"][0] > -1.5)
-        self.assertTrue(tp_collect_dict["entropy"][-1] < 0.1)
-        self.assertTrue(tp_collect_dict["entropy"][-1] > 0.0)
-        self.assertTrue(tp_collect_dict["entropy"][0] < 273)
-        self.assertTrue(tp_collect_dict["entropy"][0] > 272)
-        self.assertTrue(tp_collect_dict["heat_capacity"][-1] < 0.1)
-        self.assertTrue(tp_collect_dict["heat_capacity"][-1] > 0.0)
-        self.assertTrue(tp_collect_dict["heat_capacity"][0] < 100)
-        self.assertTrue(tp_collect_dict["heat_capacity"][0] > 99)
-        self.assertTrue(tp_collect_dict["volumes"][-1] < 66.8)
-        self.assertTrue(tp_collect_dict["volumes"][-1] > 66.7)
-        self.assertTrue(tp_collect_dict["volumes"][0] < 68.6)
-        self.assertTrue(tp_collect_dict["volumes"][0] > 68.5)
+        self.assertTrue(tp_collect_dict["free_energy"][0] < 0.2)
+        self.assertTrue(tp_collect_dict["free_energy"][0] > 0.1)
+        self.assertTrue(tp_collect_dict["free_energy"][-1] < -2.5)
+        self.assertTrue(tp_collect_dict["free_energy"][-1] > -2.6)
+        self.assertTrue(tp_collect_dict["entropy"][0] < 0.1)
+        self.assertTrue(tp_collect_dict["entropy"][0] > 0.0)
+        self.assertTrue(tp_collect_dict["entropy"][-1] < 273)
+        self.assertTrue(tp_collect_dict["entropy"][-1] > 272)
+        self.assertTrue(tp_collect_dict["heat_capacity"][0] < 0.1)
+        self.assertTrue(tp_collect_dict["heat_capacity"][0] > 0.0)
+        self.assertTrue(tp_collect_dict["heat_capacity"][-1] < 100)
+        self.assertTrue(tp_collect_dict["heat_capacity"][-1] > 99)
+        self.assertTrue(tp_collect_dict["volumes"][-1] < 68.6)
+        self.assertTrue(tp_collect_dict["volumes"][-1] > 68.5)
+        self.assertTrue(tp_collect_dict["volumes"][0] < 66.8)
+        self.assertTrue(tp_collect_dict["volumes"][0] > 66.7)
