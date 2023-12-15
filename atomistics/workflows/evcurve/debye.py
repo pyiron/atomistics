@@ -2,8 +2,87 @@ import numpy as np
 import scipy.constants
 import scipy.optimize
 
+from atomistics.shared.output import OutputThermodynamic
 from atomistics.workflows.evcurve.fit import interpolate_energy
 from atomistics.workflows.evcurve.thermo import get_thermo_bulk_model
+
+
+class DebyeThermalProperties(object):
+    def __init__(
+        self,
+        fit_dict,
+        masses,
+        t_min=1,
+        t_max=1500,
+        t_step=50,
+        temperatures=None,
+        constant_volume=False,
+        num_steps=50,
+    ):
+        if temperatures is None:
+            temperatures = np.arange(t_min, t_max + t_step, t_step)
+        self._temperatures = temperatures
+        self._debye_model = get_debye_model(
+            fit_dict=fit_dict, masses=masses, num_steps=num_steps
+        )
+        self._pes = get_thermo_bulk_model(
+            temperatures=temperatures,
+            debye_model=self._debye_model,
+        )
+        self._constant_volume = constant_volume
+
+    def get_free_energy(self):
+        return (
+              self._pes.get_free_energy_p()
+              - self._debye_model.interpolate(volumes=self._pes.get_minimum_energy_path())
+        ) / self._pes.num_atoms
+
+    def get_temperatures(self):
+        return self._temperatures
+
+    def get_entropy(self):
+        if not self._constant_volume:
+            return (
+                self._pes.eV_to_J_per_mol
+                / self._pes.num_atoms
+                * self._pes.get_entropy_p()
+            )
+        else:
+            return (
+                self._pes.eV_to_J_per_mol
+                / self._pes.num_atoms
+                * self._pes.get_entropy_v()
+            )
+
+    def get_heat_capacity(self):
+        if not self._constant_volume:
+            heat_capacity = (
+                self._pes.eV_to_J_per_mol
+                * self._pes.temperatures[:-2]
+                * np.gradient(self._pes.get_entropy_p(), self._pes._d_temp)[:-2]
+            )
+        else:
+            heat_capacity = (
+                self._pes.eV_to_J_per_mol
+                * self._pes.temperatures[:-2]
+                * np.gradient(self._pes.get_entropy_v(), self._pes._d_temp)[:-2]
+            )
+        return np.array(heat_capacity.tolist() + [np.nan, np.nan])
+
+    def get_volumes(self):
+        if not self._constant_volume:
+            return self._pes.get_minimum_energy_path()
+        else:
+            return np.array([self._pes.volumes[0]] * len(self._temperatures))
+
+
+DebyeOutputThermodynamic = OutputThermodynamic(
+    temperatures=DebyeThermalProperties.get_temperatures,
+    free_energy=DebyeThermalProperties.get_free_energy,
+    entropy=DebyeThermalProperties.get_entropy,
+    heat_capacity=DebyeThermalProperties.get_heat_capacity,
+    volumes=DebyeThermalProperties.get_volumes,
+)
 
 
 def _debye_kernel(xi):
@@ -170,47 +249,18 @@ def get_thermal_properties(
     temperatures=None,
     constant_volume=False,
     num_steps=50,
+    quantities=OutputThermodynamic.fields(),
 ):
-    if temperatures is None:
-        temperatures = np.arange(t_min, t_max + t_step, t_step)
-    debye_model = get_debye_model(fit_dict=fit_dict, masses=masses, num_steps=num_steps)
-    pes = get_thermo_bulk_model(
-        temperatures=temperatures,
-        debye_model=debye_model,
+    return DebyeOutputThermodynamic.get(
+        DebyeThermalProperties(
+            fit_dict=fit_dict,
+            masses=masses,
+            t_min=t_min,
+            t_max=t_max,
+            t_step=t_step,
+            temperatures=temperatures,
+            constant_volume=constant_volume,
+            num_steps=num_steps,
+        ),
+        *quantities,
     )
-    if not constant_volume:
-        heat_capacity = (
-            pes.eV_to_J_per_mol
-            * pes.temperatures[:-2]
-            * np.gradient(pes.get_entropy_v(), pes._d_temp)[:-2]
-        )
-        heat_capacity = np.array(heat_capacity.tolist() + [np.nan, np.nan])
-        free_energy = (
-            pes.get_free_energy_p()
-            - debye_model.interpolate(volumes=pes.get_minimum_energy_path())
-        ) / pes.num_atoms
-        return {
-            "temperatures": temperatures,
-            "volumes": pes.get_minimum_energy_path(),
-            "free_energy": free_energy,
-            "entropy": pes.eV_to_J_per_mol / pes.num_atoms * pes.get_entropy_p(),
-            "heat_capacity": heat_capacity,
-        }
-    else:
-        heat_capacity = (
-            pes.eV_to_J_per_mol
-            * pes.temperatures[:-2]
-            * np.gradient(pes.get_entropy_v(), pes._d_temp)[:-2]
-        )
-        heat_capacity = np.array(heat_capacity.tolist() + [np.nan, np.nan])
-        free_energy = (
-            pes.get_free_energy_p()
-            - debye_model.interpolate(volumes=pes.get_minimum_energy_path())
-        ) / pes.num_atoms
-        return {
-            "temperatures": temperatures,
-            "volumes": np.array([pes.volumes[0]] * len(temperatures)),
-            "free_energy": free_energy,
-            "entropy": pes.eV_to_J_per_mol / pes.num_atoms * pes.get_entropy_v(),
-            "heat_capacity": heat_capacity,
-        }
