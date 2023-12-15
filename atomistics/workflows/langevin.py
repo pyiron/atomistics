@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.constants import physical_constants
 
-from atomistics.workflows.shared.workflow import Workflow
+from atomistics.workflows.interface import Workflow
 
 
 KB = physical_constants["Boltzmann constant in eV/K"][0]

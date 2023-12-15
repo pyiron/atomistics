@@ -3,7 +3,7 @@ from ase.atoms import Atoms
 from collections import OrderedDict
 
 from atomistics.workflows.evcurve.fit import EnergyVolumeFit
-from atomistics.workflows.shared.workflow import Workflow
+from atomistics.workflows.interface import Workflow
 from atomistics.workflows.evcurve.debye import get_thermal_expansion_with_evcurve
 
 

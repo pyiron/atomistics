@@ -2,7 +2,7 @@ from collections import OrderedDict
 import numpy as np
 import scipy.constants
 
-from atomistics.workflows.shared.workflow import Workflow
+from atomistics.workflows.interface import Workflow
 from atomistics.workflows.elastic.symmetry import (
     find_symmetry_group_number,
     get_C_from_A2,
