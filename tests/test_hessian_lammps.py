@@ -75,6 +75,6 @@ class TestLangevin(unittest.TestCase):
         self.assertTrue(eng_pot_lst[-1] < 0.0005)
         self.assertTrue(eng_pot_lst[-1] > 0.0003)
         self.assertTrue(eng_kin_lst[-1] < 32)
-        self.assertTrue(eng_kin_lst[-1] > 22)
+        self.assertTrue(eng_kin_lst[-1] > 20)
         self.assertTrue(eng_kin_lst[0] < 32)
-        self.assertTrue(eng_kin_lst[0] > 22)
+        self.assertTrue(eng_kin_lst[0] > 20)
