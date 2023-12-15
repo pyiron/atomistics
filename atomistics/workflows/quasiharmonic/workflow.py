@@ -249,6 +249,8 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             eng_lst.append(fit_dict["energy_eq"])
             vol_lst.append(fit_dict["volume_eq"])
 
+        if not quantum_mechanical:  # heat capacity and entropy are not yet implemented for the classical approach.
+            quantities = ["free_energy", "temperatures", "volumes"]
         return QuasiHarmonicOutputThermodynamic.get(
             QuasiHarmonicThermalProperties(
                 temperatures=temperatures,
