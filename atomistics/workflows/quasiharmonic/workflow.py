@@ -203,7 +203,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
                         )
                     ]
                 )
-        mat_dict["volumes"] = vol_lst
+        mat_dict["volumes"] = np.array(vol_lst)
         mat_dict["temperatures"] = temperatures
         return mat_dict
 
