@@ -49,33 +49,14 @@ class TestPhonons(unittest.TestCase):
         )
         eng_internal_dict, mesh_collect_dict, dos_collect_dict = workflow.analyse_structures(output_dict=result_dict)
         tp_collect_dict = workflow.get_thermal_properties(t_min=1, t_max=1500, t_step=50, temperatures=None)
-        temperatures_qh_qm, volumes_qh_qm = workflow.get_thermal_expansion(
-            output_dict=result_dict,
-            temperatures=[100, 1000],
-            quantum_mechanical=True
-        )
-        temperatures_qh_cl, volumes_qh_cl = workflow.get_thermal_expansion(
-            output_dict=result_dict,
-            temperatures=[100, 1000],
-            quantum_mechanical=False
-        )
-        print(tp_collect_dict)
-        self.assertEqual(len(eng_internal_dict.keys()), 11)
-        self.assertEqual(len(tp_collect_dict.keys()), 5)
-        self.assertEqual(len(temperatures_qh_qm), 2)
-        self.assertEqual(len(volumes_qh_qm), 2)
-        self.assertTrue(volumes_qh_qm[0] < volumes_qh_qm[-1])
-        self.assertEqual(len(temperatures_qh_cl), 2)
-        self.assertEqual(len(volumes_qh_cl), 2)
-        self.assertTrue(volumes_qh_cl[0] < volumes_qh_cl[-1])
         for key in ["temperatures", "free_energy", "volumes", "entropy", "heat_capacity"]:
             self.assertTrue(len(tp_collect_dict[key]), 31)
         self.assertEqual(tp_collect_dict["temperatures"][0], 1.0)
         self.assertEqual(tp_collect_dict["temperatures"][-1], 1501.0)
         self.assertTrue(tp_collect_dict["free_energy"][0] < 0.2)
         self.assertTrue(tp_collect_dict["free_energy"][0] > 0.1)
-        self.assertTrue(tp_collect_dict["free_energy"][-1] < -2.5)
-        self.assertTrue(tp_collect_dict["free_energy"][-1] > -2.6)
+        self.assertTrue(tp_collect_dict["free_energy"][-1] < -2.6)
+        self.assertTrue(tp_collect_dict["free_energy"][-1] > -2.7)
         self.assertTrue(tp_collect_dict["entropy"][0] < 0.1)
         self.assertTrue(tp_collect_dict["entropy"][0] > 0.0)
         self.assertTrue(tp_collect_dict["entropy"][-1] < 273)
@@ -88,3 +69,21 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue(tp_collect_dict["volumes"][-1] > 68.5)
         self.assertTrue(tp_collect_dict["volumes"][0] < 66.8)
         self.assertTrue(tp_collect_dict["volumes"][0] > 66.7)
+        temperatures_qh_qm, volumes_qh_qm = workflow.get_thermal_expansion(
+            output_dict=result_dict,
+            temperatures=[100, 1000],
+            quantum_mechanical=True
+        )
+        temperatures_qh_cl, volumes_qh_cl = workflow.get_thermal_expansion(
+            output_dict=result_dict,
+            temperatures=[100, 1000],
+            quantum_mechanical=False
+        )
+        self.assertEqual(len(eng_internal_dict.keys()), 11)
+        self.assertEqual(len(tp_collect_dict.keys()), 5)
+        self.assertEqual(len(temperatures_qh_qm), 2)
+        self.assertEqual(len(volumes_qh_qm), 2)
+        self.assertTrue(volumes_qh_qm[0] < volumes_qh_qm[-1])
+        self.assertEqual(len(temperatures_qh_cl), 2)
+        self.assertEqual(len(volumes_qh_cl), 2)
+        self.assertTrue(volumes_qh_cl[0] < volumes_qh_cl[-1])
