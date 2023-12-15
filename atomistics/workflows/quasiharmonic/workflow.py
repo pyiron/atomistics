@@ -226,14 +226,6 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
                 cutoff_frequency=cutoff_frequency,
             )
 
-        if (
-            "temperatures" not in tp_collect_dict.keys()
-            and "free_energy" not in tp_collect_dict.keys()
-        ):
-            raise ValueError(
-                "The quasi harmonic approximation requires the temperatures and the free_energy to be calculated."
-            )
-
         temperatures = tp_collect_dict[1.0]["temperatures"]
         quantities = tp_collect_dict[1.0].keys()
         strain_lst = self._eng_internal_dict.keys()
