@@ -66,6 +66,24 @@ class TestPhonons(unittest.TestCase):
         )
         for key in ["temperatures", "free_energy", "volumes", "entropy", "heat_capacity"]:
             self.assertTrue(len(thermal_dict[key]), 31)
+        self.assertEqual(thermal_dict["temperatures"][0], 1.0)
+        self.assertEqual(thermal_dict["temperatures"][-1], 1501.0)
+        self.assertTrue(thermal_dict["free_energy"][0] < 0.2)
+        self.assertTrue(thermal_dict["free_energy"][0] > 0.1)
+        self.assertTrue(thermal_dict["free_energy"][-1] < -2.6)
+        self.assertTrue(thermal_dict["free_energy"][-1] > -2.7)
+        self.assertTrue(thermal_dict["entropy"][0] < 0.1)
+        self.assertTrue(thermal_dict["entropy"][0] > 0.0)
+        self.assertTrue(thermal_dict["entropy"][-1] < 271)
+        self.assertTrue(thermal_dict["entropy"][-1] > 270)
+        self.assertTrue(thermal_dict["heat_capacity"][0] < 0.1)
+        self.assertTrue(thermal_dict["heat_capacity"][0] > 0.0)
+        self.assertTrue(thermal_dict["heat_capacity"][-1] < 100)
+        self.assertTrue(thermal_dict["heat_capacity"][-1] > 99)
+        self.assertTrue(thermal_dict["volumes"][-1] < 66.5)
+        self.assertTrue(thermal_dict["volumes"][-1] > 66.4)
+        self.assertTrue(thermal_dict["volumes"][0] < 66.5)
+        self.assertTrue(thermal_dict["volumes"][0] > 66.4)
         thermal_dict = workflow.get_thermal_properties(
             t_min=1,
             t_max=1500,
@@ -78,3 +96,9 @@ class TestPhonons(unittest.TestCase):
             quantities=["temperatures", "free_energy"]
         )
         self.assertEqual(len(thermal_dict.keys()), 2)
+        self.assertEqual(thermal_dict["temperatures"][0], 1.0)
+        self.assertEqual(thermal_dict["temperatures"][-1], 1501.0)
+        self.assertTrue(thermal_dict["free_energy"][0] < 0.2)
+        self.assertTrue(thermal_dict["free_energy"][0] > 0.1)
+        self.assertTrue(thermal_dict["free_energy"][-1] < -2.6)
+        self.assertTrue(thermal_dict["free_energy"][-1] > -2.7)
