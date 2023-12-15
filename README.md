@@ -22,10 +22,10 @@ dynamics.
 On the other hand the `atomistics` package also provides `workflows` to calculate material properties on the atomistic 
 scales, these include:
 
-* Equation of State - to calculate equilibrium properties like the equilibrium energy, equilibrium volume, equilibrium bulk modulus and its pressure derivative.
-* Elastic Matrix - to calculate the elastic constants and elastic moduli.
-* Harmonic and Quasi-harmonic Approximation - to calculate the density of states, vibrational free energy and thermal expansion based on the finite displacements method implemented in [phonopy](https://phonopy.github.io/phonopy/).
-* Molecular Dynamics - to calculate finite temperature properties like thermal expansion including the anharmonic contributions.
+* [Equation of State](https://atomistics.readthedocs.io/en/latest/workflows.html#energy-volume-curve) - to calculate equilibrium properties like the equilibrium energy, equilibrium volume, equilibrium bulk modulus and its pressure derivative.
+* [Elastic Matrix](https://atomistics.readthedocs.io/en/latest/workflows.html#elastic-matrix) - to calculate the elastic constants and elastic moduli.
+* [Harmonic and Quasi-harmonic Approximation](https://atomistics.readthedocs.io/en/latest/workflows.html#harmonic-approximation) - to calculate the density of states, vibrational free energy and thermal expansion based on the finite displacements method implemented in [phonopy](https://phonopy.github.io/phonopy/).
+* [Molecular Dynamics](https://atomistics.readthedocs.io/en/latest/workflows.html#molecular-dynamics) - to calculate finite temperature properties like thermal expansion including the anharmonic contributions.
 
 All these `workflows` can be coupled with all the simulation codes implemented in the `atomistics` package.
 In contrast to the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/) which provides similar functionality
