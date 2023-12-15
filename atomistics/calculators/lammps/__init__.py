@@ -3,6 +3,7 @@ from atomistics.calculators.lammps.calculator import (
     calc_molecular_dynamics_nph_with_lammps,
     calc_molecular_dynamics_npt_with_lammps,
     calc_molecular_dynamics_nvt_with_lammps,
+    calc_molecular_dynamics_langevin_with_lammps,
     calc_static_with_lammps,
     evaluate_with_lammps,
     evaluate_with_lammps_library,
