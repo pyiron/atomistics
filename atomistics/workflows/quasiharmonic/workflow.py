@@ -52,7 +52,7 @@ class QuasiHarmonicThermalProperties(object):
         )
 
     def get_free_energy(self):
-        return self.get_property(thermal_property="free_energy") * kJ_mol_to_eV
+        return self.get_property(thermal_property="free_energy")
 
     def get_temperatures(self):
         return self._temperatures
