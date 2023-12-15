@@ -54,3 +54,27 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue('group_velocities' in mesh_dict.keys())
         self.assertTrue('frequency_points' in dos_dict.keys())
         self.assertTrue('total_dos' in dos_dict.keys())
+        thermal_dict = workflow.get_thermal_properties(
+            t_min=1,
+            t_max=1500,
+            t_step=50,
+            temperatures=None,
+            cutoff_frequency=None,
+            pretend_real=False,
+            band_indices=None,
+            is_projection=False,
+        )
+        for key in ["temperatures", "free_energy", "volumes", "entropy", "heat_capacity"]:
+            self.assertTrue(len(thermal_dict[key]), 31)
+        thermal_dict = workflow.get_thermal_properties(
+            t_min=1,
+            t_max=1500,
+            t_step=50,
+            temperatures=None,
+            cutoff_frequency=None,
+            pretend_real=False,
+            band_indices=None,
+            is_projection=False,
+            quantities=["temperatures", "free_energy"]
+        )
+        self.assertEqual(len(thermal_dict.keys()), 2)

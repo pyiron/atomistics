@@ -28,3 +28,12 @@ class OutputMolecularDynamics(Output):
     energy_tot: callable
     pressure: callable
     velocities: callable
+
+
+@dataclasses.dataclass
+class OutputThermodynamic(Output):
+    temperatures: callable
+    free_energy: callable
+    entropy: callable
+    heat_capacity: callable
+    volumes: callable
