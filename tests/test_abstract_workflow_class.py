@@ -1,6 +1,6 @@
 import unittest
 
-from atomistics.workflows.shared.workflow import Workflow
+from atomistics.workflows.interface import Workflow
 
 
 class WorkflowClass(Workflow):

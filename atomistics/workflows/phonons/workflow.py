@@ -7,7 +7,7 @@ from phonopy.file_IO import write_FORCE_CONSTANTS
 import structuretoolkit
 
 from atomistics.shared.output import OutputThermodynamic
-from atomistics.workflows.shared.workflow import Workflow
+from atomistics.workflows.interface import Workflow
 from atomistics.workflows.phonons.helper import (
     get_supercell_matrix,
     get_hesse_matrix,
