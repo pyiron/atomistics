@@ -41,11 +41,11 @@ def lammps_calc_md_step(
     lmp_instance,
     run_str,
     run,
-    quantities=LammpsOutputMolecularDynamics.fields(),
+    output=LammpsOutputMolecularDynamics.fields(),
 ):
     run_str_rendered = Template(run_str).render(run=run)
     lmp_instance.interactive_lib_command(run_str_rendered)
-    return LammpsOutputMolecularDynamics.get(lmp_instance, *quantities)
+    return LammpsOutputMolecularDynamics.get(lmp_instance, *output)
 
 
 def lammps_calc_md(
@@ -53,18 +53,18 @@ def lammps_calc_md(
     run_str,
     run,
     thermo,
-    quantities=LammpsOutputMolecularDynamics.fields(),
+    output=LammpsOutputMolecularDynamics.fields(),
 ):
     results_lst = [
         lammps_calc_md_step(
             lmp_instance=lmp_instance,
             run_str=run_str,
             run=thermo,
-            quantities=quantities,
+            output=output,
         )
         for _ in range(run // thermo)
     ]
-    return {q: np.array([d[q] for d in results_lst]) for q in quantities}
+    return {q: np.array([d[q] for d in results_lst]) for q in output}
 
 
 def lammps_thermal_expansion_loop(

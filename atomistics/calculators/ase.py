@@ -65,7 +65,7 @@ def evaluate_with_ase(
         return calc_static_with_ase(
             structure=structure,
             ase_calculator=ase_calculator,
-            quantities=get_quantities_from_tasks(tasks=tasks),
+            output=get_quantities_from_tasks(tasks=tasks),
         )
     else:
         raise ValueError("The ASE calculator does not implement:", tasks)
@@ -75,10 +75,10 @@ def evaluate_with_ase(
 def calc_static_with_ase(
     structure,
     ase_calculator,
-    quantities=OutputStatic.fields(),
+    output=OutputStatic.fields(),
 ):
     return ASEOutputStatic.get(
-        ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator), *quantities
+        ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator), *output
     )
 
 

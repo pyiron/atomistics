@@ -173,7 +173,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         band_indices=None,
         is_projection=False,
         quantum_mechanical=True,
-        quantities=OutputThermodynamic.fields(),
+        output=OutputThermodynamic.fields(),
     ):
         """
         Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
@@ -203,7 +203,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
                 pretend_real=pretend_real,
                 band_indices=band_indices,
                 is_projection=is_projection,
-                quantities=quantities,
+                output=output,
             )
         else:
             if is_projection:
@@ -252,7 +252,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         if (
             not quantum_mechanical
         ):  # heat capacity and entropy are not yet implemented for the classical approach.
-            quantities = ["free_energy", "temperatures", "volumes"]
+            output = ["free_energy", "temperatures", "volumes"]
         return QuasiHarmonicOutputThermodynamic.get(
             QuasiHarmonicThermalProperties(
                 temperatures=temperatures,
@@ -261,7 +261,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
                 volumes_lst=volume_lst,
                 volumes_selected_lst=vol_lst,
             ),
-            *quantities,
+            *output,
         )
 
     def _get_thermal_properties_quantum_mechanical(
@@ -274,7 +274,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         pretend_real=False,
         band_indices=None,
         is_projection=False,
-        quantities=OutputThermodynamic.fields(),
+        output=OutputThermodynamic.fields(),
     ):
         """
         Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
@@ -303,7 +303,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
                     pretend_real=pretend_real,
                     band_indices=band_indices,
                     is_projection=is_projection,
-                    quantities=quantities,
+                    output=output,
                 ).items()
             }
         return tp_collect_dict
@@ -389,6 +389,6 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             band_indices=band_indices,
             is_projection=is_projection,
             quantum_mechanical=quantum_mechanical,
-            quantities=["free_energy", "temperatures", "volumes"],
+            output=["free_energy", "temperatures", "volumes"],
         )
         return tp_collect_dict["temperatures"], tp_collect_dict["volumes"]

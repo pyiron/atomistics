@@ -185,7 +185,7 @@ def calc_static_with_qe(
     pseudopotentials=None,
     tstress=True,
     tprnfor=True,
-    quantities=OutputStatic.fields(),
+    output=OutputStatic.fields(),
     **kwargs,
 ):
     input_file_name = os.path.join(working_directory, calculation_name + ".pwi")
@@ -212,7 +212,7 @@ def calc_static_with_qe(
         calculation_name=calculation_name, working_directory=working_directory
     )
     return QuantumEspressoOutputStatic.get(
-        QEStaticParser(filename=output_file_name), *quantities
+        QEStaticParser(filename=output_file_name), *output
     )
 
 
@@ -251,7 +251,7 @@ def evaluate_with_qe(
             pseudopotentials=pseudopotentials,
             tstress=tstress,
             tprnfor=tprnfor,
-            quantities=get_quantities_from_tasks(tasks=tasks),
+            output=get_quantities_from_tasks(tasks=tasks),
             **kwargs,
         )
     else:

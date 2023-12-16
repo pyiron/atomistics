@@ -163,7 +163,7 @@ class PhonopyWorkflow(Workflow):
         pretend_real=False,
         band_indices=None,
         is_projection=False,
-        quantities=OutputThermodynamic.fields(),
+        output=OutputThermodynamic.fields(),
     ):
         """
         Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
@@ -190,7 +190,7 @@ class PhonopyWorkflow(Workflow):
             is_projection=is_projection,
         )
         return PhonopyOutputThermodynamic.get(
-            PhonopyThermalProperties(phonopy_instance=self.phonopy), *quantities
+            PhonopyThermalProperties(phonopy_instance=self.phonopy), *output
         )
 
     def get_dynamical_matrix(self):
