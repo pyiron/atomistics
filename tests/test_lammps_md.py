@@ -174,7 +174,7 @@ class TestLammpsMD(unittest.TestCase):
 
     def test_calc_molecular_dynamics_signature(self):
         self.assertEqual(
-            inspect.signature(calc_molecular_dynamics_nvt_with_lammps).parameters["quantities"].default,
+            inspect.signature(calc_molecular_dynamics_nvt_with_lammps).parameters["output"].default,
             (
                 "positions",
                 "cell",
