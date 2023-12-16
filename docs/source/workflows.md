@@ -90,7 +90,18 @@ as `structure` are:
 * `strains` specifies the strains directly rather than deriving them from the range of volume compression `vol_range`. 
 
 Beyond calculating the equilibrium properties the `EnergyVolumeCurveWorkflow` can also be used to calculate the thermal
-expansion using the [Moruzzi, V. L. et al.](https://link.aps.org/doi/10.1103/PhysRevB.37.790)  model: 
+properties using the [Moruzzi, V. L. et al.](https://link.aps.org/doi/10.1103/PhysRevB.37.790)  model: 
+```
+tp_dict = workflow.get_thermal_properties(
+    t_min=1,
+    t_max=1500,
+    t_step=50,
+    temperatures=None,
+    constant_volume=False,
+)
+print(tp_dict)
+```
+Or alternatively directly calculate the thermal expansion:
 ```
 temperatures, volumes = workflow.get_thermal_expansion(
     output_dict=result_dict, 
@@ -596,10 +607,9 @@ fit_dict = workflow.analyse_structures(output_dict=result_dict)
 The `QuasiHarmonicWorkflow` is a combination of the `EnergyVolumeCurveWorkflow` and the `PhonopyWorkflow`. Consequently, 
 the inputs are a superset of the inputs of these two workflows. 
 
-Based on the `QuasiHarmonicWorkflow` the thermal expansion can be calculated:
+Based on the `QuasiHarmonicWorkflow` the thermal properties can be calculated:
 ```
-temperatures, volumes = workflow.get_thermal_expansion(
-    output_dict=result_dict, 
+tp_dict = workflow.get_thermal_properties(
     t_min=1, 
     t_max=1500, 
     t_step=50, 
@@ -614,6 +624,22 @@ temperatures, volumes = workflow.get_thermal_expansion(
 This requires the same inputs as the calculation of the thermal properties `get_thermal_properties()` with the 
 `PhonopyWorkflow`. The additional parameter `quantum_mechanical` specifies whether the classical harmonic oscillator or 
 the quantum mechanical harmonic oscillator is used to calculate the free energy. 
+
+And finally also the thermal expansion can be calculated:
+```
+temperatures, volumes = workflow.get_thermal_expansion(
+    output_dict=result_dict, 
+    t_min=1, 
+    t_max=1500, 
+    t_step=50, 
+    temperatures=None,
+    cutoff_frequency=None,
+    pretend_real=False,
+    band_indices=None,
+    is_projection=False,
+    quantum_mechanical=True,
+)
+```
 
 ## Structure Optimization 
 In analogy to the molecular dynamics calculation also the structure optimization could in principle be defined inside 
