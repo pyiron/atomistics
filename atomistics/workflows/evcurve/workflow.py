@@ -4,7 +4,10 @@ from collections import OrderedDict
 
 from atomistics.workflows.evcurve.fit import EnergyVolumeFit
 from atomistics.workflows.interface import Workflow
-from atomistics.workflows.evcurve.debye import get_thermal_expansion_with_evcurve
+from atomistics.workflows.evcurve.debye import (
+    get_thermal_expansion_with_evcurve,
+    get_thermal_properties,
+)
 
 
 def _strain_axes(
@@ -163,4 +166,22 @@ class EnergyVolumeCurveWorkflow(Workflow):
             t_max=t_max,
             t_step=t_step,
             temperatures=temperatures,
+        )
+
+    def get_thermal_properties(
+        self,
+        t_min=1,
+        t_max=1500,
+        t_step=50,
+        temperatures=None,
+        constant_volume=False,
+    ):
+        return get_thermal_properties(
+            fit_dict=self.fit_dict,
+            masses=self.structure.get_masses(),
+            t_min=t_min,
+            t_max=t_max,
+            t_step=t_step,
+            temperatures=temperatures,
+            constant_volume=constant_volume,
         )
