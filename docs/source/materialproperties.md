@@ -481,7 +481,7 @@ from atomistics.calculators import calc_molecular_dynamics_thermal_expansion_wit
 
 structure_md = structure_opt.repeat(11)
 temperature_md_lst, volume_md_lst = calc_molecular_dynamics_thermal_expansion_with_lammps(
-    structure=structure,                       # atomistic structure
+    structure=structure_md,                    # atomistic structure
     potential_dataframe=potential_dataframe,   # interatomic potential defined as pandas.DataFrame 
     Tstart=15,                                 # temperature to for initial velocity distribution
     Tstop=1500,                                # final temperature
