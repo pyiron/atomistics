@@ -148,7 +148,7 @@ result_dict = calc_molecular_dynamics_langevin_with_lammps(
     timestep=0.001,
     seed=4928459,
     dist="gaussian",
-    quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
+    output=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
 )
 ```
 In addition to the typical LAMMPS input parameters like the atomistic structure `structure` as `ase.atoms.Atoms` object
@@ -164,7 +164,7 @@ and the `pandas.DataFrame` for the interatomic potential `potential_dataframe` a
 * `seed` random seed for the molecular dynamics 
 * `dist` initial velocity distribution 
 * `lmp` Lammps library instance as `pylammpsmpi.LammpsASELibrary` object 
-* `quantities` the quantities which are extracted from the molecular dynamics simulation
+* `output` the output quantities which are extracted from the molecular dynamics simulation
 
 #### Nose Hoover Thermostat
 Canonical ensemble (nvt) - volume and temperature constraints molecular dynamics:
@@ -189,7 +189,7 @@ result_dict = calc_molecular_dynamics_nvt_with_lammps(
     timestep=0.001,
     seed=4928459,
     dist="gaussian",
-    quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
+    output=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
 )
 ```
 In addition to the typical LAMMPS input parameters like the atomistic structure `structure` as `ase.atoms.Atoms` object
@@ -205,7 +205,7 @@ and the `pandas.DataFrame` for the interatomic potential `potential_dataframe` a
 * `seed` random seed for the molecular dynamics 
 * `dist` initial velocity distribution 
 * `lmp` Lammps library instance as `pylammpsmpi.LammpsASELibrary` object 
-* `quantities` the quantities which are extracted from the molecular dynamics simulation
+* `output` the output quantities which are extracted from the molecular dynamics simulation
 
 Isothermal-isobaric ensemble (npt) - pressure and temperature constraints molecular dynamics:
 ```
@@ -232,7 +232,7 @@ result_dict = calc_molecular_dynamics_npt_with_lammps(
     Pdamp=1.0,
     seed=4928459,
     dist="gaussian",
-    quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
+    output=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
 )
 ```
 The input parameters for the isothermal-isobaric ensemble (npt) are the same as for the canonical ensemble (nvt) plus:
@@ -264,7 +264,7 @@ result_dict = calc_molecular_dynamics_nph_with_lammps(
     Pdamp=1.0,
     seed=4928459,
     dist="gaussian",
-    quantities=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
+    output=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
 )
 ```
 
