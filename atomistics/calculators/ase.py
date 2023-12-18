@@ -122,9 +122,10 @@ def calc_molecular_dynamics_npt_with_ase(
     thermo=100,
     timestep=1 * units.fs,
     ttime=100 * units.fs,
-    pfactor=2e6*units.GPa*(units.fs**2),
+    pfactor=2e6 * units.GPa * (units.fs**2),
     temperature=100,
-    externalstress=np.array([[0., 0., 0.], [0., 0., 0.], [0., 0., 0.]])*units.bar,
+    externalstress=np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
+    * units.bar,
     quantities=ASEOutputMolecularDynamics.fields(),
 ):
     structure.calc = ase_calculator
@@ -141,7 +142,7 @@ def calc_molecular_dynamics_npt_with_ase(
         trajectory=None,
         logfile=None,
         loginterval=1,
-        append_trajectory=False
+        append_trajectory=False,
     )
     loops_to_execute = int(run / thermo)
     cache = {q: [] for q in quantities}
