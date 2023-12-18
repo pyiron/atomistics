@@ -116,20 +116,20 @@ def calc_static_with_ase(
 
 
 def _calc_md_step_with_ase(
-    dyn, structure, ase_calculator, temperature, run, thermo, quantities
+    dyn, structure, ase_calculator, temperature, run, thermo, output
 ):
     structure.calc = ase_calculator
     MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
-    cache = {q: [] for q in quantities}
+    cache = {q: [] for q in output}
     for i in range(int(run / thermo)):
         dyn.run(thermo)
         calc_dict = ASEOutputMolecularDynamics.get(
             ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator),
-            *quantities,
+            *output,
         )
         for k, v in calc_dict.items():
             cache[k].append(v)
-    return {q: np.array(cache[q]) for q in quantities}
+    return {q: np.array(cache[q]) for q in output}
 
 
 def calc_molecular_dynamics_npt_with_ase(
@@ -143,7 +143,7 @@ def calc_molecular_dynamics_npt_with_ase(
     temperature=100,
     externalstress=np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
     * units.bar,
-    quantities=ASEOutputMolecularDynamics.fields(),
+    output=ASEOutputMolecularDynamics.fields(),
 ):
     return _calc_md_step_with_ase(
         dyn=NPT(
@@ -165,7 +165,7 @@ def calc_molecular_dynamics_npt_with_ase(
         temperature=temperature,
         run=run,
         thermo=thermo,
-        quantities=quantities,
+        output=output,
     )
 
 
@@ -177,7 +177,7 @@ def calc_molecular_dynamics_langevin_with_ase(
     timestep=1 * units.fs,
     temperature=100,
     friction=0.002,
-    quantities=ASEOutputMolecularDynamics.fields(),
+    output=ASEOutputMolecularDynamics.fields(),
 ):
     return _calc_md_step_with_ase(
         dyn=Langevin(
@@ -191,7 +191,7 @@ def calc_molecular_dynamics_langevin_with_ase(
         temperature=temperature,
         run=run,
         thermo=thermo,
-        quantities=quantities,
+        output=output,
     )
 
 
