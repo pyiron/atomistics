@@ -1,0 +1,4 @@
+channels:
+- conda-forge
+dependencies:
+- matgl =0.9.1
