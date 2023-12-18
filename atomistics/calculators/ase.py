@@ -33,7 +33,9 @@ class ASEExecutor(object):
         return self.structure.get_stress(voigt=False)
 
     def get_total_energy(self):
-        return self.structure.get_potential_energy() + self.structure.get_kinetic_energy()
+        return (
+            self.structure.get_potential_energy() + self.structure.get_kinetic_energy()
+        )
 
     def get_cell(self):
         return self.structure.get_cell()
@@ -124,13 +126,16 @@ def calc_molecular_dynamics_langevin_with_ase(
 ):
     structure.calc = ase_calculator
     MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
-    dyn = Langevin(atoms=structure, timestep=timestep, temperature_K=temperature, friction=friction)
+    dyn = Langevin(
+        atoms=structure, timestep=timestep, temperature_K=temperature, friction=friction
+    )
     loops_to_execute = int(run / thermo)
     cache = {q: [] for q in quantities}
     for i in range(loops_to_execute):
         dyn.run(thermo)
         calc_dict = ASEOutputMolecularDynamics.get(
-            ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator), *quantities
+            ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator),
+            *quantities,
         )
         for k, v in calc_dict.items():
             cache[k].append(v)
