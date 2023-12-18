@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+from ase import units
+from ase.md.langevin import Langevin
+from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.constraints import UnitCellFilter
+import numpy as np
 from typing import TYPE_CHECKING
 
 from atomistics.calculators.interface import get_quantities_from_tasks
-from atomistics.shared.output import OutputStatic
+from atomistics.shared.output import OutputStatic, OutputMolecularDynamics
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 if TYPE_CHECKING:
@@ -28,11 +32,37 @@ class ASEExecutor(object):
     def get_stress(self):
         return self.structure.get_stress(voigt=False)
 
+    def get_total_energy(self):
+        return self.structure.get_potential_energy() + self.structure.get_kinetic_energy()
+
+    def get_cell(self):
+        return self.structure.get_cell()
+
+    def get_positions(self):
+        return self.structure.get_positions()
+
+    def get_velocities(self):
+        return self.structure.get_velocities()
+
+    def get_temperature(self):
+        return self.structure.get_temperature()
+
 
 ASEOutputStatic = OutputStatic(
     forces=ASEExecutor.get_forces,
     energy=ASEExecutor.get_energy,
     stress=ASEExecutor.get_stress,
+)
+
+ASEOutputMolecularDynamics = OutputMolecularDynamics(
+    positions=ASEExecutor.get_positions,
+    cell=ASEExecutor.get_cell,
+    forces=ASEExecutor.get_forces,
+    temperature=ASEExecutor.get_temperature,
+    energy_pot=ASEExecutor.get_energy,
+    energy_tot=ASEExecutor.get_total_energy,
+    pressure=ASEExecutor.get_stress,
+    velocities=ASEExecutor.get_velocities,
 )
 
 
@@ -80,6 +110,31 @@ def calc_static_with_ase(
     return ASEOutputStatic.get(
         ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator), *quantities
     )
+
+
+def calc_molecular_dynamics_langevin_with_ase(
+    structure,
+    ase_calculator,
+    run=100,
+    thermo=100,
+    timestep=1 * units.fs,
+    temperature=100,
+    friction=0.002,
+    quantities=ASEOutputMolecularDynamics.fields(),
+):
+    structure.calc = ase_calculator
+    MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
+    dyn = Langevin(atoms=structure, timestep=timestep, temperature_K=temperature, friction=friction)
+    loops_to_execute = int(run / thermo)
+    cache = {q: [] for q in quantities}
+    for i in range(loops_to_execute):
+        dyn.run(thermo)
+        calc_dict = ASEOutputMolecularDynamics.get(
+            ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator), *quantities
+        )
+        for k, v in calc_dict.items():
+            cache[k].append(v)
+    return {q: np.array(cache[q]) for q in quantities}
 
 
 def optimize_positions_with_ase(
