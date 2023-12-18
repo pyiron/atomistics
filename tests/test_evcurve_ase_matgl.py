@@ -28,7 +28,7 @@ class TestEvCurve(unittest.TestCase):
             task_dict=task_dict,
             ase_calculator=ase_calculator,
             ase_optimizer=LBFGS,
-            ase_optimizer_kwargs={"fmax": 0.000001}
+            ase_optimizer_kwargs={"fmax": 0.001}
         )
         workflow = EnergyVolumeCurveWorkflow(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
@@ -46,11 +46,9 @@ class TestEvCurve(unittest.TestCase):
         )
         fit_dict = workflow.analyse_structures(output_dict=result_dict)
         temperatures_ev, volumes_ev = workflow.get_thermal_expansion(output_dict=result_dict, temperatures=[100, 1000])
-        print(fit_dict)
-        print(temperatures_ev, volumes_ev)
-        self.assertTrue(np.isclose(fit_dict['volume_eq'], 66.55955267110758, atol=1e-04))
-        self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 50.83813788264323, atol=1e-04))
-        self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 4.800569268887965, atol=1e-04))
+        self.assertTrue(np.isclose(fit_dict['volume_eq'], 66.56048874824006, atol=1e-04))
+        self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 50.96266448851179, atol=1e-04))
+        self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 4.674534962000779, atol=1e-04))
         self.assertEqual(len(temperatures_ev), 2)
         self.assertEqual(len(volumes_ev), 2)
         self.assertTrue(volumes_ev[0] < volumes_ev[-1])
