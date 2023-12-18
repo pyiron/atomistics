@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ase import units
 from ase.md.langevin import Langevin
+from ase.md.npt import NPT
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.constraints import UnitCellFilter
 import numpy as np
@@ -112,6 +113,47 @@ def calc_static_with_ase(
     return ASEOutputStatic.get(
         ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator), *quantities
     )
+
+
+def calc_molecular_dynamics_npt_with_ase(
+    structure,
+    ase_calculator,
+    run=100,
+    thermo=100,
+    timestep=1 * units.fs,
+    ttime=100 * units.fs,
+    pfactor=2e6*units.GPa*(units.fs**2),
+    temperature=100,
+    externalstress=np.array([[0., 0., 0.], [0., 0., 0.], [0., 0., 0.]])*units.bar,
+    quantities=ASEOutputMolecularDynamics.fields(),
+):
+    structure.calc = ase_calculator
+    MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
+    dyn = NPT(
+        atoms=structure,
+        timestep=timestep,
+        temperature=None,
+        externalstress=externalstress,
+        ttime=ttime,
+        pfactor=pfactor,
+        temperature_K=temperature,
+        mask=None,
+        trajectory=None,
+        logfile=None,
+        loginterval=1,
+        append_trajectory=False
+    )
+    loops_to_execute = int(run / thermo)
+    cache = {q: [] for q in quantities}
+    for i in range(loops_to_execute):
+        dyn.run(thermo)
+        calc_dict = ASEOutputMolecularDynamics.get(
+            ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator),
+            *quantities,
+        )
+        for k, v in calc_dict.items():
+            cache[k].append(v)
+    return {q: np.array(cache[q]) for q in quantities}
 
 
 def calc_molecular_dynamics_langevin_with_ase(
