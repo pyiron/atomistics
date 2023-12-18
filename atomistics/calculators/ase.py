@@ -115,6 +115,23 @@ def calc_static_with_ase(
     )
 
 
+def _calc_md_step_with_ase(
+    dyn, structure, ase_calculator, temperature, run, thermo, quantities
+):
+    structure.calc = ase_calculator
+    MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
+    cache = {q: [] for q in quantities}
+    for i in range(int(run / thermo)):
+        dyn.run(thermo)
+        calc_dict = ASEOutputMolecularDynamics.get(
+            ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator),
+            *quantities,
+        )
+        for k, v in calc_dict.items():
+            cache[k].append(v)
+    return {q: np.array(cache[q]) for q in quantities}
+
+
 def calc_molecular_dynamics_npt_with_ase(
     structure,
     ase_calculator,
@@ -128,33 +145,28 @@ def calc_molecular_dynamics_npt_with_ase(
     * units.bar,
     quantities=ASEOutputMolecularDynamics.fields(),
 ):
-    structure.calc = ase_calculator
-    MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
-    dyn = NPT(
-        atoms=structure,
-        timestep=timestep,
-        temperature=None,
-        externalstress=externalstress,
-        ttime=ttime,
-        pfactor=pfactor,
-        temperature_K=temperature,
-        mask=None,
-        trajectory=None,
-        logfile=None,
-        loginterval=1,
-        append_trajectory=False,
+    return _calc_md_step_with_ase(
+        dyn=NPT(
+            atoms=structure,
+            timestep=timestep,
+            temperature=None,
+            externalstress=externalstress,
+            ttime=ttime,
+            pfactor=pfactor,
+            temperature_K=temperature,
+            mask=None,
+            trajectory=None,
+            logfile=None,
+            loginterval=1,
+            append_trajectory=False,
+        ),
+        structure=structure,
+        ase_calculator=ase_calculator,
+        temperature=temperature,
+        run=run,
+        thermo=thermo,
+        quantities=quantities,
     )
-    loops_to_execute = int(run / thermo)
-    cache = {q: [] for q in quantities}
-    for i in range(loops_to_execute):
-        dyn.run(thermo)
-        calc_dict = ASEOutputMolecularDynamics.get(
-            ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator),
-            *quantities,
-        )
-        for k, v in calc_dict.items():
-            cache[k].append(v)
-    return {q: np.array(cache[q]) for q in quantities}
 
 
 def calc_molecular_dynamics_langevin_with_ase(
@@ -167,22 +179,20 @@ def calc_molecular_dynamics_langevin_with_ase(
     friction=0.002,
     quantities=ASEOutputMolecularDynamics.fields(),
 ):
-    structure.calc = ase_calculator
-    MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
-    dyn = Langevin(
-        atoms=structure, timestep=timestep, temperature_K=temperature, friction=friction
+    return _calc_md_step_with_ase(
+        dyn=Langevin(
+            atoms=structure,
+            timestep=timestep,
+            temperature_K=temperature,
+            friction=friction,
+        ),
+        structure=structure,
+        ase_calculator=ase_calculator,
+        temperature=temperature,
+        run=run,
+        thermo=thermo,
+        quantities=quantities,
     )
-    loops_to_execute = int(run / thermo)
-    cache = {q: [] for q in quantities}
-    for i in range(loops_to_execute):
-        dyn.run(thermo)
-        calc_dict = ASEOutputMolecularDynamics.get(
-            ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator),
-            *quantities,
-        )
-        for k, v in calc_dict.items():
-            cache[k].append(v)
-    return {q: np.array(cache[q]) for q in quantities}
 
 
 def optimize_positions_with_ase(
