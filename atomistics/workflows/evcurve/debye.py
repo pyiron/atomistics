@@ -249,7 +249,7 @@ def get_thermal_properties(
     temperatures=None,
     constant_volume=False,
     num_steps=50,
-    quantities=OutputThermodynamic.fields(),
+    output=OutputThermodynamic.fields(),
 ):
     return DebyeOutputThermodynamic.get(
         DebyeThermalProperties(
@@ -262,5 +262,5 @@ def get_thermal_properties(
             constant_volume=constant_volume,
             num_steps=num_steps,
         ),
-        *quantities,
+        *output,
     )

@@ -119,7 +119,7 @@ def calc_static_with_lammps(
     structure,
     potential_dataframe,
     lmp=None,
-    quantities=LammpsOutputStatic.fields(),
+    output=LammpsOutputStatic.fields(),
     **kwargs,
 ):
     template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
@@ -133,7 +133,7 @@ def calc_static_with_lammps(
         lmp=lmp,
         **kwargs,
     )
-    result_dict = LammpsOutputStatic.get(lmp_instance, *quantities)
+    result_dict = LammpsOutputStatic.get(lmp_instance, *output)
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 
@@ -150,7 +150,7 @@ def calc_molecular_dynamics_nvt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=LammpsOutputMolecularDynamics.fields(),
+    output=LammpsOutputMolecularDynamics.fields(),
     **kwargs,
 ):
     init_str = (
@@ -186,7 +186,7 @@ def calc_molecular_dynamics_nvt_with_lammps(
         run_str=run_str,
         run=run,
         thermo=thermo,
-        quantities=quantities,
+        output=output,
     )
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
@@ -207,7 +207,7 @@ def calc_molecular_dynamics_npt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=LammpsOutputMolecularDynamics.fields(),
+    output=LammpsOutputMolecularDynamics.fields(),
     **kwargs,
 ):
     init_str = (
@@ -246,7 +246,7 @@ def calc_molecular_dynamics_npt_with_lammps(
         run_str=run_str,
         run=run,
         thermo=thermo,
-        quantities=quantities,
+        output=output,
     )
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
@@ -265,7 +265,7 @@ def calc_molecular_dynamics_nph_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=LammpsOutputMolecularDynamics.fields(),
+    output=LammpsOutputMolecularDynamics.fields(),
     **kwargs,
 ):
     init_str = (
@@ -301,7 +301,7 @@ def calc_molecular_dynamics_nph_with_lammps(
         run_str=run_str,
         run=run,
         thermo=thermo,
-        quantities=quantities,
+        output=output,
     )
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
@@ -319,7 +319,7 @@ def calc_molecular_dynamics_langevin_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    quantities=LammpsOutputMolecularDynamics.fields(),
+    output=LammpsOutputMolecularDynamics.fields(),
     **kwargs,
 ):
     init_str = (
@@ -357,7 +357,7 @@ def calc_molecular_dynamics_langevin_with_lammps(
         run_str=run_str,
         run=run,
         thermo=thermo,
-        quantities=quantities,
+        output=output,
     )
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
@@ -455,7 +455,7 @@ def evaluate_with_lammps_library(
             structure=structure,
             potential_dataframe=potential_dataframe,
             lmp=lmp,
-            quantities=get_quantities_from_tasks(tasks=tasks),
+            output=get_quantities_from_tasks(tasks=tasks),
         )
     else:
         raise ValueError("The LAMMPS calculator does not implement:", tasks)
