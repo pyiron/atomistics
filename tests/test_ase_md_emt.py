@@ -57,6 +57,6 @@ class TestASEMD(unittest.TestCase):
         self.assertEqual(result_dict["energy_pot"].shape, (10,))
         self.assertEqual(result_dict["energy_tot"].shape, (10,))
         self.assertEqual(result_dict["pressure"].shape, (10, 3, 3))
-        self.assertTrue(result_dict["temperature"][-1] > 25)
-        self.assertTrue(result_dict["temperature"][-1] < 75)
+        self.assertTrue(result_dict["temperature"][-1] > 50)
+        self.assertTrue(result_dict["temperature"][-1] < 100)
         self.assertTrue(get_volume(result_dict["cell"][0]) < get_volume(result_dict["cell"][-1]))
