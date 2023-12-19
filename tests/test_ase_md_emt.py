@@ -37,7 +37,7 @@ class TestASEMD(unittest.TestCase):
         self.assertTrue(result_dict["temperature"][-1] < 75)
 
     def test_ase_npt(self):
-        structure = bulk("Al", a=4.0, cubic=True).repeat([2, 2, 2])
+        structure = bulk("Al", a=3.5, cubic=True).repeat([2, 2, 2])
         result_dict = calc_molecular_dynamics_npt_with_ase(
             structure=structure,
             ase_calculator=EMT(),
