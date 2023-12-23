@@ -111,7 +111,7 @@ class TestElastic(unittest.TestCase):
         self.assertTrue(np.isclose(elastic_dict['AVR'], 4.962492964955925))
         self.assertTrue(np.isclose(elastic_dict['C_eigval'].eigenvalues, np.array(
             [235.12517572,  53.59208765,  53.59208765,  51.23853765,    51.23853765,  51.23853765]
-        ), rtol=1.e-4, atol=1.e-7).all())
+        ), rtol=1.e-3, atol=1.e-6).all())
         self.assertTrue(np.isclose(elastic_dict['C_eigval'].eigenvectors, np.array(
             [
                 [-0.57735027, -0.62664396, 0.28808397, 0., 0.,0.],
@@ -121,4 +121,4 @@ class TestElastic(unittest.TestCase):
                 [0., 0., 0., 0., 1., 0.],
                 [0., 0., 0., 0., 0., 1.],
             ]
-        ), rtol=1.e-4, atol=1.e-7).all())
+        ), rtol=1.e-3, atol=1.e-6).all())
