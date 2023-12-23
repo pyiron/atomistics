@@ -2,6 +2,7 @@ from collections import OrderedDict
 import numpy as np
 import scipy.constants
 
+from atomistics.shared.output import OutputElastic
 from atomistics.workflows.interface import Workflow
 from atomistics.workflows.elastic.symmetry import (
     find_symmetry_group_number,
@@ -9,6 +10,117 @@ from atomistics.workflows.elastic.symmetry import (
     get_LAG_Strain_List,
     get_symmetry_family_from_SGN,
     Ls_Dic,
+)
+from atomistics.workflows.elastic.material import (
+    get_BV,
+    get_GV,
+    get_EV,
+    get_nuV,
+    get_BR,
+    get_GR,
+    get_ER,
+    get_nuR,
+    get_BH,
+    get_GH,
+    get_EH,
+    get_nuH,
+    get_AVR,
+    get_S,
+    get_C_eigval,
+)
+
+
+class ElasticProperties:
+    def __init__(self, C):
+        self._C = C
+        self._S = None
+        self._BV = None
+        self._GV = None
+        self._BR = None
+        self._GR = None
+        self._BH = None
+        self._GH = None
+
+    def get_C(self):
+        return self._C
+
+    def get_S(self):
+        if self._S is None:
+            self._S = get_S(C=self._C)
+        return self._S
+
+    def get_BV(self):
+        if self._BV is None:
+            self._BV = get_BV(C=self._C)
+        return self._BV
+
+    def get_GV(self):
+        if self._GV is None:
+            self._GV = get_GV(C=self._C)
+        return self._GV
+
+    def get_BR(self):
+        if self._BR is None:
+            self._BR = get_BR(S=self.get_S())
+        return self._BR
+
+    def get_GR(self):
+        if self._GR is None:
+            self._GR = get_GR(S=self.get_S())
+        return self._GR
+
+    def get_BH(self):
+        if self._BH is None:
+            self._BH = get_BH(BV=self.get_BV(), BR=self.get_BR())
+        return self._BH
+
+    def get_GH(self):
+        if self._GH is None:
+            self._GH = get_GH(GV=self.get_GV(), GR=self.get_GR())
+        return self._GH
+
+    def get_EV(self):
+        return get_EV(BV=self.get_BV(), GV=self.get_GV())
+
+    def get_nuV(self):
+        return get_nuV(BV=self.get_BV(), GV=self.get_GV())
+
+    def get_ER(self):
+        return get_ER(BR=self.get_BR(), GR=self.get_GR())
+
+    def get_nuR(self):
+        return get_nuR(BR=self.get_BR(), GR=self.get_GR())
+
+    def get_EH(self):
+        return get_EH(BH=self.get_BH(), GH=self.get_GH())
+
+    def get_nuH(self):
+        return get_nuH(BH=self.get_BH(), GH=self.get_GH())
+
+    def get_AVR(self):
+        return get_AVR(GV=self.get_GV(), GR=self.get_GR())
+
+    def get_C_eigval(self):
+        return get_C_eigval(C=self._C)
+
+
+ElasticMatrixOutputElastic = OutputElastic(
+    C=ElasticProperties.get_C,
+    S=ElasticProperties.get_S,
+    BV=ElasticProperties.get_BV,
+    BR=ElasticProperties.get_BR,
+    BH=ElasticProperties.get_BH,
+    GV=ElasticProperties.get_GV,
+    GR=ElasticProperties.get_GR,
+    GH=ElasticProperties.get_GH,
+    EV=ElasticProperties.get_EV,
+    ER=ElasticProperties.get_ER,
+    EH=ElasticProperties.get_EH,
+    nuV=ElasticProperties.get_nuV,
+    nuR=ElasticProperties.get_nuR,
+    nuH=ElasticProperties.get_nuH,
+    AVR=ElasticProperties.get_AVR,
+    C_eigval=ElasticProperties.get_C_eigval,
 )
 
 
@@ -110,11 +222,12 @@ class ElasticMatrixWorkflow(Workflow):
 
         return {"calc_energy": self._structure_dict}
 
-    def analyse_structures(self, output_dict):
+    def analyse_structures(self, output_dict, output=OutputElastic.fields()):
         """
 
         Args:
             output_dict (dict):
+            output (tuple):
 
         Returns:
 
@@ -142,65 +255,9 @@ class ElasticMatrixWorkflow(Workflow):
                 strain_energy[-1].append((eps, ene))
         self._data["strain_energy"] = strain_energy
         self.fit_elastic_matrix()
-        return self._data
-
-    def calculate_modulus(self):
-        """
-
-        Returns:
-
-        """
-        C = self._data["C"]
-
-        BV = (C[0, 0] + C[1, 1] + C[2, 2] + 2 * (C[0, 1] + C[0, 2] + C[1, 2])) / 9
-        GV = (
-            (C[0, 0] + C[1, 1] + C[2, 2])
-            - (C[0, 1] + C[0, 2] + C[1, 2])
-            + 3 * (C[3, 3] + C[4, 4] + C[5, 5])
-        ) / 15
-        EV = (9 * BV * GV) / (3 * BV + GV)
-        nuV = (1.5 * BV - GV) / (3 * BV + GV)
-        self._data["BV"] = BV
-        self._data["GV"] = GV
-        self._data["EV"] = EV
-        self._data["nuV"] = nuV
-
-        try:
-            S = np.linalg.inv(C)
-
-            BR = 1 / (S[0, 0] + S[1, 1] + S[2, 2] + 2 * (S[0, 1] + S[0, 2] + S[1, 2]))
-            GR = 15 / (
-                4 * (S[0, 0] + S[1, 1] + S[2, 2])
-                - 4 * (S[0, 1] + S[0, 2] + S[1, 2])
-                + 3 * (S[3, 3] + S[4, 4] + S[5, 5])
-            )
-            ER = (9 * BR * GR) / (3 * BR + GR)
-            nuR = (1.5 * BR - GR) / (3 * BR + GR)
-
-            BH = 0.50 * (BV + BR)
-            GH = 0.50 * (GV + GR)
-            EH = (9.0 * BH * GH) / (3.0 * BH + GH)
-            nuH = (1.5 * BH - GH) / (3.0 * BH + GH)
-
-            AVR = 100.0 * (GV - GR) / (GV + GR)
-            self._data["S"] = S
-
-            self._data["BR"] = BR
-            self._data["GR"] = GR
-            self._data["ER"] = ER
-            self._data["nuR"] = nuR
-
-            self._data["BH"] = BH
-            self._data["GH"] = GH
-            self._data["EH"] = EH
-            self._data["nuH"] = nuH
-
-            self._data["AVR"] = AVR
-        except np.linalg.LinAlgError as e:
-            print("LinAlgError:", e)
-
-        eigval = np.linalg.eig(C)
-        self._data["C_eigval"] = eigval
+        return ElasticMatrixOutputElastic.get(
+            ElasticProperties(C=self._data["C"]), *output
+        )
 
     def fit_elastic_matrix(self):
         """
@@ -234,7 +291,6 @@ class ElasticMatrixWorkflow(Workflow):
         C *= CONV
         self._data["C"] = C
         self._data["A2"] = A2
-        self.calculate_modulus()
 
     @staticmethod
     def subjob_name(i, eps):

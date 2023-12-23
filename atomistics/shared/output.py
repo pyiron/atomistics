@@ -37,3 +37,23 @@ class OutputThermodynamic(Output):
     entropy: callable
     heat_capacity: callable
     volumes: callable
+
+
+@dataclasses.dataclass
+class OutputElastic(Output):
+    C: callable
+    S: callable
+    BV: callable
+    BR: callable
+    BH: callable
+    GV: callable
+    GR: callable
+    GH: callable
+    EV: callable
+    ER: callable
+    EH: callable
+    nuV: callable
+    nuR: callable
+    nuH: callable
+    AVR: callable
+    C_eigval: callable
