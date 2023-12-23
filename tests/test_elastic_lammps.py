@@ -44,6 +44,81 @@ class TestElastic(unittest.TestCase):
             potential_dataframe=df_pot_selected,
         )
         elastic_dict = workflow.analyse_structures(output_dict=result_dict)
-        self.assertTrue(np.isclose(elastic_dict["C"][0, 0], 114.10393023))
-        self.assertTrue(np.isclose(elastic_dict["C"][0, 1], 60.51098897))
-        self.assertTrue(np.isclose(elastic_dict["C"][3, 3], 51.23853765))
+        self.assertTrue(np.isclose(elastic_dict["C"], np.array(
+            [
+                [114.10311701, 60.51102935, 60.51102935, 0., 0., 0.],
+                [60.51102935, 114.10311701, 60.51102935, 0., 0., 0.],
+                [60.51102935, 60.51102935, 114.10311701, 0., 0., 0.],
+                [0., 0., 0., 51.23853765, 0., 0.],
+                [0., 0., 0., 0., 51.23853765, 0.],
+                [0., 0., 0., 0., 0., 51.23853765]
+            ])
+        ).all())
+        self.assertEqual(elastic_dict['SGN'], 225)
+        self.assertEqual(elastic_dict['LC'], 'CI')
+        self.assertEqual(elastic_dict['Lag_strain_list'], ['01', '08', '23'])
+        self.assertTrue(np.isclose(elastic_dict['epss'], np.array([-0.005, -0.0025, 0., 0.0025, 0.005])).all())
+        self.assertTrue(np.isclose(elastic_dict["v0"], 66.43035441556098))
+        self.assertTrue(np.isclose(elastic_dict["e0"],  -13.439999952735112))
+        self.assertTrue(np.isclose(elastic_dict['strain_energy'], np.array(
+            [
+                [
+                    (-0.005, -13.436320248980278),
+                    (-0.0025, -13.439079680886989),
+                    (0.0, -13.439999952735112),
+                    (0.0024999999999999996, -13.439084974614394),
+                    (0.005, -13.436364320399795)
+                ],
+                [
+                    (-0.005, -13.43817471490433),
+                    (-0.0025, -13.439544638502628),
+                    (0.0, -13.439999952735112),
+                    (0.0024999999999999996, -13.43954822781134),
+                    (0.005, -13.438204192615181)
+                ],
+                [
+                    (-0.005, -13.436741954502294),
+                    (-0.0025, -13.439195465714551),
+                    (0.0, -13.439999952735112),
+                    (0.0024999999999999996, -13.439213491269701),
+                    (0.005, -13.436885713447486)
+                ]
+            ])).all()
+        )
+        self.assertTrue(np.isclose(elastic_dict['A2'], np.array([2.20130388, 1.08985578, 1.91883479])).all())
+        self.assertTrue(np.isclose(elastic_dict['BV'], 78.37505857279467))
+        self.assertTrue(np.isclose(elastic_dict['GV'], 41.46154012284969))
+        self.assertTrue(np.isclose(elastic_dict['EV'], 105.73882997912072))
+        self.assertTrue(np.isclose(elastic_dict['nuV'], 0.2751435386362729))
+        self.assertTrue(np.isclose(elastic_dict['S'], np.array(
+            [
+                [0.01385733, -0.00480214, -0.00480214, 0., 0., 0.],
+                [-0.00480214, 0.01385733, -0.00480214, 0., 0., 0.],
+                [-0.00480214, -0.00480214,  0.01385733, 0., 0., 0.],
+                [0., 0., 0., 0.01951656, 0., 0.],
+                [0., 0., 0., 0., 0.01951656, 0.],
+                [0., 0., 0., 0., 0., 0.01951656]
+            ]
+        )).all())
+        self.assertTrue(np.isclose(elastic_dict['BR'], 78.37505857279469))
+        self.assertTrue(np.isclose(elastic_dict['GR'], 37.54104251720356))
+        self.assertTrue(np.isclose(elastic_dict['ER'], 97.11702764970639))
+        self.assertTrue(np.isclose(elastic_dict['nuR'], 0.29347803281170937))
+        self.assertTrue(np.isclose(elastic_dict['BH'], 78.37505857279467))
+        self.assertTrue(np.isclose(elastic_dict['GH'], 39.501291320026624))
+        self.assertTrue(np.isclose(elastic_dict['EH'], 101.45869947879392))
+        self.assertTrue(np.isclose(elastic_dict['nuH'], 0.2842453510798992))
+        self.assertTrue(np.isclose(elastic_dict['AVR'], 4.962492964955925))
+        self.assertTrue(np.isclose(elastic_dict['C_eigval'].eigenvalues, np.array(
+            [235.12517572,  53.59208765,  53.59208765,  51.23853765,    51.23853765,  51.23853765]
+        )).all())
+        self.assertTrue(np.isclose(elastic_dict['C_eigval'].eigenvectors, np.array(
+            [
+                [-0.57735027, -0.62664396, 0.28808397, 0., 0.,0.],
+                [-0.57735027, 0.76662983, 0.51758912, 0., 0., 0.],
+                [-0.57735027, -0.13998587, -0.80567309, 0., 0., 0.],
+                [0., 0., 0., 1., 0., 0.],
+                [0., 0., 0., 0., 1., 0.],
+                [0., 0., 0., 0., 0., 1.],
+            ]
+        )).all())
