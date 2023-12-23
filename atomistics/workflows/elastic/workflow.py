@@ -11,7 +11,7 @@ from atomistics.workflows.elastic.symmetry import (
     get_symmetry_family_from_SGN,
     Ls_Dic,
 )
-from atomistics.workflows.elastic.material import (
+from atomistics.workflows.elastic.elastic_moduli import (
     get_BV,
     get_GV,
     get_EV,
