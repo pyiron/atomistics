@@ -54,13 +54,13 @@ class TestElastic(unittest.TestCase):
                 [0., 0., 0., 0., 0., 51.23853765]
             ])
         ).all())
-        self.assertEqual(elastic_dict['SGN'], 225)
-        self.assertEqual(elastic_dict['LC'], 'CI')
-        self.assertEqual(elastic_dict['Lag_strain_list'], ['01', '08', '23'])
-        self.assertTrue(np.isclose(elastic_dict['epss'], np.array([-0.005, -0.0025, 0., 0.0025, 0.005])).all())
-        self.assertTrue(np.isclose(elastic_dict["v0"], 66.43035441556098))
-        self.assertTrue(np.isclose(elastic_dict["e0"],  -13.439999952735112))
-        self.assertTrue(np.isclose(elastic_dict['strain_energy'], np.array(
+        self.assertEqual(workflow._data['SGN'], 225)
+        self.assertEqual(workflow._data['LC'], 'CI')
+        self.assertEqual(workflow._data['Lag_strain_list'], ['01', '08', '23'])
+        self.assertTrue(np.isclose(workflow._data['epss'], np.array([-0.005, -0.0025, 0., 0.0025, 0.005])).all())
+        self.assertTrue(np.isclose(workflow._data["v0"], 66.43035441556098))
+        self.assertTrue(np.isclose(workflow._data["e0"],  -13.439999952735112))
+        self.assertTrue(np.isclose(workflow._data['strain_energy'], np.array(
             [
                 [
                     (-0.005, -13.436320248980278),
@@ -85,7 +85,7 @@ class TestElastic(unittest.TestCase):
                 ]
             ])).all()
         )
-        self.assertTrue(np.isclose(elastic_dict['A2'], np.array([2.20130388, 1.08985578, 1.91883479])).all())
+        self.assertTrue(np.isclose(workflow._data['A2'], np.array([2.20130388, 1.08985578, 1.91883479])).all())
         self.assertTrue(np.isclose(elastic_dict['BV'], 78.37505857279467))
         self.assertTrue(np.isclose(elastic_dict['GV'], 41.46154012284969))
         self.assertTrue(np.isclose(elastic_dict['EV'], 105.73882997912072))
