@@ -5,8 +5,8 @@ from collections import OrderedDict
 from atomistics.workflows.evcurve.fit import EnergyVolumeFit
 from atomistics.workflows.interface import Workflow
 from atomistics.workflows.evcurve.debye import (
-    get_thermal_expansion_with_evcurve,
     get_thermal_properties,
+    OutputThermodynamic,
 )
 
 
@@ -158,14 +158,20 @@ class EnergyVolumeCurveWorkflow(Workflow):
     def get_thermal_expansion(
         self, output_dict, t_min=1, t_max=1500, t_step=50, temperatures=None
     ):
-        fit_dict = self.analyse_structures(output_dict=output_dict)
-        return get_thermal_expansion_with_evcurve(
-            fit_dict=fit_dict,
+        self.analyse_structures(output_dict=output_dict)
+        thermal_properties_dict = get_thermal_properties(
+            fit_dict=self.fit_dict,
             masses=self.structure.get_masses(),
             t_min=t_min,
             t_max=t_max,
             t_step=t_step,
             temperatures=temperatures,
+            constant_volume=False,
+            output=["temperatures", "volumes"],
+        )
+        return (
+            thermal_properties_dict["temperatures"],
+            thermal_properties_dict["volumes"],
         )
 
     def get_thermal_properties(
@@ -175,6 +181,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         t_step=50,
         temperatures=None,
         constant_volume=False,
+        output=OutputThermodynamic.fields(),
     ):
         return get_thermal_properties(
             fit_dict=self.fit_dict,
@@ -184,4 +191,5 @@ class EnergyVolumeCurveWorkflow(Workflow):
             t_step=t_step,
             temperatures=temperatures,
             constant_volume=constant_volume,
+            output=output,
         )
