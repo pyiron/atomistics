@@ -480,7 +480,7 @@ thermostat implemented in LAMMPS](https://docs.lammps.org/fix_nh.html) directly 
 from atomistics.calculators import calc_molecular_dynamics_thermal_expansion_with_lammps
 
 structure_md = structure_opt.repeat(11)
-temperature_md_lst, volume_md_lst = calc_molecular_dynamics_thermal_expansion_with_lammps(
+result_dict = calc_molecular_dynamics_thermal_expansion_with_lammps(
     structure=structure_md,                    # atomistic structure
     potential_dataframe=potential_dataframe,   # interatomic potential defined as pandas.DataFrame 
     Tstart=15,                                 # temperature to for initial velocity distribution
@@ -496,6 +496,7 @@ temperature_md_lst, volume_md_lst = calc_molecular_dynamics_thermal_expansion_wi
     seed=4928459,                              # random seed 
     dist="gaussian",                           # Gaussian velocity distribution 
 )
+temperature_md_lst, volume_md_lst = result_dict["temperatures"], result_dict["volumes"]
 ```
 The `calc_molecular_dynamics_thermal_expansion_with_lammps()` function defines a loop over a vector of temperatures in 
 5K steps. For each step 100 molecular dynamics steps are executed before the temperature is again increased by 5K. For 
