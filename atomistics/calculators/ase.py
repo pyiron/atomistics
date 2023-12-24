@@ -50,11 +50,15 @@ class ASEExecutor(object):
     def get_temperature(self):
         return self.structure.get_temperature()
 
+    def get_volume(self):
+        return self.structure.get_volume()
+
 
 ASEOutputStatic = OutputStatic(
     forces=ASEExecutor.get_forces,
     energy=ASEExecutor.get_energy,
     stress=ASEExecutor.get_stress,
+    volume=ASEExecutor.get_volume,
 )
 
 ASEOutputMolecularDynamics = OutputMolecularDynamics(
@@ -66,6 +70,7 @@ ASEOutputMolecularDynamics = OutputMolecularDynamics(
     energy_tot=ASEExecutor.get_total_energy,
     pressure=ASEExecutor.get_stress,
     velocities=ASEExecutor.get_velocities,
+    volume=ASEExecutor.get_volume,
 )
 
 
