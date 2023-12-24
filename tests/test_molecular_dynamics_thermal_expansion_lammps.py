@@ -98,8 +98,6 @@ class TestMolecularDynamicsThermalExpansion(unittest.TestCase):
             pfactor=2e6 * units.GPa * (units.fs ** 2),
             externalstress=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
         )
-        temperature_lst = results_dict["temperatures"]
-        volume_lst = results_dict["volumes"]
-        self.assertTrue(all(np.array(temperature_lst) < 600))
-        self.assertTrue(all(np.array(temperature_lst) > 0))
-        self.assertTrue(volume_lst[0] < volume_lst[-1])
+        self.assertTrue(all(np.array(results_dict["temperatures"]) < 600))
+        self.assertTrue(all(np.array(results_dict["temperatures"]) > 0))
+        self.assertTrue(results_dict["volumes"][0] < results_dict["volumes"][-1])
