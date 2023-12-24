@@ -72,7 +72,7 @@ class OutputEnergyVolumeCurve(
 
 
 @dataclasses.dataclass
-class OutputElastic(EquilibriumBulkModul):
+class OutputElastic(Output):
     C: callable
     S: callable
     BV: callable
