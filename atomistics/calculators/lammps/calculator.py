@@ -32,6 +32,7 @@ from atomistics.calculators.lammps.output import (
     LammpsOutputStatic,
 )
 from atomistics.calculators.wrapper import as_task_dict_evaluator
+from atomistics.shared.thermal_expansion import OutputThermalExpansionProperties
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -379,6 +380,7 @@ def calc_molecular_dynamics_thermal_expansion_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
+    output=OutputThermalExpansionProperties.fields(),
     **kwargs,
 ):
     init_str = (
@@ -393,7 +395,7 @@ def calc_molecular_dynamics_thermal_expansion_with_lammps(
     )
     run_str = LAMMPS_ENSEMBLE_NPT + "\n" + LAMMPS_RUN
     temperature_lst = np.arange(Tstart, Tstop + Tstep, Tstep).tolist()
-    temperature_md_lst, volume_md_lst = lammps_thermal_expansion_loop(
+    return lammps_thermal_expansion_loop(
         structure=structure,
         potential_dataframe=potential_dataframe,
         init_str=init_str,
@@ -409,9 +411,9 @@ def calc_molecular_dynamics_thermal_expansion_with_lammps(
         seed=seed,
         dist=dist,
         lmp=lmp,
+        output=output,
         **kwargs,
     )
-    return temperature_md_lst, volume_md_lst
 
 
 @as_task_dict_evaluator
@@ -440,16 +442,16 @@ def evaluate_with_lammps_library(
             **lmp_optimizer_kwargs,
         )
     elif "calc_molecular_dynamics_thermal_expansion" in tasks:
-        (
-            temperature_lst,
-            volume_md_lst,
-        ) = calc_molecular_dynamics_thermal_expansion_with_lammps(
+        results_dict = calc_molecular_dynamics_thermal_expansion_with_lammps(
             structure=structure,
             potential_dataframe=potential_dataframe,
             lmp=lmp,
             **lmp_optimizer_kwargs,
         )
-        results["volume_over_temperature"] = (temperature_lst, volume_md_lst)
+        results["volume_over_temperature"] = (
+            results_dict["temperatures"],
+            results_dict["volumes"],
+        )
     elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
         return calc_static_with_lammps(
             structure=structure,

@@ -9,8 +9,12 @@ import numpy as np
 from typing import TYPE_CHECKING
 
 from atomistics.calculators.interface import get_quantities_from_tasks
-from atomistics.shared.output import OutputStatic, OutputMolecularDynamics
 from atomistics.calculators.wrapper import as_task_dict_evaluator
+from atomistics.shared.output import OutputStatic, OutputMolecularDynamics
+from atomistics.shared.thermal_expansion import (
+    OutputThermalExpansionProperties,
+    ThermalExpansionProperties,
+)
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -141,8 +145,7 @@ def calc_molecular_dynamics_npt_with_ase(
     ttime=100 * units.fs,
     pfactor=2e6 * units.GPa * (units.fs**2),
     temperature=100,
-    externalstress=np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
-    * units.bar,
+    externalstress=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
     output=ASEOutputMolecularDynamics.fields(),
 ):
     return _calc_md_step_with_ase(
@@ -213,3 +216,46 @@ def optimize_positions_and_volume_with_ase(
     ase_optimizer_obj = ase_optimizer(UnitCellFilter(structure_optimized))
     ase_optimizer_obj.run(**ase_optimizer_kwargs)
     return structure_optimized
+
+
+def calc_molecular_dynamics_thermal_expansion_with_ase(
+    structure,
+    ase_calculator,
+    temperature_start=15,
+    temperature_stop=1500,
+    temperature_step=5,
+    run=100,
+    thermo=100,
+    timestep=1 * units.fs,
+    ttime=100 * units.fs,
+    pfactor=2e6 * units.GPa * (units.fs**2),
+    externalstress=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
+    output=OutputThermalExpansionProperties.fields(),
+):
+    structure_current = structure.copy()
+    temperature_lst = np.arange(
+        temperature_start, temperature_stop + temperature_step, temperature_step
+    ).tolist()
+    volume_md_lst, temperature_md_lst = [], []
+    for temperature in temperature_lst:
+        result_dict = calc_molecular_dynamics_npt_with_ase(
+            structure=structure_current.copy(),
+            ase_calculator=ase_calculator,
+            run=run,
+            thermo=thermo,
+            timestep=timestep,
+            ttime=ttime,
+            pfactor=pfactor,
+            temperature=temperature,
+            externalstress=externalstress,
+        )
+        cell = result_dict["cell"][-1]
+        structure_current.set_cell(cell=cell, scale_atoms=True)
+        temperature_md_lst.append(result_dict["temperature"][-1])
+        volume_md_lst.append(np.abs(np.linalg.det(cell)))
+    return OutputThermalExpansionProperties.get(
+        ThermalExpansionProperties(
+            temperatures_lst=temperature_md_lst, volumes_lst=volume_md_lst
+        ),
+        *output,
+    )

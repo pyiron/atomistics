@@ -1,6 +1,7 @@
 from atomistics.calculators.ase import (
-    calc_molecular_dynamics_npt_with_ase,
     calc_molecular_dynamics_langevin_with_ase,
+    calc_molecular_dynamics_npt_with_ase,
+    calc_molecular_dynamics_thermal_expansion_with_ase,
     calc_static_with_ase,
     evaluate_with_ase,
     optimize_positions_with_ase,
