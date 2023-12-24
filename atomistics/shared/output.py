@@ -16,6 +16,7 @@ class OutputStatic(Output):
     forces: callable
     energy: callable
     stress: callable
+    volume: callable
 
 
 @dataclasses.dataclass
@@ -28,6 +29,7 @@ class OutputMolecularDynamics(Output):
     energy_tot: callable
     pressure: callable
     velocities: callable
+    volume: callable
 
 
 @dataclasses.dataclass
