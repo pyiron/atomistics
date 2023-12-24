@@ -184,6 +184,7 @@ class TestLammpsMD(unittest.TestCase):
                 "energy_tot",
                 "pressure",
                 "velocities",
+                "volume",
             )
 
         )
