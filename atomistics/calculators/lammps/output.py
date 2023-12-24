@@ -1,4 +1,7 @@
-from atomistics.shared.output import OutputStatic, OutputMolecularDynamics
+from atomistics.shared.output import (
+    OutputStatic,
+    OutputMolecularDynamics,
+)
 from pylammpsmpi import LammpsASELibrary
 
 

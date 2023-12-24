@@ -33,12 +33,16 @@ class OutputMolecularDynamics(Output):
 
 
 @dataclasses.dataclass
-class OutputThermodynamic(Output):
+class OutputThermalExpansion(Output):
     temperatures: callable
+    volumes: callable
+
+
+@dataclasses.dataclass
+class OutputThermodynamic(OutputThermalExpansion):
     free_energy: callable
     entropy: callable
     heat_capacity: callable
-    volumes: callable
 
 
 @dataclasses.dataclass

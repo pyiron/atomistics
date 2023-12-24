@@ -1,10 +1,13 @@
 import os
 
+from ase import units
 from ase.build import bulk
+from ase.calculators.lammpslib import LAMMPSlib
 import numpy as np
 import unittest
 
 from atomistics.workflows import calc_molecular_dynamics_thermal_expansion
+from atomistics.calculators import calc_molecular_dynamics_thermal_expansion_with_ase
 
 
 try:
@@ -51,7 +54,7 @@ class TestMolecularDynamicsThermalExpansion(unittest.TestCase):
             potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
-        temperature_lst, volume_lst = calc_molecular_dynamics_thermal_expansion_with_lammps(
+        results_dict = calc_molecular_dynamics_thermal_expansion_with_lammps(
             structure=structure,
             potential_dataframe=df_pot_selected,
             Tstart=50,
@@ -68,6 +71,33 @@ class TestMolecularDynamicsThermalExpansion(unittest.TestCase):
             dist="gaussian",
             lmp=None,
         )
-        self.assertTrue(all(np.array(temperature_lst) < 600))
-        self.assertTrue(all(np.array(temperature_lst) > 0))
-        self.assertTrue(volume_lst[0] < volume_lst[-1])
+        self.assertTrue(all(np.array(results_dict["temperatures"]) < 600))
+        self.assertTrue(all(np.array(results_dict["temperatures"]) > 0))
+        self.assertTrue(results_dict["volumes"][0] < results_dict["volumes"][-1])
+
+    def test_calc_thermal_expansion_using_ase(self):
+        structure = bulk("Al", cubic=True)
+        cmds = [
+            "pair_style morse/smooth/linear 9.0",
+            "pair_coeff * * 0.5 1.8 2.95"
+        ]
+        results_dict = calc_molecular_dynamics_thermal_expansion_with_ase(
+            structure=structure.copy(),
+            ase_calculator=LAMMPSlib(
+                lmpcmds=cmds,
+                atom_types={"Al": 1},
+                keep_alive=True,
+            ),
+            temperature_start=50,
+            temperature_stop=500,
+            temperature_step=50,
+            run=100,
+            thermo=100,
+            timestep=1 * units.fs,
+            ttime=100 * units.fs,
+            pfactor=2e6 * units.GPa * (units.fs ** 2),
+            externalstress=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
+        )
+        self.assertTrue(all(np.array(results_dict["temperatures"]) < 600))
+        self.assertTrue(all(np.array(results_dict["temperatures"]) > 0))
+        self.assertTrue(results_dict["volumes"][0] < results_dict["volumes"][-1])
