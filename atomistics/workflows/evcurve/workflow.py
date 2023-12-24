@@ -169,7 +169,10 @@ class EnergyVolumeCurveWorkflow(Workflow):
             constant_volume=False,
             output=["temperatures", "volumes"],
         )
-        return thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
+        return (
+            thermal_properties_dict["temperatures"],
+            thermal_properties_dict["volumes"],
+        )
 
     def get_thermal_properties(
         self,
