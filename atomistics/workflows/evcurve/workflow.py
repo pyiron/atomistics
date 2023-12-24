@@ -156,12 +156,12 @@ class EnergyVolumeCurveWorkflow(Workflow):
         self.fit_order = fit_order
         self.axes = axes
         self.strains = strains
-        self.fit_module = EnergyVolumeFit()
         self._structure_dict = OrderedDict()
+        self._fit_dict = {}
 
     @property
     def fit_dict(self):
-        return self.fit_module.fit_dict
+        return self._fit_dict
 
     def generate_structures(self):
         """
@@ -184,17 +184,20 @@ class EnergyVolumeCurveWorkflow(Workflow):
         return {"calc_energy": self._structure_dict}
 
     def analyse_structures(self, output_dict, output=OutputEnergyVolumeCurve.fields()):
-        self.fit_module = fit_ev_curve_internal(
-            volume_lst=get_volume_lst(structure_dict=self._structure_dict),
-            energy_lst=get_energy_lst(
-                output_dict=output_dict, structure_dict=self._structure_dict
+        self._fit_dict = EnergyVolumeCurveOutputEnergyVolumeCurve.get(
+            EnergyVolumeCurveProperties(
+                fit_module=fit_ev_curve_internal(
+                    volume_lst=get_volume_lst(structure_dict=self._structure_dict),
+                    energy_lst=get_energy_lst(
+                        output_dict=output_dict, structure_dict=self._structure_dict
+                    ),
+                    fit_type=self.fit_type,
+                    fit_order=self.fit_order,
+                )
             ),
-            fit_type=self.fit_type,
-            fit_order=self.fit_order,
+            *output,
         )
-        return EnergyVolumeCurveOutputEnergyVolumeCurve.get(
-            EnergyVolumeCurveProperties(fit_module=self.fit_module), *output
-        )
+        return self.fit_dict
 
     def get_volume_lst(self):
         return get_volume_lst(structure_dict=self._structure_dict)
