@@ -40,7 +40,39 @@ class OutputThermodynamic(Output):
 
 
 @dataclasses.dataclass
-class OutputElastic(Output):
+class EquilibriumEnergy(Output):
+    energy_eq: callable
+
+
+@dataclasses.dataclass
+class EquilibriumVolume(Output):
+    volume_eq: callable
+
+
+@dataclasses.dataclass
+class EquilibriumBulkModul(Output):
+    bulkmodul_eq: callable
+
+
+@dataclasses.dataclass
+class EquilibriumBulkModulDerivative(Output):
+    b_prime_eq: callable
+
+
+@dataclasses.dataclass
+class OutputEnergyVolumeCurve(
+    EquilibriumEnergy,
+    EquilibriumVolume,
+    EquilibriumBulkModul,
+    EquilibriumBulkModulDerivative,
+):
+    fit_dict: callable
+    energy: callable
+    volume: callable
+
+
+@dataclasses.dataclass
+class OutputElastic(EquilibriumBulkModul):
     C: callable
     S: callable
     BV: callable

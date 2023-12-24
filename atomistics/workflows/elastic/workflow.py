@@ -110,6 +110,7 @@ ElasticMatrixOutputElastic = OutputElastic(
     BV=ElasticProperties.get_BV,
     BR=ElasticProperties.get_BR,
     BH=ElasticProperties.get_BH,
+    bulkmodul_eq=ElasticProperties.get_BH,
     GV=ElasticProperties.get_GV,
     GR=ElasticProperties.get_GR,
     GH=ElasticProperties.get_GH,

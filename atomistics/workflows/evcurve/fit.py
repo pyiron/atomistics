@@ -88,9 +88,9 @@ def fitfunction(parameters, vol, fittype="vinet"):
 
 
 def interpolate_energy(fit_dict, volumes):
-    if fit_dict["fit_type"] == "polynomial":
-        return np.poly1d(fit_dict["poly_fit"])(volumes)
-    elif fit_dict["fit_type"] in [
+    if fit_dict["fit_dict"]["fit_type"] == "polynomial":
+        return np.poly1d(fit_dict["fit_dict"]["poly_fit"])(volumes)
+    elif fit_dict["fit_dict"]["fit_type"] in [
         "birch",
         "birchmurnaghan",
         "murnaghan",
@@ -104,10 +104,10 @@ def interpolate_energy(fit_dict, volumes):
             fit_dict["volume_eq"],
         ]
         return fitfunction(
-            parameters=parameters, vol=volumes, fittype=fit_dict["fit_type"]
+            parameters=parameters, vol=volumes, fittype=fit_dict["fit_dict"]["fit_type"]
         )
     else:
-        raise ValueError("Unsupported fit_type: ", fit_dict["fit_type"])
+        raise ValueError("Unsupported fit_type: ", fit_dict["fit_dict"]["fit_type"])
 
 
 def fit_leastsq(p0, datax, datay, fittype="vinet"):
