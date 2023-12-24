@@ -22,11 +22,15 @@ class QEStaticParser(object):
     def get_stress(self):
         return self.parser.stress
 
+    def get_volume(self):
+        return self.parser.volume
+
 
 QuantumEspressoOutputStatic = OutputStatic(
     forces=QEStaticParser.get_forces,
     energy=QEStaticParser.get_energy,
     stress=QEStaticParser.get_stress,
+    volume=QEStaticParser.get_volume,
 )
 
 

@@ -9,6 +9,7 @@ LammpsOutputStatic = OutputStatic(
     forces=LammpsASELibrary.interactive_forces_getter,
     energy=LammpsASELibrary.interactive_energy_pot_getter,
     stress=LammpsASELibrary.interactive_pressures_getter,
+    volume=LammpsASELibrary.interactive_volume_getter,
 )
 LammpsOutputMolecularDynamics = OutputMolecularDynamics(
     positions=LammpsASELibrary.interactive_positions_getter,
@@ -19,4 +20,5 @@ LammpsOutputMolecularDynamics = OutputMolecularDynamics(
     energy_tot=LammpsASELibrary.interactive_energy_tot_getter,
     pressure=LammpsASELibrary.interactive_pressures_getter,
     velocities=LammpsASELibrary.interactive_velocities_getter,
+    volume=LammpsASELibrary.interactive_volume_getter,
 )
