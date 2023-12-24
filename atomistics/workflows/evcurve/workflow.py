@@ -2,6 +2,7 @@ import numpy as np
 from ase.atoms import Atoms
 from collections import OrderedDict
 
+from atomistics.shared.output import OutputEnergyVolumeCurve
 from atomistics.workflows.evcurve.fit import EnergyVolumeFit
 from atomistics.workflows.interface import Workflow
 from atomistics.workflows.evcurve.debye import (
@@ -96,6 +97,47 @@ def fit_ev_curve(volume_lst, energy_lst, fit_type, fit_order):
     ).fit_dict
 
 
+class EnergyVolumeCurveProperties:
+    def __init__(self, fit_module):
+        self._fit_module = fit_module
+
+    def get_volume_eq(self):
+        return self._fit_module.fit_dict["volume_eq"]
+
+    def get_energy_eq(self):
+        return self._fit_module.fit_dict["energy_eq"]
+
+    def get_bulkmodul_eq(self):
+        return self._fit_module.fit_dict["bulkmodul_eq"]
+
+    def get_bulkmodul_pressure_derivative_eq(self):
+        return self._fit_module.fit_dict["b_prime_eq"]
+
+    def get_volumes(self):
+        return self._fit_module.fit_dict["volume"]
+
+    def get_energies(self):
+        return self._fit_module.fit_dict["energy"]
+
+    def get_fit_dict(self):
+        return {
+            k: self._fit_module.fit_dict[k]
+            for k in ["fit_type", "least_square_error", "poly_fit", "fit_order"]
+            if k in self._fit_module.fit_dict.keys()
+        }
+
+
+EnergyVolumeCurveOutputEnergyVolumeCurve = OutputEnergyVolumeCurve(
+    fit_dict=EnergyVolumeCurveProperties.get_fit_dict,
+    energy=EnergyVolumeCurveProperties.get_energies,
+    volume=EnergyVolumeCurveProperties.get_volumes,
+    b_prime_eq=EnergyVolumeCurveProperties.get_bulkmodul_pressure_derivative_eq,
+    bulkmodul_eq=EnergyVolumeCurveProperties.get_bulkmodul_eq,
+    energy_eq=EnergyVolumeCurveProperties.get_energy_eq,
+    volume_eq=EnergyVolumeCurveProperties.get_volume_eq,
+)
+
+
 class EnergyVolumeCurveWorkflow(Workflow):
     def __init__(
         self,
@@ -114,12 +156,12 @@ class EnergyVolumeCurveWorkflow(Workflow):
         self.fit_order = fit_order
         self.axes = axes
         self.strains = strains
-        self.fit_module = EnergyVolumeFit()
         self._structure_dict = OrderedDict()
+        self._fit_dict = {}
 
     @property
     def fit_dict(self):
-        return self.fit_module.fit_dict
+        return self._fit_dict
 
     def generate_structures(self):
         """
@@ -141,14 +183,19 @@ class EnergyVolumeCurveWorkflow(Workflow):
             self._structure_dict[1 + np.round(strain, 7)] = basis
         return {"calc_energy": self._structure_dict}
 
-    def analyse_structures(self, output_dict):
-        self.fit_module = fit_ev_curve_internal(
-            volume_lst=get_volume_lst(structure_dict=self._structure_dict),
-            energy_lst=get_energy_lst(
-                output_dict=output_dict, structure_dict=self._structure_dict
+    def analyse_structures(self, output_dict, output=OutputEnergyVolumeCurve.fields()):
+        self._fit_dict = EnergyVolumeCurveOutputEnergyVolumeCurve.get(
+            EnergyVolumeCurveProperties(
+                fit_module=fit_ev_curve_internal(
+                    volume_lst=get_volume_lst(structure_dict=self._structure_dict),
+                    energy_lst=get_energy_lst(
+                        output_dict=output_dict, structure_dict=self._structure_dict
+                    ),
+                    fit_type=self.fit_type,
+                    fit_order=self.fit_order,
+                )
             ),
-            fit_type=self.fit_type,
-            fit_order=self.fit_order,
+            *output,
         )
         return self.fit_dict
 
