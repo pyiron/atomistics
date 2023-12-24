@@ -10,6 +10,7 @@ from atomistics.shared.thermal_expansion import (
     OutputThermalExpansionProperties,
     ThermalExpansionProperties,
 )
+from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 
 
 def lammps_run(structure, potential_dataframe, input_template=None, lmp=None, **kwargs):
@@ -105,7 +106,7 @@ def lammps_thermal_expansion_loop(
     )
 
     volume_md_lst, temperature_md_lst = [], []
-    for temp in temperature_lst:
+    for temp in get_tqdm_iterator(temperature_lst):
         run_str_rendered = Template(run_str).render(
             run=run,
             Tstart=temp - 5,

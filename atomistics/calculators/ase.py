@@ -15,6 +15,7 @@ from atomistics.shared.thermal_expansion import (
     OutputThermalExpansionProperties,
     ThermalExpansionProperties,
 )
+from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -242,7 +243,7 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
         temperature_start, temperature_stop + temperature_step, temperature_step
     ).tolist()
     volume_md_lst, temperature_md_lst = [], []
-    for temperature in temperature_lst:
+    for temperature in get_tqdm_iterator(temperature_lst):
         result_dict = calc_molecular_dynamics_npt_with_ase(
             structure=structure_current.copy(),
             ase_calculator=ase_calculator,
