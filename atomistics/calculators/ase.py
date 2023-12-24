@@ -254,10 +254,9 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
             temperature=temperature,
             externalstress=externalstress,
         )
-        cell = result_dict["cell"][-1]
-        structure_current.set_cell(cell=cell, scale_atoms=True)
+        structure_current.set_cell(cell=result_dict["cell"][-1], scale_atoms=True)
         temperature_md_lst.append(result_dict["temperature"][-1])
-        volume_md_lst.append(np.abs(np.linalg.det(cell)))
+        volume_md_lst.append(result_dict["volume"][-1])
     return OutputThermalExpansionProperties.get(
         ThermalExpansionProperties(
             temperatures_lst=temperature_md_lst, volumes_lst=volume_md_lst
