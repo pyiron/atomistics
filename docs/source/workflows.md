@@ -508,7 +508,7 @@ result_dict = evaluate_with_lammps(
     task_dict=task_dict,
     potential_dataframe=potential_dataframe,
 )
-mesh_dict, dos_dict = workflow.analyse_structures(output_dict=result_dict)
+phonopy_dict = workflow.analyse_structures(output_dict=result_dict)
 ```
 The `PhonopyWorkflow` takes the following inputs: 
 

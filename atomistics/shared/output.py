@@ -95,3 +95,12 @@ class OutputElastic(Output):
     poissonsratio_hill: callable
     AVR: callable
     elastic_matrix_eigval: callable
+
+
+@dataclasses.dataclass
+class OutputPhonons(Output):
+    mesh_dict: callable
+    band_structure_dict: callable
+    total_dos_dict: callable
+    dynamical_matrix: callable
+    force_constants: callable

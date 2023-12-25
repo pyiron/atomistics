@@ -36,7 +36,8 @@ class TestPhonons(unittest.TestCase):
                 kpts=(3, 3, 3)
             )
         )
-        mesh_dict, dos_dict = workflow.analyse_structures(output_dict=result_dict)
+        phonopy_dict = workflow.analyse_structures(output_dict=result_dict)
+        mesh_dict, dos_dict = phonopy_dict["mesh_dict"], phonopy_dict["total_dos_dict"]
         self.assertEqual((324, 324), workflow.get_hesse_matrix().shape)
         self.assertTrue('qpoints' in mesh_dict.keys())
         self.assertTrue('weights' in mesh_dict.keys())
