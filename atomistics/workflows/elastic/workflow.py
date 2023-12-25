@@ -31,96 +31,133 @@ from atomistics.workflows.elastic.elastic_moduli import (
 
 
 class ElasticProperties:
-    def __init__(self, C):
-        self._C = C
-        self._S = None
-        self._BV = None
-        self._GV = None
-        self._BR = None
-        self._GR = None
-        self._BH = None
-        self._GH = None
+    def __init__(self, elastic_matrix):
+        self._elastic_matrix = elastic_matrix
+        self._elastic_matrix_inverse = None
+        self._bulkmodul_voigt = None
+        self._shearmodul_voigt = None
+        self._bulkmodul_reuss = None
+        self._shearmodul_reuss = None
+        self._bulkmodul_hill = None
+        self._shearmodul_hill = None
 
-    def get_C(self):
-        return self._C
+    def get_elastic_matrix(self):
+        return self._elastic_matrix
 
-    def get_S(self):
-        if self._S is None:
-            self._S = get_elastic_matrix_inverse(C=self._C)
-        return self._S
+    def get_elastic_matrix_inverse(self):
+        if self._elastic_matrix_inverse is None:
+            self._elastic_matrix_inverse = get_elastic_matrix_inverse(
+                elastic_matrix=self._elastic_matrix
+            )
+        return self._elastic_matrix_inverse
 
-    def get_BV(self):
-        if self._BV is None:
-            self._BV = get_bulkmodul_voigt(C=self._C)
-        return self._BV
+    def get_bulkmodul_voigt(self):
+        if self._bulkmodul_voigt is None:
+            self._bulkmodul_voigt = get_bulkmodul_voigt(
+                elastic_matrix=self._elastic_matrix
+            )
+        return self._bulkmodul_voigt
 
-    def get_GV(self):
-        if self._GV is None:
-            self._GV = get_shearmodul_voigt(C=self._C)
-        return self._GV
+    def get_shearmodul_voigt(self):
+        if self._shearmodul_voigt is None:
+            self._shearmodul_voigt = get_shearmodul_voigt(
+                elastic_matrix=self._elastic_matrix
+            )
+        return self._shearmodul_voigt
 
-    def get_BR(self):
-        if self._BR is None:
-            self._BR = get_bulkmodul_reuss(S=self.get_S())
-        return self._BR
+    def get_bulkmodul_reuss(self):
+        if self._bulkmodul_reuss is None:
+            self._bulkmodul_reuss = get_bulkmodul_reuss(
+                elastic_matrix_inverse=self.get_elastic_matrix_inverse()
+            )
+        return self._bulkmodul_reuss
 
-    def get_GR(self):
-        if self._GR is None:
-            self._GR = get_shearmodul_reuss(S=self.get_S())
-        return self._GR
+    def get_shearmodul_reuss(self):
+        if self._shearmodul_reuss is None:
+            self._shearmodul_reuss = get_shearmodul_reuss(
+                elastic_matrix_inverse=self.get_elastic_matrix_inverse()
+            )
+        return self._shearmodul_reuss
 
-    def get_BH(self):
-        if self._BH is None:
-            self._BH = get_bulkmodul_hill(BV=self.get_BV(), BR=self.get_BR())
-        return self._BH
+    def get_bulkmodul_hill(self):
+        if self._bulkmodul_hill is None:
+            self._bulkmodul_hill = get_bulkmodul_hill(
+                bulkmodul_voigt=self.get_bulkmodul_voigt(),
+                bulkmodul_reuss=self.get_bulkmodul_reuss(),
+            )
+        return self._bulkmodul_hill
 
-    def get_GH(self):
-        if self._GH is None:
-            self._GH = get_shearmodul_hill(GV=self.get_GV(), GR=self.get_GR())
-        return self._GH
+    def get_shearmodul_hill(self):
+        if self._shearmodul_hill is None:
+            self._shearmodul_hill = get_shearmodul_hill(
+                shearmodul_voigt=self.get_shearmodul_voigt(),
+                shearmodul_reuss=self.get_shearmodul_reuss(),
+            )
+        return self._shearmodul_hill
 
-    def get_EV(self):
-        return get_youngsmodul_voigt(BV=self.get_BV(), GV=self.get_GV())
+    def get_youngsmodul_voigt(self):
+        return get_youngsmodul_voigt(
+            bulkmodul_voigt=self.get_bulkmodul_voigt(),
+            shearmodul_voigt=self.get_shearmodul_voigt(),
+        )
 
-    def get_nuV(self):
-        return get_poissonsratio_voigt(BV=self.get_BV(), GV=self.get_GV())
+    def get_poissonsratio_voigt(self):
+        return get_poissonsratio_voigt(
+            bulkmodul_voigt=self.get_bulkmodul_voigt(),
+            shearmodul_voigt=self.get_shearmodul_voigt(),
+        )
 
-    def get_ER(self):
-        return get_youngsmodul_reuss(BR=self.get_BR(), GR=self.get_GR())
+    def get_youngsmodul_reuss(self):
+        return get_youngsmodul_reuss(
+            bulkmodul_reuss=self.get_bulkmodul_reuss(),
+            shearmodul_reuss=self.get_shearmodul_reuss(),
+        )
 
-    def get_nuR(self):
-        return get_poissonsratio_reuss(BR=self.get_BR(), GR=self.get_GR())
+    def get_poissonsratio_reuss(self):
+        return get_poissonsratio_reuss(
+            bulkmodul_reuss=self.get_bulkmodul_reuss(),
+            shearmodul_reuss=self.get_shearmodul_reuss(),
+        )
 
-    def get_EH(self):
-        return get_youngsmodul_hill(BH=self.get_BH(), GH=self.get_GH())
+    def get_youngsmodul_hill(self):
+        return get_youngsmodul_hill(
+            bulkmodul_hill=self.get_bulkmodul_hill(),
+            shearmodul_hill=self.get_shearmodul_hill(),
+        )
 
-    def get_nuH(self):
-        return get_poissonsratio_hill(BH=self.get_BH(), GH=self.get_GH())
+    def get_poissonratio_hill(self):
+        return get_poissonsratio_hill(
+            bulkmodul_hill=self.get_bulkmodul_hill(),
+            shearmodul_hill=self.get_shearmodul_hill(),
+        )
 
     def get_AVR(self):
-        return get_AVR(GV=self.get_GV(), GR=self.get_GR())
+        return get_AVR(
+            shearmodul_voigt=self.get_shearmodul_voigt(),
+            shearmodul_reuss=self.get_shearmodul_reuss(),
+        )
 
-    def get_C_eigval(self):
-        return get_elastic_matrix_eigval(C=self._C)
+    def get_elastic_matrix_eigval(self):
+        return get_elastic_matrix_eigval(elastic_matrix=self._elastic_matrix)
 
 
 ElasticMatrixOutputElastic = OutputElastic(
-    elastic_matrix=ElasticProperties.get_C,
-    elastic_matrix_inverse=ElasticProperties.get_S,
-    bulkmodul_voigt=ElasticProperties.get_BV,
-    bulkmodul_reuss=ElasticProperties.get_BR,
-    bulkmodul_hill=ElasticProperties.get_BH,
-    shearmodul_voigt=ElasticProperties.get_GV,
-    shearmodul_reuss=ElasticProperties.get_GR,
-    shearmodul_hill=ElasticProperties.get_GH,
-    youngsmodul_voigt=ElasticProperties.get_EV,
-    youngsmodul_reuss=ElasticProperties.get_ER,
-    youngsmodul_hill=ElasticProperties.get_EH,
-    poissonsratio_voigt=ElasticProperties.get_nuV,
-    poissonsratio_reuss=ElasticProperties.get_nuR,
-    poissonsratio_hill=ElasticProperties.get_nuH,
+    elastic_matrix=ElasticProperties.get_elastic_matrix,
+    elastic_matrix_inverse=ElasticProperties.get_elastic_matrix_inverse,
+    bulkmodul_voigt=ElasticProperties.get_bulkmodul_voigt,
+    bulkmodul_reuss=ElasticProperties.get_bulkmodul_reuss,
+    bulkmodul_hill=ElasticProperties.get_bulkmodul_hill,
+    shearmodul_voigt=ElasticProperties.get_shearmodul_voigt,
+    shearmodul_reuss=ElasticProperties.get_shearmodul_reuss,
+    shearmodul_hill=ElasticProperties.get_shearmodul_hill,
+    youngsmodul_voigt=ElasticProperties.get_youngsmodul_voigt,
+    youngsmodul_reuss=ElasticProperties.get_youngsmodul_reuss,
+    youngsmodul_hill=ElasticProperties.get_youngsmodul_hill,
+    poissonsratio_voigt=ElasticProperties.get_poissonsratio_voigt,
+    poissonsratio_reuss=ElasticProperties.get_poissonsratio_reuss,
+    poissonsratio_hill=ElasticProperties.get_poissonratio_hill,
     AVR=ElasticProperties.get_AVR,
-    elastic_matrix_eigval=ElasticProperties.get_C_eigval,
+    elastic_matrix_eigval=ElasticProperties.get_elastic_matrix_eigval,
 )
 
 
@@ -256,7 +293,7 @@ class ElasticMatrixWorkflow(Workflow):
         self._data["strain_energy"] = strain_energy
         self.fit_elastic_matrix()
         return ElasticMatrixOutputElastic.get(
-            ElasticProperties(C=self._data["C"]), *output
+            ElasticProperties(elastic_matrix=self._data["C"]), *output
         )
 
     def fit_elastic_matrix(self):
