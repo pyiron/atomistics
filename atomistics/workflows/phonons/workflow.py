@@ -352,8 +352,8 @@ class PhonopyWorkflow(Workflow):
 
     def plot_dos(self, *args, axis=None, **kwargs):
         return plot_dos(
-            dos_energies=self._phonopy_dict["dos_dict"]["frequency_points"],
-            dos_total=self._phonopy_dict["dos_dict"]["total_dos"],
+            dos_energies=self._phonopy_dict["total_dos_dict"]["frequency_points"],
+            dos_total=self._phonopy_dict["total_dos_dict"]["total_dos"],
             *args,
             axis=axis,
             **kwargs,
