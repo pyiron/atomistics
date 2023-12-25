@@ -11,116 +11,26 @@ from atomistics.workflows.elastic.symmetry import (
     get_symmetry_family_from_SGN,
     Ls_Dic,
 )
-from atomistics.workflows.elastic.elastic_moduli import (
-    get_BV,
-    get_GV,
-    get_EV,
-    get_nuV,
-    get_BR,
-    get_GR,
-    get_ER,
-    get_nuR,
-    get_BH,
-    get_GH,
-    get_EH,
-    get_nuH,
-    get_AVR,
-    get_S,
-    get_C_eigval,
-)
-
-
-class ElasticProperties:
-    def __init__(self, C):
-        self._C = C
-        self._S = None
-        self._BV = None
-        self._GV = None
-        self._BR = None
-        self._GR = None
-        self._BH = None
-        self._GH = None
-
-    def get_C(self):
-        return self._C
-
-    def get_S(self):
-        if self._S is None:
-            self._S = get_S(C=self._C)
-        return self._S
-
-    def get_BV(self):
-        if self._BV is None:
-            self._BV = get_BV(C=self._C)
-        return self._BV
-
-    def get_GV(self):
-        if self._GV is None:
-            self._GV = get_GV(C=self._C)
-        return self._GV
-
-    def get_BR(self):
-        if self._BR is None:
-            self._BR = get_BR(S=self.get_S())
-        return self._BR
-
-    def get_GR(self):
-        if self._GR is None:
-            self._GR = get_GR(S=self.get_S())
-        return self._GR
-
-    def get_BH(self):
-        if self._BH is None:
-            self._BH = get_BH(BV=self.get_BV(), BR=self.get_BR())
-        return self._BH
-
-    def get_GH(self):
-        if self._GH is None:
-            self._GH = get_GH(GV=self.get_GV(), GR=self.get_GR())
-        return self._GH
-
-    def get_EV(self):
-        return get_EV(BV=self.get_BV(), GV=self.get_GV())
-
-    def get_nuV(self):
-        return get_nuV(BV=self.get_BV(), GV=self.get_GV())
-
-    def get_ER(self):
-        return get_ER(BR=self.get_BR(), GR=self.get_GR())
-
-    def get_nuR(self):
-        return get_nuR(BR=self.get_BR(), GR=self.get_GR())
-
-    def get_EH(self):
-        return get_EH(BH=self.get_BH(), GH=self.get_GH())
-
-    def get_nuH(self):
-        return get_nuH(BH=self.get_BH(), GH=self.get_GH())
-
-    def get_AVR(self):
-        return get_AVR(GV=self.get_GV(), GR=self.get_GR())
-
-    def get_C_eigval(self):
-        return get_C_eigval(C=self._C)
+from atomistics.workflows.elastic.elastic_moduli import ElasticProperties
 
 
 ElasticMatrixOutputElastic = OutputElastic(
-    C=ElasticProperties.get_C,
-    S=ElasticProperties.get_S,
-    BV=ElasticProperties.get_BV,
-    BR=ElasticProperties.get_BR,
-    BH=ElasticProperties.get_BH,
-    GV=ElasticProperties.get_GV,
-    GR=ElasticProperties.get_GR,
-    GH=ElasticProperties.get_GH,
-    EV=ElasticProperties.get_EV,
-    ER=ElasticProperties.get_ER,
-    EH=ElasticProperties.get_EH,
-    nuV=ElasticProperties.get_nuV,
-    nuR=ElasticProperties.get_nuR,
-    nuH=ElasticProperties.get_nuH,
+    elastic_matrix=ElasticProperties.get_elastic_matrix,
+    elastic_matrix_inverse=ElasticProperties.get_elastic_matrix_inverse,
+    bulkmodul_voigt=ElasticProperties.get_bulkmodul_voigt,
+    bulkmodul_reuss=ElasticProperties.get_bulkmodul_reuss,
+    bulkmodul_hill=ElasticProperties.get_bulkmodul_hill,
+    shearmodul_voigt=ElasticProperties.get_shearmodul_voigt,
+    shearmodul_reuss=ElasticProperties.get_shearmodul_reuss,
+    shearmodul_hill=ElasticProperties.get_shearmodul_hill,
+    youngsmodul_voigt=ElasticProperties.get_youngsmodul_voigt,
+    youngsmodul_reuss=ElasticProperties.get_youngsmodul_reuss,
+    youngsmodul_hill=ElasticProperties.get_youngsmodul_hill,
+    poissonsratio_voigt=ElasticProperties.get_poissonsratio_voigt,
+    poissonsratio_reuss=ElasticProperties.get_poissonsratio_reuss,
+    poissonsratio_hill=ElasticProperties.get_poissonratio_hill,
     AVR=ElasticProperties.get_AVR,
-    C_eigval=ElasticProperties.get_C_eigval,
+    elastic_matrix_eigval=ElasticProperties.get_elastic_matrix_eigval,
 )
 
 
@@ -256,7 +166,7 @@ class ElasticMatrixWorkflow(Workflow):
         self._data["strain_energy"] = strain_energy
         self.fit_elastic_matrix()
         return ElasticMatrixOutputElastic.get(
-            ElasticProperties(C=self._data["C"]), *output
+            ElasticProperties(elastic_matrix=self._data["C"]), *output
         )
 
     def fit_elastic_matrix(self):

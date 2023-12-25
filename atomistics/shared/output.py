@@ -79,22 +79,22 @@ class OutputEnergyVolumeCurve(
 
 @dataclasses.dataclass
 class OutputElastic(Output):
-    C: callable
-    S: callable
-    BV: callable
-    BR: callable
-    BH: callable
-    GV: callable
-    GR: callable
-    GH: callable
-    EV: callable
-    ER: callable
-    EH: callable
-    nuV: callable
-    nuR: callable
-    nuH: callable
+    elastic_matrix: callable
+    elastic_matrix_inverse: callable
+    bulkmodul_voigt: callable
+    bulkmodul_reuss: callable
+    bulkmodul_hill: callable
+    shearmodul_voigt: callable
+    shearmodul_reuss: callable
+    shearmodul_hill: callable
+    youngsmodul_voigt: callable
+    youngsmodul_reuss: callable
+    youngsmodul_hill: callable
+    poissonsratio_voigt: callable
+    poissonsratio_reuss: callable
+    poissonsratio_hill: callable
     AVR: callable
-    C_eigval: callable
+    elastic_matrix_eigval: callable
 
 
 @dataclasses.dataclass

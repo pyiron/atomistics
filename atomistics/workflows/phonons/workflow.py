@@ -273,12 +273,20 @@ class PhonopyWorkflow(Workflow):
             PhonopyThermalProperties(phonopy_instance=self.phonopy), *output
         )
 
-    def get_dynamical_matrix(self):
+    def get_dynamical_matrix(self, npoints=101):
         """
 
         Returns:
 
         """
+        self.phonopy.auto_band_structure(
+            npoints=npoints,
+            with_eigenvectors=False,
+            with_group_velocities=False,
+            plot=False,
+            write_yaml=False,
+            filename="band.yaml",
+        )
         return np.real_if_close(self.phonopy.dynamical_matrix.dynamical_matrix)
 
     def dynamical_matrix_at_q(self, q):

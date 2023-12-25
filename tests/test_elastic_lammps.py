@@ -44,7 +44,7 @@ class TestElastic(unittest.TestCase):
             potential_dataframe=df_pot_selected,
         )
         elastic_dict = workflow.analyse_structures(output_dict=result_dict)
-        self.assertTrue(np.isclose(elastic_dict["C"], np.array(
+        self.assertTrue(np.isclose(elastic_dict["elastic_matrix"], np.array(
             [
                 [114.10311701, 60.51102935, 60.51102935, 0., 0., 0.],
                 [60.51102935, 114.10311701, 60.51102935, 0., 0., 0.],
@@ -86,11 +86,11 @@ class TestElastic(unittest.TestCase):
             ])).all()
         )
         self.assertTrue(np.isclose(workflow._data['A2'], np.array([2.20130388, 1.08985578, 1.91883479])).all())
-        self.assertTrue(np.isclose(elastic_dict['BV'], 78.37505857279467))
-        self.assertTrue(np.isclose(elastic_dict['GV'], 41.46154012284969))
-        self.assertTrue(np.isclose(elastic_dict['EV'], 105.73882997912072))
-        self.assertTrue(np.isclose(elastic_dict['nuV'], 0.2751435386362729))
-        self.assertTrue(np.isclose(elastic_dict['S'], np.array(
+        self.assertTrue(np.isclose(elastic_dict['bulkmodul_voigt'], 78.37505857279467))
+        self.assertTrue(np.isclose(elastic_dict['shearmodul_voigt'], 41.46154012284969))
+        self.assertTrue(np.isclose(elastic_dict['youngsmodul_voigt'], 105.73882997912072))
+        self.assertTrue(np.isclose(elastic_dict['poissonsratio_voigt'], 0.2751435386362729))
+        self.assertTrue(np.isclose(elastic_dict['elastic_matrix_inverse'], np.array(
             [
                 [0.01385733, -0.00480214, -0.00480214, 0., 0., 0.],
                 [-0.00480214, 0.01385733, -0.00480214, 0., 0., 0.],
@@ -100,14 +100,14 @@ class TestElastic(unittest.TestCase):
                 [0., 0., 0., 0., 0., 0.01951656]
             ]
         )).all())
-        self.assertTrue(np.isclose(elastic_dict['BR'], 78.37505857279469))
-        self.assertTrue(np.isclose(elastic_dict['GR'], 37.54104251720356))
-        self.assertTrue(np.isclose(elastic_dict['ER'], 97.11702764970639))
-        self.assertTrue(np.isclose(elastic_dict['nuR'], 0.29347803281170937))
-        self.assertTrue(np.isclose(elastic_dict['BH'], 78.37505857279467))
-        self.assertTrue(np.isclose(elastic_dict['GH'], 39.501291320026624))
-        self.assertTrue(np.isclose(elastic_dict['EH'], 101.45869947879392))
-        self.assertTrue(np.isclose(elastic_dict['nuH'], 0.2842453510798992))
+        self.assertTrue(np.isclose(elastic_dict['bulkmodul_reuss'], 78.37505857279469))
+        self.assertTrue(np.isclose(elastic_dict['shearmodul_reuss'], 37.54104251720356))
+        self.assertTrue(np.isclose(elastic_dict['youngsmodul_reuss'], 97.11702764970639))
+        self.assertTrue(np.isclose(elastic_dict['poissonsratio_reuss'], 0.29347803281170937))
+        self.assertTrue(np.isclose(elastic_dict['bulkmodul_hill'], 78.37505857279467))
+        self.assertTrue(np.isclose(elastic_dict['shearmodul_hill'], 39.501291320026624))
+        self.assertTrue(np.isclose(elastic_dict['youngsmodul_hill'], 101.45869947879392))
+        self.assertTrue(np.isclose(elastic_dict['poissonsratio_hill'], 0.2842453510798992))
         self.assertTrue(np.isclose(elastic_dict['AVR'], 4.962492964955925))
         # self.assertTrue(np.isclose(elastic_dict['C_eigval'].eigenvalues, np.array(
         #     [235.12517572,  53.59208765,  53.59208765,  51.23853765,    51.23853765,  51.23853765]
