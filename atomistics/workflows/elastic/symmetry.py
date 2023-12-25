@@ -317,3 +317,17 @@ def get_C_from_A2(A2, LC):
         C[4, 5] = 0.25 * (A2[20] - A2[4] - A2[5])
         C[5, 5] = 0.5 * A2[5]
     return C
+
+
+def symmetry_analysis(structure, eps_range, num_of_point):
+    """
+
+    Returns:
+
+    """
+    SGN = find_symmetry_group_number(structure)
+    v0 = structure.get_volume()
+    LC = get_symmetry_family_from_SGN(SGN)
+    Lag_strain_list = get_LAG_Strain_List(LC)
+    epss = np.linspace(-eps_range, eps_range, num_of_point)
+    return SGN, v0, LC, Lag_strain_list, epss

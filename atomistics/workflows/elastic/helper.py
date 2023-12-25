@@ -2,66 +2,10 @@ import numpy as np
 import scipy.constants
 
 from atomistics.workflows.elastic.symmetry import (
-    find_symmetry_group_number,
+    symmetry_analysis,
     get_C_from_A2,
-    get_LAG_Strain_List,
-    get_symmetry_family_from_SGN,
     Ls_Dic,
 )
-
-
-def _subjob_name(i, eps):
-    """
-
-    Args:
-        i:
-        eps:
-
-    Returns:
-
-    """
-    return ("s_%s_e_%.5f" % (i, eps)).replace(".", "_").replace("-", "m")
-
-
-def _fit_elastic_matrix(strain_ene, v0, LC, fit_order):
-    """
-
-    Returns:
-
-    """
-    A2 = []
-    for s_e in strain_ene:
-        ss = np.transpose(s_e)
-        coeffs = np.polyfit(ss[0], ss[1] / v0, fit_order)
-        A2.append(coeffs[fit_order - 2])
-
-    A2 = np.array(A2)
-    C = get_C_from_A2(A2, LC)
-
-    for i in range(5):
-        for j in range(i + 1, 6):
-            C[j, i] = C[i, j]
-
-    CONV = (
-        1e21 / scipy.constants.physical_constants["joule-electron volt relationship"][0]
-    )  # From eV/Ang^3 to GPa
-
-    C *= CONV
-    return C, A2
-
-
-def _symmetry_analysis(structure, eps_range, num_of_point):
-    """
-
-    Returns:
-
-    """
-    SGN = find_symmetry_group_number(structure)
-    v0 = structure.get_volume()
-    LC = get_symmetry_family_from_SGN(SGN)
-    Lag_strain_list = get_LAG_Strain_List(LC)
-    epss = np.linspace(-eps_range, eps_range, num_of_point)
-    return SGN, v0, LC, Lag_strain_list, epss
 
 
 def generate_structures_helper(
@@ -72,7 +16,7 @@ def generate_structures_helper(
     Returns:
 
     """
-    SGN, v0, LC, Lag_strain_list, epss = _symmetry_analysis(
+    SGN, v0, LC, Lag_strain_list, epss = symmetry_analysis(
         structure=structure,
         eps_range=eps_range,
         num_of_point=num_of_point,
@@ -177,3 +121,43 @@ def analyse_structures_helper(
         fit_order=int(fit_order),
     )
     return elastic_matrix, A2, strain_energy, ene0
+
+
+def _subjob_name(i, eps):
+    """
+
+    Args:
+        i:
+        eps:
+
+    Returns:
+
+    """
+    return ("s_%s_e_%.5f" % (i, eps)).replace(".", "_").replace("-", "m")
+
+
+def _fit_elastic_matrix(strain_ene, v0, LC, fit_order):
+    """
+
+    Returns:
+
+    """
+    A2 = []
+    for s_e in strain_ene:
+        ss = np.transpose(s_e)
+        coeffs = np.polyfit(ss[0], ss[1] / v0, fit_order)
+        A2.append(coeffs[fit_order - 2])
+
+    A2 = np.array(A2)
+    C = get_C_from_A2(A2, LC)
+
+    for i in range(5):
+        for j in range(i + 1, 6):
+            C[j, i] = C[i, j]
+
+    CONV = (
+        1e21 / scipy.constants.physical_constants["joule-electron volt relationship"][0]
+    )  # From eV/Ang^3 to GPa
+
+    C *= CONV
+    return C, A2
