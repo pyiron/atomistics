@@ -46,7 +46,7 @@ class TestPhonons(unittest.TestCase):
             task_dict=task_dict,
             ase_calculator=ase_calculator,
         )
-        eng_internal_dict, mesh_collect_dict, dos_collect_dict = workflow.analyse_structures(output_dict=result_dict)
+        eng_internal_dict, phonopy_collect_dict = workflow.analyse_structures(output_dict=result_dict)
         tp_collect_dict = workflow.get_thermal_properties(t_min=1, t_max=501, t_step=50, temperatures=None)
         temperatures_qh_qm, volumes_qh_qm = workflow.get_thermal_expansion(
             output_dict=result_dict,
