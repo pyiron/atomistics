@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 import numpy as np
 import scipy.constants
 
@@ -29,7 +31,7 @@ def generate_structures_helper(
         "epss": epss,
     }
 
-    structure_dict = {}
+    structure_dict = OrderedDict()
     if 0.0 in epss:
         structure_dict[zero_strain_job_name] = structure.copy()
 
