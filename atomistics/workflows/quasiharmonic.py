@@ -151,11 +151,14 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
 
     def analyse_structures(self, output_dict):
         self._eng_internal_dict = output_dict["energy"]
-        phonopy_collect_dict = {strain: phono.analyse_structures(
-            output_dict={
-                k: v for k, v in output_dict["forces"].items() if strain in k
-            }
-        ) for strain, phono in self._phonopy_dict.items()}
+        phonopy_collect_dict = {
+            strain: phono.analyse_structures(
+                output_dict={
+                    k: v for k, v in output_dict["forces"].items() if strain in k
+                }
+            )
+            for strain, phono in self._phonopy_dict.items()
+        }
         return self._eng_internal_dict, phonopy_collect_dict
 
     def get_thermal_properties(
