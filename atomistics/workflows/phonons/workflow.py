@@ -38,45 +38,83 @@ class PhonopyProperties(object):
         npoints=101,
     ):
         self._phonopy = phonopy_instance
-        self._phonopy.produce_force_constants(
-            fc_calculator=None if number_of_snapshots is None else "alm"
-        )
-        self._phonopy.run_mesh(
-            mesh=[dos_mesh] * 3,
-            shift=shift,
-            is_time_reversal=is_time_reversal,
-            is_mesh_symmetry=is_mesh_symmetry,
-            with_eigenvectors=with_eigenvectors,
-            with_group_velocities=with_group_velocities,
-            is_gamma_center=is_gamma_center,
-        )
-        self._phonopy.run_total_dos(
-            sigma=sigma,
-            freq_min=freq_min,
-            freq_max=freq_max,
-            freq_pitch=freq_pitch,
-            use_tetrahedron_method=use_tetrahedron_method,
-        )
+        self._sigma = sigma
+        self._freq_min = freq_min
+        self._freq_max = freq_max
+        self._freq_pitch = freq_pitch
+        self._use_tetrahedron_method = use_tetrahedron_method
+        self._npoints = npoints
+        self._with_eigenvectors = with_eigenvectors
+        self._with_group_velocities = with_group_velocities
+        self._dos_mesh = dos_mesh
+        self._shift = shift
+        self._is_time_reversal = is_time_reversal
+        self._is_mesh_symmetry = is_mesh_symmetry
+        self._with_eigenvectors = with_eigenvectors
+        self._with_group_velocities = with_group_velocities
+        self._is_gamma_center = is_gamma_center
+        self._number_of_snapshots = number_of_snapshots
+        self._total_dos = None
+        self._band_structure_dict = None
+        self._mesh_dict = None
+        self._force_constants = None
+
+    def _calc_band_structure(self):
         self._phonopy.auto_band_structure(
-            npoints=npoints,
-            with_eigenvectors=with_eigenvectors,
-            with_group_velocities=with_group_velocities,
+            npoints=self._npoints,
+            with_eigenvectors=self._with_eigenvectors,
+            with_group_velocities=self._with_group_velocities,
         )
+        self._band_structure_dict = self._phonopy.get_band_structure_dict()
+
+    def _calc_force_constants(self):
+        self._phonopy.produce_force_constants(
+            fc_calculator=None if self._number_of_snapshots is None else "alm"
+        )
+        self._force_constants = self._phonopy.force_constants
 
     def get_mesh_dict(self):
-        return self._phonopy.get_mesh_dict()
+        if self._force_constants is None:
+            self._calc_force_constants()
+        if self._mesh_dict is None:
+            self._phonopy.run_mesh(
+                mesh=[self._dos_mesh] * 3,
+                shift=self._shift,
+                is_time_reversal=self._is_time_reversal,
+                is_mesh_symmetry=self._is_mesh_symmetry,
+                with_eigenvectors=self._with_eigenvectors,
+                with_group_velocities=self._with_group_velocities,
+                is_gamma_center=self._is_gamma_center,
+            )
+            self._mesh_dict = self._phonopy.get_mesh_dict()
+        return self._mesh_dict
 
     def get_band_structure_dict(self):
-        return self._phonopy.get_band_structure_dict()
+        if self._band_structure_dict is None:
+            self._calc_band_structure()
+        return self._band_structure_dict
 
     def get_total_dos_dict(self):
-        return self._phonopy.get_total_dos_dict()
+        if self._total_dos is None:
+            self._phonopy.run_total_dos(
+                sigma=self._sigma,
+                freq_min=self._freq_min,
+                freq_max=self._freq_max,
+                freq_pitch=self._freq_pitch,
+                use_tetrahedron_method=self._use_tetrahedron_method,
+            )
+            self._total_dos = self._phonopy.get_total_dos_dict()
+        return self._total_dos
 
     def get_dynamical_matrix(self):
+        if self._band_structure_dict is None:
+            self._calc_band_structure()
         return self._phonopy.dynamical_matrix.dynamical_matrix
 
     def get_force_constants(self):
-        return self._phonopy.force_constants
+        if self._force_constants is None:
+            self._calc_force_constants()
+        return self._force_constants
 
 
 class PhonopyThermalProperties(object):
