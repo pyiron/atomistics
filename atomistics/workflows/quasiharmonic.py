@@ -432,7 +432,8 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         is_projection=False,
         quantum_mechanical=True,
     ):
-        self.analyse_structures(output_dict=output_dict)
+        if self._eng_internal_dict is None:
+            self.analyse_structures(output_dict=output_dict)
         tp_collect_dict = self.get_thermal_properties(
             t_min=t_min,
             t_max=t_max,
