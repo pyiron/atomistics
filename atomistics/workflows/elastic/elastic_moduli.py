@@ -154,7 +154,7 @@ class ElasticProperties:
     def bulkmodul_hill(self):
         return get_bulkmodul_hill(
             bulkmodul_voigt=self.bulkmodul_voigt(),
-            bulkmodul_reuss=self.bulkmodul_reuss()
+            bulkmodul_reuss=self.bulkmodul_reuss(),
         )
 
     @cache
@@ -168,49 +168,47 @@ class ElasticProperties:
     def youngsmodul_voigt(self):
         return get_youngsmodul_voigt(
             bulkmodul_voigt=self.bulkmodul_voigt(),
-            shearmodul_voigt=self.shearmodul_voigt()
+            shearmodul_voigt=self.shearmodul_voigt(),
         )
 
     @cache
     def poissonsratio_voigt(self):
         return get_poissonsratio_voigt(
             bulkmodul_voigt=self.bulkmodul_voigt(),
-            shearmodul_voigt=self.shearmodul_voigt()
+            shearmodul_voigt=self.shearmodul_voigt(),
         )
 
     @cache
     def youngsmodul_reuss(self):
         return get_youngsmodul_reuss(
             bulkmodul_reuss=self.bulkmodul_reuss(),
-            shearmodul_reuss=self.shearmodul_reuss()
+            shearmodul_reuss=self.shearmodul_reuss(),
         )
 
     @cache
     def poissonsratio_reuss(self):
         return get_poissonsratio_reuss(
             bulkmodul_reuss=self.bulkmodul_reuss(),
-            shearmodul_reuss=self.shearmodul_reuss()
+            shearmodul_reuss=self.shearmodul_reuss(),
         )
 
     @cache
     def youngsmodul_hill(self):
         return get_youngsmodul_hill(
-            bulkmodul_hill=self.bulkmodul_hill(),
-            shearmodul_hill=self.shearmodul_hill()
+            bulkmodul_hill=self.bulkmodul_hill(), shearmodul_hill=self.shearmodul_hill()
         )
 
     @cache
     def poissonsratio_hill(self):
         return get_poissonsratio_hill(
-            bulkmodul_hill=self.bulkmodul_hill(),
-            shearmodul_hill=self.shearmodul_hill()
+            bulkmodul_hill=self.bulkmodul_hill(), shearmodul_hill=self.shearmodul_hill()
         )
 
     @cache
     def AVR(self):
         return get_AVR(
             shearmodul_voigt=self.shearmodul_voigt(),
-            shearmodul_reuss=self.shearmodul_reuss()
+            shearmodul_reuss=self.shearmodul_reuss(),
         )
 
     @cache
