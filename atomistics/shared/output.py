@@ -78,26 +78,6 @@ class OutputEnergyVolumeCurve(
 
 
 @dataclasses.dataclass
-class OutputElastic(Output):
-    elastic_matrix: callable
-    elastic_matrix_inverse: callable
-    bulkmodul_voigt: callable
-    bulkmodul_reuss: callable
-    bulkmodul_hill: callable
-    shearmodul_voigt: callable
-    shearmodul_reuss: callable
-    shearmodul_hill: callable
-    youngsmodul_voigt: callable
-    youngsmodul_reuss: callable
-    youngsmodul_hill: callable
-    poissonsratio_voigt: callable
-    poissonsratio_reuss: callable
-    poissonsratio_hill: callable
-    AVR: callable
-    elastic_matrix_eigval: callable
-
-
-@dataclasses.dataclass
 class OutputPhonons(Output):
     mesh_dict: callable
     band_structure_dict: callable
