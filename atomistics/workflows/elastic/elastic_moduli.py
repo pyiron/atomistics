@@ -132,7 +132,7 @@ class OutputElastic(Output):
         return self._elastic_matrix
 
     @cached_property
-    def _elastic_matrix_inverse(self):
+    def elastic_matrix_inverse(self):
         return get_elastic_matrix_inverse(elastic_matrix=self.elastic_matrix)
 
     @cached_property
