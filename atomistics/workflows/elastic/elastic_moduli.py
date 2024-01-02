@@ -223,7 +223,4 @@ class OutputElastic(Output):
 
     @classmethod
     def fields(cls):
-        return tuple(
-            q for q in dir(cls)
-            if not (q[0] == "_" or q in ["get", "fields"])
-        )
+        return tuple(q for q in dir(cls) if not (q[0] == "_" or q in ["get", "fields"]))
