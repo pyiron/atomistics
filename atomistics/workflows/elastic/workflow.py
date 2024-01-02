@@ -9,7 +9,7 @@ from atomistics.workflows.elastic.helper import (
 )
 
 
-ElasticMatrixOutputElastic = OutputElastic(
+elastic_matrix_output_elastic = OutputElastic(
     **{k: getattr(ElasticProperties, k) for k in OutputElastic.fields()}
 )
 
@@ -66,6 +66,6 @@ class ElasticMatrixWorkflow(Workflow):
         self._data["strain_energy"] = strain_energy
         self._data["e0"] = ene0
         self._data["A2"] = A2
-        return ElasticMatrixOutputElastic.get(
+        return elastic_matrix_output_elastic.get(
             ElasticProperties(elastic_matrix=elastic_matrix), *output
         )
