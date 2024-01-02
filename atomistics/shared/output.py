@@ -2,7 +2,7 @@ import dataclasses
 
 
 @dataclasses.dataclass
-class Output:
+class EngineOutput:
     @classmethod
     def fields(cls):
         return tuple(field.name for field in dataclasses.fields(cls))
@@ -12,7 +12,7 @@ class Output:
 
 
 @dataclasses.dataclass
-class OutputStatic(Output):
+class OutputStatic(EngineOutput):
     forces: callable
     energy: callable
     stress: callable
@@ -20,7 +20,7 @@ class OutputStatic(Output):
 
 
 @dataclasses.dataclass
-class OutputMolecularDynamics(Output):
+class OutputMolecularDynamics(EngineOutput):
     positions: callable
     cell: callable
     forces: callable
@@ -33,7 +33,7 @@ class OutputMolecularDynamics(Output):
 
 
 @dataclasses.dataclass
-class OutputThermalExpansion(Output):
+class OutputThermalExpansion(EngineOutput):
     temperatures: callable
     volumes: callable
 
@@ -46,22 +46,22 @@ class OutputThermodynamic(OutputThermalExpansion):
 
 
 @dataclasses.dataclass
-class EquilibriumEnergy(Output):
+class EquilibriumEnergy(EngineOutput):
     energy_eq: callable
 
 
 @dataclasses.dataclass
-class EquilibriumVolume(Output):
+class EquilibriumVolume(EngineOutput):
     volume_eq: callable
 
 
 @dataclasses.dataclass
-class EquilibriumBulkModul(Output):
+class EquilibriumBulkModul(EngineOutput):
     bulkmodul_eq: callable
 
 
 @dataclasses.dataclass
-class EquilibriumBulkModulDerivative(Output):
+class EquilibriumBulkModulDerivative(EngineOutput):
     b_prime_eq: callable
 
 
@@ -78,7 +78,7 @@ class OutputEnergyVolumeCurve(
 
 
 @dataclasses.dataclass
-class OutputPhonons(Output):
+class OutputPhonons(EngineOutput):
     mesh_dict: callable
     band_structure_dict: callable
     total_dos_dict: callable
