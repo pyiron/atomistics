@@ -2,7 +2,7 @@ from functools import cached_property
 
 import numpy as np
 
-from atomistics.shared.output import EngineOutput
+from atomistics.shared.output import PropertyOutput
 
 
 def get_bulkmodul_voigt(elastic_matrix) -> float:
@@ -123,7 +123,7 @@ def _hill_approximation(voigt, reuss):
     return 0.50 * (voigt + reuss)
 
 
-class OutputElastic(EngineOutput):
+class OutputElastic(PropertyOutput):
     def __init__(self, elastic_matrix: np.ndarray):
         self._elastic_matrix = elastic_matrix
 
@@ -217,10 +217,3 @@ class OutputElastic(EngineOutput):
     @cached_property
     def elastic_matrix_eigval(self):
         return get_elastic_matrix_eigval(elastic_matrix=self.elastic_matrix)
-
-    def get(self, *output: str) -> dict:
-        return {q: getattr(self, q) for q in output}
-
-    @classmethod
-    def fields(cls):
-        return tuple(q for q in dir(OutputElastic) if not (q[0] == "_" or q == "get"))
