@@ -10,22 +10,7 @@ from atomistics.workflows.elastic.helper import (
 
 
 ElasticMatrixOutputElastic = OutputElastic(
-    elastic_matrix=ElasticProperties.get_elastic_matrix,
-    elastic_matrix_inverse=ElasticProperties.get_elastic_matrix_inverse,
-    bulkmodul_voigt=ElasticProperties.get_bulkmodul_voigt,
-    bulkmodul_reuss=ElasticProperties.get_bulkmodul_reuss,
-    bulkmodul_hill=ElasticProperties.get_bulkmodul_hill,
-    shearmodul_voigt=ElasticProperties.get_shearmodul_voigt,
-    shearmodul_reuss=ElasticProperties.get_shearmodul_reuss,
-    shearmodul_hill=ElasticProperties.get_shearmodul_hill,
-    youngsmodul_voigt=ElasticProperties.get_youngsmodul_voigt,
-    youngsmodul_reuss=ElasticProperties.get_youngsmodul_reuss,
-    youngsmodul_hill=ElasticProperties.get_youngsmodul_hill,
-    poissonsratio_voigt=ElasticProperties.get_poissonsratio_voigt,
-    poissonsratio_reuss=ElasticProperties.get_poissonsratio_reuss,
-    poissonsratio_hill=ElasticProperties.get_poissonratio_hill,
-    AVR=ElasticProperties.get_AVR,
-    elastic_matrix_eigval=ElasticProperties.get_elastic_matrix_eigval,
+    **{k: getattr(ElasticProperties, k) for k in OutputElastic.fields()}
 )
 
 
