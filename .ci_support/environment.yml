@@ -3,7 +3,7 @@ channels:
 dependencies:
 - ase =3.22.1
 - coverage
-- numpy =1.26.2
+- numpy =1.26.3
 - scipy =1.11.4
 - spglib =2.2.0
 - phonopy =2.21.0
