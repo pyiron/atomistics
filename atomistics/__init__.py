@@ -1,3 +1,3 @@
-# Calculator
+from . import _version
 
-# Additional modules
+__version__ = _version.get_versions()["version"]

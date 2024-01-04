@@ -4,11 +4,12 @@ from ase.build import bulk
 from phonopy.units import VaspToTHz
 import unittest
 
-from atomistics.workflows.phonons.workflow import PhonopyWorkflow
+from atomistics.workflows import PhonopyWorkflow, optimize_positions_and_volume
 
 try:
-    from atomistics.calculators.lammps_library.calculator import evaluate_with_lammps
-    from atomistics.calculators.lammps_library.potential import get_potential_dataframe
+    from atomistics.calculators import (
+        evaluate_with_lammps, get_potential_by_name
+    )
 
     skip_lammps_test = False
 except ImportError:
@@ -20,16 +21,18 @@ except ImportError:
 )
 class TestPhonons(unittest.TestCase):
     def test_calc_phonons(self):
-        potential = '1999--Mishin-Y--Al--LAMMPS--ipr1'
-        resource_path = os.path.join(os.path.dirname(__file__), "static", "lammps")
-        structure = bulk("Al", a=4.05, cubic=True)
-        df_pot = get_potential_dataframe(
-            structure=structure,
-            resource_path=resource_path
+        structure = bulk("Al", cubic=True)
+        df_pot_selected = get_potential_by_name(
+            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
-        df_pot_selected = df_pot[df_pot.Name == potential].iloc[0]
-        calculator = PhonopyWorkflow(
-            structure=structure,
+        task_dict = optimize_positions_and_volume(structure=structure)
+        result_dict = evaluate_with_lammps(
+            task_dict=task_dict,
+            potential_dataframe=df_pot_selected,
+        )
+        workflow = PhonopyWorkflow(
+            structure=result_dict["structure_with_optimized_positions_and_volume"],
             interaction_range=10,
             factor=VaspToTHz,
             displacement=0.01,
@@ -37,13 +40,14 @@ class TestPhonons(unittest.TestCase):
             primitive_matrix=None,
             number_of_snapshots=None,
         )
-        structure_dict = calculator.generate_structures()
+        task_dict = workflow.generate_structures()
         result_dict = evaluate_with_lammps(
-            task_dict=structure_dict,
+            task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
-        mesh_dict, dos_dict = calculator.analyse_structures(output_dict=result_dict)
-        self.assertEqual((324, 324), calculator.get_hesse_matrix().shape)
+        phonopy_dict = workflow.analyse_structures(output_dict=result_dict)
+        mesh_dict, dos_dict = phonopy_dict["mesh_dict"], phonopy_dict["total_dos_dict"]
+        self.assertEqual((324, 324), workflow.get_hesse_matrix().shape)
         self.assertTrue('qpoints' in mesh_dict.keys())
         self.assertTrue('weights' in mesh_dict.keys())
         self.assertTrue('frequencies' in mesh_dict.keys())
@@ -51,3 +55,51 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue('group_velocities' in mesh_dict.keys())
         self.assertTrue('frequency_points' in dos_dict.keys())
         self.assertTrue('total_dos' in dos_dict.keys())
+        thermal_dict = workflow.get_thermal_properties(
+            t_min=1,
+            t_max=1500,
+            t_step=50,
+            temperatures=None,
+            cutoff_frequency=None,
+            pretend_real=False,
+            band_indices=None,
+            is_projection=False,
+        )
+        for key in ["temperatures", "free_energy", "volumes", "entropy", "heat_capacity"]:
+            self.assertTrue(len(thermal_dict[key]), 31)
+        self.assertEqual(thermal_dict["temperatures"][0], 1.0)
+        self.assertEqual(thermal_dict["temperatures"][-1], 1501.0)
+        self.assertTrue(thermal_dict["free_energy"][0] < 0.2)
+        self.assertTrue(thermal_dict["free_energy"][0] > 0.1)
+        self.assertTrue(thermal_dict["free_energy"][-1] < -2.6)
+        self.assertTrue(thermal_dict["free_energy"][-1] > -2.7)
+        self.assertTrue(thermal_dict["entropy"][0] < 0.1)
+        self.assertTrue(thermal_dict["entropy"][0] > 0.0)
+        self.assertTrue(thermal_dict["entropy"][-1] < 271)
+        self.assertTrue(thermal_dict["entropy"][-1] > 270)
+        self.assertTrue(thermal_dict["heat_capacity"][0] < 0.1)
+        self.assertTrue(thermal_dict["heat_capacity"][0] > 0.0)
+        self.assertTrue(thermal_dict["heat_capacity"][-1] < 100)
+        self.assertTrue(thermal_dict["heat_capacity"][-1] > 99)
+        self.assertTrue(thermal_dict["volumes"][-1] < 66.5)
+        self.assertTrue(thermal_dict["volumes"][-1] > 66.4)
+        self.assertTrue(thermal_dict["volumes"][0] < 66.5)
+        self.assertTrue(thermal_dict["volumes"][0] > 66.4)
+        thermal_dict = workflow.get_thermal_properties(
+            t_min=1,
+            t_max=1500,
+            t_step=50,
+            temperatures=None,
+            cutoff_frequency=None,
+            pretend_real=False,
+            band_indices=None,
+            is_projection=False,
+            output=["temperatures", "free_energy"]
+        )
+        self.assertEqual(len(thermal_dict.keys()), 2)
+        self.assertEqual(thermal_dict["temperatures"][0], 1.0)
+        self.assertEqual(thermal_dict["temperatures"][-1], 1501.0)
+        self.assertTrue(thermal_dict["free_energy"][0] < 0.2)
+        self.assertTrue(thermal_dict["free_energy"][0] > 0.1)
+        self.assertTrue(thermal_dict["free_energy"][-1] < -2.6)
+        self.assertTrue(thermal_dict["free_energy"][-1] > -2.7)

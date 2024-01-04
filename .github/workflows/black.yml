@@ -6,14 +6,13 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - uses: psf/black@stable
       with:
         options: "--check --diff"
-        src: "./atomistics"
+        src: ./${{ github.event.repository.name }}

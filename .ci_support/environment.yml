@@ -2,11 +2,10 @@ channels:
 - conda-forge
 dependencies:
 - ase =3.22.1
-- coveralls
 - coverage
-- numpy =1.23.5
-- scipy =1.11.2
-- spglib =2.0.2
-- phonopy =2.20.0
-- structuretoolkit =0.0.11
+- numpy =1.26.3
+- scipy =1.11.4
+- spglib =2.2.0
+- phonopy =2.21.0
+- structuretoolkit =0.0.17
 - seekpath =2.1.0

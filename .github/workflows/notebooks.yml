@@ -6,18 +6,16 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Merge Notebook environment
         run: |
-          python .ci_support/condamerge.py --base .ci_support/environment.yml --add .ci_support/environment-notebooks.yml > environment.yml
+          cp .ci_support/environment.yml environment.yml
+          tail --lines=+4 .ci_support/environment-notebooks.yml >> environment.yml
       - name: Setup Mambaforge
         uses: conda-incubator/setup-miniconda@v2
         with:
@@ -26,13 +24,11 @@ jobs:
           channels: conda-forge
           channel-priority: strict
           activate-environment: my-env
+          environment-file: environment.yml
           use-mamba: true
-      - name: Update environment
-        run: mamba env update -n my-env -f environment.yml
-      - name: Setup
-        shell: bash -l {0}
-        run: |
-          pip install --no-deps .
       - name: Test
         shell: bash -l {0}
-        run: ./.ci_support/build_notebooks.sh
+        run: |
+          pip install versioneer[toml]==0.29
+          pip install . --no-deps --no-build-isolation
+          ./.ci_support/build_notebooks.sh
