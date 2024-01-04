@@ -7,13 +7,13 @@ dependencies:
   - numpy
   - ase =3.22.1
   - coverage
-  - numpy =1.26.2
+  - numpy =1.26.3
   - scipy =1.11.4
   - spglib =2.2.0
   - phonopy =2.21.0
-  - structuretoolkit =0.0.11
+  - structuretoolkit =0.0.17
   - seekpath =2.1.0
   - lammps =2023.08.02
   - pandas =2.1.4
-  - pylammpsmpi =0.2.5
+  - pylammpsmpi =0.2.11
   - jinja2 =3.1.2
