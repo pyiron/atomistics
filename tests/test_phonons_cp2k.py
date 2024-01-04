@@ -2,10 +2,11 @@ import os
 import shutil
 
 from ase.build import bulk
+from ase.calculators.cp2k import CP2K
 from phonopy.units import VaspToTHz
 import unittest
 
-from atomistics.calculators.cp2k_ase.calculator import evaluate_with_cp2k
+from atomistics.calculators import evaluate_with_ase
 from atomistics.workflows.phonons.workflow import PhonopyWorkflow
 
 
@@ -32,13 +33,15 @@ class TestPhonons(unittest.TestCase):
             number_of_snapshots=None,
         )
         structure_dict = calculator.generate_structures()
-        result_dict = evaluate_with_cp2k(
+        result_dict = evaluate_with_ase(
             task_dict=structure_dict,
-            command=cp2k_command,
-            basis_set_file=os.path.join(resource_path, 'BASIS_SET'),
-            basis_set="DZVP-GTH-PADE",
-            potential_file=os.path.join(resource_path, 'GTH_POTENTIALS'),
-            pseudo_potential="GTH-PADE-q4",
+            ase_calculator=CP2K(
+                command="cp2k_shell.psmp",
+                basis_set_file=os.path.join(resource_path, 'BASIS_SET'),
+                basis_set="DZVP-GTH-PADE",
+                potential_file=os.path.join(resource_path, 'GTH_POTENTIALS'),
+                pseudo_potential="GTH-PADE-q4",
+            )
         )
         mesh_dict, dos_dict = calculator.analyse_structures(output_dict=result_dict)
         self.assertEqual((324, 324), calculator.get_hesse_matrix().shape)

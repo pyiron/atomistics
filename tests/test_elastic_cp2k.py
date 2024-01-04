@@ -2,10 +2,11 @@ import os
 import shutil
 
 from ase.build import bulk
+from ase.calculators.cp2k import CP2K
 import numpy as np
 import unittest
 
-from atomistics.calculators.cp2k_ase.calculator import evaluate_with_cp2k
+from atomistics.calculators import evaluate_with_ase
 from atomistics.workflows.elastic.workflow import ElasticMatrixWorkflow
 
 
@@ -30,13 +31,15 @@ class TestElastic(unittest.TestCase):
             fit_order=2
         )
         structure_dict = calculator.generate_structures()
-        result_dict = evaluate_with_cp2k(
+        result_dict = evaluate_with_ase(
             task_dict=structure_dict,
-            command=cp2k_command,
-            basis_set_file=os.path.join(resource_path, 'BASIS_SET'),
-            basis_set="DZVP-GTH-PADE",
-            potential_file=os.path.join(resource_path, 'GTH_POTENTIALS'),
-            pseudo_potential="GTH-PADE-q4",
+            ase_calculator=CP2K(
+                command="cp2k_shell.psmp",
+                basis_set_file=os.path.join(resource_path, 'BASIS_SET'),
+                basis_set="DZVP-GTH-PADE",
+                potential_file=os.path.join(resource_path, 'GTH_POTENTIALS'),
+                pseudo_potential="GTH-PADE-q4",
+            )
         )
         elastic_dict = calculator.analyse_structures(output_dict=result_dict)
         print(elastic_dict)
