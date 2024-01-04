@@ -10,7 +10,7 @@ from atomistics.calculators import evaluate_with_ase
 from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
 
 
-cp2k_command = "cp2k_shell.psmp"
+cp2k_command = "cp2k.ssmp"
 if shutil.which(cp2k_command) is not None:
     skip_cp2k_test = False
 else:
@@ -36,7 +36,7 @@ class TestEvCurve(unittest.TestCase):
         result_dict = evaluate_with_ase(
             task_dict=structure_dict,
             ase_calculator=CP2K(
-                command="cp2k_shell.psmp",
+                command=cp2k_command,
                 basis_set_file=os.path.join(resource_path, 'BASIS_SET'),
                 basis_set="DZVP-GTH-PADE",
                 potential_file=os.path.join(resource_path, 'GTH_POTENTIALS'),
