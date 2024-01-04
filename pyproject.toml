@@ -41,7 +41,7 @@ Repository = "https://github.com/pyiron/atomistics"
 phonopy = [
     "phonopy==2.21.0",
     "seekpath==2.1.0",
-    "structuretoolkit==0.0.16",
+    "structuretoolkit==0.0.17",
 ]
 gpaw = [
     "gpaw==23.9.1",
