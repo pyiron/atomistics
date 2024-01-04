@@ -10,7 +10,7 @@ from atomistics.calculators import evaluate_with_ase
 from atomistics.workflows.phonons.workflow import PhonopyWorkflow
 
 
-cp2k_command = "cp2k.ssmp"
+cp2k_command = "cp2k_shell.ssmp"
 if shutil.which(cp2k_command) is not None:
     skip_cp2k_test = False
 else:
