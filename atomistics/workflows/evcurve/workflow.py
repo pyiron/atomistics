@@ -174,7 +174,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         return {"calc_energy": self._structure_dict}
 
     def analyse_structures(self, output_dict, output=energy_volume_curve_output_keys):
-        self.fit_dict = EnergyVolumeCurveProperties(
+        self._fit_dict = EnergyVolumeCurveProperties(
             fit_module=fit_ev_curve_internal(
                 volume_lst=get_volume_lst(structure_dict=self._structure_dict),
                 energy_lst=get_energy_lst(
