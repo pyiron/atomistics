@@ -1,4 +1,4 @@
-import dataclasses
+from dataclasses import make_dataclass
 
 from atomistics.shared.generic import (
     static_calculation_output_keys,
@@ -11,17 +11,15 @@ from atomistics.shared.generic import (
 )
 
 
-@dataclasses.dataclass
-class Output:
-    def get(self, engine, *output: str) -> dict:
-        return {q: getattr(self, q)(engine) for q in output}
-
-
 def make_output_dataclass(cls_name, output_keys):
-    return dataclasses.make_dataclass(
+    return make_dataclass(
         cls_name=cls_name,
         fields=[(key, callable) for key in output_keys],
-        bases=(Output,),
+        namespace={
+            "get": lambda self, engine, *output: {
+                q: getattr(self, q)(engine) for q in output
+            }
+        },
     )
 
 

@@ -11,7 +11,7 @@ from atomistics.workflows.elastic.helper import (
 
 
 elastic_matrix_output_elastic = OutputElastic(
-    **{k: getattr(ElasticProperties, k) for k in OutputElastic.fields()}
+    **{k: getattr(ElasticProperties, k) for k in elastic_matrix_output_keys}
 )
 
 
