@@ -61,7 +61,7 @@ def lammps_calc_md_step(
         pressure=lmp_instance.interactive_pressures_getter,
         velocities=lmp_instance.interactive_velocities_getter,
         volume=lmp_instance.interactive_volume_getter,
-    ).get(*output)
+    ).get(output=output)
 
 
 def lammps_calc_md(

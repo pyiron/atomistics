@@ -126,7 +126,7 @@ def get_thermal_properties(
         entropy=qh_thermal.get_entropy,
         heat_capacity=qh_thermal.get_heat_capacity,
         volumes=qh_thermal.get_volumes,
-    ).get(*output)
+    ).get(output=output)
 
 
 def _get_thermal_properties_quantum_mechanical(

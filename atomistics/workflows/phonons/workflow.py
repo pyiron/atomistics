@@ -260,7 +260,7 @@ class PhonopyWorkflow(Workflow):
             total_dos_dict=phono_prop.get_total_dos_dict,
             dynamical_matrix=phono_prop.get_dynamical_matrix,
             force_constants=phono_prop.get_force_constants,
-        ).get(*output)
+        ).get(output=output)
         return self._phonopy_dict
 
     def get_thermal_properties(
@@ -306,7 +306,7 @@ class PhonopyWorkflow(Workflow):
             entropy=phono_thermal.get_entropy,
             heat_capacity=phono_thermal.get_heat_capacity,
             volumes=phono_thermal.get_volumes,
-        ).get(*output)
+        ).get(output=output)
 
     def get_dynamical_matrix(self, npoints=101):
         """

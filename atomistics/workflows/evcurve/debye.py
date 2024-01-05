@@ -246,4 +246,4 @@ def get_thermal_properties(
         entropy=debye_thermal.get_entropy,
         heat_capacity=debye_thermal.get_heat_capacity,
         volumes=debye_thermal.get_volumes,
-    ).get(*output)
+    ).get(output=output)

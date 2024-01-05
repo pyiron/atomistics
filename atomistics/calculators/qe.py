@@ -214,7 +214,7 @@ def calc_static_with_qe(
         energy=qe_parser.get_energy,
         stress=qe_parser.get_stress,
         volume=qe_parser.get_volume,
-    ).get(*output)
+    ).get(output=output)
 
 
 @as_task_dict_evaluator

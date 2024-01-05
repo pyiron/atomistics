@@ -20,4 +20,4 @@ def get_thermal_expansion_output(temperatures_lst, volumes_lst, output):
     return OutputThermalExpansion(
         temperatures=thermal_properties.get_temperatures,
         volumes=thermal_properties.get_volumes,
-    ).get(*output)
+    ).get(output=output)

@@ -108,7 +108,7 @@ def calc_static_with_ase(
         energy=ase_exe.get_energy,
         stress=ase_exe.get_stress,
         volume=ase_exe.get_volume,
-    ).get(*output)
+    ).get(output=output)
 
 
 def _calc_md_step_with_ase(
@@ -130,7 +130,7 @@ def _calc_md_step_with_ase(
             pressure=ase_exe.get_stress,
             velocities=ase_exe.get_velocities,
             volume=ase_exe.get_volume,
-        ).get(*output)
+        ).get(output=output)
         for k, v in calc_dict.items():
             cache[k].append(v)
     return {q: np.array(cache[q]) for q in output}

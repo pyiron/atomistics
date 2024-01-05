@@ -192,7 +192,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
             bulkmodul_eq=ev_prop.get_bulkmodul_eq,
             energy_eq=ev_prop.get_energy_eq,
             volume_eq=ev_prop.get_volume_eq,
-        ).get(*output)
+        ).get(output=output)
         return self.fit_dict
 
     def get_volume_lst(self):
