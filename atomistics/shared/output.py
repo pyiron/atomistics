@@ -19,15 +19,14 @@ class Output:
 
 def make_output_dataclass(cls_name, output_keys):
     return dataclasses.make_dataclass(
-    cls_name=cls_name,
-    fields=[(key, callable) for key in output_keys],
-    bases=(Output, ),
-)
+        cls_name=cls_name,
+        fields=[(key, callable) for key in output_keys],
+        bases=(Output,),
+    )
 
 
 OutputStatic = make_output_dataclass(
-    cls_name="OutputStatic",
-    output_keys=static_calculation_output_keys
+    cls_name="OutputStatic", output_keys=static_calculation_output_keys
 )
 
 

@@ -40,7 +40,7 @@ energy_volume_curve_output_keys = (
     "bulkmodul_eq",  # float [GPa]
     "b_prime_eq",  # float
     "fit_dict",  # dict
-    "energy",   # np.ndarray (V) [eV]
+    "energy",  # np.ndarray (V) [eV]
     "volume",  # np.ndarray (V) [Ang^3]
 )
 
