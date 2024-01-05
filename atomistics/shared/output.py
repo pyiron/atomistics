@@ -7,11 +7,13 @@ class Output:
 
     @classmethod
     def get_keys(cls):
-        return tuple([
-            k
-            for k in cls.__dict__.keys()
-            if k[0] != "_" and k not in ["get_output", "get_keys"]
-        ])
+        return tuple(
+            [
+                k
+                for k in cls.__dict__.keys()
+                if k[0] != "_" and k not in ["get_output", "get_keys"]
+            ]
+        )
 
 
 class OutputStatic(ABC, Output):
