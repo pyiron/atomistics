@@ -25,9 +25,12 @@ class TestSharedOutput(TestCase):
             output_cls.__abstractmethods__ = set()
 
             class Demo(output_cls):
-                pass
+                def __init__(self):
+                    super().__init__()
+                    self._demo = None
 
             dm = Demo()
 
-            for func in dm.get_keys():
-                self.assertIsNone(getattr(dm, func)())
+            for func in dir(dm):
+                if func[0] != "_" and func not in ['get_keys', 'get_output']:
+                    self.assertIsNone(getattr(dm, func)())
