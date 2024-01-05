@@ -13,24 +13,21 @@ class QEStaticParser(object):
     def __init__(self, filename):
         self.parser = io.read_pw_scf(filename=filename, use_alat=True)
 
-    def get_forces(self):
+    def forces(self):
         return self.parser.forces
 
-    def get_energy(self):
+    def energy(self):
         return self.parser.etot
 
-    def get_stress(self):
+    def stress(self):
         return self.parser.stress
 
-    def get_volume(self):
+    def volume(self):
         return self.parser.volume
 
 
 QuantumEspressoOutputStatic = OutputStatic(
-    forces=QEStaticParser.get_forces,
-    energy=QEStaticParser.get_energy,
-    stress=QEStaticParser.get_stress,
-    volume=QEStaticParser.get_volume,
+    **{k: getattr(QEStaticParser, k) for k in OutputStatic.fields()}
 )
 
 
