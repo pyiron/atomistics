@@ -26,7 +26,7 @@ classifiers = [
 ]
 dependencies = [
     "ase==3.22.1",
-    "numpy==1.26.2",
+    "numpy==1.26.3",
     "scipy==1.11.4",
     "spglib==2.2.0",
 ]
@@ -41,18 +41,18 @@ Repository = "https://github.com/pyiron/atomistics"
 phonopy = [
     "phonopy==2.21.0",
     "seekpath==2.1.0",
-    "structuretoolkit==0.0.15",
+    "structuretoolkit==0.0.17",
 ]
 gpaw = [
     "gpaw==23.9.1",
 ]
 lammps = [
-    "pylammpsmpi==0.2.10",
+    "pylammpsmpi==0.2.11",
     "jinja2==3.1.2",
     "pandas==2.1.4",
 ]
 lammps_phonons = [
-    "pylammpsmpi==0.2.10",
+    "pylammpsmpi==0.2.11",
     "jinja2==3.1.2",
     "pandas==2.1.4",
     "dynaphopy==1.17.15",
