@@ -31,33 +31,39 @@ class ASEExecutor(object):
         self.structure = ase_structure
         self.structure.calc = ase_calculator
 
-    def get_forces(self):
+    def forces(self):
         return self.structure.get_forces()
 
-    def get_energy(self):
+    def energy(self):
         return self.structure.get_potential_energy()
 
-    def get_stress(self):
-        return self.structure.get_stress(voigt=False)
+    def energy_pot(self):
+        return self.structure.get_potential_energy()
 
-    def get_total_energy(self):
+    def energy_tot(self):
         return (
             self.structure.get_potential_energy() + self.structure.get_kinetic_energy()
         )
 
-    def get_cell(self):
+    def stress(self):
+        return self.structure.get_stress(voigt=False)
+
+    def pressure(self):
+        return self.structure.get_stress(voigt=False)
+
+    def cell(self):
         return self.structure.get_cell()
 
-    def get_positions(self):
+    def positions(self):
         return self.structure.get_positions()
 
-    def get_velocities(self):
+    def velocities(self):
         return self.structure.get_velocities()
 
-    def get_temperature(self):
+    def temperature(self):
         return self.structure.get_temperature()
 
-    def get_volume(self):
+    def volume(self):
         return self.structure.get_volume()
 
 
@@ -104,10 +110,10 @@ def calc_static_with_ase(
 ):
     ase_exe = ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator)
     return OutputStatic(
-        forces=ase_exe.get_forces,
-        energy=ase_exe.get_energy,
-        stress=ase_exe.get_stress,
-        volume=ase_exe.get_volume,
+        forces=ase_exe.forces,
+        energy=ase_exe.energy,
+        stress=ase_exe.stress,
+        volume=ase_exe.volume,
     ).get(output=output)
 
 
@@ -121,15 +127,15 @@ def _calc_md_step_with_ase(
         dyn.run(thermo)
         ase_exe = ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator)
         calc_dict = OutputMolecularDynamics(
-            positions=ase_exe.get_positions,
-            cell=ase_exe.get_cell,
-            forces=ase_exe.get_forces,
-            temperature=ase_exe.get_temperature,
-            energy_pot=ase_exe.get_energy,
-            energy_tot=ase_exe.get_total_energy,
-            pressure=ase_exe.get_stress,
-            velocities=ase_exe.get_velocities,
-            volume=ase_exe.get_volume,
+            positions=ase_exe.positions,
+            cell=ase_exe.cell,
+            forces=ase_exe.forces,
+            temperature=ase_exe.temperature,
+            energy_pot=ase_exe.energy,
+            energy_tot=ase_exe.energy_tot,
+            pressure=ase_exe.pressure,
+            velocities=ase_exe.velocities,
+            volume=ase_exe.volume,
         ).get(output=output)
         for k, v in calc_dict.items():
             cache[k].append(v)

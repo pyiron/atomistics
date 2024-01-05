@@ -32,16 +32,16 @@ class DebyeThermalProperties(object):
         )
         self._constant_volume = constant_volume
 
-    def get_free_energy(self):
+    def free_energy(self):
         return (
             self._pes.get_free_energy_p()
             - self._debye_model.interpolate(volumes=self._pes.get_minimum_energy_path())
         ) / self._pes.num_atoms
 
-    def get_temperatures(self):
+    def temperatures(self):
         return self._temperatures
 
-    def get_entropy(self):
+    def entropy(self):
         if not self._constant_volume:
             return (
                 self._pes.eV_to_J_per_mol
@@ -55,7 +55,7 @@ class DebyeThermalProperties(object):
                 * self._pes.get_entropy_v()
             )
 
-    def get_heat_capacity(self):
+    def heat_capacity(self):
         if not self._constant_volume:
             heat_capacity = (
                 self._pes.eV_to_J_per_mol
@@ -70,7 +70,7 @@ class DebyeThermalProperties(object):
             )
         return np.array(heat_capacity.tolist() + [np.nan, np.nan])
 
-    def get_volumes(self):
+    def volumes(self):
         if not self._constant_volume:
             return self._pes.get_minimum_energy_path()
         else:
@@ -241,9 +241,9 @@ def get_thermal_properties(
         num_steps=num_steps,
     )
     return OutputThermodynamic(
-        temperatures=debye_thermal.get_temperatures,
-        free_energy=debye_thermal.get_free_energy,
-        entropy=debye_thermal.get_entropy,
-        heat_capacity=debye_thermal.get_heat_capacity,
-        volumes=debye_thermal.get_volumes,
+        temperatures=debye_thermal.temperatures,
+        free_energy=debye_thermal.free_energy,
+        entropy=debye_thermal.entropy,
+        heat_capacity=debye_thermal.heat_capacity,
+        volumes=debye_thermal.volumes,
     ).get(output=output)

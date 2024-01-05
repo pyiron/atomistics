@@ -102,25 +102,25 @@ class EnergyVolumeCurveProperties:
     def __init__(self, fit_module):
         self._fit_module = fit_module
 
-    def get_volume_eq(self):
+    def volume_eq(self):
         return self._fit_module.fit_dict["volume_eq"]
 
-    def get_energy_eq(self):
+    def energy_eq(self):
         return self._fit_module.fit_dict["energy_eq"]
 
-    def get_bulkmodul_eq(self):
+    def bulkmodul_eq(self):
         return self._fit_module.fit_dict["bulkmodul_eq"]
 
-    def get_bulkmodul_pressure_derivative_eq(self):
+    def b_prime_eq(self):
         return self._fit_module.fit_dict["b_prime_eq"]
 
-    def get_volumes(self):
+    def volume(self):
         return self._fit_module.fit_dict["volume"]
 
-    def get_energies(self):
+    def energy(self):
         return self._fit_module.fit_dict["energy"]
 
-    def get_fit_dict(self):
+    def fit_dict(self):
         return {
             k: self._fit_module.fit_dict[k]
             for k in ["fit_type", "least_square_error", "poly_fit", "fit_order"]
@@ -185,13 +185,13 @@ class EnergyVolumeCurveWorkflow(Workflow):
             )
         )
         self._fit_dict = OutputEnergyVolumeCurve(
-            fit_dict=ev_prop.get_fit_dict,
-            energy=ev_prop.get_energies,
-            volume=ev_prop.get_volumes,
-            b_prime_eq=ev_prop.get_bulkmodul_pressure_derivative_eq,
-            bulkmodul_eq=ev_prop.get_bulkmodul_eq,
-            energy_eq=ev_prop.get_energy_eq,
-            volume_eq=ev_prop.get_volume_eq,
+            fit_dict=ev_prop.fit_dict,
+            energy=ev_prop.energy,
+            volume=ev_prop.volume,
+            b_prime_eq=ev_prop.b_prime_eq,
+            bulkmodul_eq=ev_prop.bulkmodul_eq,
+            energy_eq=ev_prop.energy_eq,
+            volume_eq=ev_prop.volume_eq,
         ).get(output=output)
         return self.fit_dict
 

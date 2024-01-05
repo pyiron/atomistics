@@ -121,11 +121,11 @@ def get_thermal_properties(
         volumes_selected_lst=vol_lst,
     )
     return OutputThermodynamic(
-        temperatures=qh_thermal.get_temperatures,
-        free_energy=qh_thermal.get_free_energy,
-        entropy=qh_thermal.get_entropy,
-        heat_capacity=qh_thermal.get_heat_capacity,
-        volumes=qh_thermal.get_volumes,
+        temperatures=qh_thermal.temperatures,
+        free_energy=qh_thermal.free_energy,
+        entropy=qh_thermal.entropy,
+        heat_capacity=qh_thermal.heat_capacity,
+        volumes=qh_thermal.volumes,
     ).get(output=output)
 
 
@@ -263,19 +263,19 @@ class QuasiHarmonicThermalProperties(object):
             ]
         )
 
-    def get_free_energy(self):
+    def free_energy(self):
         return self.get_property(thermal_property="free_energy")
 
-    def get_temperatures(self):
+    def temperatures(self):
         return self._temperatures
 
-    def get_entropy(self):
+    def entropy(self):
         return self.get_property(thermal_property="entropy")
 
-    def get_heat_capacity(self):
+    def heat_capacity(self):
         return self.get_property(thermal_property="heat_capacity")
 
-    def get_volumes(self):
+    def volumes(self):
         return self._volumes_selected_lst
 
 

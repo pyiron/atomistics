@@ -14,16 +14,16 @@ class QEStaticParser(object):
     def __init__(self, filename):
         self.parser = io.read_pw_scf(filename=filename, use_alat=True)
 
-    def get_forces(self):
+    def forces(self):
         return self.parser.forces
 
-    def get_energy(self):
+    def energy(self):
         return self.parser.etot
 
-    def get_stress(self):
+    def stress(self):
         return self.parser.stress
 
-    def get_volume(self):
+    def volume(self):
         return self.parser.volume
 
 
@@ -210,10 +210,10 @@ def calc_static_with_qe(
     )
     qe_parser = QEStaticParser(filename=output_file_name)
     return OutputStatic(
-        forces=qe_parser.get_forces,
-        energy=qe_parser.get_energy,
-        stress=qe_parser.get_stress,
-        volume=qe_parser.get_volume,
+        forces=qe_parser.forces,
+        energy=qe_parser.energy,
+        stress=qe_parser.stress,
+        volume=qe_parser.volume,
     ).get(output=output)
 
 
