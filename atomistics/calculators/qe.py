@@ -27,14 +27,6 @@ class QEStaticParser(object):
         return self.parser.volume
 
 
-QuantumEspressoOutputStatic = OutputStatic(
-    forces=QEStaticParser.get_forces,
-    energy=QEStaticParser.get_energy,
-    stress=QEStaticParser.get_stress,
-    volume=QEStaticParser.get_volume,
-)
-
-
 def call_qe_via_ase_command(calculation_name, working_directory):
     subprocess.check_output(
         os.environ["ASE_ESPRESSO_COMMAND"].replace("PREFIX", calculation_name),
@@ -216,9 +208,12 @@ def calc_static_with_qe(
     call_qe_via_ase_command(
         calculation_name=calculation_name, working_directory=working_directory
     )
-    return QuantumEspressoOutputStatic.get(
-        QEStaticParser(filename=output_file_name), *output
-    )
+    return OutputStatic(
+        forces=QEStaticParser.get_forces,
+        energy=QEStaticParser.get_energy,
+        stress=QEStaticParser.get_stress,
+        volume=QEStaticParser.get_volume,
+    ).get(QEStaticParser(filename=output_file_name), *output)
 
 
 @as_task_dict_evaluator

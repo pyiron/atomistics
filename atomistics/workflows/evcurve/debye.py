@@ -77,15 +77,6 @@ class DebyeThermalProperties(object):
             return np.array([self._pes.volumes[0]] * len(self._temperatures))
 
 
-DebyeOutputThermodynamic = OutputThermodynamic(
-    temperatures=DebyeThermalProperties.get_temperatures,
-    free_energy=DebyeThermalProperties.get_free_energy,
-    entropy=DebyeThermalProperties.get_entropy,
-    heat_capacity=DebyeThermalProperties.get_heat_capacity,
-    volumes=DebyeThermalProperties.get_volumes,
-)
-
-
 def _debye_kernel(xi):
     return xi**3 / (np.exp(xi) - 1)
 
@@ -239,7 +230,13 @@ def get_thermal_properties(
     num_steps=50,
     output=thermodynamic_output_keys,
 ):
-    return DebyeOutputThermodynamic.get(
+    return OutputThermodynamic(
+        temperatures=DebyeThermalProperties.get_temperatures,
+        free_energy=DebyeThermalProperties.get_free_energy,
+        entropy=DebyeThermalProperties.get_entropy,
+        heat_capacity=DebyeThermalProperties.get_heat_capacity,
+        volumes=DebyeThermalProperties.get_volumes,
+    ).get(
         DebyeThermalProperties(
             fit_dict=fit_dict,
             masses=masses,

@@ -64,26 +64,6 @@ class ASEExecutor(object):
         return self.structure.get_volume()
 
 
-ASEOutputStatic = OutputStatic(
-    forces=ASEExecutor.get_forces,
-    energy=ASEExecutor.get_energy,
-    stress=ASEExecutor.get_stress,
-    volume=ASEExecutor.get_volume,
-)
-
-ASEOutputMolecularDynamics = OutputMolecularDynamics(
-    positions=ASEExecutor.get_positions,
-    cell=ASEExecutor.get_cell,
-    forces=ASEExecutor.get_forces,
-    temperature=ASEExecutor.get_temperature,
-    energy_pot=ASEExecutor.get_energy,
-    energy_tot=ASEExecutor.get_total_energy,
-    pressure=ASEExecutor.get_stress,
-    velocities=ASEExecutor.get_velocities,
-    volume=ASEExecutor.get_volume,
-)
-
-
 @as_task_dict_evaluator
 def evaluate_with_ase(
     structure: Atoms,
@@ -125,15 +105,29 @@ def calc_static_with_ase(
     ase_calculator,
     output=static_calculation_output_keys,
 ):
-    return ASEOutputStatic.get(
-        ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator), *output
-    )
+    return OutputStatic(
+        forces=ASEExecutor.get_forces,
+        energy=ASEExecutor.get_energy,
+        stress=ASEExecutor.get_stress,
+        volume=ASEExecutor.get_volume,
+    ).get(ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator), *output)
 
 
 def _calc_md_step_with_ase(
     dyn, structure, ase_calculator, temperature, run, thermo, output
 ):
     structure.calc = ase_calculator
+    ASEOutputMolecularDynamics = OutputMolecularDynamics(
+        positions=ASEExecutor.get_positions,
+        cell=ASEExecutor.get_cell,
+        forces=ASEExecutor.get_forces,
+        temperature=ASEExecutor.get_temperature,
+        energy_pot=ASEExecutor.get_energy,
+        energy_tot=ASEExecutor.get_total_energy,
+        pressure=ASEExecutor.get_stress,
+        velocities=ASEExecutor.get_velocities,
+        volume=ASEExecutor.get_volume,
+    )
     MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
     cache = {q: [] for q in output}
     for i in range(int(run / thermo)):

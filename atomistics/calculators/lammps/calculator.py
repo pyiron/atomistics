@@ -27,11 +27,8 @@ from atomistics.calculators.lammps.commands import (
     LAMMPS_RUN,
     LAMMPS_MINIMIZE_VOLUME,
 )
-from atomistics.calculators.lammps.output import (
-    LammpsOutputMolecularDynamics,
-    LammpsOutputStatic,
-)
 from atomistics.calculators.wrapper import as_task_dict_evaluator
+from atomistics.shared.output import OutputStatic
 from atomistics.shared.generic import (
     static_calculation_output_keys,
     molecular_dynamics_output_keys,
@@ -138,7 +135,12 @@ def calc_static_with_lammps(
         lmp=lmp,
         **kwargs,
     )
-    result_dict = LammpsOutputStatic.get(lmp_instance, *output)
+    result_dict = OutputStatic(
+        forces=LammpsASELibrary.interactive_forces_getter,
+        energy=LammpsASELibrary.interactive_energy_pot_getter,
+        stress=LammpsASELibrary.interactive_pressures_getter,
+        volume=LammpsASELibrary.interactive_volume_getter,
+    ).get(lmp_instance, *output)
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 

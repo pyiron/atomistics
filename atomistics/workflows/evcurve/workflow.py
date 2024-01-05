@@ -128,17 +128,6 @@ class EnergyVolumeCurveProperties:
         }
 
 
-EnergyVolumeCurveOutputEnergyVolumeCurve = OutputEnergyVolumeCurve(
-    fit_dict=EnergyVolumeCurveProperties.get_fit_dict,
-    energy=EnergyVolumeCurveProperties.get_energies,
-    volume=EnergyVolumeCurveProperties.get_volumes,
-    b_prime_eq=EnergyVolumeCurveProperties.get_bulkmodul_pressure_derivative_eq,
-    bulkmodul_eq=EnergyVolumeCurveProperties.get_bulkmodul_eq,
-    energy_eq=EnergyVolumeCurveProperties.get_energy_eq,
-    volume_eq=EnergyVolumeCurveProperties.get_volume_eq,
-)
-
-
 class EnergyVolumeCurveWorkflow(Workflow):
     def __init__(
         self,
@@ -185,7 +174,15 @@ class EnergyVolumeCurveWorkflow(Workflow):
         return {"calc_energy": self._structure_dict}
 
     def analyse_structures(self, output_dict, output=energy_volume_curve_output_keys):
-        self._fit_dict = EnergyVolumeCurveOutputEnergyVolumeCurve.get(
+        self._fit_dict = OutputEnergyVolumeCurve(
+            fit_dict=EnergyVolumeCurveProperties.get_fit_dict,
+            energy=EnergyVolumeCurveProperties.get_energies,
+            volume=EnergyVolumeCurveProperties.get_volumes,
+            b_prime_eq=EnergyVolumeCurveProperties.get_bulkmodul_pressure_derivative_eq,
+            bulkmodul_eq=EnergyVolumeCurveProperties.get_bulkmodul_eq,
+            energy_eq=EnergyVolumeCurveProperties.get_energy_eq,
+            volume_eq=EnergyVolumeCurveProperties.get_volume_eq,
+        ).get(
             EnergyVolumeCurveProperties(
                 fit_module=fit_ev_curve_internal(
                     volume_lst=get_volume_lst(structure_dict=self._structure_dict),
