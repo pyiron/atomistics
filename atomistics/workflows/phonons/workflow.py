@@ -23,7 +23,7 @@ from atomistics.workflows.phonons.helper import (
 from atomistics.workflows.phonons.units import VaspToTHz, kJ_mol_to_eV
 
 
-class PhonopyProperties(OutputThermodynamic):
+class PhonopyProperties(OutputPhonons):
     def __init__(
         self,
         phonopy_instance,
@@ -122,7 +122,7 @@ class PhonopyProperties(OutputThermodynamic):
         return self._force_constants
 
 
-class PhonopyThermalProperties(OutputPhonons):
+class PhonopyThermalProperties(OutputThermodynamic):
     def __init__(self, phonopy_instance):
         self._phonopy = phonopy_instance
         self._thermal_properties = phonopy_instance.get_thermal_properties_dict()
