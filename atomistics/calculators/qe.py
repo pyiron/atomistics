@@ -5,6 +5,7 @@ from ase.io import write
 from pwtools import io
 
 from atomistics.calculators.interface import get_quantities_from_tasks
+from atomistics.shared.generic import static_calculation_output_keys
 from atomistics.shared.output import OutputStatic
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 
@@ -189,7 +190,7 @@ def calc_static_with_qe(
     pseudopotentials=None,
     tstress=True,
     tprnfor=True,
-    output=OutputStatic.fields(),
+    output=static_calculation_output_keys,
     **kwargs,
 ):
     input_file_name = os.path.join(working_directory, calculation_name + ".pwi")

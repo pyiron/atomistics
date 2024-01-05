@@ -1,6 +1,7 @@
 import numpy as np
 
-from atomistics.shared.output import OutputThermodynamic, OutputPhonons
+from atomistics.shared.generic import thermodynamic_output_keys
+from atomistics.shared.output import OutputThermodynamic
 from atomistics.workflows.evcurve.workflow import (
     EnergyVolumeCurveWorkflow,
     fit_ev_curve,
@@ -36,7 +37,7 @@ def get_thermal_properties(
     band_indices=None,
     is_projection=False,
     quantum_mechanical=True,
-    output=OutputThermodynamic.fields(),
+    output=thermodynamic_output_keys,
 ):
     """
     Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
@@ -135,7 +136,7 @@ def _get_thermal_properties_quantum_mechanical(
     pretend_real=False,
     band_indices=None,
     is_projection=False,
-    output=OutputThermodynamic.fields(),
+    output=thermodynamic_output_keys,
 ):
     """
     Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
@@ -380,7 +381,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         band_indices=None,
         is_projection=False,
         quantum_mechanical=True,
-        output=OutputThermodynamic.fields(),
+        output=thermodynamic_output_keys,
     ):
         """
         Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
@@ -416,7 +417,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             band_indices=band_indices,
             is_projection=is_projection,
             quantum_mechanical=quantum_mechanical,
-            output=OutputThermodynamic.fields(),
+            output=thermodynamic_output_keys,
         )
 
     def get_thermal_expansion(

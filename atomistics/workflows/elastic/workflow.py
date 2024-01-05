@@ -1,6 +1,7 @@
 import numpy as np
 
 from atomistics.shared.output import OutputElastic
+from atomistics.shared.generic import elastic_matrix_output_keys
 from atomistics.workflows.interface import Workflow
 from atomistics.workflows.elastic.elastic_moduli import ElasticProperties
 from atomistics.workflows.elastic.helper import (
@@ -44,7 +45,7 @@ class ElasticMatrixWorkflow(Workflow):
         )
         return {"calc_energy": self._structure_dict}
 
-    def analyse_structures(self, output_dict, output=OutputElastic.fields()):
+    def analyse_structures(self, output_dict, output=elastic_matrix_output_keys):
         """
 
         Args:

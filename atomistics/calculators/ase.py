@@ -10,6 +10,11 @@ from typing import TYPE_CHECKING
 
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.wrapper import as_task_dict_evaluator
+from atomistics.shared.generic import (
+    static_calculation_output_keys,
+    molecular_dynamics_output_keys,
+    thermal_expansion_output_keys,
+)
 from atomistics.shared.output import OutputStatic, OutputMolecularDynamics
 from atomistics.shared.thermal_expansion import (
     OutputThermalExpansionProperties,
@@ -118,7 +123,7 @@ def evaluate_with_ase(
 def calc_static_with_ase(
     structure,
     ase_calculator,
-    output=OutputStatic.fields(),
+    output=static_calculation_output_keys,
 ):
     return ASEOutputStatic.get(
         ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator), *output
@@ -152,7 +157,7 @@ def calc_molecular_dynamics_npt_with_ase(
     pfactor=2e6 * units.GPa * (units.fs**2),
     temperature=100,
     externalstress=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
-    output=ASEOutputMolecularDynamics.fields(),
+    output=molecular_dynamics_output_keys,
 ):
     return _calc_md_step_with_ase(
         dyn=NPT(
@@ -186,7 +191,7 @@ def calc_molecular_dynamics_langevin_with_ase(
     timestep=1 * units.fs,
     temperature=100,
     friction=0.002,
-    output=ASEOutputMolecularDynamics.fields(),
+    output=molecular_dynamics_output_keys,
 ):
     return _calc_md_step_with_ase(
         dyn=Langevin(
@@ -236,7 +241,7 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
     ttime=100 * units.fs,
     pfactor=2e6 * units.GPa * (units.fs**2),
     externalstress=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
-    output=OutputThermalExpansionProperties.fields(),
+    output=thermal_expansion_output_keys,
 ):
     structure_current = structure.copy()
     temperature_lst = np.arange(

@@ -10,6 +10,15 @@ from atomistics.shared.thermal_expansion import (
     OutputThermalExpansionProperties,
     ThermalExpansionProperties,
 )
+from atomistics.shared.generic import (
+    static_calculation_output_keys,
+    molecular_dynamics_output_keys,
+    thermal_expansion_output_keys,
+    thermodynamic_output_keys,
+    energy_volume_curve_output_keys,
+    elastic_matrix_output_keys,
+    phonon_output_keys,
+)
 from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 
 
@@ -46,7 +55,7 @@ def lammps_calc_md_step(
     lmp_instance,
     run_str,
     run,
-    output=LammpsOutputMolecularDynamics.fields(),
+    output=molecular_dynamics_output_keys,
 ):
     run_str_rendered = Template(run_str).render(run=run)
     lmp_instance.interactive_lib_command(run_str_rendered)
@@ -58,7 +67,7 @@ def lammps_calc_md(
     run_str,
     run,
     thermo,
-    output=LammpsOutputMolecularDynamics.fields(),
+    output=molecular_dynamics_output_keys,
 ):
     results_lst = [
         lammps_calc_md_step(
@@ -88,7 +97,7 @@ def lammps_thermal_expansion_loop(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output=OutputThermalExpansionProperties.fields(),
+    output=thermal_expansion_output_keys,
     **kwargs,
 ):
     lmp_instance = lammps_run(

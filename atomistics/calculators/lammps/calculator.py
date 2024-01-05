@@ -32,7 +32,11 @@ from atomistics.calculators.lammps.output import (
     LammpsOutputStatic,
 )
 from atomistics.calculators.wrapper import as_task_dict_evaluator
-from atomistics.shared.thermal_expansion import OutputThermalExpansionProperties
+from atomistics.shared.generic import (
+    static_calculation_output_keys,
+    molecular_dynamics_output_keys,
+    thermal_expansion_output_keys,
+)
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -120,7 +124,7 @@ def calc_static_with_lammps(
     structure,
     potential_dataframe,
     lmp=None,
-    output=LammpsOutputStatic.fields(),
+    output=static_calculation_output_keys,
     **kwargs,
 ):
     template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
@@ -151,7 +155,7 @@ def calc_molecular_dynamics_nvt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output=LammpsOutputMolecularDynamics.fields(),
+    output=molecular_dynamics_output_keys,
     **kwargs,
 ):
     init_str = (
@@ -208,7 +212,7 @@ def calc_molecular_dynamics_npt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output=LammpsOutputMolecularDynamics.fields(),
+    output=molecular_dynamics_output_keys,
     **kwargs,
 ):
     init_str = (
@@ -266,7 +270,7 @@ def calc_molecular_dynamics_nph_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output=LammpsOutputMolecularDynamics.fields(),
+    output=molecular_dynamics_output_keys,
     **kwargs,
 ):
     init_str = (
@@ -320,7 +324,7 @@ def calc_molecular_dynamics_langevin_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output=LammpsOutputMolecularDynamics.fields(),
+    output=molecular_dynamics_output_keys,
     **kwargs,
 ):
     init_str = (
@@ -380,7 +384,7 @@ def calc_molecular_dynamics_thermal_expansion_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output=OutputThermalExpansionProperties.fields(),
+    output=thermal_expansion_output_keys,
     **kwargs,
 ):
     init_str = (

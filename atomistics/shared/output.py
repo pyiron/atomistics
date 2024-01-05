@@ -1,5 +1,15 @@
 import dataclasses
 
+from atomistics.shared.generic import (
+    static_calculation_output_keys,
+    molecular_dynamics_output_keys,
+    thermal_expansion_output_keys,
+    thermodynamic_output_keys,
+    energy_volume_curve_output_keys,
+    elastic_matrix_output_keys,
+    phonon_output_keys,
+)
+
 
 @dataclasses.dataclass
 class Output:
@@ -11,96 +21,50 @@ class Output:
         return {q: getattr(self, q)(engine) for q in output}
 
 
-@dataclasses.dataclass
-class OutputStatic(Output):
-    forces: callable
-    energy: callable
-    stress: callable
-    volume: callable
+OutputStatic = dataclasses.make_dataclass(
+    cls_name="OutputStatic",
+    fields=[(key, callable) for key in static_calculation_output_keys],
+    bases=(Output, )
+)
 
 
-@dataclasses.dataclass
-class OutputMolecularDynamics(Output):
-    positions: callable
-    cell: callable
-    forces: callable
-    temperature: callable
-    energy_pot: callable
-    energy_tot: callable
-    pressure: callable
-    velocities: callable
-    volume: callable
+OutputMolecularDynamics = dataclasses.make_dataclass(
+    cls_name="OutputMolecularDynamics",
+    fields=[(key, callable) for key in molecular_dynamics_output_keys],
+    bases=(Output, )
+)
 
 
-@dataclasses.dataclass
-class OutputThermalExpansion(Output):
-    temperatures: callable
-    volumes: callable
+OutputThermalExpansion = dataclasses.make_dataclass(
+    cls_name="OutputThermalExpansion",
+    fields=[(key, callable) for key in thermal_expansion_output_keys],
+    bases=(Output, )
+)
 
 
-@dataclasses.dataclass
-class OutputThermodynamic(OutputThermalExpansion):
-    free_energy: callable
-    entropy: callable
-    heat_capacity: callable
+OutputThermodynamic = dataclasses.make_dataclass(
+    cls_name="OutputThermodynamic",
+    fields=[(key, callable) for key in thermodynamic_output_keys],
+    bases=(Output, )
+)
 
 
-@dataclasses.dataclass
-class EquilibriumEnergy(Output):
-    energy_eq: callable
+OutputEnergyVolumeCurve = dataclasses.make_dataclass(
+    cls_name="OutputEnergyVolumeCurve",
+    fields=[(key, callable) for key in energy_volume_curve_output_keys],
+    bases=(Output, )
+)
 
 
-@dataclasses.dataclass
-class EquilibriumVolume(Output):
-    volume_eq: callable
+OutputElastic = dataclasses.make_dataclass(
+    cls_name="OutputElastic",
+    fields=[(key, callable) for key in elastic_matrix_output_keys],
+    bases=(Output, )
+)
 
 
-@dataclasses.dataclass
-class EquilibriumBulkModul(Output):
-    bulkmodul_eq: callable
-
-
-@dataclasses.dataclass
-class EquilibriumBulkModulDerivative(Output):
-    b_prime_eq: callable
-
-
-@dataclasses.dataclass
-class OutputEnergyVolumeCurve(
-    EquilibriumEnergy,
-    EquilibriumVolume,
-    EquilibriumBulkModul,
-    EquilibriumBulkModulDerivative,
-):
-    fit_dict: callable
-    energy: callable
-    volume: callable
-
-
-@dataclasses.dataclass
-class OutputElastic(Output):
-    elastic_matrix: callable
-    elastic_matrix_inverse: callable
-    bulkmodul_voigt: callable
-    bulkmodul_reuss: callable
-    bulkmodul_hill: callable
-    shearmodul_voigt: callable
-    shearmodul_reuss: callable
-    shearmodul_hill: callable
-    youngsmodul_voigt: callable
-    youngsmodul_reuss: callable
-    youngsmodul_hill: callable
-    poissonsratio_voigt: callable
-    poissonsratio_reuss: callable
-    poissonsratio_hill: callable
-    AVR: callable
-    elastic_matrix_eigval: callable
-
-
-@dataclasses.dataclass
-class OutputPhonons(Output):
-    mesh_dict: callable
-    band_structure_dict: callable
-    total_dos_dict: callable
-    dynamical_matrix: callable
-    force_constants: callable
+OutputPhonons = dataclasses.make_dataclass(
+    cls_name="OutputPhonons",
+    fields=[(key, callable) for key in phonon_output_keys],
+    bases=(Output, )
+)

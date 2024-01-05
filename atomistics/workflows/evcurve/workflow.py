@@ -2,13 +2,14 @@ import numpy as np
 from ase.atoms import Atoms
 from collections import OrderedDict
 
+from atomistics.shared.generic import (
+    thermodynamic_output_keys,
+    energy_volume_curve_output_keys,
+)
 from atomistics.shared.output import OutputEnergyVolumeCurve
 from atomistics.workflows.evcurve.fit import EnergyVolumeFit
 from atomistics.workflows.interface import Workflow
-from atomistics.workflows.evcurve.debye import (
-    get_thermal_properties,
-    OutputThermodynamic,
-)
+from atomistics.workflows.evcurve.debye import get_thermal_properties
 
 
 def _strain_axes(
@@ -183,7 +184,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
             self._structure_dict[1 + np.round(strain, 7)] = basis
         return {"calc_energy": self._structure_dict}
 
-    def analyse_structures(self, output_dict, output=OutputEnergyVolumeCurve.fields()):
+    def analyse_structures(self, output_dict, output=energy_volume_curve_output_keys):
         self._fit_dict = EnergyVolumeCurveOutputEnergyVolumeCurve.get(
             EnergyVolumeCurveProperties(
                 fit_module=fit_ev_curve_internal(
@@ -228,7 +229,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         t_step=50,
         temperatures=None,
         constant_volume=False,
-        output=OutputThermodynamic.fields(),
+        output=thermodynamic_output_keys,
     ):
         return get_thermal_properties(
             fit_dict=self.fit_dict,
