@@ -5,12 +5,11 @@ from ase.io import write
 from pwtools import io
 
 from atomistics.calculators.interface import get_quantities_from_tasks
-from atomistics.shared.generic import static_calculation_output_keys
-from atomistics.shared.output import OutputStatic
+from atomistics.shared.output import OutputStatic, static_calculation_output_keys
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 
-class QEStaticParser(object):
+class QEStaticParser(OutputStatic):
     def __init__(self, filename):
         self.parser = io.read_pw_scf(filename=filename, use_alat=True)
 
@@ -208,13 +207,7 @@ def calc_static_with_qe(
     call_qe_via_ase_command(
         calculation_name=calculation_name, working_directory=working_directory
     )
-    qe_parser = QEStaticParser(filename=output_file_name)
-    return OutputStatic(
-        forces=qe_parser.forces,
-        energy=qe_parser.energy,
-        stress=qe_parser.stress,
-        volume=qe_parser.volume,
-    ).get(output=output)
+    return QEStaticParser(filename=output_file_name).get_output(output=output)
 
 
 @as_task_dict_evaluator

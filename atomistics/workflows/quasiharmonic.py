@@ -1,7 +1,9 @@
 import numpy as np
 
-from atomistics.shared.generic import thermodynamic_output_keys
-from atomistics.shared.output import OutputThermodynamic
+from atomistics.shared.output import (
+    OutputThermodynamic,
+    thermodynamic_output_keys,
+)
 from atomistics.workflows.evcurve.workflow import (
     EnergyVolumeCurveWorkflow,
     fit_ev_curve,
@@ -113,20 +115,13 @@ def get_thermal_properties(
         not quantum_mechanical
     ):  # heat capacity and entropy are not yet implemented for the classical approach.
         output = ["free_energy", "temperatures", "volumes"]
-    qh_thermal = QuasiHarmonicThermalProperties(
+    return QuasiHarmonicThermalProperties(
         temperatures=temperatures,
         thermal_properties_dict=tp_collect_dict,
         strain_lst=strain_lst,
         volumes_lst=volume_lst,
         volumes_selected_lst=vol_lst,
-    )
-    return OutputThermodynamic(
-        temperatures=qh_thermal.temperatures,
-        free_energy=qh_thermal.free_energy,
-        entropy=qh_thermal.entropy,
-        heat_capacity=qh_thermal.heat_capacity,
-        volumes=qh_thermal.volumes,
-    ).get(output=output)
+    ).get_output(output=output)
 
 
 def _get_thermal_properties_quantum_mechanical(
@@ -232,7 +227,7 @@ def _get_thermal_properties_classical(
     return tp_collect_dict
 
 
-class QuasiHarmonicThermalProperties(object):
+class QuasiHarmonicThermalProperties(OutputThermodynamic):
     def __init__(
         self,
         temperatures,

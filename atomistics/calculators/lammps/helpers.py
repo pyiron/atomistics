@@ -5,12 +5,12 @@ import numpy as np
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.lammps.potential import validate_potential_dataframe
-from atomistics.shared.output import OutputMolecularDynamics
-from atomistics.shared.thermal_expansion import get_thermal_expansion_output
-from atomistics.shared.generic import (
+from atomistics.calculators.lammps.output import LammpsOutput
+from atomistics.shared.output import (
     molecular_dynamics_output_keys,
     thermal_expansion_output_keys,
 )
+from atomistics.shared.thermal_expansion import get_thermal_expansion_output
 from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 
 
@@ -51,17 +51,7 @@ def lammps_calc_md_step(
 ):
     run_str_rendered = Template(run_str).render(run=run)
     lmp_instance.interactive_lib_command(run_str_rendered)
-    return OutputMolecularDynamics(
-        positions=lmp_instance.interactive_positions_getter,
-        cell=lmp_instance.interactive_cells_getter,
-        forces=lmp_instance.interactive_forces_getter,
-        temperature=lmp_instance.interactive_temperatures_getter,
-        energy_pot=lmp_instance.interactive_energy_pot_getter,
-        energy_tot=lmp_instance.interactive_energy_tot_getter,
-        pressure=lmp_instance.interactive_pressures_getter,
-        velocities=lmp_instance.interactive_velocities_getter,
-        volume=lmp_instance.interactive_volume_getter,
-    ).get(output=output)
+    return LammpsOutput(lmp=lmp_instance).get_output(output=output)
 
 
 def lammps_calc_md(

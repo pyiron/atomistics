@@ -2,11 +2,11 @@ import numpy as np
 from ase.atoms import Atoms
 from collections import OrderedDict
 
-from atomistics.shared.generic import (
+from atomistics.shared.output import (
+    OutputEnergyVolumeCurve,
     thermodynamic_output_keys,
     energy_volume_curve_output_keys,
 )
-from atomistics.shared.output import OutputEnergyVolumeCurve
 from atomistics.workflows.evcurve.fit import EnergyVolumeFit
 from atomistics.workflows.interface import Workflow
 from atomistics.workflows.evcurve.debye import get_thermal_properties
@@ -98,7 +98,7 @@ def fit_ev_curve(volume_lst, energy_lst, fit_type, fit_order):
     ).fit_dict
 
 
-class EnergyVolumeCurveProperties:
+class EnergyVolumeCurveProperties(OutputEnergyVolumeCurve):
     def __init__(self, fit_module):
         self._fit_module = fit_module
 
@@ -174,7 +174,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         return {"calc_energy": self._structure_dict}
 
     def analyse_structures(self, output_dict, output=energy_volume_curve_output_keys):
-        ev_prop = EnergyVolumeCurveProperties(
+        self.fit_dict = EnergyVolumeCurveProperties(
             fit_module=fit_ev_curve_internal(
                 volume_lst=get_volume_lst(structure_dict=self._structure_dict),
                 energy_lst=get_energy_lst(
@@ -183,16 +183,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
                 fit_type=self.fit_type,
                 fit_order=self.fit_order,
             )
-        )
-        self._fit_dict = OutputEnergyVolumeCurve(
-            fit_dict=ev_prop.fit_dict,
-            energy=ev_prop.energy,
-            volume=ev_prop.volume,
-            b_prime_eq=ev_prop.b_prime_eq,
-            bulkmodul_eq=ev_prop.bulkmodul_eq,
-            energy_eq=ev_prop.energy_eq,
-            volume_eq=ev_prop.volume_eq,
-        ).get(output=output)
+        ).get_output(output=output)
         return self.fit_dict
 
     def get_volume_lst(self):

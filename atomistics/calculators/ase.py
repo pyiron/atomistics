@@ -10,12 +10,13 @@ from typing import TYPE_CHECKING
 
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.wrapper import as_task_dict_evaluator
-from atomistics.shared.generic import (
+from atomistics.shared.output import (
+    OutputStatic,
+    OutputMolecularDynamics,
     static_calculation_output_keys,
     molecular_dynamics_output_keys,
     thermal_expansion_output_keys,
 )
-from atomistics.shared.output import OutputStatic, OutputMolecularDynamics
 from atomistics.shared.thermal_expansion import get_thermal_expansion_output
 from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 
@@ -26,7 +27,7 @@ if TYPE_CHECKING:
     from atomistics.calculators.interface import TaskName
 
 
-class ASEExecutor(object):
+class ASEExecutor(OutputStatic, OutputMolecularDynamics):
     def __init__(self, ase_structure, ase_calculator):
         self.structure = ase_structure
         self.structure.calc = ase_calculator
@@ -108,13 +109,9 @@ def calc_static_with_ase(
     ase_calculator,
     output=static_calculation_output_keys,
 ):
-    ase_exe = ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator)
-    return OutputStatic(
-        forces=ase_exe.forces,
-        energy=ase_exe.energy,
-        stress=ase_exe.stress,
-        volume=ase_exe.volume,
-    ).get(output=output)
+    return ASEExecutor(
+        ase_structure=structure, ase_calculator=ase_calculator
+    ).get_output(output=output)
 
 
 def _calc_md_step_with_ase(
@@ -125,18 +122,9 @@ def _calc_md_step_with_ase(
     cache = {q: [] for q in output}
     for i in range(int(run / thermo)):
         dyn.run(thermo)
-        ase_exe = ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator)
-        calc_dict = OutputMolecularDynamics(
-            positions=ase_exe.positions,
-            cell=ase_exe.cell,
-            forces=ase_exe.forces,
-            temperature=ase_exe.temperature,
-            energy_pot=ase_exe.energy,
-            energy_tot=ase_exe.energy_tot,
-            pressure=ase_exe.pressure,
-            velocities=ase_exe.velocities,
-            volume=ase_exe.volume,
-        ).get(output=output)
+        calc_dict = ASEExecutor(
+            ase_structure=structure, ase_calculator=ase_calculator
+        ).get_output(output=output)
         for k, v in calc_dict.items():
             cache[k].append(v)
     return {q: np.array(cache[q]) for q in output}

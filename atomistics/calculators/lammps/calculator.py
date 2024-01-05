@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.interface import get_quantities_from_tasks
+from atomistics.calculators.lammps.output import LammpsOutput
 from atomistics.calculators.lammps.helpers import (
     lammps_calc_md,
     lammps_run,
@@ -28,8 +29,7 @@ from atomistics.calculators.lammps.commands import (
     LAMMPS_MINIMIZE_VOLUME,
 )
 from atomistics.calculators.wrapper import as_task_dict_evaluator
-from atomistics.shared.output import OutputStatic
-from atomistics.shared.generic import (
+from atomistics.shared.output import (
     static_calculation_output_keys,
     molecular_dynamics_output_keys,
     thermal_expansion_output_keys,
@@ -135,12 +135,7 @@ def calc_static_with_lammps(
         lmp=lmp,
         **kwargs,
     )
-    result_dict = OutputStatic(
-        forces=lmp_instance.interactive_forces_getter,
-        energy=lmp_instance.interactive_energy_pot_getter,
-        stress=lmp_instance.interactive_pressures_getter,
-        volume=lmp_instance.interactive_volume_getter,
-    ).get(output=output)
+    result_dict = LammpsOutput(lmp=lmp_instance).get_output(output=output)
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 

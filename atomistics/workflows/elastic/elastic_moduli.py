@@ -2,6 +2,8 @@ from functools import cache
 
 import numpy as np
 
+from atomistics.shared.output import OutputElastic
+
 
 def get_bulkmodul_voigt(elastic_matrix):
     return (
@@ -121,7 +123,7 @@ def _hill_approximation(voigt, reuss):
     return 0.50 * (voigt + reuss)
 
 
-class ElasticProperties:
+class ElasticProperties(OutputElastic):
     def __init__(self, elastic_matrix):
         self._elastic_matrix = elastic_matrix
 
