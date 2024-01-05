@@ -5,8 +5,8 @@ import numpy as np
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.lammps.potential import validate_potential_dataframe
+from atomistics.shared.output import OutputMolecularDynamics
 from atomistics.shared.thermal_expansion import (
-    OutputMolecularDynamics,
     OutputThermalExpansionProperties,
     ThermalExpansionProperties,
 )
