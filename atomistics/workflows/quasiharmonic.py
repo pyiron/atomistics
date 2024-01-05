@@ -275,7 +275,10 @@ class QuasiHarmonicThermalProperties(object):
 
 
 QuasiHarmonicOutputThermodynamic = OutputThermodynamic(
-    **{k: getattr(QuasiHarmonicThermalProperties, k) for k in OutputThermodynamic.fields()}
+    **{
+        k: getattr(QuasiHarmonicThermalProperties, k)
+        for k in OutputThermodynamic.fields()
+    }
 )
 
 
