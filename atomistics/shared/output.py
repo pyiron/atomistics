@@ -223,7 +223,7 @@ class OutputPhonons(ABC, Output):
 static_calculation_output_keys = OutputStatic.get_keys()
 molecular_dynamics_output_keys = OutputMolecularDynamics.get_keys()
 thermal_expansion_output_keys = OutputThermalExpansion.get_keys()
-thermodynamic_output_keys = OutputMolecularDynamics.get_keys()
+thermodynamic_output_keys = OutputThermodynamic.get_keys()
 energy_volume_curve_output_keys = OutputEnergyVolumeCurve.get_keys()
 elastic_matrix_output_keys = OutputElastic.get_keys()
 phonon_output_keys = OutputPhonons.get_keys()
