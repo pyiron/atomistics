@@ -10,22 +10,22 @@ from atomistics.workflows.elastic.helper import (
 
 
 ElasticMatrixOutputElastic = OutputElastic(
-    elastic_matrix=ElasticProperties.get_elastic_matrix,
-    elastic_matrix_inverse=ElasticProperties.get_elastic_matrix_inverse,
-    bulkmodul_voigt=ElasticProperties.get_bulkmodul_voigt,
-    bulkmodul_reuss=ElasticProperties.get_bulkmodul_reuss,
-    bulkmodul_hill=ElasticProperties.get_bulkmodul_hill,
-    shearmodul_voigt=ElasticProperties.get_shearmodul_voigt,
-    shearmodul_reuss=ElasticProperties.get_shearmodul_reuss,
-    shearmodul_hill=ElasticProperties.get_shearmodul_hill,
-    youngsmodul_voigt=ElasticProperties.get_youngsmodul_voigt,
-    youngsmodul_reuss=ElasticProperties.get_youngsmodul_reuss,
-    youngsmodul_hill=ElasticProperties.get_youngsmodul_hill,
-    poissonsratio_voigt=ElasticProperties.get_poissonsratio_voigt,
-    poissonsratio_reuss=ElasticProperties.get_poissonsratio_reuss,
-    poissonsratio_hill=ElasticProperties.get_poissonratio_hill,
-    AVR=ElasticProperties.get_AVR,
-    elastic_matrix_eigval=ElasticProperties.get_elastic_matrix_eigval,
+    elastic_matrix=ElasticProperties.elastic_matrix,
+    elastic_matrix_inverse=ElasticProperties.elastic_matrix_inverse,
+    bulkmodul_voigt=ElasticProperties.bulkmodul_voigt,
+    bulkmodul_reuss=ElasticProperties.bulkmodul_reuss,
+    bulkmodul_hill=ElasticProperties.bulkmodul_hill,
+    shearmodul_voigt=ElasticProperties.shearmodul_voigt,
+    shearmodul_reuss=ElasticProperties.shearmodul_reuss,
+    shearmodul_hill=ElasticProperties.shearmodul_hill,
+    youngsmodul_voigt=ElasticProperties.youngsmodul_voigt,
+    youngsmodul_reuss=ElasticProperties.youngsmodul_reuss,
+    youngsmodul_hill=ElasticProperties.youngsmodul_hill,
+    poissonsratio_voigt=ElasticProperties.poissonsratio_voigt,
+    poissonsratio_reuss=ElasticProperties.poissonsratio_reuss,
+    poissonsratio_hill=ElasticProperties.poissonsratio_hill,
+    AVR=ElasticProperties.AVR,
+    elastic_matrix_eigval=ElasticProperties.elastic_matrix_eigval,
 )
 
 

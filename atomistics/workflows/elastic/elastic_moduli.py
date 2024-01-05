@@ -1,3 +1,5 @@
+from functools import cache
+
 import numpy as np
 
 
@@ -122,109 +124,93 @@ def _hill_approximation(voigt, reuss):
 class ElasticProperties:
     def __init__(self, elastic_matrix):
         self._elastic_matrix = elastic_matrix
-        self._elastic_matrix_inverse = None
-        self._bulkmodul_voigt = None
-        self._shearmodul_voigt = None
-        self._bulkmodul_reuss = None
-        self._shearmodul_reuss = None
-        self._bulkmodul_hill = None
-        self._shearmodul_hill = None
 
-    def get_elastic_matrix(self):
+    def elastic_matrix(self):
         return self._elastic_matrix
 
-    def get_elastic_matrix_inverse(self):
-        if self._elastic_matrix_inverse is None:
-            self._elastic_matrix_inverse = get_elastic_matrix_inverse(
-                elastic_matrix=self._elastic_matrix
-            )
-        return self._elastic_matrix_inverse
+    @cache
+    def elastic_matrix_inverse(self):
+        return get_elastic_matrix_inverse(elastic_matrix=self.elastic_matrix())
 
-    def get_bulkmodul_voigt(self):
-        if self._bulkmodul_voigt is None:
-            self._bulkmodul_voigt = get_bulkmodul_voigt(
-                elastic_matrix=self._elastic_matrix
-            )
-        return self._bulkmodul_voigt
+    @cache
+    def bulkmodul_voigt(self):
+        return get_bulkmodul_voigt(elastic_matrix=self.elastic_matrix())
 
-    def get_shearmodul_voigt(self):
-        if self._shearmodul_voigt is None:
-            self._shearmodul_voigt = get_shearmodul_voigt(
-                elastic_matrix=self._elastic_matrix
-            )
-        return self._shearmodul_voigt
+    @cache
+    def shearmodul_voigt(self):
+        return get_shearmodul_voigt(elastic_matrix=self.elastic_matrix())
 
-    def get_bulkmodul_reuss(self):
-        if self._bulkmodul_reuss is None:
-            self._bulkmodul_reuss = get_bulkmodul_reuss(
-                elastic_matrix_inverse=self.get_elastic_matrix_inverse()
-            )
-        return self._bulkmodul_reuss
+    @cache
+    def bulkmodul_reuss(self):
+        return get_bulkmodul_reuss(elastic_matrix_inverse=self.elastic_matrix_inverse())
 
-    def get_shearmodul_reuss(self):
-        if self._shearmodul_reuss is None:
-            self._shearmodul_reuss = get_shearmodul_reuss(
-                elastic_matrix_inverse=self.get_elastic_matrix_inverse()
-            )
-        return self._shearmodul_reuss
+    @cache
+    def shearmodul_reuss(self):
+        return get_shearmodul_reuss(
+            elastic_matrix_inverse=self.elastic_matrix_inverse()
+        )
 
-    def get_bulkmodul_hill(self):
-        if self._bulkmodul_hill is None:
-            self._bulkmodul_hill = get_bulkmodul_hill(
-                bulkmodul_voigt=self.get_bulkmodul_voigt(),
-                bulkmodul_reuss=self.get_bulkmodul_reuss(),
-            )
-        return self._bulkmodul_hill
+    @cache
+    def bulkmodul_hill(self):
+        return get_bulkmodul_hill(
+            bulkmodul_voigt=self.bulkmodul_voigt(),
+            bulkmodul_reuss=self.bulkmodul_reuss(),
+        )
 
-    def get_shearmodul_hill(self):
-        if self._shearmodul_hill is None:
-            self._shearmodul_hill = get_shearmodul_hill(
-                shearmodul_voigt=self.get_shearmodul_voigt(),
-                shearmodul_reuss=self.get_shearmodul_reuss(),
-            )
-        return self._shearmodul_hill
+    @cache
+    def shearmodul_hill(self):
+        return get_shearmodul_hill(
+            shearmodul_voigt=self.shearmodul_voigt(),
+            shearmodul_reuss=self.shearmodul_reuss(),
+        )
 
-    def get_youngsmodul_voigt(self):
+    @cache
+    def youngsmodul_voigt(self):
         return get_youngsmodul_voigt(
-            bulkmodul_voigt=self.get_bulkmodul_voigt(),
-            shearmodul_voigt=self.get_shearmodul_voigt(),
+            bulkmodul_voigt=self.bulkmodul_voigt(),
+            shearmodul_voigt=self.shearmodul_voigt(),
         )
 
-    def get_poissonsratio_voigt(self):
+    @cache
+    def poissonsratio_voigt(self):
         return get_poissonsratio_voigt(
-            bulkmodul_voigt=self.get_bulkmodul_voigt(),
-            shearmodul_voigt=self.get_shearmodul_voigt(),
+            bulkmodul_voigt=self.bulkmodul_voigt(),
+            shearmodul_voigt=self.shearmodul_voigt(),
         )
 
-    def get_youngsmodul_reuss(self):
+    @cache
+    def youngsmodul_reuss(self):
         return get_youngsmodul_reuss(
-            bulkmodul_reuss=self.get_bulkmodul_reuss(),
-            shearmodul_reuss=self.get_shearmodul_reuss(),
+            bulkmodul_reuss=self.bulkmodul_reuss(),
+            shearmodul_reuss=self.shearmodul_reuss(),
         )
 
-    def get_poissonsratio_reuss(self):
+    @cache
+    def poissonsratio_reuss(self):
         return get_poissonsratio_reuss(
-            bulkmodul_reuss=self.get_bulkmodul_reuss(),
-            shearmodul_reuss=self.get_shearmodul_reuss(),
+            bulkmodul_reuss=self.bulkmodul_reuss(),
+            shearmodul_reuss=self.shearmodul_reuss(),
         )
 
-    def get_youngsmodul_hill(self):
+    @cache
+    def youngsmodul_hill(self):
         return get_youngsmodul_hill(
-            bulkmodul_hill=self.get_bulkmodul_hill(),
-            shearmodul_hill=self.get_shearmodul_hill(),
+            bulkmodul_hill=self.bulkmodul_hill(), shearmodul_hill=self.shearmodul_hill()
         )
 
-    def get_poissonratio_hill(self):
+    @cache
+    def poissonsratio_hill(self):
         return get_poissonsratio_hill(
-            bulkmodul_hill=self.get_bulkmodul_hill(),
-            shearmodul_hill=self.get_shearmodul_hill(),
+            bulkmodul_hill=self.bulkmodul_hill(), shearmodul_hill=self.shearmodul_hill()
         )
 
-    def get_AVR(self):
+    @cache
+    def AVR(self):
         return get_AVR(
-            shearmodul_voigt=self.get_shearmodul_voigt(),
-            shearmodul_reuss=self.get_shearmodul_reuss(),
+            shearmodul_voigt=self.shearmodul_voigt(),
+            shearmodul_reuss=self.shearmodul_reuss(),
         )
 
-    def get_elastic_matrix_eigval(self):
-        return get_elastic_matrix_eigval(elastic_matrix=self._elastic_matrix)
+    @cache
+    def elastic_matrix_eigval(self):
+        return get_elastic_matrix_eigval(elastic_matrix=self.elastic_matrix())
