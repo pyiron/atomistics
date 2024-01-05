@@ -13,58 +13,55 @@ from atomistics.shared.generic import (
 
 @dataclasses.dataclass
 class Output:
-    @classmethod
-    def fields(cls):
-        return tuple(field.name for field in dataclasses.fields(cls))
-
     def get(self, engine, *output: str) -> dict:
         return {q: getattr(self, q)(engine) for q in output}
 
 
-OutputStatic = dataclasses.make_dataclass(
+def make_output_dataclass(cls_name, output_keys):
+    return dataclasses.make_dataclass(
+    cls_name=cls_name,
+    fields=[(key, callable) for key in output_keys],
+    bases=(Output, ),
+)
+
+
+OutputStatic = make_output_dataclass(
     cls_name="OutputStatic",
-    fields=[(key, callable) for key in static_calculation_output_keys],
-    bases=(Output, )
+    output_keys=static_calculation_output_keys
 )
 
 
-OutputMolecularDynamics = dataclasses.make_dataclass(
+OutputMolecularDynamics = make_output_dataclass(
     cls_name="OutputMolecularDynamics",
-    fields=[(key, callable) for key in molecular_dynamics_output_keys],
-    bases=(Output, )
+    output_keys=molecular_dynamics_output_keys,
 )
 
 
-OutputThermalExpansion = dataclasses.make_dataclass(
+OutputThermalExpansion = make_output_dataclass(
     cls_name="OutputThermalExpansion",
-    fields=[(key, callable) for key in thermal_expansion_output_keys],
-    bases=(Output, )
+    output_keys=thermal_expansion_output_keys,
 )
 
 
-OutputThermodynamic = dataclasses.make_dataclass(
+OutputThermodynamic = make_output_dataclass(
     cls_name="OutputThermodynamic",
-    fields=[(key, callable) for key in thermodynamic_output_keys],
-    bases=(Output, )
+    output_keys=thermodynamic_output_keys,
 )
 
 
-OutputEnergyVolumeCurve = dataclasses.make_dataclass(
+OutputEnergyVolumeCurve = make_output_dataclass(
     cls_name="OutputEnergyVolumeCurve",
-    fields=[(key, callable) for key in energy_volume_curve_output_keys],
-    bases=(Output, )
+    output_keys=energy_volume_curve_output_keys,
 )
 
 
-OutputElastic = dataclasses.make_dataclass(
+OutputElastic = make_output_dataclass(
     cls_name="OutputElastic",
-    fields=[(key, callable) for key in elastic_matrix_output_keys],
-    bases=(Output, )
+    output_keys=elastic_matrix_output_keys,
 )
 
 
-OutputPhonons = dataclasses.make_dataclass(
+OutputPhonons = make_output_dataclass(
     cls_name="OutputPhonons",
-    fields=[(key, callable) for key in phonon_output_keys],
-    bases=(Output, )
+    output_keys=phonon_output_keys,
 )
