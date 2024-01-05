@@ -16,9 +16,7 @@ def make_output_dataclass(cls_name, output_keys):
         cls_name=cls_name,
         fields=[(key, callable) for key in output_keys],
         namespace={
-            "get": lambda self, engine, *output: {
-                q: getattr(self, q)(engine) for q in output
-            }
+            "get": lambda self, *output: {q: getattr(self, q)() for q in output}
         },
     )
 

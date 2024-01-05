@@ -208,12 +208,13 @@ def calc_static_with_qe(
     call_qe_via_ase_command(
         calculation_name=calculation_name, working_directory=working_directory
     )
+    qe_parser = QEStaticParser(filename=output_file_name)
     return OutputStatic(
-        forces=QEStaticParser.get_forces,
-        energy=QEStaticParser.get_energy,
-        stress=QEStaticParser.get_stress,
-        volume=QEStaticParser.get_volume,
-    ).get(QEStaticParser(filename=output_file_name), *output)
+        forces=qe_parser.get_forces,
+        energy=qe_parser.get_energy,
+        stress=qe_parser.get_stress,
+        volume=qe_parser.get_volume,
+    ).get(*output)
 
 
 @as_task_dict_evaluator

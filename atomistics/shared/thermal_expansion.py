@@ -13,7 +13,11 @@ class ThermalExpansionProperties:
         return self._temperatures_lst
 
 
-OutputThermalExpansionProperties = OutputThermalExpansion(
-    temperatures=ThermalExpansionProperties.get_temperatures,
-    volumes=ThermalExpansionProperties.get_volumes,
-)
+def get_thermal_expansion_output(temperatures_lst, volumes_lst, output):
+    thermal_properties = ThermalExpansionProperties(
+        temperatures_lst=temperatures_lst, volumes_lst=volumes_lst
+    )
+    return OutputThermalExpansion(
+        temperatures=thermal_properties.get_temperatures,
+        volumes=thermal_properties.get_volumes,
+    ).get(*output)

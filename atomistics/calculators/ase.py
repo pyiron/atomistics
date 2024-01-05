@@ -16,10 +16,7 @@ from atomistics.shared.generic import (
     thermal_expansion_output_keys,
 )
 from atomistics.shared.output import OutputStatic, OutputMolecularDynamics
-from atomistics.shared.thermal_expansion import (
-    OutputThermalExpansionProperties,
-    ThermalExpansionProperties,
-)
+from atomistics.shared.thermal_expansion import get_thermal_expansion_output
 from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 
 if TYPE_CHECKING:
@@ -105,37 +102,35 @@ def calc_static_with_ase(
     ase_calculator,
     output=static_calculation_output_keys,
 ):
+    ase_exe = ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator)
     return OutputStatic(
-        forces=ASEExecutor.get_forces,
-        energy=ASEExecutor.get_energy,
-        stress=ASEExecutor.get_stress,
-        volume=ASEExecutor.get_volume,
-    ).get(ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator), *output)
+        forces=ase_exe.get_forces,
+        energy=ase_exe.get_energy,
+        stress=ase_exe.get_stress,
+        volume=ase_exe.get_volume,
+    ).get(*output)
 
 
 def _calc_md_step_with_ase(
     dyn, structure, ase_calculator, temperature, run, thermo, output
 ):
     structure.calc = ase_calculator
-    ASEOutputMolecularDynamics = OutputMolecularDynamics(
-        positions=ASEExecutor.get_positions,
-        cell=ASEExecutor.get_cell,
-        forces=ASEExecutor.get_forces,
-        temperature=ASEExecutor.get_temperature,
-        energy_pot=ASEExecutor.get_energy,
-        energy_tot=ASEExecutor.get_total_energy,
-        pressure=ASEExecutor.get_stress,
-        velocities=ASEExecutor.get_velocities,
-        volume=ASEExecutor.get_volume,
-    )
     MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
     cache = {q: [] for q in output}
     for i in range(int(run / thermo)):
         dyn.run(thermo)
-        calc_dict = ASEOutputMolecularDynamics.get(
-            ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator),
-            *output,
-        )
+        ase_exe = ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator)
+        calc_dict = OutputMolecularDynamics(
+            positions=ase_exe.get_positions,
+            cell=ase_exe.get_cell,
+            forces=ase_exe.get_forces,
+            temperature=ase_exe.get_temperature,
+            energy_pot=ase_exe.get_energy,
+            energy_tot=ase_exe.get_total_energy,
+            pressure=ase_exe.get_stress,
+            velocities=ase_exe.get_velocities,
+            volume=ase_exe.get_volume,
+        ).get(*output)
         for k, v in calc_dict.items():
             cache[k].append(v)
     return {q: np.array(cache[q]) for q in output}
@@ -257,9 +252,6 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
         structure_current.set_cell(cell=result_dict["cell"][-1], scale_atoms=True)
         temperature_md_lst.append(result_dict["temperature"][-1])
         volume_md_lst.append(result_dict["volume"][-1])
-    return OutputThermalExpansionProperties.get(
-        ThermalExpansionProperties(
-            temperatures_lst=temperature_md_lst, volumes_lst=volume_md_lst
-        ),
-        *output,
+    return get_thermal_expansion_output(
+        temperatures_lst=temperature_md_lst, volumes_lst=volume_md_lst, output=output
     )

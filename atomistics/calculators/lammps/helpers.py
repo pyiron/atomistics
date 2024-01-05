@@ -6,10 +6,7 @@ from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.lammps.potential import validate_potential_dataframe
 from atomistics.shared.output import OutputMolecularDynamics
-from atomistics.shared.thermal_expansion import (
-    OutputThermalExpansionProperties,
-    ThermalExpansionProperties,
-)
+from atomistics.shared.thermal_expansion import get_thermal_expansion_output
 from atomistics.shared.generic import (
     molecular_dynamics_output_keys,
     thermal_expansion_output_keys,
@@ -55,16 +52,16 @@ def lammps_calc_md_step(
     run_str_rendered = Template(run_str).render(run=run)
     lmp_instance.interactive_lib_command(run_str_rendered)
     return OutputMolecularDynamics(
-        positions=LammpsASELibrary.interactive_positions_getter,
-        cell=LammpsASELibrary.interactive_cells_getter,
-        forces=LammpsASELibrary.interactive_forces_getter,
-        temperature=LammpsASELibrary.interactive_temperatures_getter,
-        energy_pot=LammpsASELibrary.interactive_energy_pot_getter,
-        energy_tot=LammpsASELibrary.interactive_energy_tot_getter,
-        pressure=LammpsASELibrary.interactive_pressures_getter,
-        velocities=LammpsASELibrary.interactive_velocities_getter,
-        volume=LammpsASELibrary.interactive_volume_getter,
-    ).get(lmp_instance, *output)
+        positions=lmp_instance.interactive_positions_getter,
+        cell=lmp_instance.interactive_cells_getter,
+        forces=lmp_instance.interactive_forces_getter,
+        temperature=lmp_instance.interactive_temperatures_getter,
+        energy_pot=lmp_instance.interactive_energy_pot_getter,
+        energy_tot=lmp_instance.interactive_energy_tot_getter,
+        pressure=lmp_instance.interactive_pressures_getter,
+        velocities=lmp_instance.interactive_velocities_getter,
+        volume=lmp_instance.interactive_volume_getter,
+    ).get(*output)
 
 
 def lammps_calc_md(
@@ -135,11 +132,8 @@ def lammps_thermal_expansion_loop(
         volume_md_lst.append(lmp_instance.interactive_volume_getter())
         temperature_md_lst.append(lmp_instance.interactive_temperatures_getter())
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
-    return OutputThermalExpansionProperties.get(
-        ThermalExpansionProperties(
-            temperatures_lst=temperature_md_lst, volumes_lst=volume_md_lst
-        ),
-        *output,
+    return get_thermal_expansion_output(
+        temperatures_lst=temperature_md_lst, volumes_lst=volume_md_lst, output=output
     )
 
 

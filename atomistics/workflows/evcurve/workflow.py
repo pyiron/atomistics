@@ -174,27 +174,25 @@ class EnergyVolumeCurveWorkflow(Workflow):
         return {"calc_energy": self._structure_dict}
 
     def analyse_structures(self, output_dict, output=energy_volume_curve_output_keys):
-        self._fit_dict = OutputEnergyVolumeCurve(
-            fit_dict=EnergyVolumeCurveProperties.get_fit_dict,
-            energy=EnergyVolumeCurveProperties.get_energies,
-            volume=EnergyVolumeCurveProperties.get_volumes,
-            b_prime_eq=EnergyVolumeCurveProperties.get_bulkmodul_pressure_derivative_eq,
-            bulkmodul_eq=EnergyVolumeCurveProperties.get_bulkmodul_eq,
-            energy_eq=EnergyVolumeCurveProperties.get_energy_eq,
-            volume_eq=EnergyVolumeCurveProperties.get_volume_eq,
-        ).get(
-            EnergyVolumeCurveProperties(
-                fit_module=fit_ev_curve_internal(
-                    volume_lst=get_volume_lst(structure_dict=self._structure_dict),
-                    energy_lst=get_energy_lst(
-                        output_dict=output_dict, structure_dict=self._structure_dict
-                    ),
-                    fit_type=self.fit_type,
-                    fit_order=self.fit_order,
-                )
-            ),
-            *output,
+        ev_prop = EnergyVolumeCurveProperties(
+            fit_module=fit_ev_curve_internal(
+                volume_lst=get_volume_lst(structure_dict=self._structure_dict),
+                energy_lst=get_energy_lst(
+                    output_dict=output_dict, structure_dict=self._structure_dict
+                ),
+                fit_type=self.fit_type,
+                fit_order=self.fit_order,
+            )
         )
+        self._fit_dict = OutputEnergyVolumeCurve(
+            fit_dict=ev_prop.get_fit_dict,
+            energy=ev_prop.get_energies,
+            volume=ev_prop.get_volumes,
+            b_prime_eq=ev_prop.get_bulkmodul_pressure_derivative_eq,
+            bulkmodul_eq=ev_prop.get_bulkmodul_eq,
+            energy_eq=ev_prop.get_energy_eq,
+            volume_eq=ev_prop.get_volume_eq,
+        ).get(*output)
         return self.fit_dict
 
     def get_volume_lst(self):

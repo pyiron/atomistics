@@ -230,22 +230,20 @@ def get_thermal_properties(
     num_steps=50,
     output=thermodynamic_output_keys,
 ):
-    return OutputThermodynamic(
-        temperatures=DebyeThermalProperties.get_temperatures,
-        free_energy=DebyeThermalProperties.get_free_energy,
-        entropy=DebyeThermalProperties.get_entropy,
-        heat_capacity=DebyeThermalProperties.get_heat_capacity,
-        volumes=DebyeThermalProperties.get_volumes,
-    ).get(
-        DebyeThermalProperties(
-            fit_dict=fit_dict,
-            masses=masses,
-            t_min=t_min,
-            t_max=t_max,
-            t_step=t_step,
-            temperatures=temperatures,
-            constant_volume=constant_volume,
-            num_steps=num_steps,
-        ),
-        *output,
+    debye_thermal = DebyeThermalProperties(
+        fit_dict=fit_dict,
+        masses=masses,
+        t_min=t_min,
+        t_max=t_max,
+        t_step=t_step,
+        temperatures=temperatures,
+        constant_volume=constant_volume,
+        num_steps=num_steps,
     )
+    return OutputThermodynamic(
+        temperatures=debye_thermal.get_temperatures,
+        free_energy=debye_thermal.get_free_energy,
+        entropy=debye_thermal.get_entropy,
+        heat_capacity=debye_thermal.get_heat_capacity,
+        volumes=debye_thermal.get_volumes,
+    ).get(*output)

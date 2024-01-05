@@ -113,22 +113,20 @@ def get_thermal_properties(
         not quantum_mechanical
     ):  # heat capacity and entropy are not yet implemented for the classical approach.
         output = ["free_energy", "temperatures", "volumes"]
-    return OutputThermodynamic(
-        temperatures=QuasiHarmonicThermalProperties.get_temperatures,
-        free_energy=QuasiHarmonicThermalProperties.get_free_energy,
-        entropy=QuasiHarmonicThermalProperties.get_entropy,
-        heat_capacity=QuasiHarmonicThermalProperties.get_heat_capacity,
-        volumes=QuasiHarmonicThermalProperties.get_volumes,
-    ).get(
-        QuasiHarmonicThermalProperties(
-            temperatures=temperatures,
-            thermal_properties_dict=tp_collect_dict,
-            strain_lst=strain_lst,
-            volumes_lst=volume_lst,
-            volumes_selected_lst=vol_lst,
-        ),
-        *output,
+    qh_thermal = QuasiHarmonicThermalProperties(
+        temperatures=temperatures,
+        thermal_properties_dict=tp_collect_dict,
+        strain_lst=strain_lst,
+        volumes_lst=volume_lst,
+        volumes_selected_lst=vol_lst,
     )
+    return OutputThermodynamic(
+        temperatures=qh_thermal.get_temperatures,
+        free_energy=qh_thermal.get_free_energy,
+        entropy=qh_thermal.get_entropy,
+        heat_capacity=qh_thermal.get_heat_capacity,
+        volumes=qh_thermal.get_volumes,
+    ).get(*output)
 
 
 def _get_thermal_properties_quantum_mechanical(

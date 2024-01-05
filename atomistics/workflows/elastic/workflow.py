@@ -62,6 +62,7 @@ class ElasticMatrixWorkflow(Workflow):
         self._data["strain_energy"] = strain_energy
         self._data["e0"] = ene0
         self._data["A2"] = A2
+        elastic_prop = ElasticProperties(elastic_matrix=elastic_matrix)
         return OutputElastic(
-            **{k: getattr(ElasticProperties, k) for k in elastic_matrix_output_keys}
-        ).get(ElasticProperties(elastic_matrix=elastic_matrix), *output)
+            **{k: getattr(elastic_prop, k) for k in elastic_matrix_output_keys}
+        ).get(*output)
