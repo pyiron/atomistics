@@ -417,32 +417,3 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             quantum_mechanical=quantum_mechanical,
             output=OutputThermodynamic.fields(),
         )
-
-    def get_thermal_expansion(
-        self,
-        output_dict,
-        t_min=1,
-        t_max=1500,
-        t_step=50,
-        temperatures=None,
-        cutoff_frequency=None,
-        pretend_real=False,
-        band_indices=None,
-        is_projection=False,
-        quantum_mechanical=True,
-    ):
-        if self._eng_internal_dict is None:
-            self.analyse_structures(output_dict=output_dict)
-        tp_collect_dict = self.get_thermal_properties(
-            t_min=t_min,
-            t_max=t_max,
-            t_step=t_step,
-            temperatures=temperatures,
-            cutoff_frequency=cutoff_frequency,
-            pretend_real=pretend_real,
-            band_indices=band_indices,
-            is_projection=is_projection,
-            quantum_mechanical=quantum_mechanical,
-            output=["free_energy", "temperatures", "volumes"],
-        )
-        return tp_collect_dict["temperatures"], tp_collect_dict["volumes"]
