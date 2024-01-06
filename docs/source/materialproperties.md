@@ -379,10 +379,12 @@ particular the derived equilibrium properties are the input for the Debye model 
 ```
 import numpy as np
 
-temperatures_ev, volume_ev = workflow_ev.get_thermal_expansion(
-    output_dict=result_dict, 
+workflow_ev.analyse_structures(output_dict=result_dict)
+thermal_properties_dict = workflow_ev.get_thermal_properties(
     temperatures=np.arange(1, 1500, 50),
+    output=["temperatures", "volumes"],
 )
+temperatures_ev, volume_ev = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
 ```
 The output of the Debye model provides the change of the temperature specific optimal volume `volume_ev` which can be 
 plotted over the temperature `temperatures_ev` to determine the thermal expansion. 
@@ -451,24 +453,28 @@ result_dict = evaluate_with_lammps(
 ```
 The `structure_dict` is evaluated with the [LAMMPS](https://www.lammps.org/) molecular dynamics simulation code to 
 calculate the corresponding energies and forces. The output is not plotted here as the forces for the 108 atom cells 
-result in 3x108 outputs per cell. Still the structure of the `result_dict` again follows the labels of the `structure_dict`
-as explained before. Finally, in the third step the individual free energy curves at the different temperatures are 
-fitted to determine the equilibrium volume at the given temperature using the `get_thermal_expansion()` function: 
+result in 3x108 outputs per cell. Still the structure of the `result_dict` again follows the labels of the 
+`structure_dict` as explained before. Finally, in the third step the individual free energy curves at the different 
+temperatures are fitted to determine the equilibrium volume at the given temperature using the `analyse_structures()` 
+and `get_thermal_properties()` functions:
 ```
-temperatures_qh_qm, volume_qh_qm = workflow_qh.get_thermal_expansion(
-    output_dict=result_dict, 
+workflow_qh.analyse_structures(output_dict=result_dict)
+thermal_properties_dict_qm = workflow_qh.get_thermal_properties(
     temperatures=np.arange(1, 1500, 50),
-    quantum_mechanical=True,
+    output=["temperatures", "volumes"],
+    quantum_mechanical=True
 )
+temperatures_qh_qm, volume_qh_qm = thermal_properties_dict_qm["temperatures"], thermal_properties_dict_qm["volumes"]
 ```
 The optimal volume at the different `temperatures` is stored in the `volume_qh_qm` in analogy to the previous section. 
 Here the extension `_qm` indicates that the quantum-mechanical harmonic oszillator is used. 
 ```
-temperatures_qh_cl, volume_qh_cl = workflow_qh.get_thermal_expansion(
-    output_dict=result_dict, 
+thermal_properties_dict_cl = workflow_qh.get_thermal_properties(
     temperatures=np.arange(1, 1500, 50),
+    output=["temperatures", "volumes"],
     quantum_mechanical=False,
 )
+temperatures_qh_cl, volume_qh_cl = thermal_properties_dict_cl["temperatures"], thermal_properties_dict_cl["volumes"]
 ```
 For the classical harmonic oszillator the resulting volumes are stored as `volume_qh_cl`. 
 

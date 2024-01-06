@@ -30,7 +30,11 @@ class TestEvCurve(unittest.TestCase):
         task_dict = workflow.generate_structures()
         result_dict = evaluate_with_ase(task_dict=task_dict, ase_calculator=EMT())
         fit_dict = workflow.analyse_structures(output_dict=result_dict)
-        temperatures_ev, volumes_ev = workflow.get_thermal_expansion(output_dict=result_dict, temperatures=[100, 1000])
+        thermal_properties_dict = workflow.get_thermal_properties(
+            temperatures=[100, 1000],
+            output=["temperatures", "volumes"]
+        )
+        temperatures_ev, volumes_ev = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
         self.assertTrue(np.isclose(fit_dict['volume_eq'], 63.72747170239313))
         self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 39.51954433668759))
         self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 2.148388436768747))
