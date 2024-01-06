@@ -69,16 +69,18 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue(tp_collect_dict["volumes"][-1] > 68.5)
         self.assertTrue(tp_collect_dict["volumes"][0] < 66.8)
         self.assertTrue(tp_collect_dict["volumes"][0] > 66.7)
-        temperatures_qh_qm, volumes_qh_qm = workflow.get_thermal_expansion(
-            output_dict=result_dict,
+        thermal_properties_dict = workflow.get_thermal_properties(
             temperatures=[100, 1000],
+            output=["temperatures", "volumes"],
             quantum_mechanical=True
         )
-        temperatures_qh_cl, volumes_qh_cl = workflow.get_thermal_expansion(
-            output_dict=result_dict,
+        temperatures_qh_qm, volumes_qh_qm = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
+        thermal_properties_dict = workflow.get_thermal_properties(
             temperatures=[100, 1000],
+            output=["temperatures", "volumes"],
             quantum_mechanical=False
         )
+        temperatures_qh_cl, volumes_qh_cl = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
         self.assertEqual(len(eng_internal_dict.keys()), 11)
         self.assertEqual(len(tp_collect_dict.keys()), 5)
         self.assertEqual(len(temperatures_qh_qm), 2)

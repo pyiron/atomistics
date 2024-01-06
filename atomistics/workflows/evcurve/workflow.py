@@ -190,25 +190,6 @@ class EnergyVolumeCurveWorkflow(Workflow):
     def get_volume_lst(self):
         return get_volume_lst(structure_dict=self._structure_dict)
 
-    def get_thermal_expansion(
-        self, output_dict, t_min=1, t_max=1500, t_step=50, temperatures=None
-    ):
-        self.analyse_structures(output_dict=output_dict)
-        thermal_properties_dict = get_thermal_properties(
-            fit_dict=self.fit_dict,
-            masses=self.structure.get_masses(),
-            t_min=t_min,
-            t_max=t_max,
-            t_step=t_step,
-            temperatures=temperatures,
-            constant_volume=False,
-            output_keys=["temperatures", "volumes"],
-        )
-        return (
-            thermal_properties_dict["temperatures"],
-            thermal_properties_dict["volumes"],
-        )
-
     def get_thermal_properties(
         self,
         t_min=1,

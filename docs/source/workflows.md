@@ -103,13 +103,15 @@ print(tp_dict)
 ```
 Or alternatively directly calculate the thermal expansion:
 ```
-temperatures, volumes = workflow.get_thermal_expansion(
-    output_dict=result_dict, 
+thermal_properties_dict = workflow.get_thermal_properties(
     t_min=1, 
     t_max=1500, 
     t_step=50, 
     temperatures=None,
+    constant_volume=False,
+    output=["temperatures", "volumes"],
 )
+temperatures, volumes = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
 ```
 The [Moruzzi, V. L. et al.](https://link.aps.org/doi/10.1103/PhysRevB.37.790)  model is a quantum mechanical approximation, so the equilibrium volume at 0K is not
 the same as the equilibrium volume calculated by fitting the equation of state. 
@@ -627,8 +629,7 @@ the quantum mechanical harmonic oscillator is used to calculate the free energy.
 
 And finally also the thermal expansion can be calculated:
 ```
-temperatures, volumes = workflow.get_thermal_expansion(
-    output_dict=result_dict, 
+tp_dict = workflow.get_thermal_properties(
     t_min=1, 
     t_max=1500, 
     t_step=50, 
@@ -638,7 +639,9 @@ temperatures, volumes = workflow.get_thermal_expansion(
     band_indices=None,
     is_projection=False,
     quantum_mechanical=True,
+    output=["temperatures", "volumes"],
 )
+temperatures, volumes = tp_dict["temperatures"], tp_dict["volumes"]
 ```
 
 ## Structure Optimization 
