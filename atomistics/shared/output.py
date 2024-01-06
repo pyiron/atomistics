@@ -11,7 +11,7 @@ class Output:
             [
                 k
                 for k in cls.__dict__.keys()
-                if k[0] != "_" and k not in ["get_output", "get_keys"]
+                if k[0] != "_" and k not in ["get_output", "keys"]
             ]
         )
 
