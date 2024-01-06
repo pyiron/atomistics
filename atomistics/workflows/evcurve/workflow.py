@@ -173,7 +173,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         return {"calc_energy": self._structure_dict}
 
     def analyse_structures(
-        self, output_dict, output=OutputEnergyVolumeCurve.get_keys()
+        self, output_dict, output_keys=OutputEnergyVolumeCurve.keys()
     ):
         self._fit_dict = EnergyVolumeCurveProperties(
             fit_module=fit_ev_curve_internal(
@@ -184,7 +184,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
                 fit_type=self.fit_type,
                 fit_order=self.fit_order,
             )
-        ).get_output(output=output)
+        ).get_output(output_keys=output_keys)
         return self.fit_dict
 
     def get_volume_lst(self):
@@ -202,7 +202,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
             t_step=t_step,
             temperatures=temperatures,
             constant_volume=False,
-            output=["temperatures", "volumes"],
+            output_keys=["temperatures", "volumes"],
         )
         return (
             thermal_properties_dict["temperatures"],
@@ -216,7 +216,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         t_step=50,
         temperatures=None,
         constant_volume=False,
-        output=OutputThermodynamic.get_keys(),
+        output_keys=OutputThermodynamic.keys(),
     ):
         return get_thermal_properties(
             fit_dict=self.fit_dict,
@@ -226,5 +226,5 @@ class EnergyVolumeCurveWorkflow(Workflow):
             t_step=t_step,
             temperatures=temperatures,
             constant_volume=constant_volume,
-            output=output,
+            output_keys=output_keys,
         )

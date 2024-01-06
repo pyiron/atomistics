@@ -71,7 +71,7 @@ class TestLammpsMD(unittest.TestCase):
             seed=4928459,
             dist="gaussian",
             lmp=None,
-            output=("temperature",),
+            output_keys=("temperature",),
         )
         self.assertEqual(len(result_dict.keys()), 1)
         self.assertEqual(result_dict["temperature"].shape, (10, ))

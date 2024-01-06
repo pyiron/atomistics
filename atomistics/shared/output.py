@@ -2,11 +2,11 @@ from abc import ABC, abstractmethod
 
 
 class Output:
-    def get_output(self, output):
-        return {q: getattr(self, q)() for q in output}
+    def get_output(self, output_keys):
+        return {q: getattr(self, q)() for q in output_keys}
 
     @classmethod
-    def get_keys(cls):
+    def keys(cls):
         return tuple(
             [
                 k

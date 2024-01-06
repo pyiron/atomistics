@@ -39,12 +39,12 @@ class ElasticMatrixWorkflow(Workflow):
         )
         return {"calc_energy": self._structure_dict}
 
-    def analyse_structures(self, output_dict, output=OutputElastic.get_keys()):
+    def analyse_structures(self, output_dict, output_keys=OutputElastic.keys()):
         """
 
         Args:
             output_dict (dict):
-            output (tuple):
+            output_keys (tuple):
 
         Returns:
 
@@ -62,5 +62,5 @@ class ElasticMatrixWorkflow(Workflow):
         self._data["e0"] = ene0
         self._data["A2"] = A2
         return ElasticProperties(elastic_matrix=elastic_matrix).get_output(
-            output=output
+            output_keys=output_keys
         )
