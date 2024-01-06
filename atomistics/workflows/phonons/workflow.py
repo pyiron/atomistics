@@ -9,8 +9,6 @@ import structuretoolkit
 from atomistics.shared.output import (
     OutputThermodynamic,
     OutputPhonons,
-    thermodynamic_output_keys,
-    phonon_output_keys,
 )
 from atomistics.workflows.interface import Workflow
 from atomistics.workflows.phonons.helper import (
@@ -228,7 +226,7 @@ class PhonopyWorkflow(Workflow):
             structure.set_initial_magnetic_moments(magmoms)
         return structure
 
-    def analyse_structures(self, output_dict, output=phonon_output_keys):
+    def analyse_structures(self, output_dict, output=OutputPhonons.get_keys()):
         """
 
         Returns:
@@ -267,7 +265,7 @@ class PhonopyWorkflow(Workflow):
         pretend_real=False,
         band_indices=None,
         is_projection=False,
-        output=thermodynamic_output_keys,
+        output=OutputThermodynamic.get_keys(),
     ):
         """
         Returns thermal properties at constant volume in the given temperature range.  Can only be called after job

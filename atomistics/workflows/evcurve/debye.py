@@ -2,10 +2,7 @@ import numpy as np
 import scipy.constants
 import scipy.optimize
 
-from atomistics.shared.output import (
-    OutputThermodynamic,
-    thermodynamic_output_keys,
-)
+from atomistics.shared.output import OutputThermodynamic
 from atomistics.workflows.evcurve.fit import interpolate_energy
 from atomistics.workflows.evcurve.thermo import get_thermo_bulk_model
 
@@ -230,7 +227,7 @@ def get_thermal_properties(
     temperatures=None,
     constant_volume=False,
     num_steps=50,
-    output=thermodynamic_output_keys,
+    output=OutputThermodynamic.get_keys(),
 ):
     return DebyeThermalProperties(
         fit_dict=fit_dict,

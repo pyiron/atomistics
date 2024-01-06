@@ -7,8 +7,8 @@ from pylammpsmpi import LammpsASELibrary
 from atomistics.calculators.lammps.potential import validate_potential_dataframe
 from atomistics.calculators.lammps.output import LammpsOutput
 from atomistics.shared.output import (
-    molecular_dynamics_output_keys,
-    thermal_expansion_output_keys,
+    OutputMolecularDynamics,
+    OutputThermalExpansion,
 )
 from atomistics.shared.thermal_expansion import get_thermal_expansion_output
 from atomistics.shared.tqdm_iterator import get_tqdm_iterator
@@ -47,7 +47,7 @@ def lammps_calc_md_step(
     lmp_instance,
     run_str,
     run,
-    output=molecular_dynamics_output_keys,
+    output=OutputMolecularDynamics.get_keys(),
 ):
     run_str_rendered = Template(run_str).render(run=run)
     lmp_instance.interactive_lib_command(run_str_rendered)
@@ -59,7 +59,7 @@ def lammps_calc_md(
     run_str,
     run,
     thermo,
-    output=molecular_dynamics_output_keys,
+    output=OutputMolecularDynamics.get_keys(),
 ):
     results_lst = [
         lammps_calc_md_step(
@@ -89,7 +89,7 @@ def lammps_thermal_expansion_loop(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output=thermal_expansion_output_keys,
+    output=OutputThermalExpansion.get_keys(),
     **kwargs,
 ):
     lmp_instance = lammps_run(
