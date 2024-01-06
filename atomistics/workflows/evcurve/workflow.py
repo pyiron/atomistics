@@ -172,7 +172,9 @@ class EnergyVolumeCurveWorkflow(Workflow):
             self._structure_dict[1 + np.round(strain, 7)] = basis
         return {"calc_energy": self._structure_dict}
 
-    def analyse_structures(self, output_dict, output=OutputEnergyVolumeCurve.get_keys()):
+    def analyse_structures(
+        self, output_dict, output=OutputEnergyVolumeCurve.get_keys()
+    ):
         self._fit_dict = EnergyVolumeCurveProperties(
             fit_module=fit_ev_curve_internal(
                 volume_lst=get_volume_lst(structure_dict=self._structure_dict),
