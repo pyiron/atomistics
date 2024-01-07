@@ -97,28 +97,35 @@ def fit_ev_curve(volume_lst, energy_lst, fit_type, fit_order):
     ).fit_dict
 
 
-class EnergyVolumeCurveProperties(OutputEnergyVolumeCurve):
+class EnergyVolumeCurveOutputWrapper(OutputEnergyVolumeCurve):
     def __init__(self, fit_module):
         self._fit_module = fit_module
 
+    @property
     def volume_eq(self):
         return self._fit_module.fit_dict["volume_eq"]
 
+    @property
     def energy_eq(self):
         return self._fit_module.fit_dict["energy_eq"]
 
+    @property
     def bulkmodul_eq(self):
         return self._fit_module.fit_dict["bulkmodul_eq"]
 
+    @property
     def b_prime_eq(self):
         return self._fit_module.fit_dict["b_prime_eq"]
 
+    @property
     def volume(self):
         return self._fit_module.fit_dict["volume"]
 
+    @property
     def energy(self):
         return self._fit_module.fit_dict["energy"]
 
+    @property
     def fit_dict(self):
         return {
             k: self._fit_module.fit_dict[k]
@@ -175,7 +182,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
     def analyse_structures(
         self, output_dict, output_keys=OutputEnergyVolumeCurve.keys()
     ):
-        self._fit_dict = EnergyVolumeCurveProperties(
+        self._fit_dict = EnergyVolumeCurveOutputWrapper(
             fit_module=fit_ev_curve_internal(
                 volume_lst=get_volume_lst(structure_dict=self._structure_dict),
                 energy_lst=get_energy_lst(

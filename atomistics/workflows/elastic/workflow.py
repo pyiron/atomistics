@@ -2,7 +2,7 @@ import numpy as np
 
 from atomistics.shared.output import OutputElastic
 from atomistics.workflows.interface import Workflow
-from atomistics.workflows.elastic.elastic_moduli import ElasticProperties
+from atomistics.workflows.elastic.elastic_moduli import ElasticMatrixOutput
 from atomistics.workflows.elastic.helper import (
     generate_structures_helper,
     analyse_structures_helper,
@@ -61,6 +61,6 @@ class ElasticMatrixWorkflow(Workflow):
         self._data["strain_energy"] = strain_energy
         self._data["e0"] = ene0
         self._data["A2"] = A2
-        return ElasticProperties(elastic_matrix=elastic_matrix).get_output(
+        return ElasticMatrixOutput(elastic_matrix=elastic_matrix).get_output(
             output_keys=output_keys
         )

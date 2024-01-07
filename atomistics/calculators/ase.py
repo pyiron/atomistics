@@ -25,43 +25,54 @@ if TYPE_CHECKING:
     from atomistics.calculators.interface import TaskName
 
 
-class ASEExecutor(OutputStatic, OutputMolecularDynamics):
+class ASEOutput(OutputStatic, OutputMolecularDynamics):
     def __init__(self, ase_structure, ase_calculator):
         self.structure = ase_structure
         self.structure.calc = ase_calculator
 
+    @property
     def forces(self):
         return self.structure.get_forces()
 
+    @property
     def energy(self):
         return self.structure.get_potential_energy()
 
+    @property
     def energy_pot(self):
         return self.structure.get_potential_energy()
 
+    @property
     def energy_tot(self):
         return (
             self.structure.get_potential_energy() + self.structure.get_kinetic_energy()
         )
 
+    @property
     def stress(self):
         return self.structure.get_stress(voigt=False)
 
+    @property
     def pressure(self):
         return self.structure.get_stress(voigt=False)
 
+    @property
     def cell(self):
         return self.structure.get_cell()
 
+    @property
     def positions(self):
         return self.structure.get_positions()
 
+    @property
     def velocities(self):
         return self.structure.get_velocities()
 
+    @property
     def temperature(self):
         return self.structure.get_temperature()
 
+    @property
     def volume(self):
         return self.structure.get_volume()
 
@@ -107,7 +118,7 @@ def calc_static_with_ase(
     ase_calculator,
     output_keys=OutputStatic.keys(),
 ):
-    return ASEExecutor(
+    return ASEOutput(
         ase_structure=structure, ase_calculator=ase_calculator
     ).get_output(output_keys=output_keys)
 
@@ -120,7 +131,7 @@ def _calc_md_step_with_ase(
     cache = {q: [] for q in output_keys}
     for i in range(int(run / thermo)):
         dyn.run(thermo)
-        calc_dict = ASEExecutor(
+        calc_dict = ASEOutput(
             ase_structure=structure, ase_calculator=ase_calculator
         ).get_output(output_keys=output_keys)
         for k, v in calc_dict.items():
