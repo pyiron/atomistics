@@ -33,4 +33,4 @@ class TestSharedOutput(TestCase):
 
             for func in dir(dm):
                 if func[0] != "_" and func not in ['keys', 'get_output']:
-                    self.assertIsNone(getattr(dm, func)())
+                    self.assertIsNone(getattr(dm, func))
