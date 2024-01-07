@@ -1,4 +1,4 @@
-name: Siesta Unittest Linux 3.11
+name: Siesta Unittest Linux 3.12
 
 on:
   push:
