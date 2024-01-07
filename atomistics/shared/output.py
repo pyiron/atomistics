@@ -1,14 +1,41 @@
+"""
+The output module defines the abstract output classes for the different types of outputs defined by the atomistics
+package. All output classes are abstract classes, which define the output as abstract properties and are derived from
+the atomistics.shared.output.AbstractOutput class.
+"""
+
 from abc import ABC, abstractmethod
 
 import numpy as np
 
 
-class Output:
-    def get_output(self, output_keys):
+class AbstractOutput:
+    """
+    Abstract Base class used for the implementation of the individual output classes.
+    """
+
+    def get_output(self, output_keys) -> dict:
+        """
+        Evaluate multiple properties with a single function call by providing a list of output keys each referencing one
+        property as input and returning a dictionary with the property names as keys and the corresponding results as
+        values.
+
+        Args:
+            output_keys (tuple): Tuple of output property names as strings to be evaluated
+
+        Returns:
+            dict: dictionary with the property names as keys and the corresponding results as values.
+        """
         return {q: getattr(self, q) for q in output_keys}
 
     @classmethod
-    def keys(cls):
+    def keys(cls) -> tuple:
+        """
+        Return all public functions and properties defined in a given class.
+
+        Returns:
+            tuple: Tuple of names all public functions and properties defined in the derived class as strings.
+        """
         return tuple(
             [
                 k
@@ -18,7 +45,11 @@ class Output:
         )
 
 
-class OutputStatic(ABC, Output):
+class OutputStatic(ABC, AbstractOutput):
+    """
+    Output class for a static calculation of a supercell with n atoms.
+    """
+
     @property
     @abstractmethod
     def forces(self) -> np.ndarray:  # (n, 3) [eV / Ang^2]
@@ -40,7 +71,11 @@ class OutputStatic(ABC, Output):
         pass
 
 
-class OutputMolecularDynamics(ABC, Output):
+class OutputMolecularDynamics(ABC, AbstractOutput):
+    """
+    Output class for a molecular dynamics calculation with t steps of a supercell with n atoms.
+    """
+
     @property
     @abstractmethod
     def positions(self) -> np.ndarray:  # (t, n, 3) [Ang]
@@ -87,7 +122,11 @@ class OutputMolecularDynamics(ABC, Output):
         pass
 
 
-class OutputThermalExpansion(ABC, Output):
+class OutputThermalExpansion(ABC, AbstractOutput):
+    """
+    Output class for a thermal expansion calculation iterating over T temperature steps.
+    """
+
     @property
     @abstractmethod
     def temperatures(self) -> np.ndarray:  # (T) [K]
@@ -99,7 +138,11 @@ class OutputThermalExpansion(ABC, Output):
         pass
 
 
-class OutputThermodynamic(ABC, Output):
+class OutputThermodynamic(ABC, AbstractOutput):
+    """
+    Output class for the calculation of the temperature dependence in T temperature steps of thermodynamic properties
+    """
+
     @property
     @abstractmethod
     def temperatures(self) -> np.ndarray:  # (T) [K]
@@ -126,7 +169,11 @@ class OutputThermodynamic(ABC, Output):
         pass
 
 
-class OutputEnergyVolumeCurve(ABC, Output):
+class OutputEnergyVolumeCurve(ABC, AbstractOutput):
+    """
+    Output class for the calculation on an energy volume curve calculation based on V strained cells.
+    """
+
     @property
     @abstractmethod
     def energy_eq(self) -> float:  # float [eV]
@@ -163,7 +210,11 @@ class OutputEnergyVolumeCurve(ABC, Output):
         pass
 
 
-class OutputElastic(ABC, Output):
+class OutputElastic(ABC, AbstractOutput):
+    """
+    Output class for the calculation of elastic moduli from the elastic matrix of the elastic constants.
+    """
+
     @property
     @abstractmethod
     def elastic_matrix(self) -> np.ndarray:  # (6,6) [GPa]
@@ -245,7 +296,11 @@ class OutputElastic(ABC, Output):
         pass
 
 
-class OutputPhonons(ABC, Output):
+class OutputPhonons(ABC, AbstractOutput):
+    """
+    Output class for the calculation of phonons using the finite displacement method
+    """
+
     @property
     @abstractmethod
     def mesh_dict(self) -> dict:
