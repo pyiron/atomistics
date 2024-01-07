@@ -149,9 +149,7 @@ class ElasticMatrixOutput(OutputElastic):
 
     @cached_property
     def shearmodul_reuss(self):
-        return get_shearmodul_reuss(
-            elastic_matrix_inverse=self.elastic_matrix_inverse
-        )
+        return get_shearmodul_reuss(elastic_matrix_inverse=self.elastic_matrix_inverse)
 
     @cached_property
     def bulkmodul_hill(self):

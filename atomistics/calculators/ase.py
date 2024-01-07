@@ -118,9 +118,9 @@ def calc_static_with_ase(
     ase_calculator,
     output_keys=OutputStatic.keys(),
 ):
-    return ASEOutput(
-        ase_structure=structure, ase_calculator=ase_calculator
-    ).get_output(output_keys=output_keys)
+    return ASEOutput(ase_structure=structure, ase_calculator=ase_calculator).get_output(
+        output_keys=output_keys
+    )
 
 
 def _calc_md_step_with_ase(
