@@ -355,7 +355,9 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             )
         return task_dict
 
-    def analyse_structures(self, output_dict, output_keys=("force_constants", "mesh_dict")):
+    def analyse_structures(
+        self, output_dict, output_keys=("force_constants", "mesh_dict")
+    ):
         self._eng_internal_dict = output_dict["energy"]
         phonopy_collect_dict = {
             strain: phono.analyse_structures(

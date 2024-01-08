@@ -116,7 +116,8 @@ def calc_static_with_ase(
     output_keys=OutputStatic.fields(),
 ):
     return ASEOutputStatic.get(
-        ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator), *output_keys
+        ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator),
+        *output_keys,
     )
 
 
