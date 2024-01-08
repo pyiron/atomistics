@@ -101,25 +101,25 @@ class EnergyVolumeCurveProperties:
     def __init__(self, fit_module):
         self._fit_module = fit_module
 
-    def get_volume_eq(self):
+    def volume_eq(self):
         return self._fit_module.fit_dict["volume_eq"]
 
-    def get_energy_eq(self):
+    def energy_eq(self):
         return self._fit_module.fit_dict["energy_eq"]
 
-    def get_bulkmodul_eq(self):
+    def bulkmodul_eq(self):
         return self._fit_module.fit_dict["bulkmodul_eq"]
 
-    def get_bulkmodul_pressure_derivative_eq(self):
+    def b_prime_eq(self):
         return self._fit_module.fit_dict["b_prime_eq"]
 
-    def get_volumes(self):
+    def volume(self):
         return self._fit_module.fit_dict["volume"]
 
-    def get_energies(self):
+    def energy(self):
         return self._fit_module.fit_dict["energy"]
 
-    def get_fit_dict(self):
+    def fit_dict(self):
         return {
             k: self._fit_module.fit_dict[k]
             for k in ["fit_type", "least_square_error", "poly_fit", "fit_order"]
@@ -128,13 +128,10 @@ class EnergyVolumeCurveProperties:
 
 
 EnergyVolumeCurveOutputEnergyVolumeCurve = OutputEnergyVolumeCurve(
-    fit_dict=EnergyVolumeCurveProperties.get_fit_dict,
-    energy=EnergyVolumeCurveProperties.get_energies,
-    volume=EnergyVolumeCurveProperties.get_volumes,
-    b_prime_eq=EnergyVolumeCurveProperties.get_bulkmodul_pressure_derivative_eq,
-    bulkmodul_eq=EnergyVolumeCurveProperties.get_bulkmodul_eq,
-    energy_eq=EnergyVolumeCurveProperties.get_energy_eq,
-    volume_eq=EnergyVolumeCurveProperties.get_volume_eq,
+    **{
+        k: getattr(EnergyVolumeCurveProperties, k)
+        for k in OutputEnergyVolumeCurve.fields()
+    }
 )
 
 
@@ -201,25 +198,6 @@ class EnergyVolumeCurveWorkflow(Workflow):
 
     def get_volume_lst(self):
         return get_volume_lst(structure_dict=self._structure_dict)
-
-    def get_thermal_expansion(
-        self, output_dict, t_min=1, t_max=1500, t_step=50, temperatures=None
-    ):
-        self.analyse_structures(output_dict=output_dict)
-        thermal_properties_dict = get_thermal_properties(
-            fit_dict=self.fit_dict,
-            masses=self.structure.get_masses(),
-            t_min=t_min,
-            t_max=t_max,
-            t_step=t_step,
-            temperatures=temperatures,
-            constant_volume=False,
-            output_keys=["temperatures", "volumes"],
-        )
-        return (
-            thermal_properties_dict["temperatures"],
-            thermal_properties_dict["volumes"],
-        )
 
     def get_thermal_properties(
         self,

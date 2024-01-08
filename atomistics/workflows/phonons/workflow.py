@@ -73,7 +73,7 @@ class PhonopyProperties(object):
         )
         self._force_constants = self._phonopy.force_constants
 
-    def get_mesh_dict(self):
+    def mesh_dict(self):
         if self._force_constants is None:
             self._calc_force_constants()
         if self._mesh_dict is None:
@@ -89,12 +89,12 @@ class PhonopyProperties(object):
             self._mesh_dict = self._phonopy.get_mesh_dict()
         return self._mesh_dict
 
-    def get_band_structure_dict(self):
+    def band_structure_dict(self):
         if self._band_structure_dict is None:
             self._calc_band_structure()
         return self._band_structure_dict
 
-    def get_total_dos_dict(self):
+    def total_dos_dict(self):
         if self._total_dos is None:
             self._phonopy.run_total_dos(
                 sigma=self._sigma,
@@ -106,12 +106,12 @@ class PhonopyProperties(object):
             self._total_dos = self._phonopy.get_total_dos_dict()
         return self._total_dos
 
-    def get_dynamical_matrix(self):
+    def dynamical_matrix(self):
         if self._band_structure_dict is None:
             self._calc_band_structure()
         return self._phonopy.dynamical_matrix.dynamical_matrix
 
-    def get_force_constants(self):
+    def force_constants(self):
         if self._force_constants is None:
             self._calc_force_constants()
         return self._force_constants
@@ -122,19 +122,19 @@ class PhonopyThermalProperties(object):
         self._phonopy = phonopy_instance
         self._thermal_properties = phonopy_instance.get_thermal_properties_dict()
 
-    def get_free_energy(self):
+    def free_energy(self):
         return self._thermal_properties["free_energy"] * kJ_mol_to_eV
 
-    def get_temperatures(self):
+    def temperatures(self):
         return self._thermal_properties["temperatures"]
 
-    def get_entropy(self):
+    def entropy(self):
         return self._thermal_properties["entropy"]
 
-    def get_heat_capacity(self):
+    def heat_capacity(self):
         return self._thermal_properties["heat_capacity"]
 
-    def get_volumes(self):
+    def volumes(self):
         return np.array(
             [self._phonopy.unitcell.get_volume()]
             * len(self._thermal_properties["temperatures"])
@@ -142,18 +142,10 @@ class PhonopyThermalProperties(object):
 
 
 PhonopyOutputPhonons = OutputPhonons(
-    mesh_dict=PhonopyProperties.get_mesh_dict,
-    band_structure_dict=PhonopyProperties.get_band_structure_dict,
-    total_dos_dict=PhonopyProperties.get_total_dos_dict,
-    dynamical_matrix=PhonopyProperties.get_dynamical_matrix,
-    force_constants=PhonopyProperties.get_force_constants,
+    **{k: getattr(PhonopyProperties, k) for k in OutputPhonons.fields()}
 )
 PhonopyOutputThermodynamic = OutputThermodynamic(
-    temperatures=PhonopyThermalProperties.get_temperatures,
-    free_energy=PhonopyThermalProperties.get_free_energy,
-    entropy=PhonopyThermalProperties.get_entropy,
-    heat_capacity=PhonopyThermalProperties.get_heat_capacity,
-    volumes=PhonopyThermalProperties.get_volumes,
+    **{k: getattr(PhonopyThermalProperties, k) for k in OutputThermodynamic.fields()}
 )
 
 

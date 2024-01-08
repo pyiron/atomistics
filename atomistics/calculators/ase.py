@@ -29,53 +29,48 @@ class ASEExecutor(object):
         self.structure = ase_structure
         self.structure.calc = ase_calculator
 
-    def get_forces(self):
+    def forces(self):
         return self.structure.get_forces()
 
-    def get_energy(self):
+    def energy(self):
         return self.structure.get_potential_energy()
 
-    def get_stress(self):
-        return self.structure.get_stress(voigt=False)
+    def energy_pot(self):
+        return self.structure.get_potential_energy()
 
-    def get_total_energy(self):
+    def energy_tot(self):
         return (
             self.structure.get_potential_energy() + self.structure.get_kinetic_energy()
         )
 
-    def get_cell(self):
+    def stress(self):
+        return self.structure.get_stress(voigt=False)
+
+    def pressure(self):
+        return self.structure.get_stress(voigt=False)
+
+    def cell(self):
         return self.structure.get_cell()
 
-    def get_positions(self):
+    def positions(self):
         return self.structure.get_positions()
 
-    def get_velocities(self):
+    def velocities(self):
         return self.structure.get_velocities()
 
-    def get_temperature(self):
+    def temperature(self):
         return self.structure.get_temperature()
 
-    def get_volume(self):
+    def volume(self):
         return self.structure.get_volume()
 
 
 ASEOutputStatic = OutputStatic(
-    forces=ASEExecutor.get_forces,
-    energy=ASEExecutor.get_energy,
-    stress=ASEExecutor.get_stress,
-    volume=ASEExecutor.get_volume,
+    **{k: getattr(ASEExecutor, k) for k in OutputStatic.fields()}
 )
 
 ASEOutputMolecularDynamics = OutputMolecularDynamics(
-    positions=ASEExecutor.get_positions,
-    cell=ASEExecutor.get_cell,
-    forces=ASEExecutor.get_forces,
-    temperature=ASEExecutor.get_temperature,
-    energy_pot=ASEExecutor.get_energy,
-    energy_tot=ASEExecutor.get_total_energy,
-    pressure=ASEExecutor.get_stress,
-    velocities=ASEExecutor.get_velocities,
-    volume=ASEExecutor.get_volume,
+    **{k: getattr(ASEExecutor, k) for k in OutputMolecularDynamics.fields()}
 )
 
 
