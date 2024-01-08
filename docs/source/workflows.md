@@ -109,7 +109,7 @@ thermal_properties_dict = workflow.get_thermal_properties(
     t_step=50, 
     temperatures=None,
     constant_volume=False,
-    output=["temperatures", "volumes"],
+    output_keys=["temperatures", "volumes"],
 )
 temperatures, volumes = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
 ```
@@ -150,7 +150,7 @@ result_dict = calc_molecular_dynamics_langevin_with_lammps(
     timestep=0.001,
     seed=4928459,
     dist="gaussian",
-    output=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
+    output_keys=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
 )
 ```
 In addition to the typical LAMMPS input parameters like the atomistic structure `structure` as `ase.atoms.Atoms` object
@@ -191,7 +191,7 @@ result_dict = calc_molecular_dynamics_nvt_with_lammps(
     timestep=0.001,
     seed=4928459,
     dist="gaussian",
-    output=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
+    output_keys=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
 )
 ```
 In addition to the typical LAMMPS input parameters like the atomistic structure `structure` as `ase.atoms.Atoms` object
@@ -234,7 +234,7 @@ result_dict = calc_molecular_dynamics_npt_with_lammps(
     Pdamp=1.0,
     seed=4928459,
     dist="gaussian",
-    output=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
+    output_keys=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
 )
 ```
 The input parameters for the isothermal-isobaric ensemble (npt) are the same as for the canonical ensemble (nvt) plus:
@@ -266,7 +266,7 @@ result_dict = calc_molecular_dynamics_nph_with_lammps(
     Pdamp=1.0,
     seed=4928459,
     dist="gaussian",
-    output=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
+    output_keys=("positions", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure", "velocities"),
 )
 ```
 
@@ -639,7 +639,7 @@ tp_dict = workflow.get_thermal_properties(
     band_indices=None,
     is_projection=False,
     quantum_mechanical=True,
-    output=["temperatures", "volumes"],
+    output_keys=["temperatures", "volumes"],
 )
 temperatures, volumes = tp_dict["temperatures"], tp_dict["volumes"]
 ```

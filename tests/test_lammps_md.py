@@ -71,7 +71,7 @@ class TestLammpsMD(unittest.TestCase):
             seed=4928459,
             dist="gaussian",
             lmp=None,
-            output=("temperature",),
+            output_keys=("temperature",),
         )
         self.assertEqual(len(result_dict.keys()), 1)
         self.assertEqual(result_dict["temperature"].shape, (10, ))
@@ -174,7 +174,7 @@ class TestLammpsMD(unittest.TestCase):
 
     def test_calc_molecular_dynamics_signature(self):
         self.assertEqual(
-            inspect.signature(calc_molecular_dynamics_nvt_with_lammps).parameters["output"].default,
+            inspect.signature(calc_molecular_dynamics_nvt_with_lammps).parameters["output_keys"].default,
             (
                 "positions",
                 "cell",

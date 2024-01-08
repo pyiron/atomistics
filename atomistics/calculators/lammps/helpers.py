@@ -46,11 +46,11 @@ def lammps_calc_md_step(
     lmp_instance,
     run_str,
     run,
-    output=LammpsOutputMolecularDynamics.fields(),
+    output_keys=LammpsOutputMolecularDynamics.fields(),
 ):
     run_str_rendered = Template(run_str).render(run=run)
     lmp_instance.interactive_lib_command(run_str_rendered)
-    return LammpsOutputMolecularDynamics.get(lmp_instance, *output)
+    return LammpsOutputMolecularDynamics.get(lmp_instance, *output_keys)
 
 
 def lammps_calc_md(
@@ -58,18 +58,18 @@ def lammps_calc_md(
     run_str,
     run,
     thermo,
-    output=LammpsOutputMolecularDynamics.fields(),
+    output_keys=LammpsOutputMolecularDynamics.fields(),
 ):
     results_lst = [
         lammps_calc_md_step(
             lmp_instance=lmp_instance,
             run_str=run_str,
             run=thermo,
-            output=output,
+            output_keys=output_keys,
         )
         for _ in range(run // thermo)
     ]
-    return {q: np.array([d[q] for d in results_lst]) for q in output}
+    return {q: np.array([d[q] for d in results_lst]) for q in output_keys}
 
 
 def lammps_thermal_expansion_loop(
@@ -88,7 +88,7 @@ def lammps_thermal_expansion_loop(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output=OutputThermalExpansionProperties.fields(),
+    output_keys=OutputThermalExpansionProperties.fields(),
     **kwargs,
 ):
     lmp_instance = lammps_run(
@@ -125,7 +125,7 @@ def lammps_thermal_expansion_loop(
         ThermalExpansionProperties(
             temperatures_lst=temperature_md_lst, volumes_lst=volume_md_lst
         ),
-        *output,
+        *output_keys,
     )
 
 

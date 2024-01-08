@@ -32,7 +32,7 @@ class TestEvCurve(unittest.TestCase):
         fit_dict = workflow.analyse_structures(output_dict=result_dict)
         thermal_properties_dict = workflow.get_thermal_properties(
             temperatures=[100, 1000],
-            output=["temperatures", "volumes"]
+            output_keys=["temperatures", "volumes"]
         )
         temperatures_ev, volumes_ev = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
         self.assertTrue(np.isclose(fit_dict['volume_eq'], 63.72747170239313))

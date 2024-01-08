@@ -103,7 +103,7 @@ def evaluate_with_ase(
         return calc_static_with_ase(
             structure=structure,
             ase_calculator=ase_calculator,
-            output=get_quantities_from_tasks(tasks=tasks),
+            output_keys=get_quantities_from_tasks(tasks=tasks),
         )
     else:
         raise ValueError("The ASE calculator does not implement:", tasks)
@@ -113,28 +113,29 @@ def evaluate_with_ase(
 def calc_static_with_ase(
     structure,
     ase_calculator,
-    output=OutputStatic.fields(),
+    output_keys=OutputStatic.fields(),
 ):
     return ASEOutputStatic.get(
-        ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator), *output
+        ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator),
+        *output_keys,
     )
 
 
 def _calc_md_step_with_ase(
-    dyn, structure, ase_calculator, temperature, run, thermo, output
+    dyn, structure, ase_calculator, temperature, run, thermo, output_keys
 ):
     structure.calc = ase_calculator
     MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
-    cache = {q: [] for q in output}
+    cache = {q: [] for q in output_keys}
     for i in range(int(run / thermo)):
         dyn.run(thermo)
         calc_dict = ASEOutputMolecularDynamics.get(
             ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator),
-            *output,
+            *output_keys,
         )
         for k, v in calc_dict.items():
             cache[k].append(v)
-    return {q: np.array(cache[q]) for q in output}
+    return {q: np.array(cache[q]) for q in output_keys}
 
 
 def calc_molecular_dynamics_npt_with_ase(
@@ -147,7 +148,7 @@ def calc_molecular_dynamics_npt_with_ase(
     pfactor=2e6 * units.GPa * (units.fs**2),
     temperature=100,
     externalstress=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
-    output=ASEOutputMolecularDynamics.fields(),
+    output_keys=ASEOutputMolecularDynamics.fields(),
 ):
     return _calc_md_step_with_ase(
         dyn=NPT(
@@ -169,7 +170,7 @@ def calc_molecular_dynamics_npt_with_ase(
         temperature=temperature,
         run=run,
         thermo=thermo,
-        output=output,
+        output_keys=output_keys,
     )
 
 
@@ -181,7 +182,7 @@ def calc_molecular_dynamics_langevin_with_ase(
     timestep=1 * units.fs,
     temperature=100,
     friction=0.002,
-    output=ASEOutputMolecularDynamics.fields(),
+    output_keys=ASEOutputMolecularDynamics.fields(),
 ):
     return _calc_md_step_with_ase(
         dyn=Langevin(
@@ -195,7 +196,7 @@ def calc_molecular_dynamics_langevin_with_ase(
         temperature=temperature,
         run=run,
         thermo=thermo,
-        output=output,
+        output_keys=output_keys,
     )
 
 
@@ -231,7 +232,7 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
     ttime=100 * units.fs,
     pfactor=2e6 * units.GPa * (units.fs**2),
     externalstress=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
-    output=OutputThermalExpansionProperties.fields(),
+    output_keys=OutputThermalExpansionProperties.fields(),
 ):
     structure_current = structure.copy()
     temperature_lst = np.arange(
@@ -257,5 +258,5 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
         ThermalExpansionProperties(
             temperatures_lst=temperature_md_lst, volumes_lst=volume_md_lst
         ),
-        *output,
+        *output_keys,
     )
