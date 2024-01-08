@@ -252,4 +252,8 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
         structure_current.set_cell(cell=result_dict["cell"][-1], scale_atoms=True)
         temperature_md_lst.append(result_dict["temperature"][-1])
         volume_md_lst.append(result_dict["volume"][-1])
-    return get_thermal_expansion_output(temperatures_lst=temperature_md_lst, volumes_lst=volume_md_lst, output_keys=output_keys)
+    return get_thermal_expansion_output(
+        temperatures_lst=temperature_md_lst,
+        volumes_lst=volume_md_lst,
+        output_keys=output_keys,
+    )

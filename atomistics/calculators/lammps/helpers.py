@@ -119,7 +119,11 @@ def lammps_thermal_expansion_loop(
         volume_md_lst.append(lmp_instance.interactive_volume_getter())
         temperature_md_lst.append(lmp_instance.interactive_temperatures_getter())
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
-    return get_thermal_expansion_output(temperatures_lst=temperature_md_lst, volumes_lst=volume_md_lst, output_keys=output_keys)
+    return get_thermal_expansion_output(
+        temperatures_lst=temperature_md_lst,
+        volumes_lst=volume_md_lst,
+        output_keys=output_keys,
+    )
 
 
 def lammps_shutdown(lmp_instance, close_instance=True):
