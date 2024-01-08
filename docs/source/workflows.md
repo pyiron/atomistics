@@ -109,7 +109,7 @@ thermal_properties_dict = workflow.get_thermal_properties(
     t_step=50, 
     temperatures=None,
     constant_volume=False,
-    output=["temperatures", "volumes"],
+    output_keys=["temperatures", "volumes"],
 )
 temperatures, volumes = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
 ```
@@ -639,7 +639,7 @@ tp_dict = workflow.get_thermal_properties(
     band_indices=None,
     is_projection=False,
     quantum_mechanical=True,
-    output=["temperatures", "volumes"],
+    output_keys=["temperatures", "volumes"],
 )
 temperatures, volumes = tp_dict["temperatures"], tp_dict["volumes"]
 ```
