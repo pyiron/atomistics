@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.interface import get_quantities_from_tasks
+from atomistics.calculators.lammps.output import LammpsOutput
 from atomistics.calculators.lammps.helpers import (
     lammps_calc_md,
     lammps_run,
@@ -28,9 +29,11 @@ from atomistics.calculators.lammps.commands import (
     LAMMPS_MINIMIZE_VOLUME,
 )
 from atomistics.calculators.wrapper import as_task_dict_evaluator
-from atomistics.shared.thermal_expansion import OutputThermalExpansion
-from atomistics.shared.output import OutputStatic, OutputMolecularDynamics
-
+from atomistics.shared.output import (
+    OutputStatic,
+    OutputMolecularDynamics,
+    OutputThermalExpansion,
+)
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -132,12 +135,7 @@ def calc_static_with_lammps(
         lmp=lmp,
         **kwargs,
     )
-    result_dict = OutputStatic(
-        forces=LammpsASELibrary.interactive_forces_getter,
-        energy=LammpsASELibrary.interactive_energy_pot_getter,
-        stress=LammpsASELibrary.interactive_pressures_getter,
-        volume=LammpsASELibrary.interactive_volume_getter,
-    ).get(lmp_instance, *output_keys)
+    result_dict = LammpsOutput(lmp=lmp_instance).get_output(output_keys=output_keys)
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 

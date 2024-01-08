@@ -7,7 +7,7 @@ from atomistics.workflows.evcurve.fit import interpolate_energy
 from atomistics.workflows.evcurve.thermo import get_thermo_bulk_model
 
 
-class DebyeThermalProperties(object):
+class DebyeOutputThermodynamic(OutputThermodynamic):
     def __init__(
         self,
         fit_dict,
@@ -31,15 +31,18 @@ class DebyeThermalProperties(object):
         )
         self._constant_volume = constant_volume
 
+    @property
     def free_energy(self):
         return (
             self._pes.get_free_energy_p()
             - self._debye_model.interpolate(volumes=self._pes.get_minimum_energy_path())
         ) / self._pes.num_atoms
 
+    @property
     def temperatures(self):
         return self._temperatures
 
+    @property
     def entropy(self):
         if not self._constant_volume:
             return (
@@ -54,6 +57,7 @@ class DebyeThermalProperties(object):
                 * self._pes.get_entropy_v()
             )
 
+    @property
     def heat_capacity(self):
         if not self._constant_volume:
             heat_capacity = (
@@ -69,6 +73,7 @@ class DebyeThermalProperties(object):
             )
         return np.array(heat_capacity.tolist() + [np.nan, np.nan])
 
+    @property
     def volumes(self):
         if not self._constant_volume:
             return self._pes.get_minimum_energy_path()
@@ -229,18 +234,13 @@ def get_thermal_properties(
     num_steps=50,
     output_keys=OutputThermodynamic.keys(),
 ):
-    return OutputThermodynamic(
-        **{k: getattr(DebyeThermalProperties, k) for k in OutputThermodynamic.keys()}
-    ).get(
-        DebyeThermalProperties(
-            fit_dict=fit_dict,
-            masses=masses,
-            t_min=t_min,
-            t_max=t_max,
-            t_step=t_step,
-            temperatures=temperatures,
-            constant_volume=constant_volume,
-            num_steps=num_steps,
-        ),
-        *output_keys,
-    )
+    return DebyeOutputThermodynamic(
+        fit_dict=fit_dict,
+        masses=masses,
+        t_min=t_min,
+        t_max=t_max,
+        t_step=t_step,
+        temperatures=temperatures,
+        constant_volume=constant_volume,
+        num_steps=num_steps,
+    ).get_output(output_keys=output_keys)

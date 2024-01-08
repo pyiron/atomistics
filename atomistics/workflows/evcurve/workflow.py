@@ -2,13 +2,13 @@ import numpy as np
 from ase.atoms import Atoms
 from collections import OrderedDict
 
-from atomistics.shared.output import OutputEnergyVolumeCurve
-from atomistics.workflows.evcurve.fit import EnergyVolumeFit
-from atomistics.workflows.interface import Workflow
-from atomistics.workflows.evcurve.debye import (
-    get_thermal_properties,
+from atomistics.shared.output import (
+    OutputEnergyVolumeCurve,
     OutputThermodynamic,
 )
+from atomistics.workflows.evcurve.fit import EnergyVolumeFit
+from atomistics.workflows.interface import Workflow
+from atomistics.workflows.evcurve.debye import get_thermal_properties
 
 
 def _strain_axes(
@@ -97,28 +97,35 @@ def fit_ev_curve(volume_lst, energy_lst, fit_type, fit_order):
     ).fit_dict
 
 
-class EnergyVolumeCurveProperties:
+class EnergyVolumeCurveOutputWrapper(OutputEnergyVolumeCurve):
     def __init__(self, fit_module):
         self._fit_module = fit_module
 
+    @property
     def volume_eq(self):
         return self._fit_module.fit_dict["volume_eq"]
 
+    @property
     def energy_eq(self):
         return self._fit_module.fit_dict["energy_eq"]
 
+    @property
     def bulkmodul_eq(self):
         return self._fit_module.fit_dict["bulkmodul_eq"]
 
+    @property
     def b_prime_eq(self):
         return self._fit_module.fit_dict["b_prime_eq"]
 
+    @property
     def volume(self):
         return self._fit_module.fit_dict["volume"]
 
+    @property
     def energy(self):
         return self._fit_module.fit_dict["energy"]
 
+    @property
     def fit_dict(self):
         return {
             k: self._fit_module.fit_dict[k]
@@ -175,24 +182,16 @@ class EnergyVolumeCurveWorkflow(Workflow):
     def analyse_structures(
         self, output_dict, output_keys=OutputEnergyVolumeCurve.keys()
     ):
-        self._fit_dict = OutputEnergyVolumeCurve(
-            **{
-                k: getattr(EnergyVolumeCurveProperties, k)
-                for k in OutputEnergyVolumeCurve.keys()
-            }
-        ).get(
-            EnergyVolumeCurveProperties(
-                fit_module=fit_ev_curve_internal(
-                    volume_lst=get_volume_lst(structure_dict=self._structure_dict),
-                    energy_lst=get_energy_lst(
-                        output_dict=output_dict, structure_dict=self._structure_dict
-                    ),
-                    fit_type=self.fit_type,
-                    fit_order=self.fit_order,
-                )
-            ),
-            *output_keys,
-        )
+        self._fit_dict = EnergyVolumeCurveOutputWrapper(
+            fit_module=fit_ev_curve_internal(
+                volume_lst=get_volume_lst(structure_dict=self._structure_dict),
+                energy_lst=get_energy_lst(
+                    output_dict=output_dict, structure_dict=self._structure_dict
+                ),
+                fit_type=self.fit_type,
+                fit_order=self.fit_order,
+            )
+        ).get_output(output_keys=output_keys)
         return self.fit_dict
 
     def get_volume_lst(self):

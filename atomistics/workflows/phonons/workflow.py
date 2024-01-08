@@ -6,7 +6,10 @@ from phonopy import Phonopy
 from phonopy.file_IO import write_FORCE_CONSTANTS
 import structuretoolkit
 
-from atomistics.shared.output import OutputThermodynamic, OutputPhonons
+from atomistics.shared.output import (
+    OutputThermodynamic,
+    OutputPhonons,
+)
 from atomistics.workflows.interface import Workflow
 from atomistics.workflows.phonons.helper import (
     get_supercell_matrix,
@@ -18,7 +21,7 @@ from atomistics.workflows.phonons.helper import (
 from atomistics.workflows.phonons.units import VaspToTHz, kJ_mol_to_eV
 
 
-class PhonopyProperties(object):
+class PhonopyOutput(OutputPhonons):
     def __init__(
         self,
         phonopy_instance,
@@ -73,6 +76,7 @@ class PhonopyProperties(object):
         )
         self._force_constants = self._phonopy.force_constants
 
+    @property
     def mesh_dict(self):
         if self._force_constants is None:
             self._calc_force_constants()
@@ -89,11 +93,13 @@ class PhonopyProperties(object):
             self._mesh_dict = self._phonopy.get_mesh_dict()
         return self._mesh_dict
 
+    @property
     def band_structure_dict(self):
         if self._band_structure_dict is None:
             self._calc_band_structure()
         return self._band_structure_dict
 
+    @property
     def total_dos_dict(self):
         if self._total_dos is None:
             self._phonopy.run_total_dos(
@@ -106,34 +112,41 @@ class PhonopyProperties(object):
             self._total_dos = self._phonopy.get_total_dos_dict()
         return self._total_dos
 
+    @property
     def dynamical_matrix(self):
         if self._band_structure_dict is None:
             self._calc_band_structure()
         return self._phonopy.dynamical_matrix.dynamical_matrix
 
+    @property
     def force_constants(self):
         if self._force_constants is None:
             self._calc_force_constants()
         return self._force_constants
 
 
-class PhonopyThermalProperties(object):
+class PhonopyOutputThermodynamic(OutputThermodynamic):
     def __init__(self, phonopy_instance):
         self._phonopy = phonopy_instance
         self._thermal_properties = phonopy_instance.get_thermal_properties_dict()
 
+    @property
     def free_energy(self):
         return self._thermal_properties["free_energy"] * kJ_mol_to_eV
 
+    @property
     def temperatures(self):
         return self._thermal_properties["temperatures"]
 
+    @property
     def entropy(self):
         return self._thermal_properties["entropy"]
 
+    @property
     def heat_capacity(self):
         return self._thermal_properties["heat_capacity"]
 
+    @property
     def volumes(self):
         return np.array(
             [self._phonopy.unitcell.get_volume()]
@@ -233,28 +246,23 @@ class PhonopyWorkflow(Workflow):
             output_dict = output_dict["forces"]
         forces_lst = [output_dict[k] for k in sorted(output_dict.keys())]
         self.phonopy.forces = forces_lst
-        self._phonopy_dict = OutputPhonons(
-            **{k: getattr(PhonopyProperties, k) for k in OutputPhonons.keys()}
-        ).get(
-            PhonopyProperties(
-                phonopy_instance=self.phonopy,
-                dos_mesh=self._dos_mesh,
-                shift=None,
-                is_time_reversal=True,
-                is_mesh_symmetry=True,
-                with_eigenvectors=False,
-                with_group_velocities=False,
-                is_gamma_center=False,
-                number_of_snapshots=self._number_of_snapshots,
-                sigma=None,
-                freq_min=None,
-                freq_max=None,
-                freq_pitch=None,
-                use_tetrahedron_method=True,
-                npoints=101,
-            ),
-            *output_keys,
-        )
+        self._phonopy_dict = PhonopyOutput(
+            phonopy_instance=self.phonopy,
+            dos_mesh=self._dos_mesh,
+            shift=None,
+            is_time_reversal=True,
+            is_mesh_symmetry=True,
+            with_eigenvectors=False,
+            with_group_velocities=False,
+            is_gamma_center=False,
+            number_of_snapshots=self._number_of_snapshots,
+            sigma=None,
+            freq_min=None,
+            freq_max=None,
+            freq_pitch=None,
+            use_tetrahedron_method=True,
+            npoints=101,
+        ).get_output(output_keys=output_keys)
         return self._phonopy_dict
 
     def get_thermal_properties(
@@ -293,12 +301,9 @@ class PhonopyWorkflow(Workflow):
             band_indices=band_indices,
             is_projection=is_projection,
         )
-        return OutputThermodynamic(
-            **{
-                k: getattr(PhonopyThermalProperties, k)
-                for k in OutputThermodynamic.keys()
-            }
-        ).get(PhonopyThermalProperties(phonopy_instance=self.phonopy), *output_keys)
+        return PhonopyOutputThermodynamic(phonopy_instance=self.phonopy).get_output(
+            output_keys=output_keys
+        )
 
     def get_dynamical_matrix(self, npoints=101):
         """

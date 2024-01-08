@@ -1,6 +1,6 @@
 import numpy as np
 
-from atomistics.shared.output import OutputThermodynamic, OutputPhonons
+from atomistics.shared.output import OutputThermodynamic
 from atomistics.workflows.evcurve.workflow import (
     EnergyVolumeCurveWorkflow,
     fit_ev_curve,
@@ -112,21 +112,13 @@ def get_thermal_properties(
         not quantum_mechanical
     ):  # heat capacity and entropy are not yet implemented for the classical approach.
         output_keys = ["free_energy", "temperatures", "volumes"]
-    return OutputThermodynamic(
-        **{
-            k: getattr(QuasiHarmonicThermalProperties, k)
-            for k in OutputThermodynamic.keys()
-        }
-    ).get(
-        QuasiHarmonicThermalProperties(
-            temperatures=temperatures,
-            thermal_properties_dict=tp_collect_dict,
-            strain_lst=strain_lst,
-            volumes_lst=volume_lst,
-            volumes_selected_lst=vol_lst,
-        ),
-        *output_keys,
-    )
+    return QuasiHarmonicOutputThermodynamic(
+        temperatures=temperatures,
+        thermal_properties_dict=tp_collect_dict,
+        strain_lst=strain_lst,
+        volumes_lst=volume_lst,
+        volumes_selected_lst=vol_lst,
+    ).get_output(output_keys=output_keys)
 
 
 def _get_thermal_properties_quantum_mechanical(
@@ -232,7 +224,7 @@ def _get_thermal_properties_classical(
     return tp_collect_dict
 
 
-class QuasiHarmonicThermalProperties(object):
+class QuasiHarmonicOutputThermodynamic(OutputThermodynamic):
     def __init__(
         self,
         temperatures,
@@ -263,18 +255,23 @@ class QuasiHarmonicThermalProperties(object):
             ]
         )
 
+    @property
     def free_energy(self):
         return self.get_property(thermal_property="free_energy")
 
+    @property
     def temperatures(self):
         return self._temperatures
 
+    @property
     def entropy(self):
         return self.get_property(thermal_property="entropy")
 
+    @property
     def heat_capacity(self):
         return self.get_property(thermal_property="heat_capacity")
 
+    @property
     def volumes(self):
         return self._volumes_selected_lst
 
