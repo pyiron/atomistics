@@ -26,11 +26,6 @@ class QEStaticParser(object):
         return self.parser.volume
 
 
-QuantumEspressoOutputStatic = OutputStatic(
-    **{k: getattr(QEStaticParser, k) for k in OutputStatic.fields()}
-)
-
-
 def call_qe_via_ase_command(calculation_name, working_directory):
     subprocess.check_output(
         os.environ["ASE_ESPRESSO_COMMAND"].replace("PREFIX", calculation_name),
@@ -212,9 +207,9 @@ def calc_static_with_qe(
     call_qe_via_ase_command(
         calculation_name=calculation_name, working_directory=working_directory
     )
-    return QuantumEspressoOutputStatic.get(
-        QEStaticParser(filename=output_file_name), *output_keys
-    )
+    return OutputStatic(
+        **{k: getattr(QEStaticParser, k) for k in OutputStatic.fields()}
+    ).get(QEStaticParser(filename=output_file_name), *output_keys)
 
 
 @as_task_dict_evaluator

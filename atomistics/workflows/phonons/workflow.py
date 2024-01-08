@@ -141,14 +141,6 @@ class PhonopyThermalProperties(object):
         )
 
 
-PhonopyOutputPhonons = OutputPhonons(
-    **{k: getattr(PhonopyProperties, k) for k in OutputPhonons.fields()}
-)
-PhonopyOutputThermodynamic = OutputThermodynamic(
-    **{k: getattr(PhonopyThermalProperties, k) for k in OutputThermodynamic.fields()}
-)
-
-
 class PhonopyWorkflow(Workflow):
     """
     Phonopy wrapper for the calculation of free energy in the framework of quasi harmonic approximation.
@@ -241,7 +233,9 @@ class PhonopyWorkflow(Workflow):
             output_dict = output_dict["forces"]
         forces_lst = [output_dict[k] for k in sorted(output_dict.keys())]
         self.phonopy.forces = forces_lst
-        self._phonopy_dict = PhonopyOutputPhonons.get(
+        self._phonopy_dict = OutputPhonons(
+            **{k: getattr(PhonopyProperties, k) for k in OutputPhonons.fields()}
+        ).get(
             PhonopyProperties(
                 phonopy_instance=self.phonopy,
                 dos_mesh=self._dos_mesh,
@@ -299,9 +293,12 @@ class PhonopyWorkflow(Workflow):
             band_indices=band_indices,
             is_projection=is_projection,
         )
-        return PhonopyOutputThermodynamic.get(
-            PhonopyThermalProperties(phonopy_instance=self.phonopy), *output_keys
-        )
+        return OutputThermodynamic(
+            **{
+                k: getattr(PhonopyThermalProperties, k)
+                for k in OutputThermodynamic.fields()
+            }
+        ).get(PhonopyThermalProperties(phonopy_instance=self.phonopy), *output_keys)
 
     def get_dynamical_matrix(self, npoints=101):
         """
