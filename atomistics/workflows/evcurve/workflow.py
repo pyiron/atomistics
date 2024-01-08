@@ -183,7 +183,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
             self._structure_dict[1 + np.round(strain, 7)] = basis
         return {"calc_energy": self._structure_dict}
 
-    def analyse_structures(self, output_dict, output=OutputEnergyVolumeCurve.fields()):
+    def analyse_structures(self, output_dict, output_keys=OutputEnergyVolumeCurve.fields()):
         self._fit_dict = EnergyVolumeCurveOutputEnergyVolumeCurve.get(
             EnergyVolumeCurveProperties(
                 fit_module=fit_ev_curve_internal(
@@ -195,7 +195,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
                     fit_order=self.fit_order,
                 )
             ),
-            *output,
+            *output_keys,
         )
         return self.fit_dict
 
@@ -214,7 +214,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
             t_step=t_step,
             temperatures=temperatures,
             constant_volume=False,
-            output=["temperatures", "volumes"],
+            output_keys=["temperatures", "volumes"],
         )
         return (
             thermal_properties_dict["temperatures"],
@@ -228,7 +228,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         t_step=50,
         temperatures=None,
         constant_volume=False,
-        output=OutputThermodynamic.fields(),
+        output_keys=OutputThermodynamic.fields(),
     ):
         return get_thermal_properties(
             fit_dict=self.fit_dict,
@@ -238,5 +238,5 @@ class EnergyVolumeCurveWorkflow(Workflow):
             t_step=t_step,
             temperatures=temperatures,
             constant_volume=constant_volume,
-            output=output,
+            output_keys=output_keys,
         )

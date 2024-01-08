@@ -239,7 +239,7 @@ class PhonopyWorkflow(Workflow):
             structure.set_initial_magnetic_moments(magmoms)
         return structure
 
-    def analyse_structures(self, output_dict, output=OutputPhonons.fields()):
+    def analyse_structures(self, output_dict, output_keys=OutputPhonons.fields()):
         """
 
         Returns:
@@ -267,7 +267,7 @@ class PhonopyWorkflow(Workflow):
                 use_tetrahedron_method=True,
                 npoints=101,
             ),
-            *output,
+            *output_keys,
         )
         return self._phonopy_dict
 
@@ -281,7 +281,7 @@ class PhonopyWorkflow(Workflow):
         pretend_real=False,
         band_indices=None,
         is_projection=False,
-        output=OutputThermodynamic.fields(),
+        output_keys=OutputThermodynamic.fields(),
     ):
         """
         Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
@@ -308,7 +308,7 @@ class PhonopyWorkflow(Workflow):
             is_projection=is_projection,
         )
         return PhonopyOutputThermodynamic.get(
-            PhonopyThermalProperties(phonopy_instance=self.phonopy), *output
+            PhonopyThermalProperties(phonopy_instance=self.phonopy), *output_keys
         )
 
     def get_dynamical_matrix(self, npoints=101):

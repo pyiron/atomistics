@@ -36,7 +36,7 @@ def get_thermal_properties(
     band_indices=None,
     is_projection=False,
     quantum_mechanical=True,
-    output=OutputThermodynamic.fields(),
+    output_keys=OutputThermodynamic.fields(),
 ):
     """
     Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
@@ -64,7 +64,7 @@ def get_thermal_properties(
             pretend_real=pretend_real,
             band_indices=band_indices,
             is_projection=is_projection,
-            output=output,
+            output_keys=output_keys,
         )
     else:
         if is_projection:
@@ -111,7 +111,7 @@ def get_thermal_properties(
     if (
         not quantum_mechanical
     ):  # heat capacity and entropy are not yet implemented for the classical approach.
-        output = ["free_energy", "temperatures", "volumes"]
+        output_keys = ["free_energy", "temperatures", "volumes"]
     return QuasiHarmonicOutputThermodynamic.get(
         QuasiHarmonicThermalProperties(
             temperatures=temperatures,
@@ -120,7 +120,7 @@ def get_thermal_properties(
             volumes_lst=volume_lst,
             volumes_selected_lst=vol_lst,
         ),
-        *output,
+        *output_keys,
     )
 
 
@@ -135,7 +135,7 @@ def _get_thermal_properties_quantum_mechanical(
     pretend_real=False,
     band_indices=None,
     is_projection=False,
-    output=OutputThermodynamic.fields(),
+    output_keys=OutputThermodynamic.fields(),
 ):
     """
     Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
@@ -164,7 +164,7 @@ def _get_thermal_properties_quantum_mechanical(
                 pretend_real=pretend_real,
                 band_indices=band_indices,
                 is_projection=is_projection,
-                output=output,
+                output_keys=output_keys,
             ).items()
         }
     return tp_collect_dict
@@ -356,14 +356,14 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             )
         return task_dict
 
-    def analyse_structures(self, output_dict, output=("force_constants", "mesh_dict")):
+    def analyse_structures(self, output_dict, output_keys=("force_constants", "mesh_dict")):
         self._eng_internal_dict = output_dict["energy"]
         phonopy_collect_dict = {
             strain: phono.analyse_structures(
                 output_dict={
                     k: v for k, v in output_dict["forces"].items() if strain in k
                 },
-                output=output,
+                output_keys=output_keys,
             )
             for strain, phono in self._phonopy_dict.items()
         }
@@ -380,7 +380,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         band_indices=None,
         is_projection=False,
         quantum_mechanical=True,
-        output=OutputThermodynamic.fields(),
+        output_keys=OutputThermodynamic.fields(),
     ):
         """
         Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
@@ -416,7 +416,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             band_indices=band_indices,
             is_projection=is_projection,
             quantum_mechanical=quantum_mechanical,
-            output=OutputThermodynamic.fields(),
+            output_keys=OutputThermodynamic.fields(),
         )
 
     def get_thermal_expansion(
@@ -444,6 +444,6 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             band_indices=band_indices,
             is_projection=is_projection,
             quantum_mechanical=quantum_mechanical,
-            output=["free_energy", "temperatures", "volumes"],
+            output_keys=["free_energy", "temperatures", "volumes"],
         )
         return tp_collect_dict["temperatures"], tp_collect_dict["volumes"]
