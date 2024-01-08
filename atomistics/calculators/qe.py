@@ -181,7 +181,7 @@ def calc_static_with_qe(
     pseudopotentials=None,
     tstress=True,
     tprnfor=True,
-    output_keys=OutputStatic.fields(),
+    output_keys=OutputStatic.keys(),
     **kwargs,
 ):
     input_file_name = os.path.join(working_directory, calculation_name + ".pwi")

@@ -173,7 +173,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         return {"calc_energy": self._structure_dict}
 
     def analyse_structures(
-        self, output_dict, output_keys=OutputEnergyVolumeCurve.fields()
+        self, output_dict, output_keys=OutputEnergyVolumeCurve.keys()
     ):
         self._fit_dict = OutputEnergyVolumeCurve(
             **{
@@ -205,7 +205,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         t_step=50,
         temperatures=None,
         constant_volume=False,
-        output_keys=OutputThermodynamic.fields(),
+        output_keys=OutputThermodynamic.keys(),
     ):
         return get_thermal_properties(
             fit_dict=self.fit_dict,

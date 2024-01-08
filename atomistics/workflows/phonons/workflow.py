@@ -223,7 +223,7 @@ class PhonopyWorkflow(Workflow):
             structure.set_initial_magnetic_moments(magmoms)
         return structure
 
-    def analyse_structures(self, output_dict, output_keys=OutputPhonons.fields()):
+    def analyse_structures(self, output_dict, output_keys=OutputPhonons.keys()):
         """
 
         Returns:
@@ -267,7 +267,7 @@ class PhonopyWorkflow(Workflow):
         pretend_real=False,
         band_indices=None,
         is_projection=False,
-        output_keys=OutputThermodynamic.fields(),
+        output_keys=OutputThermodynamic.keys(),
     ):
         """
         Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
