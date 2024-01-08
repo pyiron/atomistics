@@ -77,7 +77,7 @@ class DebyeThermalProperties(object):
 
 
 DebyeOutputThermodynamic = OutputThermodynamic(
-    **{k: getattr(DebyeThermalProperties, k) for k in OutputThermodynamic.fields()}
+    **{k: getattr(DebyeThermalProperties, k) for k in OutputThermodynamic.keys()}
 )
 
 
@@ -232,7 +232,7 @@ def get_thermal_properties(
     temperatures=None,
     constant_volume=False,
     num_steps=50,
-    output_keys=OutputThermodynamic.fields(),
+    output_keys=OutputThermodynamic.keys(),
 ):
     return DebyeOutputThermodynamic.get(
         DebyeThermalProperties(
