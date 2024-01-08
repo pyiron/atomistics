@@ -10,9 +10,8 @@ from typing import TYPE_CHECKING
 
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.wrapper import as_task_dict_evaluator
-from atomistics.shared.output import OutputStatic, OutputMolecularDynamics
+from atomistics.shared.output import OutputStatic, OutputMolecularDynamics, OutputThermalExpansion
 from atomistics.shared.thermal_expansion import get_thermal_expansion_output
-from atomistics.shared.output import OutputThermalExpansion
 from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 
 if TYPE_CHECKING:

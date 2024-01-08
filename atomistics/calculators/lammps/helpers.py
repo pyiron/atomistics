@@ -7,7 +7,7 @@ from pylammpsmpi import LammpsASELibrary
 from atomistics.calculators.lammps.potential import validate_potential_dataframe
 from atomistics.shared.thermal_expansion import get_thermal_expansion_output
 from atomistics.shared.tqdm_iterator import get_tqdm_iterator
-from atomistics.shared.output import OutputMolecularDynamics
+from atomistics.shared.output import OutputMolecularDynamics, OutputThermalExpansion
 
 
 def lammps_run(structure, potential_dataframe, input_template=None, lmp=None, **kwargs):
