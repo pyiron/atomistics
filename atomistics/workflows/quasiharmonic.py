@@ -36,7 +36,7 @@ def get_thermal_properties(
     band_indices=None,
     is_projection=False,
     quantum_mechanical=True,
-    output_keys=OutputThermodynamic.fields(),
+    output_keys=OutputThermodynamic.keys(),
 ):
     """
     Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
@@ -135,7 +135,7 @@ def _get_thermal_properties_quantum_mechanical(
     pretend_real=False,
     band_indices=None,
     is_projection=False,
-    output_keys=OutputThermodynamic.fields(),
+    output_keys=OutputThermodynamic.keys(),
 ):
     """
     Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
@@ -277,7 +277,7 @@ class QuasiHarmonicThermalProperties(object):
 QuasiHarmonicOutputThermodynamic = OutputThermodynamic(
     **{
         k: getattr(QuasiHarmonicThermalProperties, k)
-        for k in OutputThermodynamic.fields()
+        for k in OutputThermodynamic.keys()
     }
 )
 
@@ -381,7 +381,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         band_indices=None,
         is_projection=False,
         quantum_mechanical=True,
-        output_keys=OutputThermodynamic.fields(),
+        output_keys=OutputThermodynamic.keys(),
     ):
         """
         Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
@@ -417,5 +417,5 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             band_indices=band_indices,
             is_projection=is_projection,
             quantum_mechanical=quantum_mechanical,
-            output_keys=OutputThermodynamic.fields(),
+            output_keys=OutputThermodynamic.keys(),
         )

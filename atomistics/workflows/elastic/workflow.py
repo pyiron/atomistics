@@ -10,7 +10,7 @@ from atomistics.workflows.elastic.helper import (
 
 
 elastic_matrix_output_elastic = OutputElastic(
-    **{k: getattr(ElasticProperties, k) for k in OutputElastic.fields()}
+    **{k: getattr(ElasticProperties, k) for k in OutputElastic.keys()}
 )
 
 
@@ -44,7 +44,7 @@ class ElasticMatrixWorkflow(Workflow):
         )
         return {"calc_energy": self._structure_dict}
 
-    def analyse_structures(self, output_dict, output_keys=OutputElastic.fields()):
+    def analyse_structures(self, output_dict, output_keys=OutputElastic.keys()):
         """
 
         Args:

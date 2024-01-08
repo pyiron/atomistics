@@ -120,7 +120,7 @@ def calc_static_with_lammps(
     structure,
     potential_dataframe,
     lmp=None,
-    output_keys=LammpsOutputStatic.fields(),
+    output_keys=LammpsOutputStatic.keys(),
     **kwargs,
 ):
     template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
@@ -151,7 +151,7 @@ def calc_molecular_dynamics_nvt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output_keys=LammpsOutputMolecularDynamics.fields(),
+    output_keys=LammpsOutputMolecularDynamics.keys(),
     **kwargs,
 ):
     init_str = (
@@ -208,7 +208,7 @@ def calc_molecular_dynamics_npt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output_keys=LammpsOutputMolecularDynamics.fields(),
+    output_keys=LammpsOutputMolecularDynamics.keys(),
     **kwargs,
 ):
     init_str = (
@@ -266,7 +266,7 @@ def calc_molecular_dynamics_nph_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output_keys=LammpsOutputMolecularDynamics.fields(),
+    output_keys=LammpsOutputMolecularDynamics.keys(),
     **kwargs,
 ):
     init_str = (
@@ -320,7 +320,7 @@ def calc_molecular_dynamics_langevin_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output_keys=LammpsOutputMolecularDynamics.fields(),
+    output_keys=LammpsOutputMolecularDynamics.keys(),
     **kwargs,
 ):
     init_str = (
@@ -380,7 +380,7 @@ def calc_molecular_dynamics_thermal_expansion_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output_keys=OutputThermalExpansion.fields(),
+    output_keys=OutputThermalExpansion.keys(),
     **kwargs,
 ):
     init_str = (
