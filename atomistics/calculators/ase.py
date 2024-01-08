@@ -10,9 +10,12 @@ from typing import TYPE_CHECKING
 
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.wrapper import as_task_dict_evaluator
-from atomistics.shared.output import OutputStatic, OutputMolecularDynamics
+from atomistics.shared.output import (
+    OutputStatic,
+    OutputMolecularDynamics,
+    OutputThermalExpansion,
+)
 from atomistics.shared.thermal_expansion import get_thermal_expansion_output
-from atomistics.shared.output import OutputThermalExpansion
 from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 
 if TYPE_CHECKING:
@@ -63,15 +66,6 @@ class ASEExecutor(object):
         return self.structure.get_volume()
 
 
-ASEOutputStatic = OutputStatic(
-    **{k: getattr(ASEExecutor, k) for k in OutputStatic.keys()}
-)
-
-ASEOutputMolecularDynamics = OutputMolecularDynamics(
-    **{k: getattr(ASEExecutor, k) for k in OutputMolecularDynamics.keys()}
-)
-
-
 @as_task_dict_evaluator
 def evaluate_with_ase(
     structure: Atoms,
@@ -113,7 +107,9 @@ def calc_static_with_ase(
     ase_calculator,
     output_keys=OutputStatic.keys(),
 ):
-    return ASEOutputStatic.get(
+    return OutputStatic(
+        **{k: getattr(ASEExecutor, k) for k in OutputStatic.keys()}
+    ).get(
         ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator),
         *output_keys,
     )
@@ -124,6 +120,9 @@ def _calc_md_step_with_ase(
 ):
     structure.calc = ase_calculator
     MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
+    ASEOutputMolecularDynamics = OutputMolecularDynamics(
+        **{k: getattr(ASEExecutor, k) for k in OutputMolecularDynamics.keys()}
+    )
     cache = {q: [] for q in output_keys}
     for i in range(int(run / thermo)):
         dyn.run(thermo)
@@ -146,7 +145,7 @@ def calc_molecular_dynamics_npt_with_ase(
     pfactor=2e6 * units.GPa * (units.fs**2),
     temperature=100,
     externalstress=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
-    output_keys=ASEOutputMolecularDynamics.keys(),
+    output_keys=OutputMolecularDynamics.keys(),
 ):
     return _calc_md_step_with_ase(
         dyn=NPT(
@@ -180,7 +179,7 @@ def calc_molecular_dynamics_langevin_with_ase(
     timestep=1 * units.fs,
     temperature=100,
     friction=0.002,
-    output_keys=ASEOutputMolecularDynamics.keys(),
+    output_keys=OutputMolecularDynamics.keys(),
 ):
     return _calc_md_step_with_ase(
         dyn=Langevin(

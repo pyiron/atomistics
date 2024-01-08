@@ -127,14 +127,6 @@ class EnergyVolumeCurveProperties:
         }
 
 
-EnergyVolumeCurveOutputEnergyVolumeCurve = OutputEnergyVolumeCurve(
-    **{
-        k: getattr(EnergyVolumeCurveProperties, k)
-        for k in OutputEnergyVolumeCurve.keys()
-    }
-)
-
-
 class EnergyVolumeCurveWorkflow(Workflow):
     def __init__(
         self,
@@ -183,7 +175,12 @@ class EnergyVolumeCurveWorkflow(Workflow):
     def analyse_structures(
         self, output_dict, output_keys=OutputEnergyVolumeCurve.keys()
     ):
-        self._fit_dict = EnergyVolumeCurveOutputEnergyVolumeCurve.get(
+        self._fit_dict = OutputEnergyVolumeCurve(
+            **{
+                k: getattr(EnergyVolumeCurveProperties, k)
+                for k in OutputEnergyVolumeCurve.keys()
+            }
+        ).get(
             EnergyVolumeCurveProperties(
                 fit_module=fit_ev_curve_internal(
                     volume_lst=get_volume_lst(structure_dict=self._structure_dict),

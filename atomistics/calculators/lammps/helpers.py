@@ -5,10 +5,9 @@ import numpy as np
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.lammps.potential import validate_potential_dataframe
-from atomistics.calculators.lammps.output import LammpsOutputMolecularDynamics
 from atomistics.shared.thermal_expansion import get_thermal_expansion_output
-from atomistics.shared.output import OutputThermalExpansion
 from atomistics.shared.tqdm_iterator import get_tqdm_iterator
+from atomistics.shared.output import OutputMolecularDynamics, OutputThermalExpansion
 
 
 def lammps_run(structure, potential_dataframe, input_template=None, lmp=None, **kwargs):
@@ -44,11 +43,21 @@ def lammps_calc_md_step(
     lmp_instance,
     run_str,
     run,
-    output_keys=LammpsOutputMolecularDynamics.keys(),
+    output_keys=OutputMolecularDynamics.keys(),
 ):
     run_str_rendered = Template(run_str).render(run=run)
     lmp_instance.interactive_lib_command(run_str_rendered)
-    return LammpsOutputMolecularDynamics.get(lmp_instance, *output_keys)
+    return OutputMolecularDynamics(
+        positions=LammpsASELibrary.interactive_positions_getter,
+        cell=LammpsASELibrary.interactive_cells_getter,
+        forces=LammpsASELibrary.interactive_forces_getter,
+        temperature=LammpsASELibrary.interactive_temperatures_getter,
+        energy_pot=LammpsASELibrary.interactive_energy_pot_getter,
+        energy_tot=LammpsASELibrary.interactive_energy_tot_getter,
+        pressure=LammpsASELibrary.interactive_pressures_getter,
+        velocities=LammpsASELibrary.interactive_velocities_getter,
+        volume=LammpsASELibrary.interactive_volume_getter,
+    ).get(lmp_instance, *output_keys)
 
 
 def lammps_calc_md(
@@ -56,7 +65,7 @@ def lammps_calc_md(
     run_str,
     run,
     thermo,
-    output_keys=LammpsOutputMolecularDynamics.keys(),
+    output_keys=OutputMolecularDynamics.keys(),
 ):
     results_lst = [
         lammps_calc_md_step(

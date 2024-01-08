@@ -27,12 +27,10 @@ from atomistics.calculators.lammps.commands import (
     LAMMPS_RUN,
     LAMMPS_MINIMIZE_VOLUME,
 )
-from atomistics.calculators.lammps.output import (
-    LammpsOutputMolecularDynamics,
-    LammpsOutputStatic,
-)
 from atomistics.calculators.wrapper import as_task_dict_evaluator
-from atomistics.shared.output import OutputThermalExpansion
+from atomistics.shared.thermal_expansion import OutputThermalExpansion
+from atomistics.shared.output import OutputStatic, OutputMolecularDynamics
+
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -120,7 +118,7 @@ def calc_static_with_lammps(
     structure,
     potential_dataframe,
     lmp=None,
-    output_keys=LammpsOutputStatic.keys(),
+    output_keys=OutputStatic.keys(),
     **kwargs,
 ):
     template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
@@ -134,7 +132,12 @@ def calc_static_with_lammps(
         lmp=lmp,
         **kwargs,
     )
-    result_dict = LammpsOutputStatic.get(lmp_instance, *output_keys)
+    result_dict = OutputStatic(
+        forces=LammpsASELibrary.interactive_forces_getter,
+        energy=LammpsASELibrary.interactive_energy_pot_getter,
+        stress=LammpsASELibrary.interactive_pressures_getter,
+        volume=LammpsASELibrary.interactive_volume_getter,
+    ).get(lmp_instance, *output_keys)
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 
@@ -151,7 +154,7 @@ def calc_molecular_dynamics_nvt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output_keys=LammpsOutputMolecularDynamics.keys(),
+    output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ):
     init_str = (
@@ -208,7 +211,7 @@ def calc_molecular_dynamics_npt_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output_keys=LammpsOutputMolecularDynamics.keys(),
+    output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ):
     init_str = (
@@ -266,7 +269,7 @@ def calc_molecular_dynamics_nph_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output_keys=LammpsOutputMolecularDynamics.keys(),
+    output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ):
     init_str = (
@@ -320,7 +323,7 @@ def calc_molecular_dynamics_langevin_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output_keys=LammpsOutputMolecularDynamics.keys(),
+    output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ):
     init_str = (

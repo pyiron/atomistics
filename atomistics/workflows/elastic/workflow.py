@@ -9,11 +9,6 @@ from atomistics.workflows.elastic.helper import (
 )
 
 
-elastic_matrix_output_elastic = OutputElastic(
-    **{k: getattr(ElasticProperties, k) for k in OutputElastic.keys()}
-)
-
-
 class ElasticMatrixWorkflow(Workflow):
     def __init__(
         self, structure, num_of_point=5, eps_range=0.005, sqrt_eta=True, fit_order=2
@@ -66,6 +61,6 @@ class ElasticMatrixWorkflow(Workflow):
         self._data["strain_energy"] = strain_energy
         self._data["e0"] = ene0
         self._data["A2"] = A2
-        return elastic_matrix_output_elastic.get(
-            ElasticProperties(elastic_matrix=elastic_matrix), *output_keys
-        )
+        return OutputElastic(
+            **{k: getattr(ElasticProperties, k) for k in OutputElastic.keys()}
+        ).get(ElasticProperties(elastic_matrix=elastic_matrix), *output_keys)
