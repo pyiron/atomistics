@@ -28,7 +28,7 @@ from atomistics.calculators.lammps.commands import (
     LAMMPS_MINIMIZE_VOLUME,
 )
 from atomistics.calculators.wrapper import as_task_dict_evaluator
-from atomistics.shared.thermal_expansion import OutputThermalExpansionProperties
+from atomistics.shared.thermal_expansion import OutputThermalExpansion
 from atomistics.shared.output import OutputStatic, OutputMolecularDynamics
 
 
@@ -383,7 +383,7 @@ def calc_molecular_dynamics_thermal_expansion_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output_keys=OutputThermalExpansionProperties.keys(),
+    output_keys=OutputThermalExpansion.keys(),
     **kwargs,
 ):
     init_str = (
