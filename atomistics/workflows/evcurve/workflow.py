@@ -178,7 +178,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         self._fit_dict = OutputEnergyVolumeCurve(
             **{
                 k: getattr(EnergyVolumeCurveProperties, k)
-                for k in OutputEnergyVolumeCurve.fields()
+                for k in OutputEnergyVolumeCurve.keys()
             }
         ).get(
             EnergyVolumeCurveProperties(

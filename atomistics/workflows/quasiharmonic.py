@@ -115,7 +115,7 @@ def get_thermal_properties(
     return OutputThermodynamic(
         **{
             k: getattr(QuasiHarmonicThermalProperties, k)
-            for k in OutputThermodynamic.fields()
+            for k in OutputThermodynamic.keys()
         }
     ).get(
         QuasiHarmonicThermalProperties(

@@ -234,7 +234,7 @@ class PhonopyWorkflow(Workflow):
         forces_lst = [output_dict[k] for k in sorted(output_dict.keys())]
         self.phonopy.forces = forces_lst
         self._phonopy_dict = OutputPhonons(
-            **{k: getattr(PhonopyProperties, k) for k in OutputPhonons.fields()}
+            **{k: getattr(PhonopyProperties, k) for k in OutputPhonons.keys()}
         ).get(
             PhonopyProperties(
                 phonopy_instance=self.phonopy,
@@ -296,7 +296,7 @@ class PhonopyWorkflow(Workflow):
         return OutputThermodynamic(
             **{
                 k: getattr(PhonopyThermalProperties, k)
-                for k in OutputThermodynamic.fields()
+                for k in OutputThermodynamic.keys()
             }
         ).get(PhonopyThermalProperties(phonopy_instance=self.phonopy), *output_keys)
 

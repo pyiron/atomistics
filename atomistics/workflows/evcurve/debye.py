@@ -230,7 +230,7 @@ def get_thermal_properties(
     output_keys=OutputThermodynamic.keys(),
 ):
     return OutputThermodynamic(
-        **{k: getattr(DebyeThermalProperties, k) for k in OutputThermodynamic.fields()}
+        **{k: getattr(DebyeThermalProperties, k) for k in OutputThermodynamic.keys()}
     ).get(
         DebyeThermalProperties(
             fit_dict=fit_dict,
