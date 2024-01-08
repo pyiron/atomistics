@@ -32,7 +32,7 @@ from atomistics.calculators.lammps.output import (
     LammpsOutputStatic,
 )
 from atomistics.calculators.wrapper import as_task_dict_evaluator
-from atomistics.shared.thermal_expansion import OutputThermalExpansionProperties
+from atomistics.shared.output import OutputThermalExpansion
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -380,7 +380,7 @@ def calc_molecular_dynamics_thermal_expansion_with_lammps(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output_keys=OutputThermalExpansionProperties.keys(),
+    output_keys=OutputThermalExpansion.keys(),
     **kwargs,
 ):
     init_str = (
