@@ -11,10 +11,8 @@ from typing import TYPE_CHECKING
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.shared.output import OutputStatic, OutputMolecularDynamics
-from atomistics.shared.thermal_expansion import (
-    OutputThermalExpansionProperties,
-    ThermalExpansionProperties,
-)
+from atomistics.shared.thermal_expansion import get_thermal_expansion_output
+from atomistics.shared.output import OutputThermalExpansion
 from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 
 if TYPE_CHECKING:
@@ -232,7 +230,7 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
     ttime=100 * units.fs,
     pfactor=2e6 * units.GPa * (units.fs**2),
     externalstress=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
-    output_keys=OutputThermalExpansionProperties.fields(),
+    output_keys=OutputThermalExpansion.fields(),
 ):
     structure_current = structure.copy()
     temperature_lst = np.arange(
@@ -254,9 +252,4 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
         structure_current.set_cell(cell=result_dict["cell"][-1], scale_atoms=True)
         temperature_md_lst.append(result_dict["temperature"][-1])
         volume_md_lst.append(result_dict["volume"][-1])
-    return OutputThermalExpansionProperties.get(
-        ThermalExpansionProperties(
-            temperatures_lst=temperature_md_lst, volumes_lst=volume_md_lst
-        ),
-        *output_keys,
-    )
+    return get_thermal_expansion_output(temperatures_lst=temperature_md_lst, volumes_lst=volume_md_lst, output_keys=output_keys)

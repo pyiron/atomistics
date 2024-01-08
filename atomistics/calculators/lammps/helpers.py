@@ -6,10 +6,8 @@ from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.lammps.potential import validate_potential_dataframe
 from atomistics.calculators.lammps.output import LammpsOutputMolecularDynamics
-from atomistics.shared.thermal_expansion import (
-    OutputThermalExpansionProperties,
-    ThermalExpansionProperties,
-)
+from atomistics.shared.thermal_expansion import get_thermal_expansion_output
+from atomistics.shared.output import OutputThermalExpansion
 from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 
 
@@ -88,7 +86,7 @@ def lammps_thermal_expansion_loop(
     seed=4928459,
     dist="gaussian",
     lmp=None,
-    output_keys=OutputThermalExpansionProperties.fields(),
+    output_keys=OutputThermalExpansion.fields(),
     **kwargs,
 ):
     lmp_instance = lammps_run(
@@ -121,12 +119,7 @@ def lammps_thermal_expansion_loop(
         volume_md_lst.append(lmp_instance.interactive_volume_getter())
         temperature_md_lst.append(lmp_instance.interactive_temperatures_getter())
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
-    return OutputThermalExpansionProperties.get(
-        ThermalExpansionProperties(
-            temperatures_lst=temperature_md_lst, volumes_lst=volume_md_lst
-        ),
-        *output_keys,
-    )
+    return get_thermal_expansion_output(temperatures_lst=temperature_md_lst, volumes_lst=volume_md_lst, output_keys=output_keys)
 
 
 def lammps_shutdown(lmp_instance, close_instance=True):
