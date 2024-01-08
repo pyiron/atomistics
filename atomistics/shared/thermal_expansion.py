@@ -14,8 +14,5 @@ class ThermalExpansionProperties:
 
 
 OutputThermalExpansionProperties = OutputThermalExpansion(
-    **{
-        k: getattr(ThermalExpansionProperties, k)
-        for k in OutputThermalExpansion.fields()
-    }
+    **{k: getattr(ThermalExpansionProperties, k) for k in OutputThermalExpansion.keys()}
 )

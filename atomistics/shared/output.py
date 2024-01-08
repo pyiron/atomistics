@@ -4,7 +4,7 @@ import dataclasses
 @dataclasses.dataclass
 class Output:
     @classmethod
-    def fields(cls):
+    def keys(cls):
         return tuple(field.name for field in dataclasses.fields(cls))
 
     def get(self, engine, *output: str) -> dict:
