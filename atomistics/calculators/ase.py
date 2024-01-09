@@ -98,7 +98,9 @@ def _calc_md_step_with_ase(
         if "energy_pot" in output_keys:
             cache["energy_pot"].append(structure.get_potential_energy())
         if "energy_tot" in output_keys:
-            cache["energy_tot"].append(structure.get_potential_energy() + structure.get_kinetic_energy())
+            cache["energy_tot"].append(
+                structure.get_potential_energy() + structure.get_kinetic_energy()
+            )
         if "pressure" in output_keys:
             cache["pressure"].append(structure.get_stress(voigt=False))
         if "velocities" in output_keys:
