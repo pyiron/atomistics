@@ -181,7 +181,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
                 for k in OutputEnergyVolumeCurve.keys()
             }
         ).get(
-            EnergyVolumeCurveProperties(
+            engine=EnergyVolumeCurveProperties(
                 fit_module=fit_ev_curve_internal(
                     volume_lst=get_volume_lst(structure_dict=self._structure_dict),
                     energy_lst=get_energy_lst(
@@ -191,7 +191,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
                     fit_order=self.fit_order,
                 )
             ),
-            *output_keys,
+            output_keys=output_keys,
         )
         return self.fit_dict
 

@@ -236,7 +236,7 @@ class PhonopyWorkflow(Workflow):
         self._phonopy_dict = OutputPhonons(
             **{k: getattr(PhonopyProperties, k) for k in OutputPhonons.keys()}
         ).get(
-            PhonopyProperties(
+            engine=PhonopyProperties(
                 phonopy_instance=self.phonopy,
                 dos_mesh=self._dos_mesh,
                 shift=None,
@@ -253,7 +253,7 @@ class PhonopyWorkflow(Workflow):
                 use_tetrahedron_method=True,
                 npoints=101,
             ),
-            *output_keys,
+            output_keys=output_keys,
         )
         return self._phonopy_dict
 
@@ -298,7 +298,7 @@ class PhonopyWorkflow(Workflow):
                 k: getattr(PhonopyThermalProperties, k)
                 for k in OutputThermodynamic.keys()
             }
-        ).get(PhonopyThermalProperties(phonopy_instance=self.phonopy), *output_keys)
+        ).get(engine=PhonopyThermalProperties(phonopy_instance=self.phonopy), output_keys=output_keys)
 
     def get_dynamical_matrix(self, npoints=101):
         """

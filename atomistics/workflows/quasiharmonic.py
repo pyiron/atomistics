@@ -118,14 +118,14 @@ def get_thermal_properties(
             for k in OutputThermodynamic.keys()
         }
     ).get(
-        QuasiHarmonicThermalProperties(
+        engine=QuasiHarmonicThermalProperties(
             temperatures=temperatures,
             thermal_properties_dict=tp_collect_dict,
             strain_lst=strain_lst,
             volumes_lst=volume_lst,
             volumes_selected_lst=vol_lst,
         ),
-        *output_keys,
+        output_keys=output_keys,
     )
 
 

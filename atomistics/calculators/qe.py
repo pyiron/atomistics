@@ -209,7 +209,7 @@ def calc_static_with_qe(
     )
     return OutputStatic(
         **{k: getattr(QEStaticParser, k) for k in OutputStatic.keys()}
-    ).get(QEStaticParser(filename=output_file_name), *output_keys)
+    ).get(engine=QEStaticParser(filename=output_file_name), output_keys=output_keys)
 
 
 @as_task_dict_evaluator

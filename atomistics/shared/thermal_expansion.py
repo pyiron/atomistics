@@ -20,8 +20,8 @@ def get_thermal_expansion_output(temperatures_lst, volumes_lst, output_keys):
             for k in OutputThermalExpansion.keys()
         }
     ).get(
-        ThermalExpansionProperties(
+        engine=ThermalExpansionProperties(
             temperatures_lst=temperatures_lst, volumes_lst=volumes_lst
         ),
-        *output_keys,
+        output_keys=output_keys,
     )

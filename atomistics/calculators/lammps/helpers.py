@@ -57,7 +57,7 @@ def lammps_calc_md_step(
         pressure=LammpsASELibrary.interactive_pressures_getter,
         velocities=LammpsASELibrary.interactive_velocities_getter,
         volume=LammpsASELibrary.interactive_volume_getter,
-    ).get(lmp_instance, *output_keys)
+    ).get(engine=lmp_instance, output_keys=output_keys)
 
 
 def lammps_calc_md(
