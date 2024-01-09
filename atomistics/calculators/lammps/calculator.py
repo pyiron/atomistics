@@ -132,12 +132,15 @@ def calc_static_with_lammps(
         lmp=lmp,
         **kwargs,
     )
-    result_dict = OutputStatic(
-        forces=lmp_instance.interactive_forces_getter,
-        energy=lmp_instance.interactive_energy_pot_getter,
-        stress=lmp_instance.interactive_pressures_getter,
-        volume=lmp_instance.interactive_volume_getter,
-    ).get(*output_keys)
+    result_dict = {}
+    if "forces" in output_keys:
+        result_dict["forces"] = lmp_instance.interactive_forces_getter()
+    if "energy" in output_keys:
+        result_dict["energy"] = lmp_instance.interactive_energy_pot_getter()
+    if "stress" in output_keys:
+        result_dict["stress"] = lmp_instance.interactive_pressures_getter()
+    if "volume" in output_keys:
+        result_dict["volume"] = lmp_instance.interactive_volume_getter()
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 

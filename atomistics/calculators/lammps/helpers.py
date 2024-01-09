@@ -47,17 +47,26 @@ def lammps_calc_md_step(
 ):
     run_str_rendered = Template(run_str).render(run=run)
     lmp_instance.interactive_lib_command(run_str_rendered)
-    return OutputMolecularDynamics(
-        positions=lmp_instance.interactive_positions_getter,
-        cell=lmp_instance.interactive_cells_getter,
-        forces=lmp_instance.interactive_forces_getter,
-        temperature=lmp_instance.interactive_temperatures_getter,
-        energy_pot=lmp_instance.interactive_energy_pot_getter,
-        energy_tot=lmp_instance.interactive_energy_tot_getter,
-        pressure=lmp_instance.interactive_pressures_getter,
-        velocities=lmp_instance.interactive_velocities_getter,
-        volume=lmp_instance.interactive_volume_getter,
-    ).get(*output_keys)
+    result_dict = {}
+    if "positions" in output_keys:
+        result_dict["positions"] = lmp_instance.interactive_positions_getter()
+    if "cell" in output_keys:
+        result_dict["cell"] = lmp_instance.interactive_cells_getter()
+    if "forces" in output_keys:
+        result_dict["forces"] = lmp_instance.interactive_forces_getter()
+    if "temperature" in output_keys:
+        result_dict["temperature"] = lmp_instance.interactive_temperatures_getter()
+    if "energy_pot" in output_keys:
+        result_dict["energy_pot"] = lmp_instance.interactive_energy_pot_getter()
+    if "energy_tot" in output_keys:
+        result_dict["energy_tot"] = lmp_instance.interactive_energy_tot_getter()
+    if "pressure" in output_keys:
+        result_dict["pressure"] = lmp_instance.interactive_pressures_getter()
+    if "velocities" in output_keys:
+        result_dict["velocities"] = lmp_instance.interactive_velocities_getter()
+    if "volume" in output_keys:
+        result_dict["volume"] = lmp_instance.interactive_volume_getter()
+    return result_dict
 
 
 def lammps_calc_md(
