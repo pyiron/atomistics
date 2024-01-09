@@ -187,7 +187,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         )
         self._fit_dict = OutputEnergyVolumeCurve(
             **{k: getattr(evcurve, k) for k in OutputEnergyVolumeCurve.keys()}
-        ).get(*output_keys)
+        ).get(output_keys=output_keys)
         return self.fit_dict
 
     def get_volume_lst(self):

@@ -64,4 +64,4 @@ class ElasticMatrixWorkflow(Workflow):
         elastic = ElasticProperties(elastic_matrix=elastic_matrix)
         return OutputElastic(
             **{k: getattr(elastic, k) for k in OutputElastic.keys()}
-        ).get(*output_keys)
+        ).get(output_keys=output_keys)
