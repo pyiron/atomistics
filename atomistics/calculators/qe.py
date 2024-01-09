@@ -207,10 +207,17 @@ def calc_static_with_qe(
     call_qe_via_ase_command(
         calculation_name=calculation_name, working_directory=working_directory
     )
-    parser = QEStaticParser(filename=output_file_name)
-    return OutputStatic(**{k: getattr(parser, k) for k in OutputStatic.keys()}).get(
-        *output_keys
-    )
+    parser = io.read_pw_scf(filename=output_file_name, use_alat=True)
+    result_dict = {}
+    if "forces" in output_keys:
+        result_dict["forces"] = parser.forces
+    if "energy" in output_keys:
+        result_dict["energy"] = parser.etot
+    if "stress" in output_keys:
+        result_dict["stress"] = parser.stress
+    if "volume" in output_keys:
+        result_dict["forces"] = parser.volume
+    return result_dict
 
 
 @as_task_dict_evaluator

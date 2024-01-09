@@ -117,30 +117,6 @@ class PhonopyProperties(object):
         return self._force_constants
 
 
-class PhonopyThermalProperties(object):
-    def __init__(self, phonopy_instance):
-        self._phonopy = phonopy_instance
-        self._thermal_properties = phonopy_instance.get_thermal_properties_dict()
-
-    def free_energy(self):
-        return self._thermal_properties["free_energy"] * kJ_mol_to_eV
-
-    def temperatures(self):
-        return self._thermal_properties["temperatures"]
-
-    def entropy(self):
-        return self._thermal_properties["entropy"]
-
-    def heat_capacity(self):
-        return self._thermal_properties["heat_capacity"]
-
-    def volumes(self):
-        return np.array(
-            [self._phonopy.unitcell.get_volume()]
-            * len(self._thermal_properties["temperatures"])
-        )
-
-
 class PhonopyWorkflow(Workflow):
     """
     Phonopy wrapper for the calculation of free energy in the framework of quasi harmonic approximation.
@@ -250,9 +226,7 @@ class PhonopyWorkflow(Workflow):
             use_tetrahedron_method=True,
             npoints=101,
         )
-        self._phonopy_dict = OutputPhonons(
-            **{k: getattr(phono, k) for k in OutputPhonons.keys()}
-        ).get(*output_keys)
+        self._phonopy_dict = {k: getattr(phono, k) for k in output_keys}
         return self._phonopy_dict
 
     def get_thermal_properties(
@@ -291,10 +265,19 @@ class PhonopyWorkflow(Workflow):
             band_indices=band_indices,
             is_projection=is_projection,
         )
-        phono = PhonopyThermalProperties(phonopy_instance=self.phonopy)
-        return OutputThermodynamic(
-            **{k: getattr(phono, k) for k in OutputThermodynamic.keys()}
-        ).get(*output_keys)
+        thermal_properties = self.phonopy.get_thermal_properties_dict()
+        output_dict = {}
+        for key in OutputThermodynamic.keys():
+            if key == "free_energy" and key in output_keys:
+                output_dict[key] = thermal_properties[key] * kJ_mol_to_eV
+            elif key == "volumes" and key in output_keys:
+                output_dict["volumes"] = np.array(
+                    [self.phonopy.unitcell.get_volume()]
+                    * len(thermal_properties["temperatures"])
+                )
+            elif key in output_keys:
+                output_dict[key] = thermal_properties[key]
+        return output_dict
 
     def get_dynamical_matrix(self, npoints=101):
         """
