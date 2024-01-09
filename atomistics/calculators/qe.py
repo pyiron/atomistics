@@ -207,9 +207,10 @@ def calc_static_with_qe(
     call_qe_via_ase_command(
         calculation_name=calculation_name, working_directory=working_directory
     )
-    return OutputStatic(
-        **{k: getattr(QEStaticParser, k) for k in OutputStatic.keys()}
-    ).get(engine=QEStaticParser(filename=output_file_name), output_keys=output_keys)
+    parser = QEStaticParser(filename=output_file_name)
+    return OutputStatic(**{k: getattr(parser, k) for k in OutputStatic.keys()}).get(
+        output_keys=output_keys
+    )
 
 
 @as_task_dict_evaluator

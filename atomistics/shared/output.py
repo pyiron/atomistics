@@ -7,8 +7,8 @@ class Output:
     def keys(cls):
         return tuple(field.name for field in dataclasses.fields(cls))
 
-    def get(self, engine, output_keys: str) -> dict:
-        return {q: getattr(self, q)(engine) for q in output_keys}
+    def get(self, output_keys: tuple) -> dict:
+        return {q: getattr(self, q)() for q in output_keys}
 
 
 @dataclasses.dataclass

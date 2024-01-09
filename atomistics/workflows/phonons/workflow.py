@@ -233,28 +233,26 @@ class PhonopyWorkflow(Workflow):
             output_dict = output_dict["forces"]
         forces_lst = [output_dict[k] for k in sorted(output_dict.keys())]
         self.phonopy.forces = forces_lst
-        self._phonopy_dict = OutputPhonons(
-            **{k: getattr(PhonopyProperties, k) for k in OutputPhonons.keys()}
-        ).get(
-            engine=PhonopyProperties(
-                phonopy_instance=self.phonopy,
-                dos_mesh=self._dos_mesh,
-                shift=None,
-                is_time_reversal=True,
-                is_mesh_symmetry=True,
-                with_eigenvectors=False,
-                with_group_velocities=False,
-                is_gamma_center=False,
-                number_of_snapshots=self._number_of_snapshots,
-                sigma=None,
-                freq_min=None,
-                freq_max=None,
-                freq_pitch=None,
-                use_tetrahedron_method=True,
-                npoints=101,
-            ),
-            output_keys=output_keys,
+        phono = PhonopyProperties(
+            phonopy_instance=self.phonopy,
+            dos_mesh=self._dos_mesh,
+            shift=None,
+            is_time_reversal=True,
+            is_mesh_symmetry=True,
+            with_eigenvectors=False,
+            with_group_velocities=False,
+            is_gamma_center=False,
+            number_of_snapshots=self._number_of_snapshots,
+            sigma=None,
+            freq_min=None,
+            freq_max=None,
+            freq_pitch=None,
+            use_tetrahedron_method=True,
+            npoints=101,
         )
+        self._phonopy_dict = OutputPhonons(
+            **{k: getattr(phono, k) for k in OutputPhonons.keys()}
+        ).get(output_keys=output_keys)
         return self._phonopy_dict
 
     def get_thermal_properties(
@@ -293,15 +291,10 @@ class PhonopyWorkflow(Workflow):
             band_indices=band_indices,
             is_projection=is_projection,
         )
+        phono = PhonopyThermalProperties(phonopy_instance=self.phonopy)
         return OutputThermodynamic(
-            **{
-                k: getattr(PhonopyThermalProperties, k)
-                for k in OutputThermodynamic.keys()
-            }
-        ).get(
-            engine=PhonopyThermalProperties(phonopy_instance=self.phonopy),
-            output_keys=output_keys,
-        )
+            **{k: getattr(phono, k) for k in OutputThermodynamic.keys()}
+        ).get(output_keys=output_keys)
 
     def get_dynamical_matrix(self, npoints=101):
         """

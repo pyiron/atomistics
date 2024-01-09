@@ -48,16 +48,16 @@ def lammps_calc_md_step(
     run_str_rendered = Template(run_str).render(run=run)
     lmp_instance.interactive_lib_command(run_str_rendered)
     return OutputMolecularDynamics(
-        positions=LammpsASELibrary.interactive_positions_getter,
-        cell=LammpsASELibrary.interactive_cells_getter,
-        forces=LammpsASELibrary.interactive_forces_getter,
-        temperature=LammpsASELibrary.interactive_temperatures_getter,
-        energy_pot=LammpsASELibrary.interactive_energy_pot_getter,
-        energy_tot=LammpsASELibrary.interactive_energy_tot_getter,
-        pressure=LammpsASELibrary.interactive_pressures_getter,
-        velocities=LammpsASELibrary.interactive_velocities_getter,
-        volume=LammpsASELibrary.interactive_volume_getter,
-    ).get(engine=lmp_instance, output_keys=output_keys)
+        positions=lmp_instance.interactive_positions_getter,
+        cell=lmp_instance.interactive_cells_getter,
+        forces=lmp_instance.interactive_forces_getter,
+        temperature=lmp_instance.interactive_temperatures_getter,
+        energy_pot=lmp_instance.interactive_energy_pot_getter,
+        energy_tot=lmp_instance.interactive_energy_tot_getter,
+        pressure=lmp_instance.interactive_pressures_getter,
+        velocities=lmp_instance.interactive_velocities_getter,
+        volume=lmp_instance.interactive_volume_getter,
+    ).get(output_keys=output_keys)
 
 
 def lammps_calc_md(
