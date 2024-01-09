@@ -26,9 +26,8 @@ if TYPE_CHECKING:
 
 
 class ASEExecutor(object):
-    def __init__(self, ase_structure, ase_calculator):
+    def __init__(self, ase_structure):
         self.structure = ase_structure
-        self.structure.calc = ase_calculator
 
     def forces(self):
         return self.structure.get_forces()
@@ -107,7 +106,8 @@ def calc_static_with_ase(
     ase_calculator,
     output_keys=OutputStatic.keys(),
 ):
-    ase_exe = ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator)
+    structure.calc = ase_calculator
+    ase_exe = ASEExecutor(ase_structure=structure)
     return OutputStatic(**{k: getattr(ase_exe, k) for k in OutputStatic.keys()}).get(
         *output_keys
     )
@@ -121,9 +121,7 @@ def _calc_md_step_with_ase(
     cache = {q: [] for q in output_keys}
     for i in range(int(run / thermo)):
         dyn.run(thermo)
-        ase_instance = ASEExecutor(
-            ase_structure=structure, ase_calculator=ase_calculator
-        )
+        ase_instance = ASEExecutor(ase_structure=structure)
         calc_dict = OutputMolecularDynamics(
             **{k: getattr(ase_instance, k) for k in OutputMolecularDynamics.keys()}
         ).get(*output_keys)
