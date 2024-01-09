@@ -229,18 +229,16 @@ def get_thermal_properties(
     num_steps=50,
     output_keys=OutputThermodynamic.keys(),
 ):
-    return OutputThermodynamic(
-        **{k: getattr(DebyeThermalProperties, k) for k in OutputThermodynamic.keys()}
-    ).get(
-        DebyeThermalProperties(
-            fit_dict=fit_dict,
-            masses=masses,
-            t_min=t_min,
-            t_max=t_max,
-            t_step=t_step,
-            temperatures=temperatures,
-            constant_volume=constant_volume,
-            num_steps=num_steps,
-        ),
-        *output_keys,
+    debye_model = DebyeThermalProperties(
+        fit_dict=fit_dict,
+        masses=masses,
+        t_min=t_min,
+        t_max=t_max,
+        t_step=t_step,
+        temperatures=temperatures,
+        constant_volume=constant_volume,
+        num_steps=num_steps,
     )
+    return OutputThermodynamic(
+        **{k: getattr(debye_model, k) for k in OutputThermodynamic.keys()}
+    ).get(*output_keys)
