@@ -108,9 +108,9 @@ def calc_static_with_ase(
     output_keys=OutputStatic.keys(),
 ):
     ase_exe = ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator)
-    return OutputStatic(
-        **{k: getattr(ase_exe, k) for k in OutputStatic.keys()}
-    ).get(*output_keys)
+    return OutputStatic(**{k: getattr(ase_exe, k) for k in OutputStatic.keys()}).get(
+        *output_keys
+    )
 
 
 def _calc_md_step_with_ase(
@@ -121,7 +121,9 @@ def _calc_md_step_with_ase(
     cache = {q: [] for q in output_keys}
     for i in range(int(run / thermo)):
         dyn.run(thermo)
-        ase_instance = ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator)
+        ase_instance = ASEExecutor(
+            ase_structure=structure, ase_calculator=ase_calculator
+        )
         calc_dict = OutputMolecularDynamics(
             **{k: getattr(ase_instance, k) for k in OutputMolecularDynamics.keys()}
         ).get(*output_keys)
