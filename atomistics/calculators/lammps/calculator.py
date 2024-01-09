@@ -28,8 +28,11 @@ from atomistics.calculators.lammps.commands import (
     LAMMPS_MINIMIZE_VOLUME,
 )
 from atomistics.calculators.wrapper import as_task_dict_evaluator
-from atomistics.shared.thermal_expansion import OutputThermalExpansion
-from atomistics.shared.output import OutputStatic, OutputMolecularDynamics
+from atomistics.shared.output import (
+    OutputThermalExpansion,
+    OutputStatic,
+    OutputMolecularDynamics,
+)
 
 
 if TYPE_CHECKING:
