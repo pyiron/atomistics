@@ -121,7 +121,7 @@ def get_thermal_properties(
     )
     return OutputThermodynamic(
         **{k: getattr(qhp, k) for k in OutputThermodynamic.keys()}
-    ).get(*output_keys)
+    ).get(output_keys=output_keys)
 
 
 def _get_thermal_properties_quantum_mechanical(
