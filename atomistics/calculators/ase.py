@@ -107,12 +107,10 @@ def calc_static_with_ase(
     ase_calculator,
     output_keys=OutputStatic.keys(),
 ):
+    ase_exe = ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator)
     return OutputStatic(
-        **{k: getattr(ASEExecutor, k) for k in OutputStatic.keys()}
-    ).get(
-        ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator),
-        *output_keys,
-    )
+        **{k: getattr(ase_exe, k) for k in OutputStatic.keys()}
+    ).get(*output_keys)
 
 
 def _calc_md_step_with_ase(
@@ -120,16 +118,13 @@ def _calc_md_step_with_ase(
 ):
     structure.calc = ase_calculator
     MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
-    ASEOutputMolecularDynamics = OutputMolecularDynamics(
-        **{k: getattr(ASEExecutor, k) for k in OutputMolecularDynamics.keys()}
-    )
     cache = {q: [] for q in output_keys}
     for i in range(int(run / thermo)):
         dyn.run(thermo)
-        calc_dict = ASEOutputMolecularDynamics.get(
-            ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator),
-            *output_keys,
-        )
+        ase_instance = ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator)
+        calc_dict = OutputMolecularDynamics(
+            **{k: getattr(ase_instance, k) for k in OutputMolecularDynamics.keys()}
+        ).get(*output_keys)
         for k, v in calc_dict.items():
             cache[k].append(v)
     return {q: np.array(cache[q]) for q in output_keys}
