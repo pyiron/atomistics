@@ -298,7 +298,10 @@ class PhonopyWorkflow(Workflow):
                 k: getattr(PhonopyThermalProperties, k)
                 for k in OutputThermodynamic.keys()
             }
-        ).get(engine=PhonopyThermalProperties(phonopy_instance=self.phonopy), output_keys=output_keys)
+        ).get(
+            engine=PhonopyThermalProperties(phonopy_instance=self.phonopy),
+            output_keys=output_keys,
+        )
 
     def get_dynamical_matrix(self, npoints=101):
         """
