@@ -226,7 +226,7 @@ class PhonopyWorkflow(Workflow):
             use_tetrahedron_method=True,
             npoints=101,
         )
-        self._phonopy_dict = {k: getattr(phono, k) for k in output_keys}
+        self._phonopy_dict = {k: getattr(phono, k)() for k in output_keys}
         return self._phonopy_dict
 
     def get_thermal_properties(
