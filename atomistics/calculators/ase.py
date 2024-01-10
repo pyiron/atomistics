@@ -113,25 +113,6 @@ def calc_static_with_ase(
     )
 
 
-def _calc_md_step_with_ase(
-    dyn, structure, ase_calculator, temperature, run, thermo, output_keys
-):
-    structure.calc = ase_calculator
-    MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
-    cache = {q: [] for q in output_keys}
-    for i in range(int(run / thermo)):
-        dyn.run(thermo)
-        ase_instance = ASEExecutor(
-            ase_structure=structure, ase_calculator=ase_calculator
-        )
-        calc_dict = OutputMolecularDynamics(
-            **{k: getattr(ase_instance, k) for k in OutputMolecularDynamics.keys()}
-        ).get(output_keys=output_keys)
-        for k, v in calc_dict.items():
-            cache[k].append(v)
-    return {q: np.array(cache[q]) for q in output_keys}
-
-
 def calc_molecular_dynamics_npt_with_ase(
     structure,
     ase_calculator,
@@ -144,7 +125,7 @@ def calc_molecular_dynamics_npt_with_ase(
     externalstress=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
     output_keys=OutputMolecularDynamics.keys(),
 ):
-    return _calc_md_step_with_ase(
+    return _calc_molecular_dynamics_with_ase(
         dyn=NPT(
             atoms=structure,
             timestep=timestep,
@@ -178,7 +159,7 @@ def calc_molecular_dynamics_langevin_with_ase(
     friction=0.002,
     output_keys=OutputMolecularDynamics.keys(),
 ):
-    return _calc_md_step_with_ase(
+    return _calc_molecular_dynamics_with_ase(
         dyn=Langevin(
             atoms=structure,
             timestep=timestep,
@@ -253,3 +234,22 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
         volumes_lst=volume_md_lst,
         output_keys=output_keys,
     )
+
+
+def _calc_molecular_dynamics_with_ase(
+    dyn, structure, ase_calculator, temperature, run, thermo, output_keys
+):
+    structure.calc = ase_calculator
+    MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
+    cache = {q: [] for q in output_keys}
+    for i in range(int(run / thermo)):
+        dyn.run(thermo)
+        ase_instance = ASEExecutor(
+            ase_structure=structure, ase_calculator=ase_calculator
+        )
+        calc_dict = OutputMolecularDynamics(
+            **{k: getattr(ase_instance, k) for k in OutputMolecularDynamics.keys()}
+        ).get(output_keys=output_keys)
+        for k, v in calc_dict.items():
+            cache[k].append(v)
+    return {q: np.array(cache[q]) for q in output_keys}
