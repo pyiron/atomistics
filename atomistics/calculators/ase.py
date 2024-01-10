@@ -79,37 +79,6 @@ def calc_static_with_ase(
     return output_dict
 
 
-def _calc_md_step_with_ase(
-    dyn, structure, ase_calculator, temperature, run, thermo, output_keys
-):
-    structure.calc = ase_calculator
-    MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
-    cache = {q: [] for q in output_keys}
-    for i in range(int(run / thermo)):
-        dyn.run(thermo)
-        if "positions" in output_keys:
-            cache["positions"].append(structure.get_positions())
-        if "cell" in output_keys:
-            cache["cell"].append(structure.get_cell())
-        if "forces" in output_keys:
-            cache["forces"].append(structure.get_forces())
-        if "temperature" in output_keys:
-            cache["temperature"].append(structure.get_temperature())
-        if "energy_pot" in output_keys:
-            cache["energy_pot"].append(structure.get_potential_energy())
-        if "energy_tot" in output_keys:
-            cache["energy_tot"].append(
-                structure.get_potential_energy() + structure.get_kinetic_energy()
-            )
-        if "pressure" in output_keys:
-            cache["pressure"].append(structure.get_stress(voigt=False))
-        if "velocities" in output_keys:
-            cache["velocities"].append(structure.get_velocities())
-        if "volume" in output_keys:
-            cache["volume"].append(structure.get_volume())
-    return {q: np.array(cache[q]) for q in output_keys}
-
-
 def calc_molecular_dynamics_npt_with_ase(
     structure,
     ase_calculator,
@@ -122,7 +91,7 @@ def calc_molecular_dynamics_npt_with_ase(
     externalstress=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
     output_keys=OutputMolecularDynamics.keys(),
 ):
-    return _calc_md_step_with_ase(
+    return _calc_molecular_dynamics_with_ase(
         dyn=NPT(
             atoms=structure,
             timestep=timestep,
@@ -156,7 +125,7 @@ def calc_molecular_dynamics_langevin_with_ase(
     friction=0.002,
     output_keys=OutputMolecularDynamics.keys(),
 ):
-    return _calc_md_step_with_ase(
+    return _calc_molecular_dynamics_with_ase(
         dyn=Langevin(
             atoms=structure,
             timestep=timestep,
@@ -231,3 +200,34 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
         volumes_lst=volume_md_lst,
         output_keys=output_keys,
     )
+
+
+def _calc_molecular_dynamics_with_ase(
+    dyn, structure, ase_calculator, temperature, run, thermo, output_keys
+):
+    structure.calc = ase_calculator
+    MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
+    cache = {q: [] for q in output_keys}
+    for i in range(int(run / thermo)):
+        dyn.run(thermo)
+        if "positions" in output_keys:
+            cache["positions"].append(structure.get_positions())
+        if "cell" in output_keys:
+            cache["cell"].append(structure.get_cell())
+        if "forces" in output_keys:
+            cache["forces"].append(structure.get_forces())
+        if "temperature" in output_keys:
+            cache["temperature"].append(structure.get_temperature())
+        if "energy_pot" in output_keys:
+            cache["energy_pot"].append(structure.get_potential_energy())
+        if "energy_tot" in output_keys:
+            cache["energy_tot"].append(
+                structure.get_potential_energy() + structure.get_kinetic_energy()
+            )
+        if "pressure" in output_keys:
+            cache["pressure"].append(structure.get_stress(voigt=False))
+        if "velocities" in output_keys:
+            cache["velocities"].append(structure.get_velocities())
+        if "volume" in output_keys:
+            cache["volume"].append(structure.get_volume())
+    return {q: np.array(cache[q]) for q in output_keys}
