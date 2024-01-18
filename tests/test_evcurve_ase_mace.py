@@ -8,7 +8,7 @@ from atomistics.workflows import optimize_positions_and_volume, EnergyVolumeCurv
 
 
 try:
-    from mace.calculators import MACECalculator
+    from mace.calculators import mace_mp
 
     skip_mace_test = False
 except ImportError:
@@ -21,10 +21,11 @@ except ImportError:
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         structure = bulk("Al", cubic=True)
-        ase_calculator = MACECalculator(
-            model_paths=['model_swa.model'],
-            device='cpu',
-            default_dtype="float32"
+        ase_calculator = mace_mp(
+            model="medium",
+            dispersion=False,
+            default_dtype="float32",
+            device='cpu'
         )
         task_dict = optimize_positions_and_volume(structure=structure)
         result_dict = evaluate_with_ase(

@@ -1,4 +1,4 @@
-name: MatGL Unittest Linux 3.11
+name: MACE Unittest Linux 3.11
 
 on:
   push:
