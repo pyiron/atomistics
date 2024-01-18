@@ -1,0 +1,4 @@
+channels:
+- conda-forge
+dependencies:
+- pymace =0.3.4
