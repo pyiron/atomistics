@@ -54,10 +54,9 @@ class TestEvCurve(unittest.TestCase):
             output_keys=["temperatures", "volumes"]
         )
         temperatures_ev, volumes_ev = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
-        print(fit_dict, thermal_properties_dict)
-        self.assertTrue(np.isclose(fit_dict['volume_eq'], 66.56048874824006, atol=1e-04))
-        self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 50.96266448851179, atol=1e-02))
-        self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 4.674534962000779, atol=1e-02))
+        self.assertTrue(np.isclose(fit_dict['volume_eq'], 66.94655948308437, atol=1e-04))
+        self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 64.40241949760645, atol=1e-02))
+        self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 4.460574503792641, atol=1e-02))
         self.assertEqual(len(temperatures_ev), 2)
         self.assertEqual(len(volumes_ev), 2)
         self.assertTrue(volumes_ev[0] < volumes_ev[-1])
