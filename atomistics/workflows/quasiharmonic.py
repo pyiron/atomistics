@@ -1,6 +1,6 @@
 import numpy as np
 
-from atomistics.shared.output import OutputThermodynamic, OutputPhonons
+from atomistics.shared.output import OutputThermodynamic
 from atomistics.workflows.evcurve.workflow import (
     EnergyVolumeCurveWorkflow,
     fit_ev_curve,

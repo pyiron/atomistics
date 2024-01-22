@@ -25,47 +25,6 @@ if TYPE_CHECKING:
     from atomistics.calculators.interface import TaskName
 
 
-class ASEExecutor(object):
-    def __init__(self, ase_structure, ase_calculator):
-        self.structure = ase_structure
-        self.structure.calc = ase_calculator
-
-    def forces(self):
-        return self.structure.get_forces()
-
-    def energy(self):
-        return self.structure.get_potential_energy()
-
-    def energy_pot(self):
-        return self.structure.get_potential_energy()
-
-    def energy_tot(self):
-        return (
-            self.structure.get_potential_energy() + self.structure.get_kinetic_energy()
-        )
-
-    def stress(self):
-        return self.structure.get_stress(voigt=False)
-
-    def pressure(self):
-        return self.structure.get_stress(voigt=False)
-
-    def cell(self):
-        return self.structure.get_cell()
-
-    def positions(self):
-        return self.structure.get_positions()
-
-    def velocities(self):
-        return self.structure.get_velocities()
-
-    def temperature(self):
-        return self.structure.get_temperature()
-
-    def volume(self):
-        return self.structure.get_volume()
-
-
 @as_task_dict_evaluator
 def evaluate_with_ase(
     structure: Atoms,
@@ -107,10 +66,17 @@ def calc_static_with_ase(
     ase_calculator,
     output_keys=OutputStatic.keys(),
 ):
-    ase_exe = ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator)
-    return OutputStatic(**{k: getattr(ase_exe, k) for k in OutputStatic.keys()}).get(
-        output_keys=output_keys
-    )
+    structure.calc = ase_calculator
+    output_dict = {}
+    if "forces" in output_keys:
+        output_dict["forces"] = structure.get_forces()
+    if "energy" in output_keys:
+        output_dict["energy"] = structure.get_potential_energy()
+    if "stress" in output_keys:
+        output_dict["stress"] = structure.get_stress(voigt=False)
+    if "volume" in output_keys:
+        output_dict["volume"] = structure.get_volume()
+    return output_dict
 
 
 def calc_molecular_dynamics_npt_with_ase(
@@ -244,12 +210,24 @@ def _calc_molecular_dynamics_with_ase(
     cache = {q: [] for q in output_keys}
     for i in range(int(run / thermo)):
         dyn.run(thermo)
-        ase_instance = ASEExecutor(
-            ase_structure=structure, ase_calculator=ase_calculator
-        )
-        calc_dict = OutputMolecularDynamics(
-            **{k: getattr(ase_instance, k) for k in OutputMolecularDynamics.keys()}
-        ).get(output_keys=output_keys)
-        for k, v in calc_dict.items():
-            cache[k].append(v)
+        if "positions" in output_keys:
+            cache["positions"].append(structure.get_positions())
+        if "cell" in output_keys:
+            cache["cell"].append(structure.get_cell())
+        if "forces" in output_keys:
+            cache["forces"].append(structure.get_forces())
+        if "temperature" in output_keys:
+            cache["temperature"].append(structure.get_temperature())
+        if "energy_pot" in output_keys:
+            cache["energy_pot"].append(structure.get_potential_energy())
+        if "energy_tot" in output_keys:
+            cache["energy_tot"].append(
+                structure.get_potential_energy() + structure.get_kinetic_energy()
+            )
+        if "pressure" in output_keys:
+            cache["pressure"].append(structure.get_stress(voigt=False))
+        if "velocities" in output_keys:
+            cache["velocities"].append(structure.get_velocities())
+        if "volume" in output_keys:
+            cache["volume"].append(structure.get_volume())
     return {q: np.array(cache[q]) for q in output_keys}

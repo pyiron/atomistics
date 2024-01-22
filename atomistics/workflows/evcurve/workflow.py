@@ -175,19 +175,24 @@ class EnergyVolumeCurveWorkflow(Workflow):
     def analyse_structures(
         self, output_dict, output_keys=OutputEnergyVolumeCurve.keys()
     ):
-        evcurve = EnergyVolumeCurveProperties(
-            fit_module=fit_ev_curve_internal(
-                volume_lst=get_volume_lst(structure_dict=self._structure_dict),
-                energy_lst=get_energy_lst(
-                    output_dict=output_dict, structure_dict=self._structure_dict
-                ),
-                fit_type=self.fit_type,
-                fit_order=self.fit_order,
-            )
+        fit_module = fit_ev_curve_internal(
+            volume_lst=get_volume_lst(structure_dict=self._structure_dict),
+            energy_lst=get_energy_lst(
+                output_dict=output_dict, structure_dict=self._structure_dict
+            ),
+            fit_type=self.fit_type,
+            fit_order=self.fit_order,
         )
-        self._fit_dict = OutputEnergyVolumeCurve(
-            **{k: getattr(evcurve, k) for k in OutputEnergyVolumeCurve.keys()}
-        ).get(output_keys=output_keys)
+        self._fit_dict = {}
+        for key in OutputEnergyVolumeCurve.keys():
+            if key == "fit_dict" and key in output_keys:
+                self._fit_dict[key] = {
+                    k: fit_module.fit_dict[k]
+                    for k in ["fit_type", "least_square_error", "poly_fit", "fit_order"]
+                    if k in fit_module.fit_dict.keys()
+                }
+            elif key in output_keys:
+                self._fit_dict[key] = fit_module.fit_dict[key]
         return self.fit_dict
 
     def get_volume_lst(self):
