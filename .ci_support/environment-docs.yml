@@ -8,10 +8,10 @@ dependencies:
   - ase =3.22.1
   - coverage
   - numpy =1.26.3
-  - scipy =1.11.4
+  - scipy =1.12.0
   - spglib =2.2.0
   - phonopy =2.21.0
-  - structuretoolkit =0.0.17
+  - structuretoolkit =0.0.18
   - seekpath =2.1.0
   - lammps =2023.08.02
   - pandas =2.2.0
