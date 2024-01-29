@@ -5,7 +5,7 @@ dependencies:
 - coverage
 - numpy =1.26.0
 - scipy =1.11.3
-- spglib =2.1.0
+- spglib =2.3.0
 - phonopy =2.20.0
 - structuretoolkit =0.0.12
 - seekpath =2.1.0
