@@ -12,7 +12,7 @@ def ase_to_spglib(structure):
     return (
         structure.cell,
         structure.get_scaled_positions(),
-        np.unique(structure.get_chemical_symbols(), return_inverse=True)[1]
+        np.unique(structure.get_chemical_symbols(), return_inverse=True)[1],
     )
 
 
