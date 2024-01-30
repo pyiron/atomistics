@@ -3,12 +3,12 @@ import os
 from ase.build import bulk
 import numpy as np
 import unittest
-import pandas
 
 from atomistics.workflows import EnergyVolumeCurveWorkflow, optimize_positions_and_volume
 
 
 try:
+    import pandas
     import matgl
     from matgl.ext.ase import M3GNetCalculator
     from atomistics.calculators import (
