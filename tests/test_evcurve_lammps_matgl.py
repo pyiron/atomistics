@@ -28,8 +28,8 @@ class TestEvCurve(unittest.TestCase):
         structure = bulk("Al", cubic=True)
         df_pot_selected = pandas.DataFrame({
             "Config": [[
-                "pair_style m3gnet " + os.path.abspath(os.path.join(__file__, "..", "static", "lammps", "potential_LAMMPS", "M3GNET")) + "\n",
-                "pair_coeff * * M3GNet-MP-2021.2.8-PES Al\n"
+                "pair_style m3gnet " + os.path.abspath(os.path.join(__file__, "..", "static", "lammps", "potential_LAMMPS", "M3GNET")),
+                "pair_coeff * * M3GNet-MP-2021.2.8-PES Al"
             ]],
             "Filename": [[]],
             "Species": [["Al"]]
