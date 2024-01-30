@@ -11,9 +11,9 @@ def ase_to_spglib(structure):
     TODO: Optional vectors should be available.
     """
     return (
-        np.array(cell.get_cell().T, dtype="double", order="C"),
-        np.array(cell.get_scaled_positions(), dtype="double", order="C"),
-        np.array(cell.get_atomic_numbers(), dtype="intc"),
+        np.array(structure.get_cell().T, dtype="double", order="C"),
+        np.array(structure.get_scaled_positions(), dtype="double", order="C"),
+        np.array(structure.get_atomic_numbers(), dtype="intc"),
     )
 
 
