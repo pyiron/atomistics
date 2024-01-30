@@ -5,14 +5,15 @@ import spglib
 def ase_to_spglib(structure):
     """
     Translate ASE to spglib cell. The format is a tuple of
-    (basis vectors, atomic points, types).
+    (basis vectors, atomic points, types). The implementation here follows
+    the doc from this page: https://github.com/spglib/spglib/pull/386/files
 
     TODO: Optional vectors should be available.
     """
     return (
-        structure.cell,
-        structure.get_scaled_positions(),
-        np.unique(structure.get_chemical_symbols(), return_inverse=True)[1]
+        np.array(cell.get_cell().T, dtype="double", order="C"),
+        np.array(cell.get_scaled_positions(), dtype="double", order="C"),
+        np.array(cell.get_atomic_numbers(), dtype="intc")
     )
 
 
