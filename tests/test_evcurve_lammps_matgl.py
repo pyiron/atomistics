@@ -27,11 +27,13 @@ class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         structure = bulk("Al", cubic=True)
         df_pot_selected = pandas.DataFrame({
-            "Config": ["['pair_style m3gnet " + os.path.abspath(os.path.join(__file__, "..", "static", "lammps", "potential_LAMMPS", "M3GNET")) + "\n', 'pair_coeff * * M3GNet-MP-2021.2.8-PES Al\n']"],
+            "Config": [[
+                "pair_style m3gnet " + os.path.abspath(os.path.join(__file__, "..", "static", "lammps", "potential_LAMMPS", "M3GNET")) + "\n",
+                "pair_coeff * * M3GNet-MP-2021.2.8-PES Al\n"
+            ]],
             "Filename": [[]],
             "Species": [["Al"]]
         })
-        print(df_pot_selected["Config"].values[0])
         task_dict = optimize_positions_and_volume(structure=structure)
         result_dict = evaluate_with_lammps(
             task_dict=task_dict,
