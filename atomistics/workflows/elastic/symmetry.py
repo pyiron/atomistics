@@ -2,8 +2,22 @@ import numpy as np
 import spglib
 
 
+def ase_to_spglib(structure):
+    """
+    Translate ASE to spglib cell. The format is a tuple of
+    (basis vectors, atomic points, types).
+
+    TODO: Optional vectors should be available.
+    """
+    return (
+        structure.cell,
+        structure.get_scaled_positions(),
+        np.unique(structure.get_chemical_symbols(), return_inverse=True)[1]
+    )
+
+
 def find_symmetry_group_number(struct):
-    dataset = spglib.get_symmetry_dataset(struct)
+    dataset = spglib.get_symmetry_dataset(cell=ase_to_spglib(struct))
     SGN = dataset["number"]
     return SGN
 
