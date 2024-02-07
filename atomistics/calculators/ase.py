@@ -5,6 +5,7 @@ from ase.md.langevin import Langevin
 from ase.md.npt import NPT
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.constraints import UnitCellFilter
+from ase.calculators.calculator import PropertyNotImplementedError
 import numpy as np
 from typing import TYPE_CHECKING
 
@@ -45,10 +46,16 @@ class ASEExecutor(object):
         )
 
     def stress(self):
-        return self.structure.get_stress(voigt=False)
+        try:
+            return self.structure.get_stress(voigt=False)
+        except PropertyNotImplementedError:
+            return None
 
     def pressure(self):
-        return self.structure.get_stress(voigt=False)
+        try:
+            return self.structure.get_stress(voigt=False)
+        except PropertyNotImplementedError:
+            return None
 
     def cell(self):
         return self.structure.get_cell()
