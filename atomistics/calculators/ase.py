@@ -156,7 +156,7 @@ def calc_molecular_dynamics_langevin_with_ase(
     thermo=100,
     timestep=1 * units.fs,
     temperature=100,
-    friction=0.002,
+    friction=0.01 / units.fs,
     output_keys=OutputMolecularDynamics.keys(),
 ):
     return _calc_molecular_dynamics_with_ase(
