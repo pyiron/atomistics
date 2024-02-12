@@ -61,7 +61,7 @@ qe = [
     "pwtools==1.2.3"
 ]
 tqdm = [
-    "tqdm==4.66.1"
+    "tqdm==4.66.2"
 ]
 
 [tool.setuptools.packages.find]
