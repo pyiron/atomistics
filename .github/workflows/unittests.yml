@@ -63,7 +63,7 @@ jobs:
       run: |
         pip install versioneer[toml]==0.29
         pip install . --no-deps --no-build-isolation
-        coverage run --omit atomistics/_version.py -m unittest discover tests
+        coverage run --omit="atomistics/_version.py,tests/*" -m unittest discover tests
         coverage combine
     - name: Coveralls
       if: matrix.label == 'linux-64-py-3-11'
