@@ -34,3 +34,4 @@ jobs:
         python -m unittest tests/test_phonons_ase_matgl.py
         python -m unittest tests/test_quasiharmonic_ase_matgl.py
         python -m unittest tests/test_ase_md_matgl.py
+        python -m unittest tests/test_evcurve_lammps_matgl.py
