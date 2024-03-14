@@ -31,45 +31,45 @@ class ASEExecutor(object):
         self.structure = ase_structure
         self.structure.calc = ase_calculator
 
-    def forces(self):
+    def forces(self) -> np.ndarray:
         return self.structure.get_forces()
 
-    def energy(self):
+    def energy(self) -> float:
         return self.structure.get_potential_energy()
 
-    def energy_pot(self):
+    def energy_pot(self) -> float:
         return self.structure.get_potential_energy()
 
-    def energy_tot(self):
+    def energy_tot(self) -> float:
         return (
             self.structure.get_potential_energy() + self.structure.get_kinetic_energy()
         )
 
-    def stress(self):
+    def stress(self) -> np.ndarray:
         try:
             return self.structure.get_stress(voigt=False)
         except PropertyNotImplementedError:
             return None
 
-    def pressure(self):
+    def pressure(self) -> np.ndarray:
         try:
             return self.structure.get_stress(voigt=False)
         except PropertyNotImplementedError:
             return None
 
-    def cell(self):
+    def cell(self) -> np.ndarray:
         return self.structure.get_cell()
 
-    def positions(self):
+    def positions(self) -> np.ndarray:
         return self.structure.get_positions()
 
-    def velocities(self):
+    def velocities(self) -> np.ndarray:
         return self.structure.get_velocities()
 
-    def temperature(self):
+    def temperature(self) -> float:
         return self.structure.get_temperature()
 
-    def volume(self):
+    def volume(self) -> float:
         return self.structure.get_volume()
 
 
@@ -80,7 +80,7 @@ def evaluate_with_ase(
     ase_calculator: ASECalculator,
     ase_optimizer: Optimizer = None,
     ase_optimizer_kwargs: dict = {},
-):
+) -> dict:
     results = {}
     if "optimize_positions" in tasks:
         results["structure_with_optimized_positions"] = optimize_positions_with_ase(
@@ -110,8 +110,8 @@ def evaluate_with_ase(
 
 
 def calc_static_with_ase(
-    structure,
-    ase_calculator,
+    structure: Atoms,
+    ase_calculator: ASECalculator,
     output_keys=OutputStatic.keys(),
 ):
     ase_exe = ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator)
@@ -121,17 +121,17 @@ def calc_static_with_ase(
 
 
 def calc_molecular_dynamics_npt_with_ase(
-    structure,
-    ase_calculator,
-    run=100,
-    thermo=100,
-    timestep=1 * units.fs,
-    ttime=100 * units.fs,
-    pfactor=2e6 * units.GPa * (units.fs**2),
-    temperature=100,
-    externalstress=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
+    structure: Atoms,
+    ase_calculator: ASECalculator,
+    run: int = 100,
+    thermo: int = 100,
+    timestep: float =1 * units.fs,
+    ttime: float = 100 * units.fs,
+    pfactor: float =2e6 * units.GPa * (units.fs**2),
+    temperature: float = 100.0,
+    externalstress: np.ndarray = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
     output_keys=OutputMolecularDynamics.keys(),
-):
+) -> dict:
     return _calc_molecular_dynamics_with_ase(
         dyn=NPT(
             atoms=structure,
@@ -157,13 +157,13 @@ def calc_molecular_dynamics_npt_with_ase(
 
 
 def calc_molecular_dynamics_langevin_with_ase(
-    structure,
-    ase_calculator,
-    run=100,
-    thermo=100,
-    timestep=1 * units.fs,
-    temperature=100,
-    friction=0.002,
+    structure: Atoms,
+    ase_calculator: ASECalculator,
+    run: int = 100,
+    thermo: int = 100,
+    timestep: float = 1 * units.fs,
+    temperature: float = 100.0,
+    friction: float = 0.002,
     output_keys=OutputMolecularDynamics.keys(),
 ):
     return _calc_molecular_dynamics_with_ase(
@@ -183,7 +183,7 @@ def calc_molecular_dynamics_langevin_with_ase(
 
 
 def optimize_positions_with_ase(
-    structure, ase_calculator, ase_optimizer, ase_optimizer_kwargs
+    structure: Atoms, ase_calculator: ASECalculator, ase_optimizer: Optimizer, ase_optimizer_kwargs: dict
 ):
     structure_optimized = structure.copy()
     structure_optimized.calc = ase_calculator
@@ -193,7 +193,7 @@ def optimize_positions_with_ase(
 
 
 def optimize_positions_and_volume_with_ase(
-    structure, ase_calculator, ase_optimizer, ase_optimizer_kwargs
+    structure: Atoms, ase_calculator: ASECalculator, ase_optimizer: Optimizer, ase_optimizer_kwargs: dict
 ):
     structure_optimized = structure.copy()
     structure_optimized.calc = ase_calculator
@@ -203,17 +203,17 @@ def optimize_positions_and_volume_with_ase(
 
 
 def calc_molecular_dynamics_thermal_expansion_with_ase(
-    structure,
-    ase_calculator,
-    temperature_start=15,
-    temperature_stop=1500,
-    temperature_step=5,
-    run=100,
-    thermo=100,
-    timestep=1 * units.fs,
-    ttime=100 * units.fs,
-    pfactor=2e6 * units.GPa * (units.fs**2),
-    externalstress=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
+    structure: Atoms,
+    ase_calculator: ASECalculator,
+    temperature_start: float = 15.0,
+    temperature_stop: float = 1500.0,
+    temperature_step: float = 5.0,
+    run: int = 100,
+    thermo: int = 100,
+    timestep: float = 1 * units.fs,
+    ttime: float = 100 * units.fs,
+    pfactor: float = 2e6 * units.GPa * (units.fs**2),
+    externalstress: np.ndarray = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
     output_keys=OutputThermalExpansion.keys(),
 ):
     structure_current = structure.copy()
@@ -244,7 +244,7 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
 
 
 def _calc_molecular_dynamics_with_ase(
-    dyn, structure, ase_calculator, temperature, run, thermo, output_keys
+    dyn, structure: Atoms, ase_calculator: ASECalculator, temperature: float, run: int, thermo: int, output_keys: tuple[str]
 ):
     structure.calc = ase_calculator
     MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)

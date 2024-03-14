@@ -3,7 +3,7 @@ from functools import cache
 import numpy as np
 
 
-def get_bulkmodul_voigt(elastic_matrix):
+def get_bulkmodul_voigt(elastic_matrix: np.ndarray) -> float:
     return (
         elastic_matrix[0, 0]
         + elastic_matrix[1, 1]
