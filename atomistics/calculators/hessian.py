@@ -115,7 +115,7 @@ def get_pressure_times_volume(
 @as_task_dict_evaluator
 def evaluate_with_hessian(
     structure: Atoms,
-    tasks: dict,
+    tasks: dict[str, dict],
     structure_equilibrium: Atoms,
     force_constants: np.ndarray,
     bulk_modulus: float = 0.0,
