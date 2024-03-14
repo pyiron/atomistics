@@ -12,7 +12,13 @@ from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 from atomistics.shared.output import OutputMolecularDynamics, OutputThermalExpansion
 
 
-def lammps_run(structure: Atoms, potential_dataframe: pandas.DataFrame, input_template=None, lmp=None, **kwargs):
+def lammps_run(
+    structure: Atoms,
+    potential_dataframe: pandas.DataFrame,
+    input_template=None,
+    lmp=None,
+    **kwargs,
+):
     potential_dataframe = validate_potential_dataframe(
         potential_dataframe=potential_dataframe
     )
@@ -137,7 +143,7 @@ def lammps_thermal_expansion_loop(
     )
 
 
-def lammps_shutdown(lmp_instance, close_instance: bool =True):
+def lammps_shutdown(lmp_instance, close_instance: bool = True):
     lmp_instance.interactive_lib_command("clear")
     if close_instance:
         lmp_instance.close()

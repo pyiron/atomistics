@@ -17,7 +17,12 @@ class PotentialAbstract(object):
         selected_atoms:
     """
 
-    def __init__(self, potential_df: pandas.DataFrame, default_df: pandas.DataFrame = None, selected_atoms: list[str] = None):
+    def __init__(
+        self,
+        potential_df: pandas.DataFrame,
+        default_df: pandas.DataFrame = None,
+        selected_atoms: list[str] = None,
+    ):
         self._potential_df = potential_df
         self._default_df = default_df
         if selected_atoms is not None:
@@ -272,7 +277,9 @@ def convert_path_to_abs_posix(path: str) -> str:
     )
 
 
-def update_potential_paths(df_pot: pandas.DataFrame, resource_path: str) -> pandas.DataFrame:
+def update_potential_paths(
+    df_pot: pandas.DataFrame, resource_path: str
+) -> pandas.DataFrame:
     config_lst = []
     for row in df_pot.itertuples():
         potential_file_lst = row.Filename
@@ -291,7 +298,9 @@ def update_potential_paths(df_pot: pandas.DataFrame, resource_path: str) -> pand
     return df_pot
 
 
-def get_resource_path_from_conda(env_variables: tuple[str] = ("CONDA_PREFIX", "CONDA_DIR")) -> str:
+def get_resource_path_from_conda(
+    env_variables: tuple[str] = ("CONDA_PREFIX", "CONDA_DIR")
+) -> str:
     env = os.environ
     for conda_var in env_variables:
         if conda_var in env.keys():
@@ -319,7 +328,9 @@ def get_potential_by_name(potential_name: str, resource_path=None):
     ).iloc[0]
 
 
-def validate_potential_dataframe(potential_dataframe: pandas.DataFrame) -> pandas.DataFrame:
+def validate_potential_dataframe(
+    potential_dataframe: pandas.DataFrame,
+) -> pandas.DataFrame:
     if isinstance(potential_dataframe, pandas.Series):
         return potential_dataframe
     elif isinstance(potential_dataframe, pandas.DataFrame):

@@ -15,7 +15,9 @@ class ThermalExpansionProperties:
         return self._temperatures_lst
 
 
-def get_thermal_expansion_output(temperatures_lst: np.ndarray, volumes_lst: np.ndarray, output_keys: tuple[str]) -> dict:
+def get_thermal_expansion_output(
+    temperatures_lst: np.ndarray, volumes_lst: np.ndarray, output_keys: tuple[str]
+) -> dict:
     thermal = ThermalExpansionProperties(
         temperatures_lst=temperatures_lst, volumes_lst=volumes_lst
     )

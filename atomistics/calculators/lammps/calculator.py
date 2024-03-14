@@ -322,7 +322,7 @@ def calc_molecular_dynamics_langevin_with_lammps(
     Tstop: float = 100,
     Tdamp: float = 0.1,
     seed: int = 4928459,
-    dist: str ="gaussian",
+    dist: str = "gaussian",
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,

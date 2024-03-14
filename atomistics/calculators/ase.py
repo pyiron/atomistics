@@ -125,9 +125,9 @@ def calc_molecular_dynamics_npt_with_ase(
     ase_calculator: ASECalculator,
     run: int = 100,
     thermo: int = 100,
-    timestep: float =1 * units.fs,
+    timestep: float = 1 * units.fs,
     ttime: float = 100 * units.fs,
-    pfactor: float =2e6 * units.GPa * (units.fs**2),
+    pfactor: float = 2e6 * units.GPa * (units.fs**2),
     temperature: float = 100.0,
     externalstress: np.ndarray = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
     output_keys=OutputMolecularDynamics.keys(),
@@ -183,7 +183,10 @@ def calc_molecular_dynamics_langevin_with_ase(
 
 
 def optimize_positions_with_ase(
-    structure: Atoms, ase_calculator: ASECalculator, ase_optimizer: Optimizer, ase_optimizer_kwargs: dict
+    structure: Atoms,
+    ase_calculator: ASECalculator,
+    ase_optimizer: Optimizer,
+    ase_optimizer_kwargs: dict,
 ):
     structure_optimized = structure.copy()
     structure_optimized.calc = ase_calculator
@@ -193,7 +196,10 @@ def optimize_positions_with_ase(
 
 
 def optimize_positions_and_volume_with_ase(
-    structure: Atoms, ase_calculator: ASECalculator, ase_optimizer: Optimizer, ase_optimizer_kwargs: dict
+    structure: Atoms,
+    ase_calculator: ASECalculator,
+    ase_optimizer: Optimizer,
+    ase_optimizer_kwargs: dict,
 ):
     structure_optimized = structure.copy()
     structure_optimized.calc = ase_calculator
@@ -244,7 +250,13 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
 
 
 def _calc_molecular_dynamics_with_ase(
-    dyn, structure: Atoms, ase_calculator: ASECalculator, temperature: float, run: int, thermo: int, output_keys: tuple[str]
+    dyn,
+    structure: Atoms,
+    ase_calculator: ASECalculator,
+    temperature: float,
+    run: int,
+    thermo: int,
+    output_keys: tuple[str],
 ):
     structure.calc = ase_calculator
     MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
