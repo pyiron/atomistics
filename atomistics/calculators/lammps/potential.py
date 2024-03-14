@@ -30,7 +30,7 @@ class PotentialAbstract(object):
         else:
             self._selected_atoms = []
 
-    def find(self, element: Union[set, list, str]) -> pandas.DataFrame:
+    def find(self, element: Union[set[str], list[str], str]) -> pandas.DataFrame:
         """
         Find the potentials
 
