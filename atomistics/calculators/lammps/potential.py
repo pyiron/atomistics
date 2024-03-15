@@ -1,3 +1,4 @@
+from typing import Union
 import pandas
 from pathlib import Path
 import os
@@ -16,7 +17,12 @@ class PotentialAbstract(object):
         selected_atoms:
     """
 
-    def __init__(self, potential_df, default_df=None, selected_atoms=None):
+    def __init__(
+        self,
+        potential_df: pandas.DataFrame,
+        default_df: pandas.DataFrame = None,
+        selected_atoms: list[str] = None,
+    ):
         self._potential_df = potential_df
         self._default_df = default_df
         if selected_atoms is not None:
@@ -24,7 +30,7 @@ class PotentialAbstract(object):
         else:
             self._selected_atoms = []
 
-    def find(self, element):
+    def find(self, element: Union[set[str], list[str], str]) -> pandas.DataFrame:
         """
         Find the potentials
 
@@ -50,7 +56,7 @@ class PotentialAbstract(object):
             ]
         ]
 
-    def find_by_name(self, potential_name):
+    def find_by_name(self, potential_name: str) -> pandas.DataFrame:
         mask = self._potential_df["Name"] == potential_name
         if not mask.any():
             raise ValueError(
@@ -58,7 +64,7 @@ class PotentialAbstract(object):
             )
         return self._potential_df[mask]
 
-    def list(self):
+    def list(self) -> pandas.DataFrame:
         """
         List the available potentials
 
@@ -79,7 +85,7 @@ class PotentialAbstract(object):
             selected_atoms=selected_atoms,
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.list())
 
     @staticmethod
@@ -87,7 +93,6 @@ class PotentialAbstract(object):
         """
 
         Args:
-            plugin_name (str):
             file_name_lst (set):
             resource_path (str):
 
@@ -159,7 +164,9 @@ class LammpsPotentialFile(PotentialAbstract):
             ]
         return None
 
-    def find_default(self, element):
+    def find_default(
+        self, element: Union[set[str], list[str], str]
+    ) -> pandas.DataFrame:
         """
         Find the potentials
 
@@ -272,7 +279,9 @@ def convert_path_to_abs_posix(path: str) -> str:
     )
 
 
-def update_potential_paths(df_pot, resource_path):
+def update_potential_paths(
+    df_pot: pandas.DataFrame, resource_path: str
+) -> pandas.DataFrame:
     config_lst = []
     for row in df_pot.itertuples():
         potential_file_lst = row.Filename
@@ -291,7 +300,9 @@ def update_potential_paths(df_pot, resource_path):
     return df_pot
 
 
-def get_resource_path_from_conda(env_variables=("CONDA_PREFIX", "CONDA_DIR")):
+def get_resource_path_from_conda(
+    env_variables: tuple[str] = ("CONDA_PREFIX", "CONDA_DIR")
+) -> str:
     env = os.environ
     for conda_var in env_variables:
         if conda_var in env.keys():
@@ -301,7 +312,7 @@ def get_resource_path_from_conda(env_variables=("CONDA_PREFIX", "CONDA_DIR")):
     raise ValueError("No resource_path found")
 
 
-def get_potential_dataframe(structure, resource_path=None):
+def get_potential_dataframe(structure: Atoms, resource_path=None):
     if resource_path is None:
         resource_path = get_resource_path_from_conda()
     return update_potential_paths(
@@ -310,7 +321,7 @@ def get_potential_dataframe(structure, resource_path=None):
     )
 
 
-def get_potential_by_name(potential_name, resource_path=None):
+def get_potential_by_name(potential_name: str, resource_path=None):
     if resource_path is None:
         resource_path = get_resource_path_from_conda()
     df = LammpsPotentialFile(resource_path=resource_path).list()
@@ -319,7 +330,9 @@ def get_potential_by_name(potential_name, resource_path=None):
     ).iloc[0]
 
 
-def validate_potential_dataframe(potential_dataframe):
+def validate_potential_dataframe(
+    potential_dataframe: pandas.DataFrame,
+) -> pandas.DataFrame:
     if isinstance(potential_dataframe, pandas.Series):
         return potential_dataframe
     elif isinstance(potential_dataframe, pandas.DataFrame):
