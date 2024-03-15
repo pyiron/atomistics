@@ -1,3 +1,5 @@
+import pandas
+from ase.atoms import Atoms
 from dynaphopy.atoms import Structure
 import dynaphopy.dynamics as dyn
 from dynaphopy.power_spectrum import _progress_bar
@@ -10,17 +12,17 @@ import numpy as np
 
 
 def generate_pylammps_trajectory(
-    structure,
+    structure: Atoms,
     lmp,
-    total_time=0.1,  # picoseconds
-    time_step=0.002,  # picoseconds
-    relaxation_time=0,
-    silent=False,
-    memmap=False,  # not fully implemented yet!
-    velocity_only=False,
-    temperature=None,
-    thermostat_mass=0.5,
-    sampling_interval=1,  # in timesteps
+    total_time: float = 0.1,  # picoseconds
+    time_step: float = 0.002,  # picoseconds
+    relaxation_time: int = 0,  # in timesteps
+    silent: bool = False,
+    memmap: bool = False,  # not fully implemented yet!
+    velocity_only: bool = False,
+    temperature: float = None,
+    thermostat_mass: float = 0.5,
+    sampling_interval: int = 1,  # in timesteps
 ):
     lmp.interactive_lib_command("neighbor 0.3 bin")
     lmp.interactive_lib_command("timestep {}".format(time_step))
@@ -92,20 +94,20 @@ def generate_pylammps_trajectory(
 
 
 def calc_molecular_dynamics_phonons_with_lammps(
-    structure_ase,
-    potential_dataframe,
-    force_constants,
+    structure_ase: Atoms,
+    potential_dataframe: pandas.DataFrame,
+    force_constants: np.ndarray,
     phonopy_unitcell,
     phonopy_primitive_matrix,
     phonopy_supercell_matrix,
-    total_time=20,  # ps
-    time_step=0.001,  # ps
-    relaxation_time=5,  # ps
-    silent=True,
-    supercell=[2, 2, 2],
-    memmap=False,
-    velocity_only=True,
-    temperature=300,
+    total_time: int = 20,  # ps
+    time_step: float = 0.001,  # ps
+    relaxation_time: int = 5,  # ps
+    silent: bool = True,
+    supercell: list[int] = [2, 2, 2],
+    memmap: bool = False,
+    velocity_only: bool = True,
+    temperature: float = 300.0,
 ):
     dp_structure = Structure(
         cell=phonopy_unitcell.get_cell(),

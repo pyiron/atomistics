@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from ase.atoms import Atoms
 from jinja2 import Template
 import numpy as np
+import pandas
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.lammps.potential import validate_potential_dataframe
@@ -10,7 +12,13 @@ from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 from atomistics.shared.output import OutputMolecularDynamics, OutputThermalExpansion
 
 
-def lammps_run(structure, potential_dataframe, input_template=None, lmp=None, **kwargs):
+def lammps_run(
+    structure: Atoms,
+    potential_dataframe: pandas.DataFrame,
+    input_template=None,
+    lmp=None,
+    **kwargs,
+):
     potential_dataframe = validate_potential_dataframe(
         potential_dataframe=potential_dataframe
     )
@@ -41,8 +49,8 @@ def lammps_run(structure, potential_dataframe, input_template=None, lmp=None, **
 
 def lammps_calc_md_step(
     lmp_instance,
-    run_str,
-    run,
+    run_str: str,
+    run: int,
     output_keys=OutputMolecularDynamics.keys(),
 ):
     run_str_rendered = Template(run_str).render(run=run)
@@ -62,9 +70,9 @@ def lammps_calc_md_step(
 
 def lammps_calc_md(
     lmp_instance,
-    run_str,
-    run,
-    thermo,
+    run_str: str,
+    run: int,
+    thermo: int,
     output_keys=OutputMolecularDynamics.keys(),
 ):
     results_lst = [
@@ -80,20 +88,20 @@ def lammps_calc_md(
 
 
 def lammps_thermal_expansion_loop(
-    structure,
-    potential_dataframe,
-    init_str,
-    run_str,
-    temperature_lst,
-    run=100,
-    thermo=100,
-    timestep=0.001,
-    Tdamp=0.1,
-    Pstart=0.0,
-    Pstop=0.0,
-    Pdamp=1.0,
-    seed=4928459,
-    dist="gaussian",
+    structure: Atoms,
+    potential_dataframe: pandas.DataFrame,
+    init_str: str,
+    run_str: str,
+    temperature_lst: list[float],
+    run: int = 100,
+    thermo: int = 100,
+    timestep: float = 0.001,
+    Tdamp: float = 0.1,
+    Pstart: float = 0.0,
+    Pstop: float = 0.0,
+    Pdamp: float = 1.0,
+    seed: int = 4928459,
+    dist: str = "gaussian",
     lmp=None,
     output_keys=OutputThermalExpansion.keys(),
     **kwargs,
@@ -135,7 +143,7 @@ def lammps_thermal_expansion_loop(
     )
 
 
-def lammps_shutdown(lmp_instance, close_instance=True):
+def lammps_shutdown(lmp_instance, close_instance: bool = True):
     lmp_instance.interactive_lib_command("clear")
     if close_instance:
         lmp_instance.close()
