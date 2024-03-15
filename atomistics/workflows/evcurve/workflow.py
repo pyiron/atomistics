@@ -158,14 +158,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         Returns:
             (dict)
         """
-        strains = self.strains
-        if strains is None:
-            strains = np.linspace(
-                -self.vol_range,
-                self.vol_range,
-                int(self.num_points),
-            )
-        for strain in strains:
+        for strain in self._get_strains():
             basis = _strain_axes(
                 structure=self.structure, axes=self.axes, volume_strain=strain
             )
@@ -212,3 +205,13 @@ class EnergyVolumeCurveWorkflow(Workflow):
             constant_volume=constant_volume,
             output_keys=output_keys,
         )
+
+    def _get_strains(self):
+        strains = self.strains
+        if strains is None:
+            strains = np.linspace(
+                -self.vol_range,
+                self.vol_range,
+                int(self.num_points),
+            )
+        return strains
