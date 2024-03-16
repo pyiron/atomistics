@@ -51,7 +51,6 @@ class TestPhonons(unittest.TestCase):
         tp_collect_dict = workflow.get_thermal_properties(t_min=1, t_max=1500, t_step=50, temperatures=None)
         for key in ["temperatures", "free_energy", "volumes", "entropy", "heat_capacity"]:
             self.assertTrue(len(tp_collect_dict[key]), 31)
-        print(tp_collect_dict)
         self.assertEqual(tp_collect_dict["temperatures"][0], 1.0)
         self.assertEqual(tp_collect_dict["temperatures"][-1], 1501.0)
         self.assertTrue(tp_collect_dict["free_energy"][0] < 0.2)
