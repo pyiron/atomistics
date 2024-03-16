@@ -296,6 +296,12 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         self._factor = factor
         self._primitive_matrix = primitive_matrix
         self._phonopy_dict = {}
+        self._eng_internal_dict = None
+        # Phonopy internally repeats structures that are "too small"
+        # Here we manually guarantee that all structures passed are big enough
+        # This provides some computational efficiency for classical calculations
+        # And for quantum calculations _ensures_ that force matrices and energy/atom
+        # get treated with the same kmesh
         self._repeat_vector = np.array(
             np.diag(
                 get_supercell_matrix(
@@ -305,7 +311,6 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             ),
             dtype=int,
         )
-        self._eng_internal_dict = None
 
     def generate_structures(self):
         task_dict = {"calc_forces": {}}
