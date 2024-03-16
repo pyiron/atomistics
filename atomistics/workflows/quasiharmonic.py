@@ -397,7 +397,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             eng_internal_dict=self._eng_internal_dict,
             phonopy_dict=self._phonopy_dict,
             volume_lst=np.array(self.get_volume_lst()) / np.prod(self._repeat_vector),
-            volume_rescale_factor=np.prod(self._repeat_vector),
+            volume_rescale_factor=1,
             fit_type=self.fit_type,
             fit_order=self.fit_order,
             t_min=t_min,
