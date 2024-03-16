@@ -159,7 +159,8 @@ def _get_thermal_properties_quantum_mechanical(
             band_indices=band_indices,
             is_projection=is_projection,
             output_keys=output_keys,
-        ) for strain, phono in phonopy_dict.items()
+        )
+        for strain, phono in phonopy_dict.items()
     }
 
 
@@ -212,8 +213,7 @@ def _get_thermal_properties_classical(
             )
         tp_collect_dict[strain] = {
             "temperatures": temperatures,
-            "free_energy": np.array(t_property_lst)
-            * kJ_mol_to_eV
+            "free_energy": np.array(t_property_lst) * kJ_mol_to_eV,
         }
     return tp_collect_dict
 
