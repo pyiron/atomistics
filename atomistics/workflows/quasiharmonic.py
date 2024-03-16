@@ -25,7 +25,6 @@ def get_thermal_properties(
     eng_internal_dict,
     phonopy_dict,
     volume_lst,
-    volume_rescale_factor,
     fit_type,
     fit_order,
     t_min=1,
@@ -56,7 +55,6 @@ def get_thermal_properties(
     if quantum_mechanical:
         tp_collect_dict = _get_thermal_properties_quantum_mechanical(
             phonopy_dict=phonopy_dict,
-            volume_rescale_factor=volume_rescale_factor,
             t_min=t_min,
             t_max=t_max,
             t_step=t_step,
@@ -82,7 +80,6 @@ def get_thermal_properties(
             )
         tp_collect_dict = _get_thermal_properties_classical(
             phonopy_dict=phonopy_dict,
-            volume_rescale_factor=volume_rescale_factor,
             t_min=t_min,
             t_max=t_max,
             t_step=t_step,
@@ -92,7 +89,7 @@ def get_thermal_properties(
 
     temperatures = tp_collect_dict[1.0]["temperatures"]
     strain_lst = eng_internal_dict.keys()
-    eng_int_lst = np.array(list(eng_internal_dict.values())) / volume_rescale_factor
+    eng_int_lst = np.array(list(eng_internal_dict.values()))
 
     vol_lst, eng_lst = [], []
     for i, temp in enumerate(temperatures):
@@ -127,7 +124,6 @@ def get_thermal_properties(
 
 def _get_thermal_properties_quantum_mechanical(
     phonopy_dict,
-    volume_rescale_factor,
     t_min=1,
     t_max=1500,
     t_step=50,
@@ -152,28 +148,23 @@ def _get_thermal_properties_quantum_mechanical(
     Returns:
         :class:`Thermal`: thermal properties as returned by Phonopy
     """
-    tp_collect_dict = {}
-    for strain, phono in phonopy_dict.items():
-        tp_collect_dict[strain] = {
-            k: v if k == "temperatures" else v / volume_rescale_factor
-            for k, v in phono.get_thermal_properties(
-                t_step=t_step,
-                t_max=t_max,
-                t_min=t_min,
-                temperatures=temperatures,
-                cutoff_frequency=cutoff_frequency,
-                pretend_real=pretend_real,
-                band_indices=band_indices,
-                is_projection=is_projection,
-                output_keys=output_keys,
-            ).items()
-        }
-    return tp_collect_dict
+    return {
+        strain: phono.get_thermal_properties(
+            t_step=t_step,
+            t_max=t_max,
+            t_min=t_min,
+            temperatures=temperatures,
+            cutoff_frequency=cutoff_frequency,
+            pretend_real=pretend_real,
+            band_indices=band_indices,
+            is_projection=is_projection,
+            output_keys=output_keys,
+        ) for strain, phono in phonopy_dict.items()
+    }
 
 
 def _get_thermal_properties_classical(
     phonopy_dict,
-    volume_rescale_factor,
     t_min=1,
     t_max=1500,
     t_step=50,
@@ -223,7 +214,6 @@ def _get_thermal_properties_classical(
             "temperatures": temperatures,
             "free_energy": np.array(t_property_lst)
             * kJ_mol_to_eV
-            / volume_rescale_factor,
         }
     return tp_collect_dict
 
@@ -397,7 +387,6 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             eng_internal_dict=self._eng_internal_dict,
             phonopy_dict=self._phonopy_dict,
             volume_lst=np.array(self.get_volume_lst()) / np.prod(self._repeat_vector),
-            volume_rescale_factor=1,
             fit_type=self.fit_type,
             fit_order=self.fit_order,
             t_min=t_min,
