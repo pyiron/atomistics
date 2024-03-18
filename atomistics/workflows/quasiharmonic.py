@@ -5,6 +5,7 @@ from atomistics.shared.output import OutputThermodynamic
 from atomistics.workflows.evcurve.workflow import (
     EnergyVolumeCurveWorkflow,
     fit_ev_curve,
+    _strain_axes,
 )
 from atomistics.workflows.phonons.workflow import PhonopyWorkflow
 from atomistics.workflows.phonons.helper import get_supercell_matrix
@@ -27,7 +28,6 @@ def get_thermal_properties(
     eng_internal_dict: dict,
     phonopy_dict: dict,
     volume_lst: np.ndarray,
-    volume_rescale_factor: float,
     fit_type: str,
     fit_order: int,
     t_min: float = 1.0,
@@ -58,7 +58,6 @@ def get_thermal_properties(
     if quantum_mechanical:
         tp_collect_dict = _get_thermal_properties_quantum_mechanical(
             phonopy_dict=phonopy_dict,
-            volume_rescale_factor=volume_rescale_factor,
             t_min=t_min,
             t_max=t_max,
             t_step=t_step,
@@ -84,7 +83,6 @@ def get_thermal_properties(
             )
         tp_collect_dict = _get_thermal_properties_classical(
             phonopy_dict=phonopy_dict,
-            volume_rescale_factor=volume_rescale_factor,
             t_min=t_min,
             t_max=t_max,
             t_step=t_step,
@@ -94,7 +92,7 @@ def get_thermal_properties(
 
     temperatures = tp_collect_dict[1.0]["temperatures"]
     strain_lst = eng_internal_dict.keys()
-    eng_int_lst = np.array(list(eng_internal_dict.values())) / volume_rescale_factor
+    eng_int_lst = np.array(list(eng_internal_dict.values()))
 
     vol_lst, eng_lst = [], []
     for i, temp in enumerate(temperatures):
@@ -129,7 +127,6 @@ def get_thermal_properties(
 
 def _get_thermal_properties_quantum_mechanical(
     phonopy_dict: dict,
-    volume_rescale_factor: float,
     t_min: float = 1.0,
     t_max: float = 1500.0,
     t_step: float = 50.0,
@@ -154,28 +151,24 @@ def _get_thermal_properties_quantum_mechanical(
     Returns:
         :class:`Thermal`: thermal properties as returned by Phonopy
     """
-    tp_collect_dict = {}
-    for strain, phono in phonopy_dict.items():
-        tp_collect_dict[strain] = {
-            k: v if k == "temperatures" else v / volume_rescale_factor
-            for k, v in phono.get_thermal_properties(
-                t_step=t_step,
-                t_max=t_max,
-                t_min=t_min,
-                temperatures=temperatures,
-                cutoff_frequency=cutoff_frequency,
-                pretend_real=pretend_real,
-                band_indices=band_indices,
-                is_projection=is_projection,
-                output_keys=output_keys,
-            ).items()
-        }
-    return tp_collect_dict
+    return {
+        strain: phono.get_thermal_properties(
+            t_step=t_step,
+            t_max=t_max,
+            t_min=t_min,
+            temperatures=temperatures,
+            cutoff_frequency=cutoff_frequency,
+            pretend_real=pretend_real,
+            band_indices=band_indices,
+            is_projection=is_projection,
+            output_keys=output_keys,
+        )
+        for strain, phono in phonopy_dict.items()
+    }
 
 
 def _get_thermal_properties_classical(
     phonopy_dict: dict,
-    volume_rescale_factor: float,
     t_min: float = 1.0,
     t_max: float = 1500.0,
     t_step: float = 50.0,
@@ -223,9 +216,7 @@ def _get_thermal_properties_classical(
             )
         tp_collect_dict[strain] = {
             "temperatures": temperatures,
-            "free_energy": np.array(t_property_lst)
-            * kJ_mol_to_eV
-            / volume_rescale_factor,
+            "free_energy": np.array(t_property_lst) * kJ_mol_to_eV,
         }
     return tp_collect_dict
 
@@ -292,23 +283,8 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         primitive_matrix: np.ndarray = None,
         number_of_snapshots: int = None,
     ):
-        repeat_vector = np.array(
-            np.diag(
-                get_supercell_matrix(
-                    interaction_range=interaction_range,
-                    cell=structure.cell.array,
-                )
-            ),
-            dtype=int,
-        )
-        # Phonopy internally repeats structures that are "too small"
-        # Here we manually guarantee that all structures passed are big enough
-        # This provides some computational efficiency for classical calculations
-        # And for quantum calculations _ensures_ that force matrices and energy/atom
-        # get treated with the same kmesh
-        structure_repeated = structure.repeat(repeat_vector)
         super().__init__(
-            structure=structure_repeated,
+            structure=structure,
             num_points=num_points,
             fit_type=fit_type,
             fit_order=fit_order,
@@ -323,15 +299,33 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         self._factor = factor
         self._primitive_matrix = primitive_matrix
         self._phonopy_dict = {}
-        self._volume_rescale_factor = len(structure_repeated) / len(structure)
         self._eng_internal_dict = None
+        # Phonopy internally repeats structures that are "too small"
+        # Here we manually guarantee that all structures passed are big enough
+        # This provides some computational efficiency for classical calculations
+        # And for quantum calculations _ensures_ that force matrices and energy/atom
+        # get treated with the same kmesh
+        self._repeat_vector = np.array(
+            np.diag(
+                get_supercell_matrix(
+                    interaction_range=interaction_range,
+                    cell=structure.cell.array,
+                )
+            ),
+            dtype=int,
+        )
 
     def generate_structures(self) -> dict:
-        task_dict = super().generate_structures()
-        task_dict["calc_forces"] = {}
-        for strain, structure in task_dict["calc_energy"].items():
-            self._phonopy_dict[strain] = PhonopyWorkflow(
-                structure=structure,
+        task_dict = {"calc_forces": {}}
+        for strain in self._get_strains():
+            strain_ind = 1 + np.round(strain, 7)
+            basis = _strain_axes(
+                structure=self.structure, axes=self.axes, volume_strain=strain
+            )
+            structure_ev = basis.repeat(self._repeat_vector)
+            self._structure_dict[strain_ind] = structure_ev
+            self._phonopy_dict[strain_ind] = PhonopyWorkflow(
+                structure=basis,
                 interaction_range=self._interaction_range,
                 factor=self._factor,
                 displacement=self._displacement,
@@ -339,15 +333,16 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
                 primitive_matrix=self._primitive_matrix,
                 number_of_snapshots=self._number_of_snapshots,
             )
-            structure_task_dict = self._phonopy_dict[strain].generate_structures()
+            structure_task_dict = self._phonopy_dict[strain_ind].generate_structures()
             task_dict["calc_forces"].update(
                 {
-                    (strain, key): structure_phono
+                    (strain_ind, key): structure_phono
                     for key, structure_phono in structure_task_dict[
                         "calc_forces"
                     ].items()
                 }
             )
+        task_dict["calc_energy"] = self._structure_dict
         return task_dict
 
     def analyse_structures(
@@ -401,8 +396,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         return get_thermal_properties(
             eng_internal_dict=self._eng_internal_dict,
             phonopy_dict=self._phonopy_dict,
-            volume_lst=np.array(self.get_volume_lst()) / self._volume_rescale_factor,
-            volume_rescale_factor=self._volume_rescale_factor,
+            volume_lst=np.array(self.get_volume_lst()) / np.prod(self._repeat_vector),
             fit_type=self.fit_type,
             fit_order=self.fit_order,
             t_min=t_min,
