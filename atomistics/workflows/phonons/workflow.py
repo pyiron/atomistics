@@ -187,13 +187,13 @@ class PhonopyWorkflow(Workflow):
             primitive_matrix=primitive_matrix,
             factor=factor,
         )
+        self._phonopy_dict = {}
+
+    def generate_structures(self) -> dict:
         self.phonopy.generate_displacements(
             distance=self._displacement,
             number_of_snapshots=self._number_of_snapshots,
         )
-        self._phonopy_dict = {}
-
-    def generate_structures(self) -> dict:
         return {
             "calc_forces": {
                 ind: self._restore_magmoms(structuretoolkit.common.phonopy_to_atoms(sc))
