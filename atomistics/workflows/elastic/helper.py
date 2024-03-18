@@ -12,7 +12,11 @@ from atomistics.workflows.elastic.symmetry import (
 
 
 def generate_structures_helper(
-    structure: ase.atoms.Atoms, eps_range: float, num_of_point: int, zero_strain_job_name: str = "s_e_0", sqrt_eta: bool = True
+    structure: ase.atoms.Atoms,
+    eps_range: float,
+    num_of_point: int,
+    zero_strain_job_name: str = "s_e_0",
+    sqrt_eta: bool = True,
 ):
     """
 

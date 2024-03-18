@@ -27,7 +27,9 @@ def _strain_axes(
     return apply_strain(structure=structure, epsilon=strains, return_box=True)
 
 
-def apply_strain(structure: Atoms, epsilon: float, return_box: bool = False, mode: str = "linear") -> Atoms:
+def apply_strain(
+    structure: Atoms, epsilon: float, return_box: bool = False, mode: str = "linear"
+) -> Atoms:
     """
     Apply a given strain on the structure. It applies the matrix `F` in the manner:
 
@@ -79,7 +81,9 @@ def get_volume_lst(structure_dict: dict) -> list:
     return [structure.get_volume() for structure in structure_dict.values()]
 
 
-def fit_ev_curve_internal(volume_lst: np.ndarray, energy_lst: np.ndarray, fit_type: str, fit_order: int) -> EnergyVolumeFit:
+def fit_ev_curve_internal(
+    volume_lst: np.ndarray, energy_lst: np.ndarray, fit_type: str, fit_order: int
+) -> EnergyVolumeFit:
     fit_module = EnergyVolumeFit(
         volume_lst=volume_lst,
         energy_lst=energy_lst,
@@ -88,7 +92,9 @@ def fit_ev_curve_internal(volume_lst: np.ndarray, energy_lst: np.ndarray, fit_ty
     return fit_module
 
 
-def fit_ev_curve(volume_lst: np.ndarray, energy_lst: np.ndarray, fit_type: str, fit_order: int) -> dict:
+def fit_ev_curve(
+    volume_lst: np.ndarray, energy_lst: np.ndarray, fit_type: str, fit_order: int
+) -> dict:
     return fit_ev_curve_internal(
         volume_lst=volume_lst,
         energy_lst=energy_lst,
@@ -200,7 +206,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         t_step: float = 50.0,
         temperatures: np.ndarray = None,
         constant_volume: bool = False,
-        output_keys: tuple[str] =OutputThermodynamic.keys(),
+        output_keys: tuple[str] = OutputThermodynamic.keys(),
     ) -> dict:
         return get_thermal_properties(
             fit_dict=self.fit_dict,

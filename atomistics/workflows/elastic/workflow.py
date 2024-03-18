@@ -12,7 +12,12 @@ from atomistics.workflows.elastic.helper import (
 
 class ElasticMatrixWorkflow(Workflow):
     def __init__(
-        self, structure: Atoms, num_of_point: int = 5, eps_range: float = 0.005, sqrt_eta: bool = True, fit_order: int = 2
+        self,
+        structure: Atoms,
+        num_of_point: int = 5,
+        eps_range: float = 0.005,
+        sqrt_eta: bool = True,
+        fit_order: int = 2,
     ):
         self.structure = structure.copy()
         self.num_of_point = num_of_point
@@ -40,7 +45,9 @@ class ElasticMatrixWorkflow(Workflow):
         )
         return {"calc_energy": self._structure_dict}
 
-    def analyse_structures(self, output_dict: dict, output_keys: tuple = OutputElastic.keys()):
+    def analyse_structures(
+        self, output_dict: dict, output_keys: tuple = OutputElastic.keys()
+    ):
         """
 
         Args:

@@ -32,7 +32,9 @@ def get_hesse_matrix(force_constants: np.ndarray) -> np.ndarray:
     )
 
 
-def plot_dos(dos_energies: np.ndarray, dos_total: np.ndarray, *args, axis=None, **kwargs):
+def plot_dos(
+    dos_energies: np.ndarray, dos_total: np.ndarray, *args, axis=None, **kwargs
+):
     """
     Plot the DOS.
 
@@ -60,7 +62,10 @@ def plot_dos(dos_energies: np.ndarray, dos_total: np.ndarray, *args, axis=None, 
 
 
 def get_band_structure(
-    phonopy: phonopy.Phonopy, npoints: int = 101, with_eigenvectors: bool = False, with_group_velocities: bool = False
+    phonopy: phonopy.Phonopy,
+    npoints: int = 101,
+    with_eigenvectors: bool = False,
+    with_group_velocities: bool = False,
 ):
     """
     Calculate band structure with automatic path through reciprocal space.

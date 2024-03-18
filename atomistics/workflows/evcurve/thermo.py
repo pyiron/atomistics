@@ -215,7 +215,10 @@ class ThermoBulk(object):
             )
 
     def set_temperatures(
-        self, temperature_min: float = 0.0, temperature_max: float = 1500.0, temperature_steps: float = 50.0
+        self,
+        temperature_min: float = 0.0,
+        temperature_max: float = 1500.0,
+        temperature_steps: float = 50.0,
     ):
         """
 
@@ -231,7 +234,9 @@ class ThermoBulk(object):
             temperature_min, temperature_max, temperature_steps
         )
 
-    def set_volumes(self, volume_min: float, volume_max: float =None, volume_steps: int = 10):
+    def set_volumes(
+        self, volume_min: float, volume_max: float = None, volume_steps: int = 10
+    ):
         """
 
         Args:
@@ -254,7 +259,7 @@ class ThermoBulk(object):
         """
         return np.meshgrid(self.volumes, self.temperatures)
 
-    def get_minimum_energy_path(self, pressure: np.ndarray=None) -> np.ndarray:
+    def get_minimum_energy_path(self, pressure: np.ndarray = None) -> np.ndarray:
         """
 
         Args:
@@ -277,7 +282,9 @@ class ThermoBulk(object):
                 v_min_lst.append(np.nan)
         return np.array(v_min_lst)
 
-    def get_free_energy(self, vol: np.ndarray, pressure: np.ndarray = None) -> np.ndarray:
+    def get_free_energy(
+        self, vol: np.ndarray, pressure: np.ndarray = None
+    ) -> np.ndarray:
         """
 
         Args:

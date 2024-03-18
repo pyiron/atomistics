@@ -17,7 +17,9 @@ from atomistics.workflows.phonons.units import (
 )
 
 
-def get_free_energy_classical(frequency: np.ndarray, temperature: np.ndarray) -> np.ndarray:
+def get_free_energy_classical(
+    frequency: np.ndarray, temperature: np.ndarray
+) -> np.ndarray:
     return kb * temperature * np.log(frequency / (kb * temperature))
 
 
@@ -37,7 +39,7 @@ def get_thermal_properties(
     band_indices: np.ndarray = None,
     is_projection: bool = False,
     quantum_mechanical: bool = True,
-    output_keys: tuple[str] =OutputThermodynamic.keys(),
+    output_keys: tuple[str] = OutputThermodynamic.keys(),
 ) -> dict:
     """
     Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
@@ -349,7 +351,9 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         return task_dict
 
     def analyse_structures(
-        self, output_dict: dict, output_keys: tuple[str] = ("force_constants", "mesh_dict")
+        self,
+        output_dict: dict,
+        output_keys: tuple[str] = ("force_constants", "mesh_dict"),
     ):
         self._eng_internal_dict = output_dict["energy"]
         phonopy_collect_dict = {

@@ -9,7 +9,9 @@ eV_div_A3_to_GPa = (
 
 
 # https://gitlab.com/ase/ase/blob/master/ase/eos.py
-def birchmurnaghan_energy(V: np.ndarray, E0: float, B0: float, BP: float, V0: float) -> np.ndarray:
+def birchmurnaghan_energy(
+    V: np.ndarray, E0: float, B0: float, BP: float, V0: float
+) -> np.ndarray:
     "BirchMurnaghan equation from PRB 70, 224107"
     eta = (V0 / V) ** (1 / 3)
     return E0 + 9 * B0 * V0 / 16 * (eta**2 - 1) ** 2 * (
@@ -17,7 +19,9 @@ def birchmurnaghan_energy(V: np.ndarray, E0: float, B0: float, BP: float, V0: fl
     )
 
 
-def vinet_energy(V: np.ndarray, E0: float, B0: float, BP: float, V0: float) -> np.ndarray:
+def vinet_energy(
+    V: np.ndarray, E0: float, B0: float, BP: float, V0: float
+) -> np.ndarray:
     "Vinet equation from PRB 70, 224107"
     eta = (V / V0) ** (1 / 3)
     return E0 + 2 * B0 * V0 / (BP - 1) ** 2 * (
@@ -47,7 +51,9 @@ def birch(V: np.ndarray, E0: float, B0: float, BP: float, V0: float) -> np.ndarr
     return E
 
 
-def pouriertarantola(V: np.ndarray, E0: float, B0: float, BP: float, V0: float) -> np.ndarray:
+def pouriertarantola(
+    V: np.ndarray, E0: float, B0: float, BP: float, V0: float
+) -> np.ndarray:
     "Pourier-Tarantola equation from PRB 70, 224107"
     eta = (V / V0) ** (1 / 3)
     squiggle = -3 * np.log(eta)
@@ -56,7 +62,9 @@ def pouriertarantola(V: np.ndarray, E0: float, B0: float, BP: float, V0: float) 
     return E
 
 
-def fitfunction(parameters: tuple[float], vol: np.ndarray, fittype: str = "vinet") -> np.ndarray:
+def fitfunction(
+    parameters: tuple[float], vol: np.ndarray, fittype: str = "vinet"
+) -> np.ndarray:
     """
     Fit the energy volume curve
 
@@ -110,7 +118,9 @@ def interpolate_energy(fit_dict: dict, volumes: np.ndarray) -> np.ndarray:
         raise ValueError("Unsupported fit_type: ", fit_dict["fit_dict"]["fit_type"])
 
 
-def fit_leastsq(p0: tuple[float], datax: np.ndarray, datay: np.ndarray, fittype: str = "vinet"):
+def fit_leastsq(
+    p0: tuple[float], datax: np.ndarray, datay: np.ndarray, fittype: str = "vinet"
+):
     """
     Least square fit
 
@@ -150,7 +160,9 @@ def fit_leastsq(p0: tuple[float], datax: np.ndarray, datay: np.ndarray, fittype:
     return pfit_leastsq, perr_leastsq
 
 
-def fit_leastsq_eos(volume_lst: np.ndarray, energy_lst: np.ndarray, fittype: str = "birchmurnaghan"):
+def fit_leastsq_eos(
+    volume_lst: np.ndarray, energy_lst: np.ndarray, fittype: str = "birchmurnaghan"
+):
     """
     Internal helper function for the least square fit
 
@@ -191,7 +203,9 @@ def get_error(x_lst: np.ndarray, y_lst: np.ndarray, p_fit) -> float:
     return np.mean(error_lst)
 
 
-def fit_equation_of_state(volume_lst: np.ndarray, energy_lst: np.ndarray, fittype: str) -> dict:
+def fit_equation_of_state(
+    volume_lst: np.ndarray, energy_lst: np.ndarray, fittype: str
+) -> dict:
     fit_dict = {}
     pfit_leastsq, perr_leastsq = fit_leastsq_eos(
         volume_lst=volume_lst, energy_lst=energy_lst, fittype=fittype
@@ -208,7 +222,9 @@ def fit_equation_of_state(volume_lst: np.ndarray, energy_lst: np.ndarray, fittyp
     return fit_dict
 
 
-def fit_polynomial(volume_lst: np.ndarray, energy_lst: np.ndarray, fit_order: int) -> dict:
+def fit_polynomial(
+    volume_lst: np.ndarray, energy_lst: np.ndarray, fit_order: int
+) -> dict:
     fit_dict = {}
 
     # compute a polynomial fit
@@ -310,7 +326,9 @@ class EnergyVolumeFit(object):
     def fit_dict(self) -> dict:
         return self._fit_dict
 
-    def _get_volume_and_energy_lst(self, volume_lst: np.ndarray = None, energy_lst: np.ndarray=None) -> tuple[np.ndarray]:
+    def _get_volume_and_energy_lst(
+        self, volume_lst: np.ndarray = None, energy_lst: np.ndarray = None
+    ) -> tuple[np.ndarray]:
         """
         Internal function to get the vector of volumes and the vector of energies
 
@@ -352,7 +370,10 @@ class EnergyVolumeFit(object):
         return self._fit_dict
 
     def fit_eos_general(
-        self, volume_lst: np.ndarray = None, energy_lst: np.ndarray = None, fittype: str = "birchmurnaghan"
+        self,
+        volume_lst: np.ndarray = None,
+        energy_lst: np.ndarray = None,
+        fittype: str = "birchmurnaghan",
     ):
         """
         Fit on of the equations of state
@@ -372,7 +393,12 @@ class EnergyVolumeFit(object):
             volume_lst=volume_lst, energy_lst=energy_lst, fittype=fittype
         )
 
-    def fit_polynomial(self, volume_lst: np.ndarray = None, energy_lst: np.ndarray = None, fit_order: int = 3):
+    def fit_polynomial(
+        self,
+        volume_lst: np.ndarray = None,
+        energy_lst: np.ndarray = None,
+        fit_order: int = 3,
+    ):
         """
         Fit a polynomial
 
@@ -407,21 +433,27 @@ class EnergyVolumeFit(object):
         return interpolate_energy(fit_dict=self.fit_dict, volumes=volume_lst)
 
     @staticmethod
-    def birchmurnaghan_energy(V: np.ndarray, E0: float, B0: float, BP: float, V0: float) -> np.ndarray:
+    def birchmurnaghan_energy(
+        V: np.ndarray, E0: float, B0: float, BP: float, V0: float
+    ) -> np.ndarray:
         """
         BirchMurnaghan equation from PRB 70, 224107
         """
         return birchmurnaghan_energy(V, E0, B0, BP, V0)
 
     @staticmethod
-    def vinet_energy(V: np.ndarray, E0: float, B0: float, BP: float, V0: float) -> np.ndarray:
+    def vinet_energy(
+        V: np.ndarray, E0: float, B0: float, BP: float, V0: float
+    ) -> np.ndarray:
         """
         Vinet equation from PRB 70, 224107
         """
         return vinet_energy(V, E0, B0, BP, V0)
 
     @staticmethod
-    def murnaghan(V: np.ndarray, E0: float, B0: float, BP: float, V0: float) -> np.ndarray:
+    def murnaghan(
+        V: np.ndarray, E0: float, B0: float, BP: float, V0: float
+    ) -> np.ndarray:
         """
         From PRB 28,5480 (1983)
         """
@@ -439,9 +471,13 @@ class EnergyVolumeFit(object):
         return birch(V, E0, B0, BP, V0)
 
     @staticmethod
-    def pouriertarantola(V: np.ndarray, E0: float, B0: float, BP: float, V0: float) -> np.ndarray:
+    def pouriertarantola(
+        V: np.ndarray, E0: float, B0: float, BP: float, V0: float
+    ) -> np.ndarray:
         return pouriertarantola(V, E0, B0, BP, V0)
 
 
-def get_energy_volume_curve_fit(volume_lst: np.ndarray = None, energy_lst: np.ndarray = None):
+def get_energy_volume_curve_fit(
+    volume_lst: np.ndarray = None, energy_lst: np.ndarray = None
+):
     return EnergyVolumeFit(volume_lst=volume_lst, energy_lst=energy_lst)

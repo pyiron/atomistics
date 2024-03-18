@@ -95,7 +95,7 @@ def get_youngsmodul_hill(bulkmodul_hill: float, shearmodul_hill: float) -> float
     )
 
 
-def get_poissonsratio_hill(bulkmodul_hill:float , shearmodul_hill: float) -> float:
+def get_poissonsratio_hill(bulkmodul_hill: float, shearmodul_hill: float) -> float:
     return (1.5 * bulkmodul_hill - shearmodul_hill) / (
         3.0 * bulkmodul_hill + shearmodul_hill
     )

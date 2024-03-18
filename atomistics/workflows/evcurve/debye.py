@@ -146,7 +146,7 @@ class DebyeModel(object):
     def _reset(self):
         self._debye_T = None
 
-    def interpolate(self, volumes : np.ndarray = None) -> np.ndarray:
+    def interpolate(self, volumes: np.ndarray = None) -> np.ndarray:
         if volumes is None:
             volumes = self.volume
         return interpolate_energy(fit_dict=self._fit_dict, volumes=volumes)
@@ -192,7 +192,9 @@ class DebyeModel(object):
         self._debye_T = (debye_low, debye_high)
         return self._debye_T
 
-    def energy_vib(self, T: np.ndarray, debye_T: tuple[float] = None, low_T_limit: bool = True):
+    def energy_vib(
+        self, T: np.ndarray, debye_T: tuple[float] = None, low_T_limit: bool = True
+    ):
         kB = scipy.constants.physical_constants["Boltzmann constant in eV/K"][0]
         if debye_T is None:
             if low_T_limit:
@@ -224,7 +226,7 @@ def get_thermal_properties(
     t_min: float = 1.0,
     t_max: float = 1500.0,
     t_step: float = 50.0,
-    temperatures: np.ndarray =None,
+    temperatures: np.ndarray = None,
     constant_volume: bool = False,
     num_steps: int = 50,
     output_keys: tuple = OutputThermodynamic.keys(),

@@ -225,7 +225,9 @@ class PhonopyWorkflow(Workflow):
             structure.set_initial_magnetic_moments(magmoms)
         return structure
 
-    def analyse_structures(self, output_dict: dict, output_keys: tuple[str]=OutputPhonons.keys()) -> dict:
+    def analyse_structures(
+        self, output_dict: dict, output_keys: tuple[str] = OutputPhonons.keys()
+    ) -> dict:
         """
 
         Returns:
@@ -325,7 +327,9 @@ class PhonopyWorkflow(Workflow):
         """
         return np.real_if_close(self.phonopy.get_dynamical_matrix_at_q(q))
 
-    def write_phonopy_force_constants(self, file_name: str = "FORCE_CONSTANTS", cwd: str = None):
+    def write_phonopy_force_constants(
+        self, file_name: str = "FORCE_CONSTANTS", cwd: str = None
+    ):
         """
 
         Args:
@@ -345,7 +349,10 @@ class PhonopyWorkflow(Workflow):
         return get_hesse_matrix(force_constants=self.phonopy.force_constants)
 
     def get_band_structure(
-        self, npoints: int = 101, with_eigenvectors: bool = False, with_group_velocities: bool = False
+        self,
+        npoints: int = 101,
+        with_eigenvectors: bool = False,
+        with_group_velocities: bool = False,
     ):
         return get_band_structure(
             phonopy=self.phonopy,

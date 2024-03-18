@@ -11,7 +11,11 @@ U_ANGSQ_PER_FSSQ_TO_EV = 1.0 / EV_TO_U_ANGSQ_PER_FSSQ
 
 
 def langevin_delta_v(
-    temperature: float, time_step: float, masses: np.ndarray, velocities: np.ndarray, damping_timescale: float = None
+    temperature: float,
+    time_step: float,
+    masses: np.ndarray,
+    velocities: np.ndarray,
+    damping_timescale: float = None,
 ) -> float:
     """
     Velocity changes due to the Langevin thermostat.
@@ -43,7 +47,9 @@ def convert_to_acceleration(forces: np.ndarray, masses: np.ndarray) -> np.ndarra
     return forces * EV_TO_U_ANGSQ_PER_FSSQ / masses
 
 
-def get_initial_velocities(temperature: float, masses: np.ndarray, overheat_fraction: float = 2.0) -> np.ndarray:
+def get_initial_velocities(
+    temperature: float, masses: np.ndarray, overheat_fraction: float = 2.0
+) -> np.ndarray:
     vel_scale = np.sqrt(EV_TO_U_ANGSQ_PER_FSSQ * KB * temperature / masses) * np.sqrt(
         overheat_fraction
     )
@@ -53,7 +59,9 @@ def get_initial_velocities(temperature: float, masses: np.ndarray, overheat_frac
     return velocities
 
 
-def get_first_half_step(forces: np.ndarray, masses: np.ndarray, time_step: float, velocities: np.ndarray) -> np.ndarray:
+def get_first_half_step(
+    forces: np.ndarray, masses: np.ndarray, time_step: float, velocities: np.ndarray
+) -> np.ndarray:
     acceleration = convert_to_acceleration(forces, masses)
     return velocities + 0.5 * acceleration * time_step
 
