@@ -1,7 +1,9 @@
 from typing import Optional
 import posixpath
 
+from ase.atoms import Atoms
 import numpy as np
+import phonopy
 from phonopy import Phonopy
 from phonopy.file_IO import write_FORCE_CONSTANTS
 import structuretoolkit
@@ -21,21 +23,21 @@ from atomistics.workflows.phonons.units import VaspToTHz, kJ_mol_to_eV
 class PhonopyProperties(object):
     def __init__(
         self,
-        phonopy_instance,
-        dos_mesh,
+        phonopy_instance: phonopy.Phonopy,
+        dos_mesh: np.ndarray,
         shift=None,
-        is_time_reversal=True,
-        is_mesh_symmetry=True,
-        with_eigenvectors=False,
-        with_group_velocities=False,
-        is_gamma_center=False,
-        number_of_snapshots=None,
-        sigma=None,
-        freq_min=None,
-        freq_max=None,
-        freq_pitch=None,
-        use_tetrahedron_method=True,
-        npoints=101,
+        is_time_reversal: bool = True,
+        is_mesh_symmetry: bool = True,
+        with_eigenvectors: bool = False,
+        with_group_velocities: bool = False,
+        is_gamma_center: bool = False,
+        number_of_snapshots: int = None,
+        sigma: float = None,
+        freq_min: float = None,
+        freq_max: float = None,
+        freq_pitch: float = None,
+        use_tetrahedron_method: bool = True,
+        npoints: int = 101,
     ):
         self._phonopy = phonopy_instance
         self._sigma = sigma
@@ -73,7 +75,7 @@ class PhonopyProperties(object):
         )
         self._force_constants = self._phonopy.force_constants
 
-    def mesh_dict(self):
+    def mesh_dict(self) -> dict:
         if self._force_constants is None:
             self._calc_force_constants()
         if self._mesh_dict is None:
@@ -89,12 +91,12 @@ class PhonopyProperties(object):
             self._mesh_dict = self._phonopy.get_mesh_dict()
         return self._mesh_dict
 
-    def band_structure_dict(self):
+    def band_structure_dict(self) -> dict:
         if self._band_structure_dict is None:
             self._calc_band_structure()
         return self._band_structure_dict
 
-    def total_dos_dict(self):
+    def total_dos_dict(self) -> dict:
         if self._total_dos is None:
             self._phonopy.run_total_dos(
                 sigma=self._sigma,
@@ -106,35 +108,35 @@ class PhonopyProperties(object):
             self._total_dos = self._phonopy.get_total_dos_dict()
         return self._total_dos
 
-    def dynamical_matrix(self):
+    def dynamical_matrix(self) -> np.ndarray:
         if self._band_structure_dict is None:
             self._calc_band_structure()
         return self._phonopy.dynamical_matrix.dynamical_matrix
 
-    def force_constants(self):
+    def force_constants(self) -> np.ndarray:
         if self._force_constants is None:
             self._calc_force_constants()
         return self._force_constants
 
 
 class PhonopyThermalProperties(object):
-    def __init__(self, phonopy_instance):
+    def __init__(self, phonopy_instance: phonopy.Phonopy):
         self._phonopy = phonopy_instance
         self._thermal_properties = phonopy_instance.get_thermal_properties_dict()
 
-    def free_energy(self):
+    def free_energy(self) -> np.ndarray:
         return self._thermal_properties["free_energy"] * kJ_mol_to_eV
 
-    def temperatures(self):
+    def temperatures(self) -> np.ndarray:
         return self._thermal_properties["temperatures"]
 
-    def entropy(self):
+    def entropy(self) -> np.ndarray:
         return self._thermal_properties["entropy"]
 
-    def heat_capacity(self):
+    def heat_capacity(self) -> np.ndarray:
         return self._thermal_properties["heat_capacity"]
 
-    def volumes(self):
+    def volumes(self) -> np.ndarray:
         return np.array(
             [self._phonopy.unitcell.get_volume()]
             * len(self._thermal_properties["temperatures"])
@@ -160,13 +162,13 @@ class PhonopyWorkflow(Workflow):
 
     def __init__(
         self,
-        structure,
-        interaction_range=10,
-        factor=VaspToTHz,
-        displacement=0.01,
-        dos_mesh=20,
-        primitive_matrix=None,
-        number_of_snapshots=None,
+        structure: Atoms,
+        interaction_range: float = 10.0,
+        factor: float = VaspToTHz,
+        displacement: float = 0.01,
+        dos_mesh: int = 20,
+        primitive_matrix: np.ndarray = None,
+        number_of_snapshots: int = None,
     ):
         self._interaction_range = interaction_range
         self._displacement = displacement
@@ -191,7 +193,7 @@ class PhonopyWorkflow(Workflow):
         )
         self._phonopy_dict = {}
 
-    def generate_structures(self):
+    def generate_structures(self) -> dict:
         return {
             "calc_forces": {
                 ind: self._restore_magmoms(structuretoolkit.common.phonopy_to_atoms(sc))
@@ -199,13 +201,13 @@ class PhonopyWorkflow(Workflow):
             }
         }
 
-    def _restore_magmoms(self, structure):
+    def _restore_magmoms(self, structure: Atoms) -> Atoms:
         """
         Args:
-            structure (pyiron.atomistics.structure.atoms): input structure
+            structure (ase.atoms.Atoms): input structure
 
         Returns:
-            structure (pyiron_atomistics.atomistics.structure.atoms): output structure with magnetic moments
+            structure (ase.atoms.Atoms): output structure with magnetic moments
         """
         if self.structure.has("initial_magmoms"):
             magmoms = self.structure.get_initial_magnetic_moments()
@@ -223,7 +225,9 @@ class PhonopyWorkflow(Workflow):
             structure.set_initial_magnetic_moments(magmoms)
         return structure
 
-    def analyse_structures(self, output_dict, output_keys=OutputPhonons.keys()):
+    def analyse_structures(
+        self, output_dict: dict, output_keys: tuple[str] = OutputPhonons.keys()
+    ) -> dict:
         """
 
         Returns:
@@ -257,16 +261,16 @@ class PhonopyWorkflow(Workflow):
 
     def get_thermal_properties(
         self,
-        t_min=1,
-        t_max=1500,
-        t_step=50,
-        temperatures=None,
-        cutoff_frequency=None,
-        pretend_real=False,
-        band_indices=None,
-        is_projection=False,
-        output_keys=OutputThermodynamic.keys(),
-    ):
+        t_min: float = 1.0,
+        t_max: float = 1500.0,
+        t_step: float = 50.0,
+        temperatures: np.ndarray = None,
+        cutoff_frequency: float = None,
+        pretend_real: bool = False,
+        band_indices: np.ndarray = None,
+        is_projection: bool = False,
+        output_keys: tuple[str] = OutputThermodynamic.keys(),
+    ) -> dict:
         """
         Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
         successfully ran.
@@ -296,7 +300,7 @@ class PhonopyWorkflow(Workflow):
             **{k: getattr(phono, k) for k in OutputThermodynamic.keys()}
         ).get(output_keys=output_keys)
 
-    def get_dynamical_matrix(self, npoints=101):
+    def get_dynamical_matrix(self, npoints: int = 101) -> np.ndarray:
         """
 
         Returns:
@@ -312,7 +316,7 @@ class PhonopyWorkflow(Workflow):
         )
         return np.real_if_close(self.phonopy.dynamical_matrix.dynamical_matrix)
 
-    def dynamical_matrix_at_q(self, q):
+    def dynamical_matrix_at_q(self, q: np.ndarray) -> np.ndarray:
         """
 
         Args:
@@ -323,7 +327,9 @@ class PhonopyWorkflow(Workflow):
         """
         return np.real_if_close(self.phonopy.get_dynamical_matrix_at_q(q))
 
-    def write_phonopy_force_constants(self, file_name="FORCE_CONSTANTS", cwd=None):
+    def write_phonopy_force_constants(
+        self, file_name: str = "FORCE_CONSTANTS", cwd: str = None
+    ):
         """
 
         Args:
@@ -339,11 +345,14 @@ class PhonopyWorkflow(Workflow):
             force_constants=self.phonopy.force_constants, filename=file_name
         )
 
-    def get_hesse_matrix(self):
+    def get_hesse_matrix(self) -> np.ndarray:
         return get_hesse_matrix(force_constants=self.phonopy.force_constants)
 
     def get_band_structure(
-        self, npoints=101, with_eigenvectors=False, with_group_velocities=False
+        self,
+        npoints: int = 101,
+        with_eigenvectors: bool = False,
+        with_group_velocities: bool = False,
     ):
         return get_band_structure(
             phonopy=self.phonopy,
