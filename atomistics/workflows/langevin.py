@@ -1,3 +1,4 @@
+from ase.atoms import Atoms
 import numpy as np
 from scipy.constants import physical_constants
 
@@ -10,8 +11,12 @@ U_ANGSQ_PER_FSSQ_TO_EV = 1.0 / EV_TO_U_ANGSQ_PER_FSSQ
 
 
 def langevin_delta_v(
-    temperature, time_step, masses, velocities, damping_timescale=None
-):
+    temperature: float,
+    time_step: float,
+    masses: np.ndarray,
+    velocities: np.ndarray,
+    damping_timescale: float = None,
+) -> float:
     """
     Velocity changes due to the Langevin thermostat.
     Args:
@@ -38,11 +43,13 @@ def langevin_delta_v(
         return 0.0
 
 
-def convert_to_acceleration(forces, masses):
+def convert_to_acceleration(forces: np.ndarray, masses: np.ndarray) -> np.ndarray:
     return forces * EV_TO_U_ANGSQ_PER_FSSQ / masses
 
 
-def get_initial_velocities(temperature, masses, overheat_fraction=2.0):
+def get_initial_velocities(
+    temperature: float, masses: np.ndarray, overheat_fraction: float = 2.0
+) -> np.ndarray:
     vel_scale = np.sqrt(EV_TO_U_ANGSQ_PER_FSSQ * KB * temperature / masses) * np.sqrt(
         overheat_fraction
     )
@@ -52,7 +59,9 @@ def get_initial_velocities(temperature, masses, overheat_fraction=2.0):
     return velocities
 
 
-def get_first_half_step(forces, masses, time_step, velocities):
+def get_first_half_step(
+    forces: np.ndarray, masses: np.ndarray, time_step: float, velocities: np.ndarray
+) -> np.ndarray:
     acceleration = convert_to_acceleration(forces, masses)
     return velocities + 0.5 * acceleration * time_step
 
@@ -60,11 +69,11 @@ def get_first_half_step(forces, masses, time_step, velocities):
 class LangevinWorkflow(Workflow):
     def __init__(
         self,
-        structure,
-        temperature=1000.0,
-        overheat_fraction=2.0,
-        damping_timescale=100.0,
-        time_step=1,
+        structure: Atoms,
+        temperature: float = 1000.0,
+        overheat_fraction: float = 2.0,
+        damping_timescale: float = 100.0,
+        time_step: int = 1,
     ):
         self.structure = structure
         self.temperature = temperature
@@ -81,7 +90,7 @@ class LangevinWorkflow(Workflow):
         self.gamma = self.masses / self.damping_timescale
         self.forces = None
 
-    def generate_structures(self):
+    def generate_structures(self) -> dict:
         """
 
         Returns:
@@ -113,7 +122,7 @@ class LangevinWorkflow(Workflow):
             structure = self.structure
         return {"calc_forces": {0: structure}, "calc_energy": {0: structure}}
 
-    def analyse_structures(self, output_dict):
+    def analyse_structures(self, output_dict: dict):
         self.forces, eng_pot = output_dict["forces"][0], output_dict["energy"][0]
 
         # second half step
