@@ -10,14 +10,14 @@ from atomistics.workflows.evcurve.thermo import get_thermo_bulk_model
 class DebyeThermalProperties(object):
     def __init__(
         self,
-        fit_dict,
-        masses,
-        t_min=1,
-        t_max=1500,
-        t_step=50,
-        temperatures=None,
-        constant_volume=False,
-        num_steps=50,
+        fit_dict: dict,
+        masses: list[float],
+        t_min: float = 1.0,
+        t_max: float = 1500.0,
+        t_step: float = 50.0,
+        temperatures: np.ndarray = None,
+        constant_volume: bool = False,
+        num_steps: int = 50,
     ):
         if temperatures is None:
             temperatures = np.arange(t_min, t_max + t_step, t_step)
@@ -31,16 +31,16 @@ class DebyeThermalProperties(object):
         )
         self._constant_volume = constant_volume
 
-    def free_energy(self):
+    def free_energy(self) -> np.ndarray:
         return (
             self._pes.get_free_energy_p()
             - self._debye_model.interpolate(volumes=self._pes.get_minimum_energy_path())
         ) / self._pes.num_atoms
 
-    def temperatures(self):
+    def temperatures(self) -> np.ndarray:
         return self._temperatures
 
-    def entropy(self):
+    def entropy(self) -> np.ndarray:
         if not self._constant_volume:
             return (
                 self._pes.eV_to_J_per_mol
@@ -54,7 +54,7 @@ class DebyeThermalProperties(object):
                 * self._pes.get_entropy_v()
             )
 
-    def heat_capacity(self):
+    def heat_capacity(self) -> np.ndarray:
         if not self._constant_volume:
             heat_capacity = (
                 self._pes.eV_to_J_per_mol
@@ -69,22 +69,22 @@ class DebyeThermalProperties(object):
             )
         return np.array(heat_capacity.tolist() + [np.nan, np.nan])
 
-    def volumes(self):
+    def volumes(self) -> np.ndarray:
         if not self._constant_volume:
             return self._pes.get_minimum_energy_path()
         else:
             return np.array([self._pes.volumes[0]] * len(self._temperatures))
 
 
-def _debye_kernel(xi):
+def _debye_kernel(xi: np.ndarray) -> np.ndarray:
     return xi**3 / (np.exp(xi) - 1)
 
 
-def debye_integral(x):
+def debye_integral(x: np.ndarray) -> np.ndarray:
     return scipy.integrate.quad(_debye_kernel, 0, x)[0]
 
 
-def debye_function(x):
+def debye_function(x: np.ndarray) -> np.ndarray:
     if hasattr(x, "__len__"):
         return np.array([3 / xx**3 * debye_integral(xx) for xx in x])
     return 3 / x**3 * debye_integral(x)
@@ -95,7 +95,7 @@ class DebyeModel(object):
     Calculate Thermodynamic Properties based on the Murnaghan output
     """
 
-    def __init__(self, fit_dict, masses, num_steps=50):
+    def __init__(self, fit_dict: dict, masses: list[float], num_steps: int = 50):
         self._fit_dict = fit_dict
         self._masses = masses
 
@@ -121,23 +121,23 @@ class DebyeModel(object):
             self._reset()
 
     @property
-    def num_steps(self):
+    def num_steps(self) -> int:
         return self._num_steps
 
     @num_steps.setter
-    def num_steps(self, val):
+    def num_steps(self, val: int):
         self._num_steps = val
         self._set_volume()
 
     @property
-    def volume(self):
+    def volume(self) -> np.ndarray:
         if self._volume is None:
             self._init_volume()
             self._set_volume()
         return self._volume
 
     @volume.setter
-    def volume(self, volume_lst):
+    def volume(self, volume_lst: np.ndarray):
         self._volume = volume_lst
         self._v_min = np.min(volume_lst)
         self._v_max = np.max(volume_lst)
@@ -146,13 +146,13 @@ class DebyeModel(object):
     def _reset(self):
         self._debye_T = None
 
-    def interpolate(self, volumes=None):
+    def interpolate(self, volumes : np.ndarray = None) -> np.ndarray:
         if volumes is None:
             volumes = self.volume
         return interpolate_energy(fit_dict=self._fit_dict, volumes=volumes)
 
     @property
-    def debye_temperature(self):
+    def debye_temperature(self) -> tuple[float]:
         if self._debye_T is not None:
             return self._debye_T
 
@@ -192,7 +192,7 @@ class DebyeModel(object):
         self._debye_T = (debye_low, debye_high)
         return self._debye_T
 
-    def energy_vib(self, T, debye_T=None, low_T_limit=True):
+    def energy_vib(self, T: np.ndarray, debye_T: tuple[float] = None, low_T_limit: bool = True):
         kB = scipy.constants.physical_constants["Boltzmann constant in eV/K"][0]
         if debye_T is None:
             if low_T_limit:
@@ -214,21 +214,21 @@ class DebyeModel(object):
         return atoms_per_cell * val
 
 
-def get_debye_model(fit_dict, masses, num_steps=50):
+def get_debye_model(fit_dict: dict, masses: list[float], num_steps: int = 50):
     return DebyeModel(fit_dict=fit_dict, masses=masses, num_steps=num_steps)
 
 
 def get_thermal_properties(
-    fit_dict,
-    masses,
-    t_min=1,
-    t_max=1500,
-    t_step=50,
-    temperatures=None,
-    constant_volume=False,
-    num_steps=50,
-    output_keys=OutputThermodynamic.keys(),
-):
+    fit_dict: dict,
+    masses: list[float],
+    t_min: float = 1.0,
+    t_max: float = 1500.0,
+    t_step: float = 50.0,
+    temperatures: np.ndarray =None,
+    constant_volume: bool = False,
+    num_steps: int = 50,
+    output_keys: tuple = OutputThermodynamic.keys(),
+) -> dict:
     debye_model = DebyeThermalProperties(
         fit_dict=fit_dict,
         masses=masses,

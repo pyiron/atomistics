@@ -1,16 +1,17 @@
 from typing import Optional
 import numpy as np
+import phonopy
 import scipy.constants
 
 
-def get_supercell_matrix(interaction_range, cell):
+def get_supercell_matrix(interaction_range: float, cell: np.ndarray) -> np.ndarray:
     supercell_range = np.ceil(
         interaction_range / np.array([np.linalg.norm(vec) for vec in cell])
     )
     return np.eye(3) * supercell_range
 
 
-def get_hesse_matrix(force_constants):
+def get_hesse_matrix(force_constants: np.ndarray) -> np.ndarray:
     """
 
     Returns:
@@ -31,7 +32,7 @@ def get_hesse_matrix(force_constants):
     )
 
 
-def plot_dos(dos_energies, dos_total, *args, axis=None, **kwargs):
+def plot_dos(dos_energies: np.ndarray, dos_total: np.ndarray, *args, axis=None, **kwargs):
     """
     Plot the DOS.
 
@@ -59,7 +60,7 @@ def plot_dos(dos_energies, dos_total, *args, axis=None, **kwargs):
 
 
 def get_band_structure(
-    phonopy, npoints=101, with_eigenvectors=False, with_group_velocities=False
+    phonopy: phonopy.Phonopy, npoints: int = 101, with_eigenvectors: bool = False, with_group_velocities: bool = False
 ):
     """
     Calculate band structure with automatic path through reciprocal space.
@@ -103,9 +104,9 @@ def get_band_structure(
 
 
 def plot_band_structure(
-    results,
-    path_connections,
-    labels,
+    results: dict,
+    path_connections: list[str],
+    labels: str,
     axis=None,
     *args,
     label: Optional[str] = None,

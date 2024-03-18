@@ -56,7 +56,7 @@ class ThermoBulk(object):
                 # self.energies = 0
 
     @property
-    def num_atoms(self):
+    def num_atoms(self) -> int:
         """
 
         Returns:
@@ -67,7 +67,7 @@ class ThermoBulk(object):
         return self._num_atoms
 
     @num_atoms.setter
-    def num_atoms(self, num):
+    def num_atoms(self, num: int):
         """
 
         Args:
@@ -88,7 +88,7 @@ class ThermoBulk(object):
         return np.polyfit(self._volumes, self._energies.T, deg=self._fit_order)
 
     @property
-    def temperatures(self):
+    def temperatures(self) -> np.ndarray:
         """
 
         Returns:
@@ -97,7 +97,7 @@ class ThermoBulk(object):
         return self._temperatures
 
     @property
-    def _d_temp(self):
+    def _d_temp(self) -> float:
         """
 
         Returns:
@@ -106,7 +106,7 @@ class ThermoBulk(object):
         return self.temperatures[1] - self.temperatures[0]
 
     @property
-    def _d_vol(self):
+    def _d_vol(self) -> float:
         """
 
         Returns:
@@ -115,7 +115,7 @@ class ThermoBulk(object):
         return self.volumes[1] - self.volumes[0]
 
     @temperatures.setter
-    def temperatures(self, temp_lst):
+    def temperatures(self, temp_lst: np.ndarray):
         """
 
         Args:
@@ -134,7 +134,7 @@ class ThermoBulk(object):
             self._reset_energy()
 
     @property
-    def volumes(self):
+    def volumes(self) -> np.ndarray:
         """
 
         Returns:
@@ -143,7 +143,7 @@ class ThermoBulk(object):
         return self._volumes
 
     @volumes.setter
-    def volumes(self, volume_lst):
+    def volumes(self, volume_lst: np.ndarray):
         """
 
         Args:
@@ -162,7 +162,7 @@ class ThermoBulk(object):
             self._reset_energy()
 
     @property
-    def entropy(self):
+    def entropy(self) -> np.ndarray:
         """
 
         Returns:
@@ -173,7 +173,7 @@ class ThermoBulk(object):
         return self._entropy
 
     @property
-    def pressure(self):
+    def pressure(self) -> np.ndarray:
         """
 
         Returns:
@@ -184,7 +184,7 @@ class ThermoBulk(object):
         return self._pressure
 
     @property
-    def energies(self):
+    def energies(self) -> np.ndarray:
         """
 
         Returns:
@@ -193,7 +193,7 @@ class ThermoBulk(object):
         return self._energies
 
     @energies.setter
-    def energies(self, erg_lst):
+    def energies(self, erg_lst: np.ndarray):
         """
 
         Args:
@@ -215,7 +215,7 @@ class ThermoBulk(object):
             )
 
     def set_temperatures(
-        self, temperature_min=0, temperature_max=1500, temperature_steps=50
+        self, temperature_min: float = 0.0, temperature_max: float = 1500.0, temperature_steps: float = 50.0
     ):
         """
 
@@ -231,7 +231,7 @@ class ThermoBulk(object):
             temperature_min, temperature_max, temperature_steps
         )
 
-    def set_volumes(self, volume_min, volume_max=None, volume_steps=10):
+    def set_volumes(self, volume_min: float, volume_max: float =None, volume_steps: int = 10):
         """
 
         Args:
@@ -246,7 +246,7 @@ class ThermoBulk(object):
             volume_max = 1.1 * volume_min
         self.volumes = np.linspace(volume_min, volume_max, volume_steps)
 
-    def meshgrid(self):
+    def meshgrid(self) -> np.ndarray:
         """
 
         Returns:
@@ -254,7 +254,7 @@ class ThermoBulk(object):
         """
         return np.meshgrid(self.volumes, self.temperatures)
 
-    def get_minimum_energy_path(self, pressure=None):
+    def get_minimum_energy_path(self, pressure: np.ndarray=None) -> np.ndarray:
         """
 
         Args:
@@ -277,7 +277,7 @@ class ThermoBulk(object):
                 v_min_lst.append(np.nan)
         return np.array(v_min_lst)
 
-    def get_free_energy(self, vol, pressure=None):
+    def get_free_energy(self, vol: np.ndarray, pressure: np.ndarray = None) -> np.ndarray:
         """
 
         Args:
@@ -292,7 +292,7 @@ class ThermoBulk(object):
         else:
             raise NotImplementedError()
 
-    def interpolate_volume(self, volumes, fit_order=None):
+    def interpolate_volume(self, volumes: np.ndarray, fit_order: int = None):
         """
 
         Args:
@@ -319,7 +319,7 @@ class ThermoBulk(object):
             -self.energies, self._d_temp, self._d_vol
         )
 
-    def get_free_energy_p(self):
+    def get_free_energy_p(self) -> np.ndarray:
         """
 
         Returns:
@@ -328,7 +328,7 @@ class ThermoBulk(object):
         coeff = np.polyfit(self._volumes, self.energies.T, deg=self._fit_order)
         return np.polyval(coeff, self.get_minimum_energy_path())
 
-    def get_entropy_p(self):
+    def get_entropy_p(self) -> np.ndarray:
         """
 
         Returns:
@@ -337,7 +337,7 @@ class ThermoBulk(object):
         s_coeff = np.polyfit(self._volumes, self.entropy.T, deg=self._fit_order)
         return np.polyval(s_coeff, self.get_minimum_energy_path())
 
-    def get_entropy_v(self):
+    def get_entropy_v(self) -> np.ndarray:
         """
 
         Returns:
@@ -386,7 +386,7 @@ class ThermoBulk(object):
         plt.xlabel("Temperature [K]")
         plt.ylabel("Entropy [J K$^{-1}$ mol-atoms$^{-1}$]")
 
-    def plot_heat_capacity(self, to_kB=True):
+    def plot_heat_capacity(self, to_kB: bool = True):
         """
 
         Args:
@@ -496,7 +496,7 @@ class ThermoBulk(object):
         return ax
 
 
-def get_thermo_bulk_model(temperatures, debye_model):
+def get_thermo_bulk_model(temperatures: np.ndarray, debye_model):
     thermo = ThermoBulk()
     thermo.temperatures = temperatures
     thermo.volumes = debye_model.volume

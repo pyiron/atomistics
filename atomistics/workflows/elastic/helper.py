@@ -1,5 +1,6 @@
 from collections import OrderedDict
 
+import ase.atoms
 import numpy as np
 import scipy.constants
 
@@ -11,7 +12,7 @@ from atomistics.workflows.elastic.symmetry import (
 
 
 def generate_structures_helper(
-    structure, eps_range, num_of_point, zero_strain_job_name="s_e_0", sqrt_eta=True
+    structure: ase.atoms.Atoms, eps_range: float, num_of_point: int, zero_strain_job_name: str = "s_e_0", sqrt_eta: bool = True
 ):
     """
 
@@ -84,13 +85,13 @@ def generate_structures_helper(
 
 
 def analyse_structures_helper(
-    output_dict,
-    Lag_strain_list,
-    epss,
-    v0,
-    LC,
-    fit_order=2,
-    zero_strain_job_name="s_e_0",
+    output_dict: dict,
+    Lag_strain_list: list[float],
+    epss: float,
+    v0: float,
+    LC: str,
+    fit_order: int = 2,
+    zero_strain_job_name: str = "s_e_0",
 ):
     """
 
@@ -125,7 +126,7 @@ def analyse_structures_helper(
     return elastic_matrix, A2, strain_energy, ene0
 
 
-def _subjob_name(i, eps):
+def _subjob_name(i: int, eps: float):
     """
 
     Args:
@@ -138,7 +139,7 @@ def _subjob_name(i, eps):
     return ("s_%s_e_%.5f" % (i, eps)).replace(".", "_").replace("-", "m")
 
 
-def _fit_elastic_matrix(strain_ene, v0, LC, fit_order):
+def _fit_elastic_matrix(strain_ene: list, v0: float, LC: str, fit_order: int):
     """
 
     Returns:
