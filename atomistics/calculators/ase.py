@@ -240,8 +240,14 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
             externalstress=externalstress,
         )
         structure_current.set_cell(cell=result_dict["cell"][-1], scale_atoms=True)
-        temperature_md_lst.append(np.mean(result_dict["temperature"][int(len(result_dict["temperature"])/2):]))
-        volume_md_lst.append(np.mean(result_dict["volume"][int(len(result_dict["volume"])/2):]))
+        temperature_md_lst.append(
+            np.mean(
+                result_dict["temperature"][int(len(result_dict["temperature"]) / 2) :]
+            )
+        )
+        volume_md_lst.append(
+            np.mean(result_dict["volume"][int(len(result_dict["volume"]) / 2) :])
+        )
     return get_thermal_expansion_output(
         temperatures_lst=temperature_md_lst,
         volumes_lst=volume_md_lst,
