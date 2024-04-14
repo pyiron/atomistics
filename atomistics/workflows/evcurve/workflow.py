@@ -27,7 +27,9 @@ def _strain_axes(
     return apply_strain(structure=structure, epsilon=strains, return_box=True)
 
 
-def apply_strain(structure, epsilon, return_box=False, mode="linear"):
+def apply_strain(
+    structure: Atoms, epsilon: float, return_box: bool = False, mode: str = "linear"
+) -> Atoms:
     """
     Apply a given strain on the structure. It applies the matrix `F` in the manner:
 
@@ -71,15 +73,17 @@ def apply_strain(structure, epsilon, return_box=False, mode="linear"):
         return structure_copy
 
 
-def get_energy_lst(output_dict, structure_dict):
+def get_energy_lst(output_dict: dict, structure_dict: dict) -> list:
     return [output_dict["energy"][k] for k in structure_dict.keys()]
 
 
-def get_volume_lst(structure_dict):
+def get_volume_lst(structure_dict: dict) -> list:
     return [structure.get_volume() for structure in structure_dict.values()]
 
 
-def fit_ev_curve_internal(volume_lst, energy_lst, fit_type, fit_order):
+def fit_ev_curve_internal(
+    volume_lst: np.ndarray, energy_lst: np.ndarray, fit_type: str, fit_order: int
+) -> EnergyVolumeFit:
     fit_module = EnergyVolumeFit(
         volume_lst=volume_lst,
         energy_lst=energy_lst,
@@ -88,7 +92,9 @@ def fit_ev_curve_internal(volume_lst, energy_lst, fit_type, fit_order):
     return fit_module
 
 
-def fit_ev_curve(volume_lst, energy_lst, fit_type, fit_order):
+def fit_ev_curve(
+    volume_lst: np.ndarray, energy_lst: np.ndarray, fit_type: str, fit_order: int
+) -> dict:
     return fit_ev_curve_internal(
         volume_lst=volume_lst,
         energy_lst=energy_lst,
@@ -101,25 +107,25 @@ class EnergyVolumeCurveProperties:
     def __init__(self, fit_module):
         self._fit_module = fit_module
 
-    def volume_eq(self):
+    def volume_eq(self) -> float:
         return self._fit_module.fit_dict["volume_eq"]
 
-    def energy_eq(self):
+    def energy_eq(self) -> float:
         return self._fit_module.fit_dict["energy_eq"]
 
-    def bulkmodul_eq(self):
+    def bulkmodul_eq(self) -> float:
         return self._fit_module.fit_dict["bulkmodul_eq"]
 
-    def b_prime_eq(self):
+    def b_prime_eq(self) -> float:
         return self._fit_module.fit_dict["b_prime_eq"]
 
-    def volume(self):
+    def volume(self) -> np.ndarray:
         return self._fit_module.fit_dict["volume"]
 
-    def energy(self):
+    def energy(self) -> np.ndarray:
         return self._fit_module.fit_dict["energy"]
 
-    def fit_dict(self):
+    def fit_dict(self) -> dict:
         return {
             k: self._fit_module.fit_dict[k]
             for k in ["fit_type", "least_square_error", "poly_fit", "fit_order"]
@@ -127,24 +133,16 @@ class EnergyVolumeCurveProperties:
         }
 
 
-EnergyVolumeCurveOutputEnergyVolumeCurve = OutputEnergyVolumeCurve(
-    **{
-        k: getattr(EnergyVolumeCurveProperties, k)
-        for k in OutputEnergyVolumeCurve.fields()
-    }
-)
-
-
 class EnergyVolumeCurveWorkflow(Workflow):
     def __init__(
         self,
-        structure,
-        num_points=11,
-        fit_type="polynomial",
-        fit_order=3,
-        vol_range=0.05,
-        axes=("x", "y", "z"),
-        strains=None,
+        structure: Atoms,
+        num_points: int = 11,
+        fit_type: str = "polynomial",
+        fit_order: int = 3,
+        vol_range: float = 0.05,
+        axes: tuple[str, str, str] = ("x", "y", "z"),
+        strains: list = None,
     ):
         self.structure = structure
         self.num_points = num_points
@@ -157,57 +155,52 @@ class EnergyVolumeCurveWorkflow(Workflow):
         self._fit_dict = {}
 
     @property
-    def fit_dict(self):
+    def fit_dict(self) -> dict:
         return self._fit_dict
 
-    def generate_structures(self):
+    def generate_structures(self) -> dict:
         """
 
         Returns:
             (dict)
         """
-        strains = self.strains
-        if strains is None:
-            strains = np.linspace(
-                -self.vol_range,
-                self.vol_range,
-                int(self.num_points),
-            )
-        for strain in strains:
+        for strain in self._get_strains():
             basis = _strain_axes(
                 structure=self.structure, axes=self.axes, volume_strain=strain
             )
             self._structure_dict[1 + np.round(strain, 7)] = basis
         return {"calc_energy": self._structure_dict}
 
-    def analyse_structures(self, output_dict, output=OutputEnergyVolumeCurve.fields()):
-        self._fit_dict = EnergyVolumeCurveOutputEnergyVolumeCurve.get(
-            EnergyVolumeCurveProperties(
-                fit_module=fit_ev_curve_internal(
-                    volume_lst=get_volume_lst(structure_dict=self._structure_dict),
-                    energy_lst=get_energy_lst(
-                        output_dict=output_dict, structure_dict=self._structure_dict
-                    ),
-                    fit_type=self.fit_type,
-                    fit_order=self.fit_order,
-                )
-            ),
-            *output,
+    def analyse_structures(
+        self, output_dict: dict, output_keys: tuple = OutputEnergyVolumeCurve.keys()
+    ) -> dict:
+        evcurve = EnergyVolumeCurveProperties(
+            fit_module=fit_ev_curve_internal(
+                volume_lst=get_volume_lst(structure_dict=self._structure_dict),
+                energy_lst=get_energy_lst(
+                    output_dict=output_dict, structure_dict=self._structure_dict
+                ),
+                fit_type=self.fit_type,
+                fit_order=self.fit_order,
+            )
         )
+        self._fit_dict = OutputEnergyVolumeCurve(
+            **{k: getattr(evcurve, k) for k in OutputEnergyVolumeCurve.keys()}
+        ).get(output_keys=output_keys)
         return self.fit_dict
 
-    def get_volume_lst(self):
+    def get_volume_lst(self) -> np.ndarray:
         return get_volume_lst(structure_dict=self._structure_dict)
 
     def get_thermal_properties(
         self,
-        t_min=1,
-        t_max=1500,
-        t_step=50,
-        temperatures=None,
-        constant_volume=False,
-        output=OutputThermodynamic.fields(),
-    ):
+        t_min: float = 1.0,
+        t_max: float = 1500.0,
+        t_step: float = 50.0,
+        temperatures: np.ndarray = None,
+        constant_volume: bool = False,
+        output_keys: tuple[str] = OutputThermodynamic.keys(),
+    ) -> dict:
         return get_thermal_properties(
             fit_dict=self.fit_dict,
             masses=self.structure.get_masses(),
@@ -216,5 +209,15 @@ class EnergyVolumeCurveWorkflow(Workflow):
             t_step=t_step,
             temperatures=temperatures,
             constant_volume=constant_volume,
-            output=output,
+            output_keys=output_keys,
         )
+
+    def _get_strains(self):
+        strains = self.strains
+        if strains is None:
+            strains = np.linspace(
+                -self.vol_range,
+                self.vol_range,
+                int(self.num_points),
+            )
+        return strains

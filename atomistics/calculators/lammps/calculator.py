@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pandas
 from jinja2 import Template
 import numpy as np
 from typing import TYPE_CHECKING
@@ -27,12 +28,10 @@ from atomistics.calculators.lammps.commands import (
     LAMMPS_RUN,
     LAMMPS_MINIMIZE_VOLUME,
 )
-from atomistics.calculators.lammps.output import (
-    LammpsOutputMolecularDynamics,
-    LammpsOutputStatic,
-)
 from atomistics.calculators.wrapper import as_task_dict_evaluator
-from atomistics.shared.thermal_expansion import OutputThermalExpansionProperties
+from atomistics.shared.thermal_expansion import OutputThermalExpansion
+from atomistics.shared.output import OutputStatic, OutputMolecularDynamics
+
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -44,15 +43,15 @@ if TYPE_CHECKING:
 def optimize_positions_and_volume_with_lammps(
     structure: Atoms,
     potential_dataframe: DataFrame,
-    min_style="cg",
-    etol=0.0,
-    ftol=0.0001,
-    maxiter=100000,
-    maxeval=10000000,
-    thermo=10,
+    min_style: str = "cg",
+    etol: float = 0.0,
+    ftol: float = 0.0001,
+    maxiter: int = 100000,
+    maxeval: int = 10000000,
+    thermo: int = 10,
     lmp=None,
     **kwargs,
-):
+) -> Atoms:
     template_str = (
         LAMMPS_MINIMIZE_VOLUME
         + "\n"
@@ -86,15 +85,15 @@ def optimize_positions_and_volume_with_lammps(
 def optimize_positions_with_lammps(
     structure: Atoms,
     potential_dataframe: DataFrame,
-    min_style="cg",
-    etol=0.0,
-    ftol=0.0001,
-    maxiter=100000,
-    maxeval=10000000,
-    thermo=10,
+    min_style: str = "cg",
+    etol: float = 0.0,
+    ftol: float = 0.0001,
+    maxiter: int = 100000,
+    maxeval: int = 10000000,
+    thermo: int = 10,
     lmp=None,
     **kwargs,
-):
+) -> Atoms:
     template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_MINIMIZE
     lmp_instance = lammps_run(
         structure=structure,
@@ -117,12 +116,12 @@ def optimize_positions_with_lammps(
 
 
 def calc_static_with_lammps(
-    structure,
-    potential_dataframe,
+    structure: Atoms,
+    potential_dataframe: pandas.DataFrame,
     lmp=None,
-    output=LammpsOutputStatic.fields(),
+    output_keys=OutputStatic.keys(),
     **kwargs,
-):
+) -> dict:
     template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
     lmp_instance = lammps_run(
         structure=structure,
@@ -134,26 +133,31 @@ def calc_static_with_lammps(
         lmp=lmp,
         **kwargs,
     )
-    result_dict = LammpsOutputStatic.get(lmp_instance, *output)
+    result_dict = OutputStatic(
+        forces=lmp_instance.interactive_forces_getter,
+        energy=lmp_instance.interactive_energy_pot_getter,
+        stress=lmp_instance.interactive_pressures_getter,
+        volume=lmp_instance.interactive_volume_getter,
+    ).get(output_keys=output_keys)
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 
 
 def calc_molecular_dynamics_nvt_with_lammps(
-    structure,
-    potential_dataframe,
-    Tstart=100,
-    Tstop=100,
-    Tdamp=0.1,
-    run=100,
-    thermo=10,
-    timestep=0.001,
-    seed=4928459,
-    dist="gaussian",
+    structure: Atoms,
+    potential_dataframe: pandas.DataFrame,
+    Tstart: float = 100.0,
+    Tstop: float = 100.0,
+    Tdamp: float = 0.1,
+    run: int = 100,
+    thermo: int = 10,
+    timestep: float = 0.001,
+    seed: int = 4928459,
+    dist: str = "gaussian",
     lmp=None,
-    output=LammpsOutputMolecularDynamics.fields(),
+    output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
-):
+) -> dict:
     init_str = (
         LAMMPS_THERMO_STYLE
         + "\n"
@@ -187,30 +191,30 @@ def calc_molecular_dynamics_nvt_with_lammps(
         run_str=run_str,
         run=run,
         thermo=thermo,
-        output=output,
+        output_keys=output_keys,
     )
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 
 
 def calc_molecular_dynamics_npt_with_lammps(
-    structure,
-    potential_dataframe,
-    Tstart=100,
-    Tstop=100,
-    Tdamp=0.1,
-    run=100,
-    thermo=100,
-    timestep=0.001,
-    Pstart=0.0,
-    Pstop=0.0,
-    Pdamp=1.0,
-    seed=4928459,
-    dist="gaussian",
+    structure: Atoms,
+    potential_dataframe: pandas.DataFrame,
+    Tstart: float = 100.0,
+    Tstop: float = 100.0,
+    Tdamp: float = 0.1,
+    run: int = 100,
+    thermo: int = 100,
+    timestep: float = 0.001,
+    Pstart: float = 0.0,
+    Pstop: float = 0.0,
+    Pdamp: float = 1.0,
+    seed: int = 4928459,
+    dist: str = "gaussian",
     lmp=None,
-    output=LammpsOutputMolecularDynamics.fields(),
+    output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
-):
+) -> dict:
     init_str = (
         LAMMPS_THERMO_STYLE
         + "\n"
@@ -247,28 +251,28 @@ def calc_molecular_dynamics_npt_with_lammps(
         run_str=run_str,
         run=run,
         thermo=thermo,
-        output=output,
+        output_keys=output_keys,
     )
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 
 
 def calc_molecular_dynamics_nph_with_lammps(
-    structure,
-    potential_dataframe,
-    run=100,
-    thermo=100,
-    timestep=0.001,
-    Tstart=100,
-    Pstart=0.0,
-    Pstop=0.0,
-    Pdamp=1.0,
-    seed=4928459,
-    dist="gaussian",
+    structure: Atoms,
+    potential_dataframe: pandas.DataFrame,
+    run: int = 100,
+    thermo: int = 100,
+    timestep: float = 0.001,
+    Tstart: float = 100.0,
+    Pstart: float = 0.0,
+    Pstop: float = 0.0,
+    Pdamp: float = 1.0,
+    seed: int = 4928459,
+    dist: str = "gaussian",
     lmp=None,
-    output=LammpsOutputMolecularDynamics.fields(),
+    output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
-):
+) -> dict:
     init_str = (
         LAMMPS_THERMO_STYLE
         + "\n"
@@ -302,25 +306,25 @@ def calc_molecular_dynamics_nph_with_lammps(
         run_str=run_str,
         run=run,
         thermo=thermo,
-        output=output,
+        output_keys=output_keys,
     )
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 
 
 def calc_molecular_dynamics_langevin_with_lammps(
-    structure,
-    potential_dataframe,
-    run=100,
-    thermo=100,
-    timestep=0.001,
-    Tstart=100,
-    Tstop=100,
-    Tdamp=0.1,
-    seed=4928459,
-    dist="gaussian",
+    structure: Atoms,
+    potential_dataframe: pandas.DataFrame,
+    run: int = 100,
+    thermo: int = 100,
+    timestep: float = 0.001,
+    Tstart: float = 100.0,
+    Tstop: float = 100,
+    Tdamp: float = 0.1,
+    seed: int = 4928459,
+    dist: str = "gaussian",
     lmp=None,
-    output=LammpsOutputMolecularDynamics.fields(),
+    output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ):
     init_str = (
@@ -358,31 +362,31 @@ def calc_molecular_dynamics_langevin_with_lammps(
         run_str=run_str,
         run=run,
         thermo=thermo,
-        output=output,
+        output_keys=output_keys,
     )
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 
 
 def calc_molecular_dynamics_thermal_expansion_with_lammps(
-    structure,
-    potential_dataframe,
-    Tstart=15,
-    Tstop=1500,
-    Tstep=5,
-    Tdamp=0.1,
-    run=100,
-    thermo=100,
-    timestep=0.001,
-    Pstart=0.0,
-    Pstop=0.0,
-    Pdamp=1.0,
-    seed=4928459,
-    dist="gaussian",
+    structure: Atoms,
+    potential_dataframe: pandas.DataFrame,
+    Tstart: float = 15.0,
+    Tstop: float = 1500.0,
+    Tstep: int = 5,
+    Tdamp: float = 0.1,
+    run: int = 100,
+    thermo: int = 100,
+    timestep: float = 0.001,
+    Pstart: float = 0.0,
+    Pstop: float = 0.0,
+    Pdamp: float = 1.0,
+    seed: int = 4928459,
+    dist: str = "gaussian",
     lmp=None,
-    output=OutputThermalExpansionProperties.fields(),
+    output_keys=OutputThermalExpansion.keys(),
     **kwargs,
-):
+) -> dict:
     init_str = (
         LAMMPS_THERMO_STYLE
         + "\n"
@@ -411,7 +415,7 @@ def calc_molecular_dynamics_thermal_expansion_with_lammps(
         seed=seed,
         dist=dist,
         lmp=lmp,
-        output=output,
+        output_keys=output_keys,
         **kwargs,
     )
 
@@ -423,16 +427,16 @@ def evaluate_with_lammps_library(
     potential_dataframe: DataFrame,
     lmp: LammpsASELibrary,
     lmp_optimizer_kwargs: dict = {},
-):
+) -> dict:
     results = {}
     if "optimize_positions_and_volume" in tasks:
-        results[
-            "structure_with_optimized_positions_and_volume"
-        ] = optimize_positions_and_volume_with_lammps(
-            structure=structure,
-            potential_dataframe=potential_dataframe,
-            lmp=lmp,
-            **lmp_optimizer_kwargs,
+        results["structure_with_optimized_positions_and_volume"] = (
+            optimize_positions_and_volume_with_lammps(
+                structure=structure,
+                potential_dataframe=potential_dataframe,
+                lmp=lmp,
+                **lmp_optimizer_kwargs,
+            )
         )
     elif "optimize_positions" in tasks:
         results["structure_with_optimized_positions"] = optimize_positions_with_lammps(
@@ -457,7 +461,7 @@ def evaluate_with_lammps_library(
             structure=structure,
             potential_dataframe=potential_dataframe,
             lmp=lmp,
-            output=get_quantities_from_tasks(tasks=tasks),
+            output_keys=get_quantities_from_tasks(tasks=tasks),
         )
     else:
         raise ValueError("The LAMMPS calculator does not implement:", tasks)
@@ -468,14 +472,14 @@ def evaluate_with_lammps(
     task_dict: dict[str, dict[str, Atoms]],
     potential_dataframe: DataFrame,
     working_directory=None,
-    cores=1,
+    cores: int = 1,
     comm=None,
     logger=None,
     log_file=None,
     library=None,
-    diable_log_file=True,
+    diable_log_file: bool = True,
     lmp_optimizer_kwargs={},
-):
+) -> dict:
     lmp = LammpsASELibrary(
         working_directory=working_directory,
         cores=cores,

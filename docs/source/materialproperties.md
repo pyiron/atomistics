@@ -382,7 +382,7 @@ import numpy as np
 workflow_ev.analyse_structures(output_dict=result_dict)
 thermal_properties_dict = workflow_ev.get_thermal_properties(
     temperatures=np.arange(1, 1500, 50),
-    output=["temperatures", "volumes"],
+    output_keys=["temperatures", "volumes"],
 )
 temperatures_ev, volume_ev = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
 ```
@@ -461,7 +461,7 @@ and `get_thermal_properties()` functions:
 workflow_qh.analyse_structures(output_dict=result_dict)
 thermal_properties_dict_qm = workflow_qh.get_thermal_properties(
     temperatures=np.arange(1, 1500, 50),
-    output=["temperatures", "volumes"],
+    output_keys=["temperatures", "volumes"],
     quantum_mechanical=True
 )
 temperatures_qh_qm, volume_qh_qm = thermal_properties_dict_qm["temperatures"], thermal_properties_dict_qm["volumes"]
@@ -471,7 +471,7 @@ Here the extension `_qm` indicates that the quantum-mechanical harmonic oszillat
 ```
 thermal_properties_dict_cl = workflow_qh.get_thermal_properties(
     temperatures=np.arange(1, 1500, 50),
-    output=["temperatures", "volumes"],
+    output_keys=["temperatures", "volumes"],
     quantum_mechanical=False,
 )
 temperatures_qh_cl, volume_qh_cl = thermal_properties_dict_cl["temperatures"], thermal_properties_dict_cl["volumes"]

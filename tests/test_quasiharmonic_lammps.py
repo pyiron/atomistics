@@ -59,25 +59,25 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue(tp_collect_dict["free_energy"][-1] > -2.7)
         self.assertTrue(tp_collect_dict["entropy"][0] < 0.1)
         self.assertTrue(tp_collect_dict["entropy"][0] > 0.0)
-        self.assertTrue(tp_collect_dict["entropy"][-1] < 273)
-        self.assertTrue(tp_collect_dict["entropy"][-1] > 272)
+        self.assertTrue(tp_collect_dict["entropy"][-1] < 270)
+        self.assertTrue(tp_collect_dict["entropy"][-1] > 269)
         self.assertTrue(tp_collect_dict["heat_capacity"][0] < 0.1)
         self.assertTrue(tp_collect_dict["heat_capacity"][0] > 0.0)
         self.assertTrue(tp_collect_dict["heat_capacity"][-1] < 100)
         self.assertTrue(tp_collect_dict["heat_capacity"][-1] > 99)
-        self.assertTrue(tp_collect_dict["volumes"][-1] < 68.6)
-        self.assertTrue(tp_collect_dict["volumes"][-1] > 68.5)
-        self.assertTrue(tp_collect_dict["volumes"][0] < 66.8)
-        self.assertTrue(tp_collect_dict["volumes"][0] > 66.7)
+        self.assertTrue(tp_collect_dict["volumes"][-1] < 66.6)
+        self.assertTrue(tp_collect_dict["volumes"][-1] > 66.5)
+        self.assertTrue(tp_collect_dict["volumes"][0] < 66.5)
+        self.assertTrue(tp_collect_dict["volumes"][0] > 66.4)
         thermal_properties_dict = workflow.get_thermal_properties(
             temperatures=[100, 1000],
-            output=["temperatures", "volumes"],
+            output_keys=["temperatures", "volumes"],
             quantum_mechanical=True
         )
         temperatures_qh_qm, volumes_qh_qm = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
         thermal_properties_dict = workflow.get_thermal_properties(
             temperatures=[100, 1000],
-            output=["temperatures", "volumes"],
+            output_keys=["temperatures", "volumes"],
             quantum_mechanical=False
         )
         temperatures_qh_cl, volumes_qh_cl = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]

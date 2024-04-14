@@ -47,7 +47,7 @@ if TYPE_CHECKING:
     SimpleEvaluator = callable[[Atoms, list[TaskName], ...], TaskResults]
 
 
-def get_quantities_from_tasks(tasks):
+def get_quantities_from_tasks(tasks: dict) -> list:
     quantities = []
     if "calc_energy" in tasks:
         quantities.append("energy")

@@ -38,13 +38,13 @@ class TestPhonons(unittest.TestCase):
         tp_collect_dict = workflow.get_thermal_properties(t_min=1, t_max=1500, t_step=50, temperatures=None)
         thermal_properties_dict = workflow.get_thermal_properties(
             temperatures=[100, 1000],
-            output=["temperatures", "volumes"],
+            output_keys=["temperatures", "volumes"],
             quantum_mechanical=True
         )
         temperatures_qh_qm, volumes_qh_qm = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
         thermal_properties_dict = workflow.get_thermal_properties(
             temperatures=[100, 1000],
-            output=["temperatures", "volumes"],
+            output_keys=["temperatures", "volumes"],
             quantum_mechanical=False
         )
         temperatures_qh_cl, volumes_qh_cl = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]

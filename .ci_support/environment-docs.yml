@@ -1,19 +1,20 @@
 channels:
 - conda-forge
 dependencies:
-  - nbsphinx
-  - sphinx
-  - myst-parser
-  - numpy
-  - ase =3.22.1
-  - coverage
-  - numpy =1.26.3
-  - scipy =1.11.4
-  - spglib =2.2.0
-  - phonopy =2.21.0
-  - structuretoolkit =0.0.17
-  - seekpath =2.1.0
-  - lammps =2023.08.02
-  - pandas =2.1.4
-  - pylammpsmpi =0.2.11
-  - jinja2 =3.1.2
+- nbsphinx
+- sphinx
+- sphinx_rtd_theme
+- myst-parser
+- numpy
+- ase =3.22.1
+- coverage
+- numpy =1.26.3
+- scipy =1.13.0
+- spglib =2.2.0
+- phonopy =2.22.1
+- structuretoolkit =0.0.22
+- seekpath =2.1.0
+- lammps =2023.11.21
+- pandas =2.2.2
+- pylammpsmpi =0.2.15
+- jinja2 =3.1.3

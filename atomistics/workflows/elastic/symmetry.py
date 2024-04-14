@@ -1,9 +1,25 @@
+from ase.atoms import Atoms
 import numpy as np
 import spglib
 
 
-def find_symmetry_group_number(struct):
-    dataset = spglib.get_symmetry_dataset(struct)
+def ase_to_spglib(structure: Atoms) -> tuple:
+    """
+    Translate ASE to spglib cell. The format is a tuple of
+    (basis vectors, atomic points, types). The implementation here follows
+    the doc from this page: https://github.com/spglib/spglib/pull/386/files
+
+    TODO: Optional vectors should be available.
+    """
+    return (
+        np.array(structure.get_cell().T, dtype="double", order="C"),
+        np.array(structure.get_scaled_positions(), dtype="double", order="C"),
+        np.array(structure.get_atomic_numbers(), dtype="intc"),
+    )
+
+
+def find_symmetry_group_number(struct: tuple) -> int:
+    dataset = spglib.get_symmetry_dataset(cell=ase_to_spglib(struct))
     SGN = dataset["number"]
     return SGN
 
@@ -57,7 +73,7 @@ Ls_Dic = {
 }
 
 
-def get_symmetry_family_from_SGN(SGN):
+def get_symmetry_family_from_SGN(SGN: int) -> str:
     if 1 <= SGN <= 2:  # Triclinic
         LC = "N"
     elif 3 <= SGN <= 15:  # Monoclinic
@@ -85,7 +101,7 @@ def get_symmetry_family_from_SGN(SGN):
     return LC
 
 
-def get_LAG_Strain_List(LC):
+def get_LAG_Strain_List(LC: str) -> list[str]:
     if LC == "CI" or LC == "CII":
         Lag_strain_list = ["01", "08", "23"]
     elif LC == "HI" or LC == "HII":
@@ -143,7 +159,7 @@ def get_LAG_Strain_List(LC):
     return Lag_strain_list
 
 
-def get_C_from_A2(A2, LC):
+def get_C_from_A2(A2: np.ndarray, LC: str) -> np.ndarray:
     C = np.zeros((6, 6))
 
     # %!%!%--- Cubic structures ---%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%
@@ -319,7 +335,7 @@ def get_C_from_A2(A2, LC):
     return C
 
 
-def symmetry_analysis(structure, eps_range, num_of_point):
+def symmetry_analysis(structure: Atoms, eps_range: float, num_of_point: int):
     """
 
     Returns:

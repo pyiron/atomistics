@@ -1,3 +1,4 @@
+from ase.atoms import Atoms
 import numpy as np
 
 from atomistics.shared.output import OutputElastic
@@ -9,14 +10,14 @@ from atomistics.workflows.elastic.helper import (
 )
 
 
-elastic_matrix_output_elastic = OutputElastic(
-    **{k: getattr(ElasticProperties, k) for k in OutputElastic.fields()}
-)
-
-
 class ElasticMatrixWorkflow(Workflow):
     def __init__(
-        self, structure, num_of_point=5, eps_range=0.005, sqrt_eta=True, fit_order=2
+        self,
+        structure: Atoms,
+        num_of_point: int = 5,
+        eps_range: float = 0.005,
+        sqrt_eta: bool = True,
+        fit_order: int = 2,
     ):
         self.structure = structure.copy()
         self.num_of_point = num_of_point
@@ -29,7 +30,7 @@ class ElasticMatrixWorkflow(Workflow):
         self.epss = np.array([])
         self.zero_strain_job_name = "s_e_0"
 
-    def generate_structures(self):
+    def generate_structures(self) -> dict:
         """
 
         Returns:
@@ -44,12 +45,14 @@ class ElasticMatrixWorkflow(Workflow):
         )
         return {"calc_energy": self._structure_dict}
 
-    def analyse_structures(self, output_dict, output=OutputElastic.fields()):
+    def analyse_structures(
+        self, output_dict: dict, output_keys: tuple = OutputElastic.keys()
+    ):
         """
 
         Args:
             output_dict (dict):
-            output (tuple):
+            output_keys (tuple):
 
         Returns:
 
@@ -66,6 +69,7 @@ class ElasticMatrixWorkflow(Workflow):
         self._data["strain_energy"] = strain_energy
         self._data["e0"] = ene0
         self._data["A2"] = A2
-        return elastic_matrix_output_elastic.get(
-            ElasticProperties(elastic_matrix=elastic_matrix), *output
-        )
+        elastic = ElasticProperties(elastic_matrix=elastic_matrix)
+        return OutputElastic(
+            **{k: getattr(elastic, k) for k in OutputElastic.keys()}
+        ).get(output_keys=output_keys)

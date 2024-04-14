@@ -8,21 +8,25 @@ from atomistics.workflows import QuasiHarmonicWorkflow, optimize_positions_and_v
 
 
 try:
-    import matgl
-    from matgl.ext.ase import M3GNetCalculator
+    from mace.calculators import mace_mp
 
-    skip_matgl_test = False
+    skip_mace_test = False
 except ImportError:
-    skip_matgl_test = True
+    skip_mace_test = True
 
 
 @unittest.skipIf(
-    skip_matgl_test, "matgl is not installed, so the matgl tests are skipped."
+    skip_mace_test, "mace is not installed, so the mace tests are skipped."
 )
 class TestPhonons(unittest.TestCase):
     def test_calc_phonons(self):
         structure = bulk("Al", cubic=True)
-        ase_calculator = M3GNetCalculator(matgl.load_model("M3GNet-MP-2021.2.8-PES"))
+        ase_calculator = mace_mp(
+            model="medium",
+            dispersion=False,
+            default_dtype="float32",
+            device='cpu'
+        )
         task_dict = optimize_positions_and_volume(structure=structure)
         result_dict = evaluate_with_ase(
             task_dict=task_dict,

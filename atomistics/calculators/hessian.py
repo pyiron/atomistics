@@ -1,9 +1,10 @@
+from ase.atoms import Atoms
 import numpy as np
 
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 
-def check_force_constants(structure, force_constants):
+def check_force_constants(structure: Atoms, force_constants: np.ndarray) -> np.ndarray:
     if structure is None:
         raise ValueError("Set reference structure via set_reference_structure() first")
     n_atom = len(structure.positions)
@@ -31,14 +32,16 @@ def check_force_constants(structure, force_constants):
         raise AssertionError("force constant shape not recognized")
 
 
-def get_displacement(structure_equilibrium, structure):
+def get_displacement(structure_equilibrium: Atoms, structure: Atoms) -> np.ndarray:
     displacements = structure.get_scaled_positions()
     displacements -= structure_equilibrium.get_scaled_positions()
     displacements -= np.rint(displacements)
     return np.einsum("ji,ni->nj", structure.cell, displacements)
 
 
-def calc_forces_transformed(force_constants, structure_equilibrium, structure):
+def calc_forces_transformed(
+    force_constants: np.ndarray, structure_equilibrium: Atoms, structure: Atoms
+) -> np.ndarray:
     displacements = get_displacement(structure_equilibrium, structure)
     position_transformed = displacements.reshape(
         displacements.shape[0] * displacements.shape[1]
@@ -46,7 +49,9 @@ def calc_forces_transformed(force_constants, structure_equilibrium, structure):
     return -np.dot(force_constants, position_transformed), displacements
 
 
-def get_forces(force_constants, structure_equilibrium, structure):
+def get_forces(
+    force_constants: np.ndarray, structure_equilibrium: Atoms, structure: Atoms
+) -> np.ndarray:
     displacements = get_displacement(structure_equilibrium, structure)
     position_transformed = displacements.reshape(
         displacements.shape[0] * displacements.shape[1]
@@ -56,8 +61,12 @@ def get_forces(force_constants, structure_equilibrium, structure):
 
 
 def get_energy_pot(
-    force_constants, structure_equilibrium, structure, bulk_modulus=0, shear_modulus=0
-):
+    force_constants: np.ndarray,
+    structure_equilibrium: Atoms,
+    structure: Atoms,
+    bulk_modulus: float = 0.0,
+    shear_modulus: float = 0.0,
+) -> float:
     displacements = get_displacement(structure_equilibrium, structure)
     position_transformed = displacements.reshape(
         displacements.shape[0] * displacements.shape[1]
@@ -74,7 +83,9 @@ def get_energy_pot(
     return energy_pot
 
 
-def get_stiffness_tensor(bulk_modulus=0, shear_modulus=0):
+def get_stiffness_tensor(
+    bulk_modulus: float = 0.0, shear_modulus: float = 0.0
+) -> np.ndarray:
     stiffness_tensor = np.zeros((6, 6))
     stiffness_tensor[:3, :3] = bulk_modulus - 2 * shear_modulus / 3
     stiffness_tensor[:3, :3] += np.eye(3) * 2 * shear_modulus
@@ -82,7 +93,9 @@ def get_stiffness_tensor(bulk_modulus=0, shear_modulus=0):
     return stiffness_tensor
 
 
-def get_pressure_times_volume(stiffness_tensor, structure_equilibrium, structure):
+def get_pressure_times_volume(
+    stiffness_tensor: np.ndarray, structure_equilibrium: Atoms, structure: Atoms
+) -> float:
     if np.sum(stiffness_tensor) != 0:
         epsilon = np.einsum(
             "ij,jk->ik",
@@ -101,12 +114,12 @@ def get_pressure_times_volume(stiffness_tensor, structure_equilibrium, structure
 
 @as_task_dict_evaluator
 def evaluate_with_hessian(
-    structure,
-    tasks,
-    structure_equilibrium,
-    force_constants,
-    bulk_modulus=0,
-    shear_modulus=0,
+    structure: Atoms,
+    tasks: dict[str, dict],
+    structure_equilibrium: Atoms,
+    force_constants: np.ndarray,
+    bulk_modulus: float = 0.0,
+    shear_modulus: float = 0.0,
 ):
     results = {}
     if "calc_energy" in tasks or "calc_forces" in tasks:

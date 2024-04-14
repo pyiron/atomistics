@@ -1,6 +1,8 @@
 import os
 import subprocess
 
+from ase.atoms import Atoms
+import numpy as np
 from ase.io import write
 from pwtools import io
 
@@ -13,25 +15,20 @@ class QEStaticParser(object):
     def __init__(self, filename):
         self.parser = io.read_pw_scf(filename=filename, use_alat=True)
 
-    def forces(self):
+    def forces(self) -> np.ndarray:
         return self.parser.forces
 
-    def energy(self):
+    def energy(self) -> float:
         return self.parser.etot
 
-    def stress(self):
+    def stress(self) -> np.ndarray:
         return self.parser.stress
 
-    def volume(self):
+    def volume(self) -> float:
         return self.parser.volume
 
 
-QuantumEspressoOutputStatic = OutputStatic(
-    **{k: getattr(QEStaticParser, k) for k in OutputStatic.fields()}
-)
-
-
-def call_qe_via_ase_command(calculation_name, working_directory):
+def call_qe_via_ase_command(calculation_name: str, working_directory: str):
     subprocess.check_output(
         os.environ["ASE_ESPRESSO_COMMAND"].replace("PREFIX", calculation_name),
         shell=True,
@@ -40,7 +37,7 @@ def call_qe_via_ase_command(calculation_name, working_directory):
     )
 
 
-def set_pseudo_potentials(pseudopotentials, structure):
+def set_pseudo_potentials(pseudopotentials: dict, structure: Atoms):
     if pseudopotentials is not None:
         return pseudopotentials
     else:
@@ -142,13 +139,13 @@ def generate_input_data(**kwargs):
 
 
 def optimize_positions_and_volume_with_qe(
-    structure,
-    calculation_name="espresso",
-    working_directory=".",
-    kpts=(3, 3, 3),
-    pseudopotentials=None,
-    tstress=True,
-    tprnfor=True,
+    structure: Atoms,
+    calculation_name: str = "espresso",
+    working_directory: str = ".",
+    kpts: tuple[int] = (3, 3, 3),
+    pseudopotentials: dict = None,
+    tstress: bool = True,
+    tprnfor: bool = True,
     **kwargs,
 ):
     input_file_name = os.path.join(working_directory, calculation_name + ".pwi")
@@ -179,14 +176,14 @@ def optimize_positions_and_volume_with_qe(
 
 
 def calc_static_with_qe(
-    structure,
-    calculation_name="espresso",
-    working_directory=".",
-    kpts=(3, 3, 3),
-    pseudopotentials=None,
-    tstress=True,
-    tprnfor=True,
-    output=OutputStatic.fields(),
+    structure: Atoms,
+    calculation_name: str = "espresso",
+    working_directory: str = ".",
+    kpts: tuple[int] = (3, 3, 3),
+    pseudopotentials: dict = None,
+    tstress: bool = True,
+    tprnfor: bool = True,
+    output_keys: tuple[str] = OutputStatic.keys(),
     **kwargs,
 ):
     input_file_name = os.path.join(working_directory, calculation_name + ".pwi")
@@ -212,36 +209,37 @@ def calc_static_with_qe(
     call_qe_via_ase_command(
         calculation_name=calculation_name, working_directory=working_directory
     )
-    return QuantumEspressoOutputStatic.get(
-        QEStaticParser(filename=output_file_name), *output
+    parser = QEStaticParser(filename=output_file_name)
+    return OutputStatic(**{k: getattr(parser, k) for k in OutputStatic.keys()}).get(
+        output_keys=output_keys
     )
 
 
 @as_task_dict_evaluator
 def evaluate_with_qe(
-    structure,
-    tasks,
-    calculation_name="espresso",
-    working_directory=".",
-    kpts=(3, 3, 3),
-    pseudopotentials=None,
-    tstress=True,
-    tprnfor=True,
+    structure: Atoms,
+    tasks: dict,
+    calculation_name: str = "espresso",
+    working_directory: str = ".",
+    kpts: tuple[int] = (3, 3, 3),
+    pseudopotentials: dict = None,
+    tstress: bool = True,
+    tprnfor: bool = True,
     **kwargs,
-):
+) -> dict:
     results = {}
     if "optimize_positions_and_volume" in tasks:
-        results[
-            "structure_with_optimized_positions_and_volume"
-        ] = optimize_positions_and_volume_with_qe(
-            structure=structure,
-            calculation_name=calculation_name,
-            working_directory=working_directory,
-            kpts=kpts,
-            pseudopotentials=pseudopotentials,
-            tstress=tstress,
-            tprnfor=tprnfor,
-            **kwargs,
+        results["structure_with_optimized_positions_and_volume"] = (
+            optimize_positions_and_volume_with_qe(
+                structure=structure,
+                calculation_name=calculation_name,
+                working_directory=working_directory,
+                kpts=kpts,
+                pseudopotentials=pseudopotentials,
+                tstress=tstress,
+                tprnfor=tprnfor,
+                **kwargs,
+            )
         )
     elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
         results = calc_static_with_qe(
@@ -252,7 +250,7 @@ def evaluate_with_qe(
             pseudopotentials=pseudopotentials,
             tstress=tstress,
             tprnfor=tprnfor,
-            output=get_quantities_from_tasks(tasks=tasks),
+            output_keys=get_quantities_from_tasks(tasks=tasks),
             **kwargs,
         )
     else:

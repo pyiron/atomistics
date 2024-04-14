@@ -1,19 +1,24 @@
 from __future__ import annotations
 
+from ase.atoms import Atoms
 from jinja2 import Template
 import numpy as np
+import pandas
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.lammps.potential import validate_potential_dataframe
-from atomistics.calculators.lammps.output import LammpsOutputMolecularDynamics
-from atomistics.shared.thermal_expansion import (
-    OutputThermalExpansionProperties,
-    ThermalExpansionProperties,
-)
+from atomistics.shared.thermal_expansion import get_thermal_expansion_output
 from atomistics.shared.tqdm_iterator import get_tqdm_iterator
+from atomistics.shared.output import OutputMolecularDynamics, OutputThermalExpansion
 
 
-def lammps_run(structure, potential_dataframe, input_template=None, lmp=None, **kwargs):
+def lammps_run(
+    structure: Atoms,
+    potential_dataframe: pandas.DataFrame,
+    input_template=None,
+    lmp=None,
+    **kwargs,
+):
     potential_dataframe = validate_potential_dataframe(
         potential_dataframe=potential_dataframe
     )
@@ -44,51 +49,61 @@ def lammps_run(structure, potential_dataframe, input_template=None, lmp=None, **
 
 def lammps_calc_md_step(
     lmp_instance,
-    run_str,
-    run,
-    output=LammpsOutputMolecularDynamics.fields(),
+    run_str: str,
+    run: int,
+    output_keys=OutputMolecularDynamics.keys(),
 ):
     run_str_rendered = Template(run_str).render(run=run)
     lmp_instance.interactive_lib_command(run_str_rendered)
-    return LammpsOutputMolecularDynamics.get(lmp_instance, *output)
+    return OutputMolecularDynamics(
+        positions=lmp_instance.interactive_positions_getter,
+        cell=lmp_instance.interactive_cells_getter,
+        forces=lmp_instance.interactive_forces_getter,
+        temperature=lmp_instance.interactive_temperatures_getter,
+        energy_pot=lmp_instance.interactive_energy_pot_getter,
+        energy_tot=lmp_instance.interactive_energy_tot_getter,
+        pressure=lmp_instance.interactive_pressures_getter,
+        velocities=lmp_instance.interactive_velocities_getter,
+        volume=lmp_instance.interactive_volume_getter,
+    ).get(output_keys=output_keys)
 
 
 def lammps_calc_md(
     lmp_instance,
-    run_str,
-    run,
-    thermo,
-    output=LammpsOutputMolecularDynamics.fields(),
+    run_str: str,
+    run: int,
+    thermo: int,
+    output_keys=OutputMolecularDynamics.keys(),
 ):
     results_lst = [
         lammps_calc_md_step(
             lmp_instance=lmp_instance,
             run_str=run_str,
             run=thermo,
-            output=output,
+            output_keys=output_keys,
         )
         for _ in range(run // thermo)
     ]
-    return {q: np.array([d[q] for d in results_lst]) for q in output}
+    return {q: np.array([d[q] for d in results_lst]) for q in output_keys}
 
 
 def lammps_thermal_expansion_loop(
-    structure,
-    potential_dataframe,
-    init_str,
-    run_str,
-    temperature_lst,
-    run=100,
-    thermo=100,
-    timestep=0.001,
-    Tdamp=0.1,
-    Pstart=0.0,
-    Pstop=0.0,
-    Pdamp=1.0,
-    seed=4928459,
-    dist="gaussian",
+    structure: Atoms,
+    potential_dataframe: pandas.DataFrame,
+    init_str: str,
+    run_str: str,
+    temperature_lst: list[float],
+    run: int = 100,
+    thermo: int = 100,
+    timestep: float = 0.001,
+    Tdamp: float = 0.1,
+    Pstart: float = 0.0,
+    Pstop: float = 0.0,
+    Pdamp: float = 1.0,
+    seed: int = 4928459,
+    dist: str = "gaussian",
     lmp=None,
-    output=OutputThermalExpansionProperties.fields(),
+    output_keys=OutputThermalExpansion.keys(),
     **kwargs,
 ):
     lmp_instance = lammps_run(
@@ -121,15 +136,14 @@ def lammps_thermal_expansion_loop(
         volume_md_lst.append(lmp_instance.interactive_volume_getter())
         temperature_md_lst.append(lmp_instance.interactive_temperatures_getter())
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
-    return OutputThermalExpansionProperties.get(
-        ThermalExpansionProperties(
-            temperatures_lst=temperature_md_lst, volumes_lst=volume_md_lst
-        ),
-        *output,
+    return get_thermal_expansion_output(
+        temperatures_lst=temperature_md_lst,
+        volumes_lst=volume_md_lst,
+        output_keys=output_keys,
     )
 
 
-def lammps_shutdown(lmp_instance, close_instance=True):
+def lammps_shutdown(lmp_instance, close_instance: bool = True):
     lmp_instance.interactive_lib_command("clear")
     if close_instance:
         lmp_instance.close()

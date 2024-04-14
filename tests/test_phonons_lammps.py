@@ -94,7 +94,7 @@ class TestPhonons(unittest.TestCase):
             pretend_real=False,
             band_indices=None,
             is_projection=False,
-            output=["temperatures", "free_energy"]
+            output_keys=["temperatures", "free_energy"]
         )
         self.assertEqual(len(thermal_dict.keys()), 2)
         self.assertEqual(thermal_dict["temperatures"][0], 1.0)
