@@ -1,9 +1,13 @@
+import os
 import unittest
+
+from ase.build import bulk
 
 try:
     import pandas
     from atomistics.calculators.lammps.potential import (
-        validate_potential_dataframe
+        validate_potential_dataframe,
+        get_potential_dataframe,
     )
 
     skip_lammps_test = False
@@ -32,3 +36,10 @@ class TestPotential(unittest.TestCase):
             potential_dataframe=pandas.DataFrame({"a": [1]})
         )
         self.assertTrue(isinstance(series, pandas.Series))
+
+    def test_get_potential_dataframe(self):
+        df = get_potential_dataframe(
+            structure=bulk("Al"),
+            resource_path=os.path.abspath(os.path.join("..", os.path.dirname(__file__), "static", "lammps")),
+        )
+        self.assertEqual(len(df), 1)
