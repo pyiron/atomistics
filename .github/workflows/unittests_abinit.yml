@@ -30,7 +30,7 @@ jobs:
       run: |
         pip install versioneer[toml]==0.29
         pip install . --no-deps --no-build-isolation
-        python -m unittest tests/test_evcurve_ase_abinit.py
+        python -m unittest tests/test_ase_interface/test_evcurve_ase_abinit.py
       env:
         ABINIT_PP_PATH: '/usr/share/miniconda3/envs/my-env/share/abinit/LDA_FHI'
         ABI_PSPDIR: '/usr/share/miniconda3/envs/my-env/share/abinit/LDA_FHI'
