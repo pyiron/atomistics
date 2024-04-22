@@ -5,12 +5,8 @@ import unittest
 
 from atomistics.workflows import EnergyVolumeCurveWorkflow
 
-try:
-    from atomistics.calculators import evaluate_with_qe
-
-    skip_quantum_espresso_test = False
-except ImportError:
-    skip_quantum_espresso_test = True
+from atomistics.calculators.qe import calc_static_with_qe
+skip_quantum_espresso_test = False
 
 
 def validate_fitdict(fit_dict):
