@@ -11,7 +11,6 @@ from atomistics.workflows.evcurve.debye import (
 )
 
 
-
 def _strain_axes(
     structure: Atoms, volume_strain: float, axes: tuple[str, str, str] = ("x", "y", "z")
 ) -> Atoms:
@@ -165,7 +164,11 @@ class EnergyVolumeCurveWorkflow(Workflow):
         Returns:
             (dict)
         """
-        self._structure_dict = OrderedDict(generate_structure_dict(structure=self.structure, axes=self.axes, strain_lst=self._get_strains()))
+        self._structure_dict = OrderedDict(
+            generate_structure_dict(
+                structure=self.structure, axes=self.axes, strain_lst=self._get_strains()
+            )
+        )
         return {"calc_energy": self._structure_dict}
 
     def analyse_structures(
@@ -221,4 +224,10 @@ class EnergyVolumeCurveWorkflow(Workflow):
 
 
 def generate_structure_dict(structure, axes, strain_lst):
-    return {1 + np.round(strain, 7): _strain_axes(structure=structure, axes=axes, volume_strain=strain) for strain in strain_lst}
+    return {
+        1
+        + np.round(strain, 7): _strain_axes(
+            structure=structure, axes=axes, volume_strain=strain
+        )
+        for strain in strain_lst
+    }
