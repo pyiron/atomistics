@@ -164,11 +164,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         Returns:
             (dict)
         """
-        for strain in self._get_strains():
-            basis = _strain_axes(
-                structure=self.structure, axes=self.axes, volume_strain=strain
-            )
-            self._structure_dict[1 + np.round(strain, 7)] = basis
+        self._structure_dict = OrderedDict(generate_structure_dict(structure=self.structure, axes=self.axes, strain_lst=self._get_strains()))
         return {"calc_energy": self._structure_dict}
 
     def analyse_structures(
@@ -221,3 +217,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
                 int(self.num_points),
             )
         return strains
+
+
+def generate_structure_dict(structure, axes, strain_lst):
+    return {1 + np.round(strain, 7): _strain_axes(structure=structure, axes=axes, volume_strain=strain) for strain in strain_lst}
