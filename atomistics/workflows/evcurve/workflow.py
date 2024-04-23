@@ -1,6 +1,7 @@
 import numpy as np
 from ase.atoms import Atoms
 from collections import OrderedDict
+from typing import Optional, List
 
 from atomistics.shared.output import OutputEnergyVolumeCurve
 from atomistics.workflows.evcurve.fit import EnergyVolumeFit
@@ -103,6 +104,39 @@ def fit_ev_curve(
     ).fit_dict
 
 
+def get_strains(
+    vol_range: Optional[float],
+    num_points: Optional[int],
+    strain_lst: Optional[List[float]] = None,
+) -> np.ndarray:
+    if strain_lst is None:
+        return np.linspace(
+            -vol_range,
+            vol_range,
+            int(num_points),
+        )
+    return strain_lst
+
+
+def generate_structures_helper(
+    structure: Atoms,
+    vol_range: Optional[float],
+    num_points: Optional[int],
+    strain_lst: Optional[List[float]] = None,
+    axes: tuple[str, str, str] = ("x", "y", "z"),
+) -> dict:
+    strain_lst = get_strains(
+        vol_range=vol_range, num_points=num_points, strain_lst=strain_lst
+    )
+    return {
+        1
+        + np.round(strain, 7): _strain_axes(
+            structure=structure, axes=axes, volume_strain=strain
+        )
+        for strain in strain_lst
+    }
+
+
 class EnergyVolumeCurveProperties:
     def __init__(self, fit_module):
         self._fit_module = fit_module
@@ -165,8 +199,12 @@ class EnergyVolumeCurveWorkflow(Workflow):
             (dict)
         """
         self._structure_dict = OrderedDict(
-            generate_structure_dict(
-                structure=self.structure, axes=self.axes, strain_lst=self._get_strains()
+            generate_structures_helper(
+                structure=self.structure,
+                vol_range=self.vol_range,
+                num_points=self.num_points,
+                strain_lst=self.strains,
+                axes=self.axes,
             )
         )
         return {"calc_energy": self._structure_dict}
@@ -213,21 +251,8 @@ class EnergyVolumeCurveWorkflow(Workflow):
         )
 
     def _get_strains(self):
-        strains = self.strains
-        if strains is None:
-            strains = np.linspace(
-                -self.vol_range,
-                self.vol_range,
-                int(self.num_points),
-            )
-        return strains
-
-
-def generate_structure_dict(structure, axes, strain_lst):
-    return {
-        1
-        + np.round(strain, 7): _strain_axes(
-            structure=structure, axes=axes, volume_strain=strain
+        return get_strains(
+            vol_range=self.vol_range,
+            num_points=self.num_points,
+            strain_lst=self.strains,
         )
-        for strain in strain_lst
-    }
