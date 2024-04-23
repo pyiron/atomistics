@@ -38,7 +38,7 @@ approximation.
 Use the equation of state to calculate the equilibrium properties like the equilibrium volume, equilibrium energy,
 equilibrium bulk modulus and its derivative using the [GPAW](https://wiki.fysik.dtu.dk/gpaw/) simulation code
 
-```
+```python
 from ase.build import bulk
 from atomistics.calculators import evaluate_with_ase
 from atomistics.workflows import EnergyVolumeCurveWorkflow
@@ -55,6 +55,8 @@ workflow = EnergyVolumeCurveWorkflow(
 )
 task_dict = workflow.generate_structures()
 print(task_dict)
+```
+```
 >>> {'calc_energy': OrderedDict([
 >>>     (0.95, Atoms(symbols='Al4', pbc=True, cell=[3.9813426685908118, 3.9813426685908118, 3.9813426685908118])),
 >>>     (0.96, Atoms(symbols='Al4', pbc=True, cell=[3.9952635604153612, 3.9952635604153612, 3.9952635604153612])),
@@ -78,7 +80,7 @@ be executed by the calculator. In this case the task is to calculate the energy 
 generated structures. Each structure is labeled by the ratio of compression or elongation. In the second step the
 `task_dict` is evaluate with the [GPAW](https://wiki.fysik.dtu.dk/gpaw/) simulation code using the
 `evaluate_with_ase()` function:
-```
+```python
 result_dict = evaluate_with_ase(
     task_dict=task_dict,
     ase_calculator=GPAW(
@@ -88,6 +90,8 @@ result_dict = evaluate_with_ase(
     )
 )
 print(result_dict)
+```
+```
 >>> {'energy': {
 >>>     0.95: -14.895378072824752,
 >>>     0.96: -14.910819737657118,
@@ -108,9 +112,11 @@ both the `task_dict` and the `result_dict` with the same labels, the `EnergyVolu
 is able to match the calculation results to the corresponding structure. Finally, in the third step the `analyse_structures()`
 function takes the `result_dict` as an input and fits the Equation of State with the fitting parameters defined in
 the first step:
-```
+```python
 fit_dict = workflow.analyse_structures(output_dict=result_dict)
 print(fit_dict)
+```
+```
 >>> {'poly_fit': array([-9.30297838e-05,  2.19434659e-02, -1.68388816e+00,  2.73605421e+01]),
 >>>  'fit_type': 'polynomial',
 >>>  'fit_order': 3,
