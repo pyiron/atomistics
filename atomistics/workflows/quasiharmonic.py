@@ -2,8 +2,8 @@ from ase.atoms import Atoms
 import numpy as np
 
 from atomistics.shared.output import OutputThermodynamic
-from atomistics.workflows.evcurve.workflow import (
-    EnergyVolumeCurveWorkflow,
+from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
+from atomistics.workflows.evcurve.helper import (
     fit_ev_curve,
     _strain_axes,
 )
