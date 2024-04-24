@@ -64,7 +64,9 @@ def get_thermal_properties(
     Returns:
         :class:`Thermal`: thermal properties as returned by Phonopy
     """
-    volume_lst = np.array(get_volume_lst(structure_dict=structure_dict)) / np.prod(repeat_vector)
+    volume_lst = np.array(get_volume_lst(structure_dict=structure_dict)) / np.prod(
+        repeat_vector
+    )
     if quantum_mechanical:
         tp_collect_dict = _get_thermal_properties_quantum_mechanical(
             phonopy_dict=phonopy_dict,
