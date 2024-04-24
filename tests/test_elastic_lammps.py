@@ -6,7 +6,6 @@ import unittest
 
 from atomistics.workflows import ElasticMatrixWorkflow, optimize_positions_and_volume
 from atomistics.workflows.elastic.workflow import (
-    ElasticProperties,
     analyse_structures_helper,
     generate_structures_helper
 )
@@ -136,20 +135,13 @@ class TestElastic(unittest.TestCase):
             task_dict={"calc_energy": structure_dict},
             potential_dataframe=df_pot_selected,
         )
-        elastic_matrix, A2, strain_energy, ene0 = analyse_structures_helper(
+        sym_dict, elastic_dict = analyse_structures_helper(
             output_dict=result_dict,
-            Lag_strain_list=sym_dict["Lag_strain_list"],
-            epss=sym_dict["epss"],
-            v0=sym_dict["v0"],
-            LC=sym_dict["LC"],
+            sym_dict=sym_dict,
             fit_order=2,
             zero_strain_job_name="s_e_0",
         )
-        sym_dict["strain_energy"] = strain_energy
-        sym_dict["e0"] = ene0
-        sym_dict["A2"] = A2
-        elastic_dict = ElasticProperties(elastic_matrix=elastic_matrix).to_dict()
-        self.assertTrue(np.isclose(elastic_matrix, np.array(
+        self.assertTrue(np.isclose(elastic_dict["elastic_matrix"], np.array(
             [
                 [114.10311701, 60.51102935, 60.51102935, 0., 0., 0.],
                 [60.51102935, 114.10311701, 60.51102935, 0., 0., 0.],
@@ -190,7 +182,7 @@ class TestElastic(unittest.TestCase):
                 ]
             ])).all()
         )
-        self.assertTrue(np.isclose(A2, np.array([2.20130388, 1.08985578, 1.91883479])).all())
+        self.assertTrue(np.isclose(sym_dict["A2"], np.array([2.20130388, 1.08985578, 1.91883479])).all())
         self.assertTrue(np.isclose(elastic_dict['bulkmodul_voigt'], 78.37505857279467))
         self.assertTrue(np.isclose(elastic_dict['shearmodul_voigt'], 41.46154012284969))
         self.assertTrue(np.isclose(elastic_dict['youngsmodul_voigt'], 105.73882997912072))
