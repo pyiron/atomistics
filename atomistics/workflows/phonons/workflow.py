@@ -3,144 +3,20 @@ import posixpath
 
 from ase.atoms import Atoms
 import numpy as np
-import phonopy
-from phonopy import Phonopy
 from phonopy.file_IO import write_FORCE_CONSTANTS
-import structuretoolkit
 
 from atomistics.shared.output import OutputThermodynamic, OutputPhonons
 from atomistics.workflows.interface import Workflow
 from atomistics.workflows.phonons.helper import (
-    get_supercell_matrix,
+    analyse_structures_helper,
+    generate_structures_helper,
+    get_thermal_properties,
     get_hesse_matrix,
     get_band_structure,
     plot_band_structure,
     plot_dos,
 )
-from atomistics.workflows.phonons.units import VaspToTHz, kJ_mol_to_eV
-
-
-class PhonopyProperties(object):
-    def __init__(
-        self,
-        phonopy_instance: phonopy.Phonopy,
-        dos_mesh: np.ndarray,
-        shift=None,
-        is_time_reversal: bool = True,
-        is_mesh_symmetry: bool = True,
-        with_eigenvectors: bool = False,
-        with_group_velocities: bool = False,
-        is_gamma_center: bool = False,
-        number_of_snapshots: int = None,
-        sigma: float = None,
-        freq_min: float = None,
-        freq_max: float = None,
-        freq_pitch: float = None,
-        use_tetrahedron_method: bool = True,
-        npoints: int = 101,
-    ):
-        self._phonopy = phonopy_instance
-        self._sigma = sigma
-        self._freq_min = freq_min
-        self._freq_max = freq_max
-        self._freq_pitch = freq_pitch
-        self._use_tetrahedron_method = use_tetrahedron_method
-        self._npoints = npoints
-        self._with_eigenvectors = with_eigenvectors
-        self._with_group_velocities = with_group_velocities
-        self._dos_mesh = dos_mesh
-        self._shift = shift
-        self._is_time_reversal = is_time_reversal
-        self._is_mesh_symmetry = is_mesh_symmetry
-        self._with_eigenvectors = with_eigenvectors
-        self._with_group_velocities = with_group_velocities
-        self._is_gamma_center = is_gamma_center
-        self._number_of_snapshots = number_of_snapshots
-        self._total_dos = None
-        self._band_structure_dict = None
-        self._mesh_dict = None
-        self._force_constants = None
-
-    def _calc_band_structure(self):
-        self._phonopy.auto_band_structure(
-            npoints=self._npoints,
-            with_eigenvectors=self._with_eigenvectors,
-            with_group_velocities=self._with_group_velocities,
-        )
-        self._band_structure_dict = self._phonopy.get_band_structure_dict()
-
-    def _calc_force_constants(self):
-        self._phonopy.produce_force_constants(
-            fc_calculator=None if self._number_of_snapshots is None else "alm"
-        )
-        self._force_constants = self._phonopy.force_constants
-
-    def mesh_dict(self) -> dict:
-        if self._force_constants is None:
-            self._calc_force_constants()
-        if self._mesh_dict is None:
-            self._phonopy.run_mesh(
-                mesh=[self._dos_mesh] * 3,
-                shift=self._shift,
-                is_time_reversal=self._is_time_reversal,
-                is_mesh_symmetry=self._is_mesh_symmetry,
-                with_eigenvectors=self._with_eigenvectors,
-                with_group_velocities=self._with_group_velocities,
-                is_gamma_center=self._is_gamma_center,
-            )
-            self._mesh_dict = self._phonopy.get_mesh_dict()
-        return self._mesh_dict
-
-    def band_structure_dict(self) -> dict:
-        if self._band_structure_dict is None:
-            self._calc_band_structure()
-        return self._band_structure_dict
-
-    def total_dos_dict(self) -> dict:
-        if self._total_dos is None:
-            self._phonopy.run_total_dos(
-                sigma=self._sigma,
-                freq_min=self._freq_min,
-                freq_max=self._freq_max,
-                freq_pitch=self._freq_pitch,
-                use_tetrahedron_method=self._use_tetrahedron_method,
-            )
-            self._total_dos = self._phonopy.get_total_dos_dict()
-        return self._total_dos
-
-    def dynamical_matrix(self) -> np.ndarray:
-        if self._band_structure_dict is None:
-            self._calc_band_structure()
-        return self._phonopy.dynamical_matrix.dynamical_matrix
-
-    def force_constants(self) -> np.ndarray:
-        if self._force_constants is None:
-            self._calc_force_constants()
-        return self._force_constants
-
-
-class PhonopyThermalProperties(object):
-    def __init__(self, phonopy_instance: phonopy.Phonopy):
-        self._phonopy = phonopy_instance
-        self._thermal_properties = phonopy_instance.get_thermal_properties_dict()
-
-    def free_energy(self) -> np.ndarray:
-        return self._thermal_properties["free_energy"] * kJ_mol_to_eV
-
-    def temperatures(self) -> np.ndarray:
-        return self._thermal_properties["temperatures"]
-
-    def entropy(self) -> np.ndarray:
-        return self._thermal_properties["entropy"]
-
-    def heat_capacity(self) -> np.ndarray:
-        return self._thermal_properties["heat_capacity"]
-
-    def volumes(self) -> np.ndarray:
-        return np.array(
-            [self._phonopy.unitcell.get_volume()]
-            * len(self._thermal_properties["temperatures"])
-        )
+from atomistics.workflows.phonons.units import VaspToTHz
 
 
 class PhonopyWorkflow(Workflow):
@@ -175,55 +51,21 @@ class PhonopyWorkflow(Workflow):
         self._dos_mesh = dos_mesh
         self._number_of_snapshots = number_of_snapshots
         self.structure = structure
-        self._phonopy_unit_cell = structuretoolkit.common.atoms_to_phonopy(
-            self.structure
-        )
-        self.phonopy = Phonopy(
-            unitcell=self._phonopy_unit_cell,
-            supercell_matrix=get_supercell_matrix(
-                interaction_range=self._interaction_range,
-                cell=self._phonopy_unit_cell.get_cell(),
-            ),
-            primitive_matrix=primitive_matrix,
-            factor=factor,
-        )
+        self._primitive_matrix = primitive_matrix
+        self._factor = factor
+        self.phonopy = None
         self._phonopy_dict = {}
 
     def generate_structures(self) -> dict:
-        self.phonopy.generate_displacements(
-            distance=self._displacement,
+        self.phonopy, structure_dict = generate_structures_helper(
+            structure=self.structure,
+            primitive_matrix=self._primitive_matrix,
+            displacement=self._displacement,
             number_of_snapshots=self._number_of_snapshots,
+            interaction_range=self._interaction_range,
+            factor=self._factor,
         )
-        return {
-            "calc_forces": {
-                ind: self._restore_magmoms(structuretoolkit.common.phonopy_to_atoms(sc))
-                for ind, sc in enumerate(self.phonopy.supercells_with_displacements)
-            }
-        }
-
-    def _restore_magmoms(self, structure: Atoms) -> Atoms:
-        """
-        Args:
-            structure (ase.atoms.Atoms): input structure
-
-        Returns:
-            structure (ase.atoms.Atoms): output structure with magnetic moments
-        """
-        if self.structure.has("initial_magmoms"):
-            magmoms = self.structure.get_initial_magnetic_moments()
-            magmoms = np.tile(
-                magmoms,
-                np.prod(
-                    np.diagonal(
-                        get_supercell_matrix(
-                            interaction_range=self._interaction_range,
-                            cell=self._phonopy_unit_cell.get_cell(),
-                        )
-                    )
-                ).astype(int),
-            )
-            structure.set_initial_magnetic_moments(magmoms)
-        return structure
+        return {"calc_forces": structure_dict}
 
     def analyse_structures(
         self, output_dict: dict, output_keys: tuple[str] = OutputPhonons.keys()
@@ -233,30 +75,13 @@ class PhonopyWorkflow(Workflow):
         Returns:
 
         """
-        if "forces" in output_dict.keys():
-            output_dict = output_dict["forces"]
-        forces_lst = [output_dict[k] for k in sorted(output_dict.keys())]
-        self.phonopy.forces = forces_lst
-        phono = PhonopyProperties(
-            phonopy_instance=self.phonopy,
+        self._phonopy_dict = analyse_structures_helper(
+            phonopy=self.phonopy,
+            output_dict=output_dict,
             dos_mesh=self._dos_mesh,
-            shift=None,
-            is_time_reversal=True,
-            is_mesh_symmetry=True,
-            with_eigenvectors=False,
-            with_group_velocities=False,
-            is_gamma_center=False,
             number_of_snapshots=self._number_of_snapshots,
-            sigma=None,
-            freq_min=None,
-            freq_max=None,
-            freq_pitch=None,
-            use_tetrahedron_method=True,
-            npoints=101,
+            output_keys=output_keys,
         )
-        self._phonopy_dict = OutputPhonons(
-            **{k: getattr(phono, k) for k in OutputPhonons.keys()}
-        ).get(output_keys=output_keys)
         return self._phonopy_dict
 
     def get_thermal_properties(
@@ -285,20 +110,18 @@ class PhonopyWorkflow(Workflow):
         Returns:
             :class:`Thermal`: thermal properties as returned by Phonopy
         """
-        self.phonopy.run_thermal_properties(
-            t_step=t_step,
-            t_max=t_max,
+        return get_thermal_properties(
+            phonopy=self.phonopy,
             t_min=t_min,
+            t_max=t_max,
+            t_step=t_step,
             temperatures=temperatures,
             cutoff_frequency=cutoff_frequency,
             pretend_real=pretend_real,
             band_indices=band_indices,
             is_projection=is_projection,
+            output_keys=output_keys,
         )
-        phono = PhonopyThermalProperties(phonopy_instance=self.phonopy)
-        return OutputThermodynamic(
-            **{k: getattr(phono, k) for k in OutputThermodynamic.keys()}
-        ).get(output_keys=output_keys)
 
     def get_dynamical_matrix(self, npoints: int = 101) -> np.ndarray:
         """
