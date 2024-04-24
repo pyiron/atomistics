@@ -69,9 +69,6 @@ class EnergyVolumeCurveWorkflow(Workflow):
         )
         return self.fit_dict
 
-    def get_volume_lst(self) -> np.ndarray:
-        return get_volume_lst(structure_dict=self._structure_dict)
-
     def get_thermal_properties(
         self,
         t_min: float = 1.0,

@@ -10,7 +10,6 @@ from atomistics.workflows.quasiharmonic import (
     analyse_structures_helper,
     get_thermal_properties,
 )
-from atomistics.workflows.evcurve.helper import get_volume_lst
 
 try:
     from atomistics.calculators import (
@@ -59,7 +58,8 @@ class TestPhonons(unittest.TestCase):
         tp_collect_dict = get_thermal_properties(
             eng_internal_dict=eng_internal_dict,
             phonopy_dict=phonopy_dict,
-            volume_lst=np.array(get_volume_lst(structure_dict=structure_energy_dict)) / np.prod(repeat_vector),
+            structure_dict=structure_energy_dict,
+            repeat_vector=repeat_vector,
             fit_type="polynomial",
             fit_order=3,
             t_min=1,
@@ -90,7 +90,8 @@ class TestPhonons(unittest.TestCase):
         thermal_properties_dict = get_thermal_properties(
             eng_internal_dict=eng_internal_dict,
             phonopy_dict=phonopy_dict,
-            volume_lst=np.array(get_volume_lst(structure_dict=structure_energy_dict)) / np.prod(repeat_vector),
+            structure_dict=structure_energy_dict,
+            repeat_vector=repeat_vector,
             fit_type="polynomial",
             fit_order=3,
             temperatures=[100, 1000],
@@ -101,7 +102,8 @@ class TestPhonons(unittest.TestCase):
         thermal_properties_dict = get_thermal_properties(
             eng_internal_dict=eng_internal_dict,
             phonopy_dict=phonopy_dict,
-            volume_lst=np.array(get_volume_lst(structure_dict=structure_energy_dict)) / np.prod(repeat_vector),
+            structure_dict=structure_energy_dict,
+            repeat_vector=repeat_vector,
             fit_type="polynomial",
             fit_order=3,
             temperatures=[100, 1000],

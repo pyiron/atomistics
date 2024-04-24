@@ -7,6 +7,7 @@ from atomistics.shared.output import OutputThermodynamic
 from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
 from atomistics.workflows.evcurve.helper import (
     get_strains,
+    get_volume_lst,
     fit_ev_curve,
     _strain_axes,
 )
@@ -34,7 +35,8 @@ def get_free_energy_classical(
 def get_thermal_properties(
     eng_internal_dict: dict,
     phonopy_dict: dict,
-    volume_lst: np.ndarray,
+    structure_dict: dict,
+    repeat_vector: np.ndarray,
     fit_type: str,
     fit_order: int,
     t_min: float = 1.0,
@@ -62,6 +64,7 @@ def get_thermal_properties(
     Returns:
         :class:`Thermal`: thermal properties as returned by Phonopy
     """
+    volume_lst = np.array(get_volume_lst(structure_dict=structure_dict)) / np.prod(repeat_vector)
     if quantum_mechanical:
         tp_collect_dict = _get_thermal_properties_quantum_mechanical(
             phonopy_dict=phonopy_dict,
@@ -449,7 +452,8 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         return get_thermal_properties(
             eng_internal_dict=self._eng_internal_dict,
             phonopy_dict=self._phonopy_dict,
-            volume_lst=np.array(self.get_volume_lst()) / np.prod(self._repeat_vector),
+            structure_dict=self._structure_dict,
+            repeat_vector=self._repeat_vector,
             fit_type=self.fit_type,
             fit_order=self.fit_order,
             t_min=t_min,
