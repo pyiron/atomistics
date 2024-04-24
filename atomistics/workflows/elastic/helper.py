@@ -4,6 +4,8 @@ import ase.atoms
 import numpy as np
 import scipy.constants
 
+from atomistics.shared.output import OutputElastic
+from atomistics.workflows.elastic.elastic_moduli import ElasticProperties
 from atomistics.workflows.elastic.symmetry import (
     symmetry_analysis,
     get_C_from_A2,
@@ -89,6 +91,30 @@ def generate_structures_helper(
 
 
 def analyse_structures_helper(
+    output_dict: dict,
+    sym_dict: dict,
+    fit_order: int = 2,
+    zero_strain_job_name: str = "s_e_0",
+    output_keys: tuple = OutputElastic.keys(),
+):
+    elastic_matrix, A2, strain_energy, ene0 = _get_elastic_matrix(
+        output_dict=output_dict,
+        Lag_strain_list=sym_dict["Lag_strain_list"],
+        epss=sym_dict["epss"],
+        v0=sym_dict["v0"],
+        LC=sym_dict["LC"],
+        fit_order=fit_order,
+        zero_strain_job_name=zero_strain_job_name,
+    )
+    sym_dict["strain_energy"] = strain_energy
+    sym_dict["e0"] = ene0
+    sym_dict["A2"] = A2
+    return sym_dict, ElasticProperties(elastic_matrix=elastic_matrix).to_dict(
+        output_keys=output_keys
+    )
+
+
+def _get_elastic_matrix(
     output_dict: dict,
     Lag_strain_list: list[float],
     epss: float,

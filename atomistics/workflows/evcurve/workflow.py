@@ -137,6 +137,25 @@ def generate_structures_helper(
     }
 
 
+def analyse_structures_helper(
+    output_dict: dict,
+    structure_dict: dict,
+    fit_type: str = "polynomial",
+    fit_order: int = 3,
+    output_keys: tuple = OutputEnergyVolumeCurve.keys(),
+) -> dict:
+    return EnergyVolumeCurveProperties(
+        fit_module=fit_ev_curve_internal(
+            volume_lst=get_volume_lst(structure_dict=structure_dict),
+            energy_lst=get_energy_lst(
+                output_dict=output_dict, structure_dict=structure_dict
+            ),
+            fit_type=fit_type,
+            fit_order=fit_order,
+        )
+    ).to_dict(output_keys=output_keys)
+
+
 class EnergyVolumeCurveProperties:
     def __init__(self, fit_module):
         self._fit_module = fit_module
@@ -217,19 +236,13 @@ class EnergyVolumeCurveWorkflow(Workflow):
     def analyse_structures(
         self, output_dict: dict, output_keys: tuple = OutputEnergyVolumeCurve.keys()
     ) -> dict:
-        evcurve = EnergyVolumeCurveProperties(
-            fit_module=fit_ev_curve_internal(
-                volume_lst=get_volume_lst(structure_dict=self._structure_dict),
-                energy_lst=get_energy_lst(
-                    output_dict=output_dict, structure_dict=self._structure_dict
-                ),
-                fit_type=self.fit_type,
-                fit_order=self.fit_order,
-            )
+        self._fit_dict = analyse_structures_helper(
+            output_dict=output_dict,
+            structure_dict=self._structure_dict,
+            fit_type=self.fit_type,
+            fit_order=self.fit_order,
+            output_keys=output_keys,
         )
-        self._fit_dict = OutputEnergyVolumeCurve(
-            **{k: getattr(evcurve, k) for k in OutputEnergyVolumeCurve.keys()}
-        ).get(output_keys=output_keys)
         return self.fit_dict
 
     def get_volume_lst(self) -> np.ndarray:

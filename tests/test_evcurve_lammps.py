@@ -6,11 +6,8 @@ import unittest
 
 from atomistics.workflows import EnergyVolumeCurveWorkflow, optimize_positions_and_volume
 from atomistics.workflows.evcurve.workflow import (
-    EnergyVolumeCurveProperties,
-    fit_ev_curve_internal,
+    analyse_structures_helper,
     generate_structures_helper,
-    get_energy_lst,
-    get_volume_lst,
     get_thermal_properties,
 )
 
@@ -88,16 +85,12 @@ class TestEvCurve(unittest.TestCase):
             task_dict={"calc_energy": structure_dict},
             potential_dataframe=df_pot_selected,
         )
-        fit_dict = EnergyVolumeCurveProperties(
-            fit_module=fit_ev_curve_internal(
-                volume_lst=get_volume_lst(structure_dict=structure_dict),
-                energy_lst=get_energy_lst(
-                    output_dict=result_dict, structure_dict=structure_dict
-                ),
-                fit_type='polynomial',
-                fit_order=3,
-            )
-        ).to_dict()
+        fit_dict = analyse_structures_helper(
+            output_dict=result_dict,
+            structure_dict=structure_dict,
+            fit_type="polynomial",
+            fit_order=3
+        )
         thermal_properties_dict = get_thermal_properties(
             fit_dict=fit_dict,
             masses=structure.get_masses(),
