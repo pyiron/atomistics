@@ -1,17 +1,14 @@
 import numpy as np
 from ase.atoms import Atoms
 from collections import OrderedDict
-from typing import Optional, List
 
 from atomistics.shared.output import OutputEnergyVolumeCurve
-from atomistics.workflows.evcurve.fit import EnergyVolumeFit
 from atomistics.workflows.interface import Workflow
 from atomistics.workflows.evcurve.debye import (
     get_thermal_properties,
     OutputThermodynamic,
 )
 from atomistics.workflows.evcurve.helper import (
-    get_strains,
     get_volume_lst,
     generate_structures_helper,
     analyse_structures_helper,
@@ -93,11 +90,4 @@ class EnergyVolumeCurveWorkflow(Workflow):
             temperatures=temperatures,
             constant_volume=constant_volume,
             output_keys=output_keys,
-        )
-
-    def _get_strains(self):
-        return get_strains(
-            vol_range=self.vol_range,
-            num_points=self.num_points,
-            strain_lst=self.strains,
         )

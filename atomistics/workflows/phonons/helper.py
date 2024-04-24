@@ -175,7 +175,7 @@ def generate_structures_helper(
     factor: float = VaspToTHz,
 ):
     unitcell = structuretoolkit.common.atoms_to_phonopy(structure)
-    phonopy = Phonopy(
+    phonopy_obj = Phonopy(
         unitcell=unitcell,
         supercell_matrix=get_supercell_matrix(
             interaction_range=interaction_range,
@@ -184,7 +184,7 @@ def generate_structures_helper(
         primitive_matrix=primitive_matrix,
         factor=factor,
     )
-    phonopy.generate_displacements(
+    phonopy_obj.generate_displacements(
         distance=displacement,
         number_of_snapshots=number_of_snapshots,
     )
@@ -195,9 +195,9 @@ def generate_structures_helper(
             interaction_range=interaction_range,
             cell=unitcell.get_cell(),
         )
-        for ind, sc in enumerate(phonopy.supercells_with_displacements)
+        for ind, sc in enumerate(phonopy_obj.supercells_with_displacements)
     }
-    return phonopy, structure_dict
+    return phonopy_obj, structure_dict
 
 
 def analyse_structures_helper(
