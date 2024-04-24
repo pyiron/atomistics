@@ -5,10 +5,10 @@ import numpy as np
 import unittest
 
 from atomistics.workflows import EnergyVolumeCurveWorkflow, optimize_positions_and_volume
-from atomistics.workflows.evcurve.workflow import (
+from atomistics.workflows.evcurve.debye import get_thermal_properties
+from atomistics.workflows.evcurve.helper import (
     analyse_structures_helper,
     generate_structures_helper,
-    get_thermal_properties,
 )
 
 
