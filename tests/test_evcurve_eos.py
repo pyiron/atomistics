@@ -36,30 +36,30 @@ class TestEvCurve(unittest.TestCase):
 
     def test_birch(self):
         fit_dict = fit_equation_of_state(volume_lst=self.volumes, energy_lst=self.energies, fittype='birch')
-        self.assertTrue(np.isclose(fit_dict['volume_eq'], 66.43019853103964))
-        self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 77.7433780646763))
-        self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 1.2836228593874182))
+        self.assertAlmostEqual(fit_dict['volume_eq'], 66.43027009811671)
+        self.assertAlmostEqual(fit_dict['bulkmodul_eq'], 77.7433780646763)
+        self.assertAlmostEqual(fit_dict['b_prime_eq'], 1.2836228593874182)
 
     def test_birchmurnaghan(self):
         fit_dict = fit_equation_of_state(volume_lst=self.volumes, energy_lst=self.energies, fittype='birchmurnaghan')
-        self.assertTrue(np.isclose(fit_dict['volume_eq'], 66.43019853103964))
-        self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 77.74337806467966))
-        self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 1.2836228593684815))
+        self.assertAlmostEqual(fit_dict['volume_eq'], 66.43027009811708)
+        self.assertAlmostEqual(fit_dict['bulkmodul_eq'], 77.74337806467966)
+        self.assertAlmostEqual(fit_dict['b_prime_eq'], 1.2836228593684815)
 
     def test_murnaghan(self):
         fit_dict = fit_equation_of_state(volume_lst=self.volumes, energy_lst=self.energies, fittype='murnaghan')
-        self.assertTrue(np.isclose(fit_dict['volume_eq'], 66.43019853103964))
-        self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 77.60443933015738))
-        self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 1.2716548170090776))
+        self.assertAlmostEqual(fit_dict['volume_eq'], 66.43035753542675)
+        self.assertAlmostEqual(fit_dict['bulkmodul_eq'], 77.60443933015738)
+        self.assertAlmostEqual(fit_dict['b_prime_eq'], 1.2716548170090776)
 
     def test_pouriertarantola(self):
         fit_dict = fit_equation_of_state(volume_lst=self.volumes, energy_lst=self.energies, fittype='pouriertarantola')
-        self.assertTrue(np.isclose(fit_dict['volume_eq'], 66.43019853103964))
-        self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 77.61743376692809))
-        self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 1.272111993713677))
+        self.assertAlmostEqual(fit_dict['volume_eq'], 66.43035598678892)
+        self.assertAlmostEqual(fit_dict['bulkmodul_eq'], 77.61743376692809)
+        self.assertAlmostEqual(fit_dict['b_prime_eq'], 1.272111993713677)
 
     def test_vinet(self):
         fit_dict = fit_equation_of_state(volume_lst=self.volumes, energy_lst=self.energies, fittype='vinet')
-        self.assertTrue(np.isclose(fit_dict['volume_eq'], 66.43019853103964))
-        self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 77.61265363975706))
-        self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 1.2734991618131122))
+        self.assertAlmostEqual(fit_dict['volume_eq'], 66.43032532814925)
+        self.assertAlmostEqual(fit_dict['bulkmodul_eq'], 77.61265363975706)
+        self.assertAlmostEqual(fit_dict['b_prime_eq'], 1.2734991618131122)

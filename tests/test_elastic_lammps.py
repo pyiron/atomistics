@@ -58,8 +58,8 @@ class TestElastic(unittest.TestCase):
         self.assertEqual(workflow._data['LC'], 'CI')
         self.assertEqual(workflow._data['Lag_strain_list'], ['01', '08', '23'])
         self.assertTrue(np.isclose(workflow._data['epss'], np.array([-0.005, -0.0025, 0., 0.0025, 0.005])).all())
-        self.assertTrue(np.isclose(workflow._data["v0"], 66.43035441556098))
-        self.assertTrue(np.isclose(workflow._data["e0"],  -13.439999952735112))
+        self.assertAlmostEqual(workflow._data["v0"], 66.43035441556098)
+        self.assertAlmostEqual(workflow._data["e0"],  -13.439999952735112)
         self.assertTrue(np.isclose(workflow._data['strain_energy'], np.array(
             [
                 [
@@ -86,10 +86,10 @@ class TestElastic(unittest.TestCase):
             ])).all()
         )
         self.assertTrue(np.isclose(workflow._data['A2'], np.array([2.20130388, 1.08985578, 1.91883479])).all())
-        self.assertTrue(np.isclose(elastic_dict['bulkmodul_voigt'], 78.37505857279467))
-        self.assertTrue(np.isclose(elastic_dict['shearmodul_voigt'], 41.46154012284969))
-        self.assertTrue(np.isclose(elastic_dict['youngsmodul_voigt'], 105.73882997912072))
-        self.assertTrue(np.isclose(elastic_dict['poissonsratio_voigt'], 0.2751435386362729))
+        self.assertAlmostEqual(elastic_dict['bulkmodul_voigt'], 78.37505857279467)
+        self.assertAlmostEqual(elastic_dict['shearmodul_voigt'], 41.46154012284969)
+        self.assertAlmostEqual(elastic_dict['youngsmodul_voigt'], 105.73882997912072)
+        self.assertAlmostEqual(elastic_dict['poissonsratio_voigt'], 0.2751435386362729)
         self.assertTrue(np.isclose(elastic_dict['elastic_matrix_inverse'], np.array(
             [
                 [0.01385733, -0.00480214, -0.00480214, 0., 0., 0.],
@@ -100,12 +100,12 @@ class TestElastic(unittest.TestCase):
                 [0., 0., 0., 0., 0., 0.01951656]
             ]
         )).all())
-        self.assertTrue(np.isclose(elastic_dict['bulkmodul_reuss'], 78.37505857279469))
-        self.assertTrue(np.isclose(elastic_dict['shearmodul_reuss'], 37.54104251720356))
-        self.assertTrue(np.isclose(elastic_dict['youngsmodul_reuss'], 97.11702764970639))
-        self.assertTrue(np.isclose(elastic_dict['poissonsratio_reuss'], 0.29347803281170937))
-        self.assertTrue(np.isclose(elastic_dict['bulkmodul_hill'], 78.37505857279467))
-        self.assertTrue(np.isclose(elastic_dict['shearmodul_hill'], 39.501291320026624))
-        self.assertTrue(np.isclose(elastic_dict['youngsmodul_hill'], 101.45869947879392))
-        self.assertTrue(np.isclose(elastic_dict['poissonsratio_hill'], 0.2842453510798992))
-        self.assertTrue(np.isclose(elastic_dict['AVR'], 4.962492964955925))
+        self.assertAlmostEqual(elastic_dict['bulkmodul_reuss'], 78.37505857279469)
+        self.assertAlmostEqual(elastic_dict['shearmodul_reuss'], 37.54104251720356)
+        self.assertAlmostEqual(elastic_dict['youngsmodul_reuss'], 97.11702764970639)
+        self.assertAlmostEqual(elastic_dict['poissonsratio_reuss'], 0.29347803281170937)
+        self.assertAlmostEqual(elastic_dict['bulkmodul_hill'], 78.37505857279467)
+        self.assertAlmostEqual(elastic_dict['shearmodul_hill'], 39.501291320026624)
+        self.assertAlmostEqual(elastic_dict['youngsmodul_hill'], 101.45869947879392)
+        self.assertAlmostEqual(elastic_dict['poissonsratio_hill'], 0.2842453510798992)
+        self.assertAlmostEqual(elastic_dict['AVR'], 4.962492964955925)
