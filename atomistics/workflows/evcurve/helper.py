@@ -99,23 +99,28 @@ def fit_ev_curve(
 
 
 def get_strains(
-    vol_range: Optional[float],
-    num_points: Optional[int],
+    vol_range: Optional[float] = None,
+    num_points: Optional[int] = None,
     strain_lst: Optional[List[float]] = None,
 ) -> np.ndarray:
-    if strain_lst is None:
+    if strain_lst is None and (vol_range is None or num_points is None):
+        raise ValueError(
+            "Either the strain_lst parameter or the vol_range and the num_points parameter have to be defined."
+        )
+    elif strain_lst is None and vol_range is not None and num_points is not None:
         return np.linspace(
             -vol_range,
             vol_range,
             int(num_points),
         )
-    return strain_lst
+    else:
+        return strain_lst
 
 
 def generate_structures_helper(
     structure: Atoms,
-    vol_range: Optional[float],
-    num_points: Optional[int],
+    vol_range: Optional[float] = None,
+    num_points: Optional[int] = None,
     strain_lst: Optional[List[float]] = None,
     axes: tuple[str, str, str] = ("x", "y", "z"),
 ) -> dict:
