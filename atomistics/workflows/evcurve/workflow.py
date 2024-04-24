@@ -14,7 +14,7 @@ from atomistics.workflows.evcurve.helper import (
     get_strains,
     get_volume_lst,
     generate_structures_helper,
-    analyse_structures_helper
+    analyse_structures_helper,
 )
 
 
