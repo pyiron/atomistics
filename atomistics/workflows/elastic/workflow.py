@@ -47,7 +47,7 @@ class ElasticMatrixWorkflow(Workflow):
 
     def analyse_structures(
         self, output_dict: dict, output_keys: tuple = OutputElastic.keys()
-    ):
+    ) -> dict:
         """
 
         Args:

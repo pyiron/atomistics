@@ -2,6 +2,8 @@ from functools import cache
 
 import numpy as np
 
+from atomistics.shared.output import OutputElastic
+
 
 def get_bulkmodul_voigt(elastic_matrix: np.ndarray) -> float:
     return (
@@ -214,3 +216,8 @@ class ElasticProperties:
     @cache
     def elastic_matrix_eigval(self):
         return get_elastic_matrix_eigval(elastic_matrix=self.elastic_matrix())
+
+    def to_dict(self, output_keys: tuple = OutputElastic.keys()) -> dict:
+        return OutputElastic(
+            **{k: getattr(self, k) for k in OutputElastic.keys()}
+        ).get(output_keys=output_keys)

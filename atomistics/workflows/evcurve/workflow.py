@@ -166,6 +166,11 @@ class EnergyVolumeCurveProperties:
             if k in self._fit_module.fit_dict.keys()
         }
 
+    def to_dict(self, output_keys: tuple = OutputEnergyVolumeCurve.keys()) -> dict:
+        return OutputEnergyVolumeCurve(
+            **{k: getattr(self, k) for k in OutputEnergyVolumeCurve.keys()}
+        ).get(output_keys=output_keys)
+
 
 class EnergyVolumeCurveWorkflow(Workflow):
     def __init__(
