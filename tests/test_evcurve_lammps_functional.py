@@ -1,7 +1,6 @@
 import os
 
 from ase.build import bulk
-import numpy as np
 import unittest
 
 from atomistics.workflows.evcurve.debye import get_thermal_properties
@@ -63,9 +62,9 @@ class TestEvCurve(unittest.TestCase):
             output_keys=["temperatures", "volumes"],
         )
         temperatures_ev, volumes_ev = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
-        self.assertTrue(np.isclose(fit_dict['volume_eq'], 66.43019853103964))
-        self.assertTrue(np.isclose(fit_dict['bulkmodul_eq'], 77.7250135953191))
-        self.assertTrue(np.isclose(fit_dict['b_prime_eq'], 1.2795467367276832))
+        self.assertAlmostEqual(fit_dict['volume_eq'], 66.43019853103964)
+        self.assertAlmostEqual(fit_dict['bulkmodul_eq'], 77.7250135953191)
+        self.assertAlmostEqual(fit_dict['b_prime_eq'], 1.2795467367276832)
         self.assertEqual(len(temperatures_ev), 2)
         self.assertEqual(len(volumes_ev), 2)
         self.assertTrue(volumes_ev[0] < volumes_ev[-1])
