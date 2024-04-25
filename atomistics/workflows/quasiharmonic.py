@@ -68,8 +68,7 @@ def get_thermal_properties(
         repeat_vector
     )
     eng_internal_dict = {
-        key: value / np.prod(repeat_vector)
-        for key, value in eng_internal_dict.items()
+        key: value / np.prod(repeat_vector) for key, value in eng_internal_dict.items()
     }
     if quantum_mechanical:
         tp_collect_dict = _get_thermal_properties_quantum_mechanical(
