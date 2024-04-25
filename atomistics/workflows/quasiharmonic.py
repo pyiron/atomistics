@@ -67,6 +67,10 @@ def get_thermal_properties(
     volume_lst = np.array(get_volume_lst(structure_dict=structure_dict)) / np.prod(
         repeat_vector
     )
+    eng_internal_dict = {
+        key: value / np.prod(repeat_vector)
+        for key, value in eng_internal_dict.items()
+    }
     if quantum_mechanical:
         tp_collect_dict = _get_thermal_properties_quantum_mechanical(
             phonopy_dict=phonopy_dict,
