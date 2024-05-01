@@ -1,2 +1,9 @@
 # install atomistics
 pip install .
+
+# copy notebooks
+mv notebooks/*.ipynb .
+rm -rf notebooks
+
+# clean up
+rm -rf .ci_support .github atomistics binder docs notebooks tests .coveralls.yml .gitattributes .gitignore .readthedocs.yml CITATION.cff CODE_OF_CONDUCT.md LICENSE MANIFEST.in README.md pyproject.toml setup.py
