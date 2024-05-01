@@ -1,0 +1,7 @@
+format: jb-book
+root: README
+chapters:
+- file: installation.md
+- file: simulationcodes.md
+- file: workflows.md
+- file: materialproperties.md

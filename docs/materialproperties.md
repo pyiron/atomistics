@@ -528,7 +528,7 @@ plt.ylabel("Temperature (K)")
 ```
 The result is visualized in the following graph:
 
-![Compare Thermal Expansion](../pictures/thermalexpansion.png)
+![Compare Thermal Expansion](pictures/thermalexpansion.png)
 
 Both the [Moruzzi, V. L. et al.](https://link.aps.org/doi/10.1103/PhysRevB.37.790) and the quantum mechanical version of
 the quasi-harmonic approach start at a larger equilibrium volume as they include the zero point vibrations, resulting in
@@ -724,7 +724,7 @@ plt.xlabel("Temperature (K)")
 plt.ylabel("Helmholtz Free Energy (eV)")
 plt.legend()
 ```
-![Helmholtz Free Energy](../pictures/free_energy_hqh.png)
+![Helmholtz Free Energy](pictures/free_energy_hqh.png)
 
 ```
 plt.title("Entropy")
@@ -734,7 +734,7 @@ plt.xlabel("Temperature (K)")
 plt.ylabel("Entropy (J/K/mol)")
 plt.legend()
 ```
-![Entropy](../pictures/entropy_hqh.png)
+![Entropy](pictures/entropy_hqh.png)
 
 ```
 plt.title("Heat Capacity")
@@ -745,7 +745,7 @@ plt.xlabel("Temperature (K)")
 plt.ylabel("Heat Capacity (J/K/mol)")
 plt.legend()
 ```
-![Heat Capacity](../pictures/heat_capacity_hqh.png)
+![Heat Capacity](pictures/heat_capacity_hqh.png)
 
 ### Thermo Dynamic Integration
 To include the anharmonic contribution to the free energy thermo dynamic integration is used to integrate the internal 
@@ -845,7 +845,7 @@ for lattice_constant, temperature in zip(lattice_constant_lst, temperature_lst):
 ```
 ### Summary
 The Helmholtz free energy for all three approximations is compared in the following:
-![Heat Capacity](../pictures/thermo_int.png)
+![Heat Capacity](pictures/thermo_int.png)
 
 ## Phase Diagram 
 One of the goals of the `atomistics` package is to be able to calculate phase diagrams with ab-initio precision. Coming 

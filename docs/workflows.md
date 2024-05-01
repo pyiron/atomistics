@@ -426,7 +426,7 @@ finite temperature phonon spectrum with the 0K phonon spectrum calulated with th
 ```
 calculation.plot_renormalized_phonon_dispersion_bands()
 ```
-![finite temperature band_structure](../pictures/lammps_md_phonons.png)
+![finite temperature band_structure](pictures/lammps_md_phonons.png)
 
 ### Langevin Thermostat 
 In addition to the molecular dynamics implemented in the LAMMPS simulation code, the `atomistics` package also provides
@@ -570,13 +570,13 @@ This band structure can also be visualised using the built-in plotting function:
 ```
 workflow.plot_band_structure()
 ```
-![band_structure](../pictures/phonon_bands_al.png)
+![band_structure](pictures/phonon_bands_al.png)
 
 Just like the desnsity of states which can be plotted using: 
 ```
 workflow.plot_dos()
 ```
-![density of states](../pictures/phonon_dos_al.png)
+![density of states](pictures/phonon_dos_al.png)
 
 ### Quasi-harmonic Approximation 
 To include the volume expansion with finite temperature the `atomistics` package implements the `QuasiHarmonicWorkflow`:
