@@ -3,6 +3,7 @@ pip install .
 
 # copy notebooks
 mv notebooks/*.ipynb .
+cp -r tests/static .
 rm -rf notebooks
 
 # clean up
