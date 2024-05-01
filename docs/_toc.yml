@@ -1,0 +1,12 @@
+format: jb-book
+root: README
+chapters:
+- file: installation.md
+- file: simulation_codes.ipynb
+- file: lammps_workflows.ipynb
+- file: materialproperties.md
+  sections:
+    - file: bulk_modulus_with_gpaw.ipynb
+    - file: thermal_expansion_with_lammps.ipynb
+    - file: free_energy_calculation.ipynb
+    - file: phasediagram.md

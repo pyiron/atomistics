@@ -31,4 +31,5 @@ jobs:
         run: |
           pip install versioneer[toml]==0.29
           pip install . --no-deps --no-build-isolation
-          ./.ci_support/build_notebooks.sh
+          cd notebooks
+          ../.ci_support/build_notebooks.sh

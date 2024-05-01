@@ -1,4 +1,4 @@
-# atomistics - Interfaces for atomistic simulation codes and workflows
+# atomistics
 [![Unittest](https://github.com/pyiron/atomistics/actions/workflows/unittests.yml/badge.svg)](https://github.com/pyiron/atomistics/actions/workflows/unittests.yml)
 [![Coverage Status](https://coveralls.io/repos/github/pyiron/atomistics/badge.svg?branch=main)](https://coveralls.io/github/pyiron/atomistics?branch=main)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pyiron/atomistics/HEAD)
