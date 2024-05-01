@@ -22,10 +22,10 @@ dynamics.
 On the other hand the `atomistics` package also provides `workflows` to calculate material properties on the atomistic 
 scales, these include:
 
-* [Equation of State](https://atomistics.readthedocs.io/en/latest/workflows.html#energy-volume-curve) - to calculate equilibrium properties like the equilibrium energy, equilibrium volume, equilibrium bulk modulus and its pressure derivative.
-* [Elastic Matrix](https://atomistics.readthedocs.io/en/latest/workflows.html#elastic-matrix) - to calculate the elastic constants and elastic moduli.
-* [Harmonic and Quasi-harmonic Approximation](https://atomistics.readthedocs.io/en/latest/workflows.html#harmonic-approximation) - to calculate the density of states, vibrational free energy and thermal expansion based on the finite displacements method implemented in [phonopy](https://phonopy.github.io/phonopy/).
-* [Molecular Dynamics](https://atomistics.readthedocs.io/en/latest/workflows.html#molecular-dynamics) - to calculate finite temperature properties like thermal expansion including the anharmonic contributions.
+* [Equation of State](https://atomistics.readthedocs.io/en/latest/lammps_workflows.html#energy-volume-curve) - to calculate equilibrium properties like the equilibrium energy, equilibrium volume, equilibrium bulk modulus and its pressure derivative.
+* [Elastic Matrix](https://atomistics.readthedocs.io/en/latest/lammps_workflows.html#elastic-matrix) - to calculate the elastic constants and elastic moduli.
+* [Harmonic and Quasi-harmonic Approximation](https://atomistics.readthedocs.io/en/latest/lammps_workflows.html#harmonic-approximation) - to calculate the density of states, vibrational free energy and thermal expansion based on the finite displacements method implemented in [phonopy](https://phonopy.github.io/phonopy/).
+* [Molecular Dynamics](https://atomistics.readthedocs.io/en/latest/lammps_workflows.html#molecular-dynamics) - to calculate finite temperature properties like thermal expansion including the anharmonic contributions.
 
 All these `workflows` can be coupled with all the simulation codes implemented in the `atomistics` package.
 In contrast to the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/) which provides similar functionality
@@ -174,18 +174,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * [Installation](https://atomistics.readthedocs.io/en/latest/installation.html)
   * [conda-based Installation](https://atomistics.readthedocs.io/en/latest/installation.html#conda-based-installation)
   * [pypi-based Installation](https://atomistics.readthedocs.io/en/latest/installation.html#pypi-based-installation)
-* [Simulation Codes](https://atomistics.readthedocs.io/en/latest/simulationcodes.html)
-  * [ASE](https://atomistics.readthedocs.io/en/latest/simulationcodes.html#ase)
-  * [LAMMPS](https://atomistics.readthedocs.io/en/latest/simulationcodes.html#lammps)
-  * [Quantum Espresso](https://atomistics.readthedocs.io/en/latest/simulationcodes.html#id1)
-* [Workflows](https://atomistics.readthedocs.io/en/latest/workflows.html)
-  * [Elastic Matrix](https://atomistics.readthedocs.io/en/latest/workflows.html#elastic-matrix)
-  * [Energy Volume Curve](https://atomistics.readthedocs.io/en/latest/workflows.html#energy-volume-curve)
-  * [Molecular Dynamics](https://atomistics.readthedocs.io/en/latest/workflows.html#molecular-dynamics)
-  * [Harmonic Approximation](https://atomistics.readthedocs.io/en/latest/workflows.html#harmonic-approximation)
-  * [Structure Optimization](https://atomistics.readthedocs.io/en/latest/workflows.html#structure-optimization)
+* [Simulation Codes](https://atomistics.readthedocs.io/en/latest/simulation_codes.html)
+  * [ASE](https://atomistics.readthedocs.io/en/latest/simulation_codes.html#ase)
+  * [LAMMPS](https://atomistics.readthedocs.io/en/latest/simulation_codes.html#lammps)
+  * [Quantum Espresso](https://atomistics.readthedocs.io/en/latest/simulation_codes.html#id1)
+* [Workflows](https://atomistics.readthedocs.io/en/latest/lammps_workflows.html)
+  * [Elastic Matrix](https://atomistics.readthedocs.io/en/latest/lammps_workflows.html#elastic-matrix)
+  * [Energy Volume Curve](https://atomistics.readthedocs.io/en/latest/lammps_workflows.html#energy-volume-curve)
+  * [Molecular Dynamics](https://atomistics.readthedocs.io/en/latest/lammps_workflows.html#molecular-dynamics)
+  * [Harmonic Approximation](https://atomistics.readthedocs.io/en/latest/lammps_workflows.html#harmonic-approximation)
+  * [Structure Optimization](https://atomistics.readthedocs.io/en/latest/lammps_workflows.html#structure-optimization)
 * [Materials Properties](https://atomistics.readthedocs.io/en/latest/materialproperties.html)
-  * [Elastic Properties](https://atomistics.readthedocs.io/en/latest/materialproperties.html#elastic-properties)
-  * [Thermal Expansion](https://atomistics.readthedocs.io/en/latest/materialproperties.html#thermal-expansion)
-  * [Helmholtz Free Energy](https://atomistics.readthedocs.io/en/latest/materialproperties.html#helmholtz-free-energy)
-  * [Phase Diagram](https://atomistics.readthedocs.io/en/latest/materialproperties.html#phase-diagram)
+  * [Elastic Properties](https://atomistics.readthedocs.io/en/latest/bulk_modulus_with_gpaw.html)
+  * [Thermal Expansion](https://atomistics.readthedocs.io/en/latest/thermal_expansion_with_lammps.html)
+  * [Helmholtz Free Energy](https://atomistics.readthedocs.io/en/latest/free_energy_calculation.html)
+  * [Phase Diagram](https://atomistics.readthedocs.io/en/latest/phasediagram.html)
