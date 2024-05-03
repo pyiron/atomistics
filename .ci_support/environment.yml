@@ -6,6 +6,6 @@ dependencies:
 - numpy =1.26.4
 - scipy =1.13.0
 - spglib =2.4.0
-- phonopy =2.23.0
+- phonopy =2.23.1
 - structuretoolkit =0.0.22
 - seekpath =2.1.0
