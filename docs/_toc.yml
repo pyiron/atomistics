@@ -10,3 +10,4 @@ chapters:
     - file: thermal_expansion_with_lammps.ipynb
     - file: free_energy_calculation.ipynb
     - file: phasediagram.md
+- file: api.rst
