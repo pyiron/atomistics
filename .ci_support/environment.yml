@@ -9,3 +9,4 @@ dependencies:
 - phonopy =2.22.1
 - structuretoolkit =0.0.22
 - seekpath =2.1.0
+- tqdm =4.66.4
