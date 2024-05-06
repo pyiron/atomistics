@@ -10,6 +10,7 @@ repository:
   path_to_book              : "docs"
 html:
   use_repository_button: true
+  use_edit_page_button: true
 
 launch_buttons:
   notebook_interface          : jupyterlab
