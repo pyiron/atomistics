@@ -22,7 +22,7 @@ except ImportError:
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         structure = bulk("Al", cubic=True)
-        ase_calculator = M3GNetCalculator(matgl.load_model("M3GNet-MP-2021.2.8-PES", force_download=True))
+        ase_calculator = M3GNetCalculator(matgl.load_model("M3GNet-MP-2021.2.8-PES"))
         task_dict = optimize_positions_and_volume(structure=structure)
         result_dict = evaluate_with_ase(
             task_dict=task_dict,
