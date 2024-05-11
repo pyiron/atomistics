@@ -27,7 +27,7 @@ dependencies = [
     "ase==3.22.1",
     "numpy==1.26.4",
     "scipy==1.13.0",
-    "spglib==2.4.0",
+    "spglib==2.3.1",
 ]
 dynamic = ["version"]
 
@@ -38,7 +38,7 @@ Repository = "https://github.com/pyiron/atomistics"
 
 [project.optional-dependencies]
 phonopy = [
-    "phonopy==2.22.1",
+    "phonopy==2.23.1",
     "seekpath==2.1.0",
     "structuretoolkit==0.0.22",
 ]

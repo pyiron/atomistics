@@ -5,8 +5,8 @@ dependencies:
 - coverage
 - numpy =1.26.4
 - scipy =1.13.0
-- spglib =2.4.0
-- phonopy =2.22.1
+- spglib =2.3.1
+- phonopy =2.23.1
 - structuretoolkit =0.0.22
 - seekpath =2.1.0
 - tqdm =4.66.4
