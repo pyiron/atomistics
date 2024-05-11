@@ -17,5 +17,5 @@ dependencies:
 - lammps =2023.11.21
 - pandas =2.2.2
 - pylammpsmpi =0.2.18
-- jinja2 =3.1.3
+- jinja2 =3.1.4
 - jupyter-book =1.0.0
