@@ -129,9 +129,7 @@ def generate_structures_helper(
     )
     key_lst = [1 + np.round(strain, 7) for strain in strain_lst]
     value_lst = [
-        _strain_axes(
-            structure=structure, axes=axes, volume_strain=strain
-        )
+        _strain_axes(structure=structure, axes=axes, volume_strain=strain)
         for strain in strain_lst
     ]
     return {key: value for key, value in zip(key_lst, value_lst)}
