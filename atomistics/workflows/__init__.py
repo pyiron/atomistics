@@ -9,12 +9,6 @@ from atomistics.workflows.structure_optimization import (
     optimize_positions_and_volume,
 )
 
-try:  # in case phonopy is not installed
-    from atomistics.workflows.phonons.workflow import PhonopyWorkflow
-    from atomistics.workflows.quasiharmonic import QuasiHarmonicWorkflow
-except ImportError:
-    pass
-
 
 __all__ = [
     ElasticMatrixWorkflow,
@@ -23,6 +17,16 @@ __all__ = [
     calc_molecular_dynamics_thermal_expansion,
     optimize_positions,
     optimize_positions_and_volume,
-    PhonopyWorkflow,
-    QuasiHarmonicWorkflow,
 ]
+
+
+try:  # in case phonopy is not installed
+    from atomistics.workflows.phonons.workflow import PhonopyWorkflow
+    from atomistics.workflows.quasiharmonic import QuasiHarmonicWorkflow
+
+    __all__ += [
+        PhonopyWorkflow,
+        QuasiHarmonicWorkflow,
+    ]
+except ImportError:
+    pass
