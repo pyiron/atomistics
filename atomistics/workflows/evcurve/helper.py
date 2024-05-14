@@ -127,7 +127,7 @@ def generate_structures_helper(
     strain_lst = get_strains(
         vol_range=vol_range, num_points=num_points, strain_lst=strain_lst
     )
-    key_lst = [1 + np.round(strain, 7) for strain in strain_lst]]
+    key_lst = [1 + np.round(strain, 7) for strain in strain_lst]
     value_lst = [
         _strain_axes(
             structure=structure, axes=axes, volume_strain=strain
