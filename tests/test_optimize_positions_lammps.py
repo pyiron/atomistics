@@ -7,9 +7,7 @@ import unittest
 from atomistics.workflows import optimize_positions
 
 try:
-    from atomistics.calculators import (
-        evaluate_with_lammps, get_potential_by_name
-    )
+    from atomistics.calculators import evaluate_with_lammps, get_potential_by_name
 
     skip_lammps_test = False
 except ImportError:
@@ -40,14 +38,16 @@ class TestOptimizePositionsLAMMPS(unittest.TestCase):
         structure.positions[0] += [0.01, 0.01, 0.01]
         structure_optimized = optimize_structure(
             structure=structure,
-            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         self.assertTrue(
-            all(np.isclose(
-                positions_before_displacement,
-                structure_optimized.positions-structure_optimized.positions[0],
-            ).flatten())
+            all(
+                np.isclose(
+                    positions_before_displacement,
+                    structure_optimized.positions - structure_optimized.positions[0],
+                ).flatten()
+            )
         )
 
     def test_optimize_positions_without_resource_path(self):
@@ -56,12 +56,14 @@ class TestOptimizePositionsLAMMPS(unittest.TestCase):
         structure.positions[0] += [0.01, 0.01, 0.01]
         structure_optimized = optimize_structure(
             structure=structure,
-            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=None,
         )
         self.assertTrue(
-            all(np.isclose(
-                positions_before_displacement,
-                structure_optimized.positions-structure_optimized.positions[0],
-            ).flatten())
+            all(
+                np.isclose(
+                    positions_before_displacement,
+                    structure_optimized.positions - structure_optimized.positions[0],
+                ).flatten()
+            )
         )

@@ -269,7 +269,7 @@ class ThermoBulk(object):
 
         """
         if pressure is not None:
-            raise NotImplemented()
+            raise NotImplementedError()
         v_min_lst = []
         for c in self._coeff.T:
             v_min = np.roots(np.polyder(c, 1))

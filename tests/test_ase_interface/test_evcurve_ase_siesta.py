@@ -19,14 +19,14 @@ else:
 
 def validate_fitdict(fit_dict):
     lst = [
-        fit_dict['b_prime_eq'] > 14.0,
-        fit_dict['b_prime_eq'] < 15.0,
-        fit_dict['bulkmodul_eq'] > 42,
-        fit_dict['bulkmodul_eq'] < 44,
-        fit_dict['energy_eq'] > -281.0,
-        fit_dict['energy_eq'] < -280.9,
-        fit_dict['volume_eq'] > 74,
-        fit_dict['volume_eq'] < 75,
+        fit_dict["b_prime_eq"] > 14.0,
+        fit_dict["b_prime_eq"] < 15.0,
+        fit_dict["bulkmodul_eq"] > 42,
+        fit_dict["bulkmodul_eq"] < 44,
+        fit_dict["energy_eq"] > -281.0,
+        fit_dict["energy_eq"] < -280.9,
+        fit_dict["volume_eq"] > 74,
+        fit_dict["volume_eq"] < 75,
     ]
     if not all(lst):
         print(fit_dict)
@@ -41,10 +41,10 @@ class TestEvCurve(unittest.TestCase):
         workflow = EnergyVolumeCurveWorkflow(
             structure=bulk("Al", a=4.15, cubic=True),
             num_points=11,
-            fit_type='polynomial',
+            fit_type="polynomial",
             fit_order=3,
             vol_range=0.05,
-            axes=('x', 'y', 'z'),
+            axes=("x", "y", "z"),
             strains=None,
         )
         task_dict = workflow.generate_structures()
@@ -60,7 +60,7 @@ class TestEvCurve(unittest.TestCase):
                 fdf_arguments={"DM.MixingWeight": 0.1, "MaxSCFIterations": 100},
                 pseudo_path=os.path.abspath("tests/static/siesta"),
                 pseudo_qualifier="",
-            )
+            ),
         )
         fit_dict = workflow.analyse_structures(output_dict=result_dict)
         self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))

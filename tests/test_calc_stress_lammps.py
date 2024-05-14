@@ -7,9 +7,7 @@ from atomistics.workflows import optimize_positions_and_volume
 
 
 try:
-    from atomistics.calculators import (
-        evaluate_with_lammps, get_potential_by_name
-    )
+    from atomistics.calculators import evaluate_with_lammps, get_potential_by_name
 
     skip_lammps_test = False
 except ImportError:
@@ -23,7 +21,7 @@ class TestStess(unittest.TestCase):
     def test_calc_stress(self):
         structure = bulk("Al", cubic=True)
         df_pot_selected = get_potential_by_name(
-            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         task_dict = {"calc_stress": structure}
@@ -36,7 +34,9 @@ class TestStess(unittest.TestCase):
             task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
-        task_dict = {"calc_stress": result_dict["structure_with_optimized_positions_and_volume"]}
+        task_dict = {
+            "calc_stress": result_dict["structure_with_optimized_positions_and_volume"]
+        }
         stress_post_dict = evaluate_with_lammps(
             task_dict=task_dict,
             potential_dataframe=df_pot_selected,

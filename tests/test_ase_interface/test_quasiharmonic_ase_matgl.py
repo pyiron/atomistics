@@ -28,7 +28,7 @@ class TestPhonons(unittest.TestCase):
             task_dict=task_dict,
             ase_calculator=ase_calculator,
             ase_optimizer=LBFGS,
-            ase_optimizer_kwargs={"fmax": 0.001}
+            ase_optimizer_kwargs={"fmax": 0.001},
         )
         workflow = QuasiHarmonicWorkflow(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
@@ -46,20 +46,30 @@ class TestPhonons(unittest.TestCase):
             task_dict=task_dict,
             ase_calculator=ase_calculator,
         )
-        eng_internal_dict, phonopy_collect_dict = workflow.analyse_structures(output_dict=result_dict)
-        tp_collect_dict = workflow.get_thermal_properties(t_min=1, t_max=501, t_step=50, temperatures=None)
+        eng_internal_dict, phonopy_collect_dict = workflow.analyse_structures(
+            output_dict=result_dict
+        )
+        tp_collect_dict = workflow.get_thermal_properties(
+            t_min=1, t_max=501, t_step=50, temperatures=None
+        )
         thermal_properties_dict = workflow.get_thermal_properties(
             temperatures=[100, 500],
             output_keys=["temperatures", "volumes"],
-            quantum_mechanical=True
+            quantum_mechanical=True,
         )
-        temperatures_qh_qm, volumes_qh_qm = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
+        temperatures_qh_qm, volumes_qh_qm = (
+            thermal_properties_dict["temperatures"],
+            thermal_properties_dict["volumes"],
+        )
         thermal_properties_dict = workflow.get_thermal_properties(
             temperatures=[100, 500],
             output_keys=["temperatures", "volumes"],
-            quantum_mechanical=False
+            quantum_mechanical=False,
         )
-        temperatures_qh_cl, volumes_qh_cl = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
+        temperatures_qh_cl, volumes_qh_cl = (
+            thermal_properties_dict["temperatures"],
+            thermal_properties_dict["volumes"],
+        )
         self.assertEqual(len(eng_internal_dict.keys()), 11)
         self.assertEqual(len(tp_collect_dict.keys()), 5)
         self.assertEqual(len(temperatures_qh_qm), 2)

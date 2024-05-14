@@ -5,13 +5,19 @@ from phonopy.units import VaspToTHz
 import unittest
 
 from atomistics.calculators import evaluate_with_hessian
-from atomistics.workflows import optimize_positions_and_volume, LangevinWorkflow, PhonopyWorkflow
+from atomistics.workflows import (
+    optimize_positions_and_volume,
+    LangevinWorkflow,
+    PhonopyWorkflow,
+)
 
 
 try:
     from pylammpsmpi import LammpsASELibrary
     from atomistics.calculators import (
-        evaluate_with_lammps, evaluate_with_lammps_library, get_potential_by_name
+        evaluate_with_lammps,
+        evaluate_with_lammps_library,
+        get_potential_by_name,
     )
 
     skip_lammps_test = False
@@ -27,7 +33,7 @@ class TestLangevin(unittest.TestCase):
         steps = 10
         structure = bulk("Al", cubic=True).repeat([3, 3, 3])
         df_pot_selected = get_potential_by_name(
-            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         task_dict = optimize_positions_and_volume(structure=structure)

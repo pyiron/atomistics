@@ -9,7 +9,9 @@ from atomistics.workflows import PhonopyWorkflow
 
 try:
     from atomistics.calculators import (
-        calc_molecular_dynamics_phonons_with_lammps, evaluate_with_lammps, get_potential_by_name
+        calc_molecular_dynamics_phonons_with_lammps,
+        evaluate_with_lammps,
+        get_potential_by_name,
     )
 
     skip_lammps_test = False
@@ -24,7 +26,7 @@ class TestLammpsMD(unittest.TestCase):
     def test_lammps_md_nvt_all(self):
         structure = bulk("Si", cubic=True)
         potential_dataframe = get_potential_by_name(
-            potential_name='1988--Tersoff-J--Si-c--LAMMPS--ipr1',
+            potential_name="1988--Tersoff-J--Si-c--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         workflow = PhonopyWorkflow(

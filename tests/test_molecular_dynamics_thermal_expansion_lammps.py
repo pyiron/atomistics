@@ -29,7 +29,7 @@ class TestMolecularDynamicsThermalExpansion(unittest.TestCase):
     def test_calc_thermal_expansion_using_evaluate(self):
         structure = bulk("Al", cubic=True)
         df_pot_selected = get_potential_by_name(
-            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         task_dict = calc_molecular_dynamics_thermal_expansion(structure=structure)
@@ -40,10 +40,10 @@ class TestMolecularDynamicsThermalExpansion(unittest.TestCase):
                 "Tstart": 50,
                 "Tstop": 500,
                 "Tstep": 50,
-            }
+            },
         )
-        temperature_lst = result_dict['volume_over_temperature'][0]
-        volume_lst = result_dict['volume_over_temperature'][1]
+        temperature_lst = result_dict["volume_over_temperature"][0]
+        volume_lst = result_dict["volume_over_temperature"][1]
         self.assertTrue(all(np.array(temperature_lst) < 600))
         self.assertTrue(all(np.array(temperature_lst) > 0))
         self.assertTrue(volume_lst[0] < volume_lst[-1])
@@ -51,7 +51,7 @@ class TestMolecularDynamicsThermalExpansion(unittest.TestCase):
     def test_calc_thermal_expansion_using_calc(self):
         structure = bulk("Al", cubic=True)
         df_pot_selected = get_potential_by_name(
-            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         results_dict = calc_molecular_dynamics_thermal_expansion_with_lammps(
@@ -77,10 +77,7 @@ class TestMolecularDynamicsThermalExpansion(unittest.TestCase):
 
     def test_calc_thermal_expansion_using_ase(self):
         structure = bulk("Al", cubic=True)
-        cmds = [
-            "pair_style morse/smooth/linear 9.0",
-            "pair_coeff * * 0.5 1.8 2.95"
-        ]
+        cmds = ["pair_style morse/smooth/linear 9.0", "pair_coeff * * 0.5 1.8 2.95"]
         results_dict = calc_molecular_dynamics_thermal_expansion_with_ase(
             structure=structure.copy(),
             ase_calculator=LAMMPSlib(
@@ -95,7 +92,7 @@ class TestMolecularDynamicsThermalExpansion(unittest.TestCase):
             thermo=100,
             timestep=1 * units.fs,
             ttime=100 * units.fs,
-            pfactor=2e6 * units.GPa * (units.fs ** 2),
+            pfactor=2e6 * units.GPa * (units.fs**2),
             externalstress=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
         )
         self.assertTrue(all(np.array(results_dict["temperatures"]) < 600))

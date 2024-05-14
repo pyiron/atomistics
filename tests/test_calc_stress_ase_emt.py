@@ -20,9 +20,11 @@ class TestStess(unittest.TestCase):
             task_dict=task_dict,
             ase_calculator=EMT(),
             ase_optimizer=LBFGS,
-            ase_optimizer_kwargs={"fmax": 0.000001}
+            ase_optimizer_kwargs={"fmax": 0.000001},
         )
-        task_dict = {"calc_stress": result_dict["structure_with_optimized_positions_and_volume"]}
+        task_dict = {
+            "calc_stress": result_dict["structure_with_optimized_positions_and_volume"]
+        }
         stress_post_dict = evaluate_with_ase(
             task_dict=task_dict,
             ase_calculator=EMT(),

@@ -17,12 +17,12 @@ else:
 
 def validate_fitdict(fit_dict):
     lst = [
-        fit_dict['bulkmodul_eq'] > 120,
-        fit_dict['bulkmodul_eq'] < 130,
-        fit_dict['energy_eq'] > -227,
-        fit_dict['energy_eq'] < -226,
-        fit_dict['volume_eq'] > 66,
-        fit_dict['volume_eq'] < 67,
+        fit_dict["bulkmodul_eq"] > 120,
+        fit_dict["bulkmodul_eq"] < 130,
+        fit_dict["energy_eq"] > -227,
+        fit_dict["energy_eq"] < -226,
+        fit_dict["volume_eq"] > 66,
+        fit_dict["volume_eq"] < 67,
     ]
     if not all(lst):
         print(fit_dict)
@@ -37,30 +37,32 @@ class TestEvCurve(unittest.TestCase):
         workflow = EnergyVolumeCurveWorkflow(
             structure=bulk("Al", a=4.045, cubic=True),
             num_points=11,
-            fit_type='polynomial',
+            fit_type="polynomial",
             fit_order=3,
             vol_range=0.05,
-            axes=('x', 'y', 'z'),
+            axes=("x", "y", "z"),
             strains=None,
         )
         task_dict = workflow.generate_structures()
         result_dict = evaluate_with_ase(
             task_dict=task_dict,
             ase_calculator=Abinit(
-                label='abinit_evcurve',
+                label="abinit_evcurve",
                 nbands=32,
                 ecut=10 * Ry,
                 kpts=(3, 3, 3),
                 toldfe=1.0e-2,
                 v8_legacy_format=False,
-            )
+            ),
         )
         fit_dict = workflow.analyse_structures(output_dict=result_dict)
         thermal_properties_dict = workflow.get_thermal_properties(
-            temperatures=[100, 1000],
-            output_keys=["temperatures", "volumes"]
+            temperatures=[100, 1000], output_keys=["temperatures", "volumes"]
         )
-        temperatures_ev, volumes_ev = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
+        temperatures_ev, volumes_ev = (
+            thermal_properties_dict["temperatures"],
+            thermal_properties_dict["volumes"],
+        )
         self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))
         self.assertEqual(len(temperatures_ev), 2)
         self.assertEqual(len(volumes_ev), 2)

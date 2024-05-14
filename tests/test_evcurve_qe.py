@@ -15,12 +15,12 @@ except ImportError:
 
 def validate_fitdict(fit_dict):
     lst = [
-        fit_dict['bulkmodul_eq'] > 50,
-        fit_dict['bulkmodul_eq'] < 80,
-        fit_dict['energy_eq'] > -2148.2,
-        fit_dict['energy_eq'] < -2148.1,
-        fit_dict['volume_eq'] > 70,
-        fit_dict['volume_eq'] < 72,
+        fit_dict["bulkmodul_eq"] > 50,
+        fit_dict["bulkmodul_eq"] < 80,
+        fit_dict["energy_eq"] > -2148.2,
+        fit_dict["energy_eq"] < -2148.1,
+        fit_dict["volume_eq"] > 70,
+        fit_dict["volume_eq"] < 72,
     ]
     if not all(lst):
         print(fit_dict)
@@ -28,7 +28,8 @@ def validate_fitdict(fit_dict):
 
 
 @unittest.skipIf(
-    skip_quantum_espresso_test, "pwtools is not installed, so the pwtools based quantum espresso tests are skipped."
+    skip_quantum_espresso_test,
+    "pwtools is not installed, so the pwtools based quantum espresso tests are skipped.",
 )
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
@@ -36,10 +37,10 @@ class TestEvCurve(unittest.TestCase):
         workflow = EnergyVolumeCurveWorkflow(
             structure=bulk("Al", a=4.15, cubic=True),
             num_points=7,
-            fit_type='polynomial',
+            fit_type="polynomial",
             fit_order=3,
             vol_range=0.05,
-            axes=('x', 'y', 'z'),
+            axes=("x", "y", "z"),
             strains=None,
         )
         task_dict = workflow.generate_structures()

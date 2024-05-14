@@ -28,7 +28,7 @@ class TestPhonons(unittest.TestCase):
             task_dict=task_dict,
             ase_calculator=ase_calculator,
             ase_optimizer=LBFGS,
-            ase_optimizer_kwargs={"fmax": 0.001}
+            ase_optimizer_kwargs={"fmax": 0.001},
         )
         workflow = PhonopyWorkflow(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
@@ -47,10 +47,10 @@ class TestPhonons(unittest.TestCase):
         phonopy_dict = workflow.analyse_structures(output_dict=result_dict)
         mesh_dict, dos_dict = phonopy_dict["mesh_dict"], phonopy_dict["total_dos_dict"]
         self.assertEqual((324, 324), workflow.get_hesse_matrix().shape)
-        self.assertTrue('qpoints' in mesh_dict.keys())
-        self.assertTrue('weights' in mesh_dict.keys())
-        self.assertTrue('frequencies' in mesh_dict.keys())
-        self.assertTrue('eigenvectors' in mesh_dict.keys())
-        self.assertTrue('group_velocities' in mesh_dict.keys())
-        self.assertTrue('frequency_points' in dos_dict.keys())
-        self.assertTrue('total_dos' in dos_dict.keys())
+        self.assertTrue("qpoints" in mesh_dict.keys())
+        self.assertTrue("weights" in mesh_dict.keys())
+        self.assertTrue("frequencies" in mesh_dict.keys())
+        self.assertTrue("eigenvectors" in mesh_dict.keys())
+        self.assertTrue("group_velocities" in mesh_dict.keys())
+        self.assertTrue("frequency_points" in dos_dict.keys())
+        self.assertTrue("total_dos" in dos_dict.keys())

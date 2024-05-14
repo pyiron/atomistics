@@ -12,9 +12,7 @@ from atomistics.workflows.phonons.helper import (
 )
 
 try:
-    from atomistics.calculators import (
-        evaluate_with_lammps, get_potential_by_name
-    )
+    from atomistics.calculators import evaluate_with_lammps, get_potential_by_name
 
     skip_lammps_test = False
 except ImportError:
@@ -28,7 +26,7 @@ class TestPhonons(unittest.TestCase):
     def test_calc_phonons(self):
         structure = bulk("Al", cubic=True)
         df_pot_selected = get_potential_by_name(
-            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         result_dict = evaluate_with_lammps(
@@ -54,14 +52,17 @@ class TestPhonons(unittest.TestCase):
             number_of_snapshots=None,
         )
         mesh_dict, dos_dict = phonopy_dict["mesh_dict"], phonopy_dict["total_dos_dict"]
-        self.assertEqual((324, 324), get_hesse_matrix(force_constants=phonopy_obj.force_constants).shape)
-        self.assertTrue('qpoints' in mesh_dict.keys())
-        self.assertTrue('weights' in mesh_dict.keys())
-        self.assertTrue('frequencies' in mesh_dict.keys())
-        self.assertTrue('eigenvectors' in mesh_dict.keys())
-        self.assertTrue('group_velocities' in mesh_dict.keys())
-        self.assertTrue('frequency_points' in dos_dict.keys())
-        self.assertTrue('total_dos' in dos_dict.keys())
+        self.assertEqual(
+            (324, 324),
+            get_hesse_matrix(force_constants=phonopy_obj.force_constants).shape,
+        )
+        self.assertTrue("qpoints" in mesh_dict.keys())
+        self.assertTrue("weights" in mesh_dict.keys())
+        self.assertTrue("frequencies" in mesh_dict.keys())
+        self.assertTrue("eigenvectors" in mesh_dict.keys())
+        self.assertTrue("group_velocities" in mesh_dict.keys())
+        self.assertTrue("frequency_points" in dos_dict.keys())
+        self.assertTrue("total_dos" in dos_dict.keys())
         thermal_dict = get_thermal_properties(
             phonopy=phonopy_obj,
             t_min=1,
@@ -73,7 +74,13 @@ class TestPhonons(unittest.TestCase):
             band_indices=None,
             is_projection=False,
         )
-        for key in ["temperatures", "free_energy", "volumes", "entropy", "heat_capacity"]:
+        for key in [
+            "temperatures",
+            "free_energy",
+            "volumes",
+            "entropy",
+            "heat_capacity",
+        ]:
             self.assertTrue(len(thermal_dict[key]), 31)
         self.assertEqual(thermal_dict["temperatures"][0], 1.0)
         self.assertEqual(thermal_dict["temperatures"][-1], 1501.0)
@@ -103,7 +110,7 @@ class TestPhonons(unittest.TestCase):
             pretend_real=False,
             band_indices=None,
             is_projection=False,
-            output_keys=["temperatures", "free_energy"]
+            output_keys=["temperatures", "free_energy"],
         )
         self.assertEqual(len(thermal_dict.keys()), 2)
         self.assertEqual(thermal_dict["temperatures"][0], 1.0)

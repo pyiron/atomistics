@@ -16,14 +16,14 @@ class TestElastic(unittest.TestCase):
             task_dict=task_dict,
             ase_calculator=EMT(),
             ase_optimizer=LBFGS,
-            ase_optimizer_kwargs={"fmax": 0.000001}
+            ase_optimizer_kwargs={"fmax": 0.000001},
         )
         workflow = ElasticMatrixWorkflow(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             num_of_point=5,
             eps_range=0.005,
             sqrt_eta=True,
-            fit_order=2
+            fit_order=2,
         )
         task_dict = workflow.generate_structures()
         result_dict = evaluate_with_ase(task_dict=task_dict, ase_calculator=EMT())

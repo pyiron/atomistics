@@ -11,7 +11,7 @@ try:
         calc_molecular_dynamics_npt_with_lammps,
         calc_molecular_dynamics_nph_with_lammps,
         calc_molecular_dynamics_langevin_with_lammps,
-        get_potential_by_name
+        get_potential_by_name,
     )
 
     skip_lammps_test = False
@@ -26,7 +26,7 @@ class TestLammpsMD(unittest.TestCase):
     def test_lammps_md_nvt_all(self):
         structure = bulk("Al", cubic=True).repeat([2, 2, 2])
         df_pot_selected = get_potential_by_name(
-            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         result_dict = calc_molecular_dynamics_nvt_with_lammps(
@@ -46,9 +46,9 @@ class TestLammpsMD(unittest.TestCase):
         self.assertEqual(result_dict["velocities"].shape, (10, 32, 3))
         self.assertEqual(result_dict["cell"].shape, (10, 3, 3))
         self.assertEqual(result_dict["forces"].shape, (10, 32, 3))
-        self.assertEqual(result_dict["temperature"].shape, (10, ))
-        self.assertEqual(result_dict["energy_pot"].shape, (10, ))
-        self.assertEqual(result_dict["energy_tot"].shape, (10, ))
+        self.assertEqual(result_dict["temperature"].shape, (10,))
+        self.assertEqual(result_dict["energy_pot"].shape, (10,))
+        self.assertEqual(result_dict["energy_tot"].shape, (10,))
         self.assertEqual(result_dict["pressure"].shape, (10, 3, 3))
         self.assertTrue(result_dict["temperature"][-1] > 90)
         self.assertTrue(result_dict["temperature"][-1] < 110)
@@ -56,7 +56,7 @@ class TestLammpsMD(unittest.TestCase):
     def test_lammps_md_nvt_select(self):
         structure = bulk("Al", cubic=True).repeat([2, 2, 2])
         df_pot_selected = get_potential_by_name(
-            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         result_dict = calc_molecular_dynamics_nvt_with_lammps(
@@ -74,14 +74,14 @@ class TestLammpsMD(unittest.TestCase):
             output_keys=("temperature",),
         )
         self.assertEqual(len(result_dict.keys()), 1)
-        self.assertEqual(result_dict["temperature"].shape, (10, ))
+        self.assertEqual(result_dict["temperature"].shape, (10,))
         self.assertTrue(result_dict["temperature"][-1] > 90)
         self.assertTrue(result_dict["temperature"][-1] < 110)
 
     def test_lammps_md_npt_all(self):
         structure = bulk("Al", cubic=True).repeat([2, 2, 2])
         df_pot_selected = get_potential_by_name(
-            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         result_dict = calc_molecular_dynamics_npt_with_lammps(
@@ -104,9 +104,9 @@ class TestLammpsMD(unittest.TestCase):
         self.assertEqual(result_dict["velocities"].shape, (10, 32, 3))
         self.assertEqual(result_dict["cell"].shape, (10, 3, 3))
         self.assertEqual(result_dict["forces"].shape, (10, 32, 3))
-        self.assertEqual(result_dict["temperature"].shape, (10, ))
-        self.assertEqual(result_dict["energy_pot"].shape, (10, ))
-        self.assertEqual(result_dict["energy_tot"].shape, (10, ))
+        self.assertEqual(result_dict["temperature"].shape, (10,))
+        self.assertEqual(result_dict["energy_pot"].shape, (10,))
+        self.assertEqual(result_dict["energy_tot"].shape, (10,))
         self.assertEqual(result_dict["pressure"].shape, (10, 3, 3))
         self.assertTrue(result_dict["temperature"][-1] > 90)
         self.assertTrue(result_dict["temperature"][-1] < 110)
@@ -114,7 +114,7 @@ class TestLammpsMD(unittest.TestCase):
     def test_lammps_md_nph_all(self):
         structure = bulk("Al", cubic=True).repeat([2, 2, 2])
         df_pot_selected = get_potential_by_name(
-            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         result_dict = calc_molecular_dynamics_nph_with_lammps(
@@ -135,9 +135,9 @@ class TestLammpsMD(unittest.TestCase):
         self.assertEqual(result_dict["velocities"].shape, (10, 32, 3))
         self.assertEqual(result_dict["cell"].shape, (10, 3, 3))
         self.assertEqual(result_dict["forces"].shape, (10, 32, 3))
-        self.assertEqual(result_dict["temperature"].shape, (10, ))
-        self.assertEqual(result_dict["energy_pot"].shape, (10, ))
-        self.assertEqual(result_dict["energy_tot"].shape, (10, ))
+        self.assertEqual(result_dict["temperature"].shape, (10,))
+        self.assertEqual(result_dict["energy_pot"].shape, (10,))
+        self.assertEqual(result_dict["energy_tot"].shape, (10,))
         self.assertEqual(result_dict["pressure"].shape, (10, 3, 3))
         self.assertTrue(result_dict["temperature"][-1] > 90)
         self.assertTrue(result_dict["temperature"][-1] < 110)
@@ -145,7 +145,7 @@ class TestLammpsMD(unittest.TestCase):
     def test_lammps_md_langevin_all(self):
         structure = bulk("Al", cubic=True).repeat([2, 2, 2])
         df_pot_selected = get_potential_by_name(
-            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         result_dict = calc_molecular_dynamics_langevin_with_lammps(
@@ -165,16 +165,18 @@ class TestLammpsMD(unittest.TestCase):
         self.assertEqual(result_dict["velocities"].shape, (10, 32, 3))
         self.assertEqual(result_dict["cell"].shape, (10, 3, 3))
         self.assertEqual(result_dict["forces"].shape, (10, 32, 3))
-        self.assertEqual(result_dict["temperature"].shape, (10, ))
-        self.assertEqual(result_dict["energy_pot"].shape, (10, ))
-        self.assertEqual(result_dict["energy_tot"].shape, (10, ))
+        self.assertEqual(result_dict["temperature"].shape, (10,))
+        self.assertEqual(result_dict["energy_pot"].shape, (10,))
+        self.assertEqual(result_dict["energy_tot"].shape, (10,))
         self.assertEqual(result_dict["pressure"].shape, (10, 3, 3))
         self.assertTrue(result_dict["temperature"][-1] > 90)
         self.assertTrue(result_dict["temperature"][-1] < 130)
 
     def test_calc_molecular_dynamics_signature(self):
         self.assertEqual(
-            inspect.signature(calc_molecular_dynamics_nvt_with_lammps).parameters["output_keys"].default,
+            inspect.signature(calc_molecular_dynamics_nvt_with_lammps)
+            .parameters["output_keys"]
+            .default,
             (
                 "positions",
                 "cell",
@@ -185,6 +187,5 @@ class TestLammpsMD(unittest.TestCase):
                 "pressure",
                 "velocities",
                 "volume",
-            )
-
+            ),
         )
