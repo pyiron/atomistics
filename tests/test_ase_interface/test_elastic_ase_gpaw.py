@@ -23,18 +23,20 @@ class TestElastic(unittest.TestCase):
             num_of_point=5,
             eps_range=0.05,
             sqrt_eta=True,
-            fit_order=2
+            fit_order=2,
         )
         task_dict = workflow.generate_structures()
         result_dict = evaluate_with_ase(
             task_dict=task_dict,
-            ase_calculator=GPAW(
-                xc="PBE",
-                mode=PW(300),
-                kpts=(3, 3, 3)
-            )
+            ase_calculator=GPAW(xc="PBE", mode=PW(300), kpts=(3, 3, 3)),
         )
         elastic_dict = workflow.analyse_structures(output_dict=result_dict)
-        self.assertTrue(np.isclose(elastic_dict["elastic_matrix"][0, 0], 125.66807354, atol=1e-04))
-        self.assertTrue(np.isclose(elastic_dict["elastic_matrix"][0, 1], 68.41418321, atol=1e-04))
-        self.assertTrue(np.isclose(elastic_dict["elastic_matrix"][3, 3], 99.29916329, atol=1e-04))
+        self.assertTrue(
+            np.isclose(elastic_dict["elastic_matrix"][0, 0], 125.66807354, atol=1e-04)
+        )
+        self.assertTrue(
+            np.isclose(elastic_dict["elastic_matrix"][0, 1], 68.41418321, atol=1e-04)
+        )
+        self.assertTrue(
+            np.isclose(elastic_dict["elastic_matrix"][3, 3], 99.29916329, atol=1e-04)
+        )

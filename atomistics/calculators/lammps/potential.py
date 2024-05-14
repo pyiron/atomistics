@@ -290,18 +290,18 @@ def update_potential_paths(
         ]
         potential_dict = {os.path.basename(f): f for f in potential_file_path_lst}
         potential_commands = []
-        for l in row.Config:
-            l = l.replace("\n", "")
+        for line in row.Config:
+            line = line.replace("\n", "")
             for key, value in potential_dict.items():
-                l = l.replace(key, value)
-            potential_commands.append(l)
+                line = line.replace(key, value)
+            potential_commands.append(line)
         config_lst.append(potential_commands)
     df_pot["Config"] = config_lst
     return df_pot
 
 
 def get_resource_path_from_conda(
-    env_variables: tuple[str] = ("CONDA_PREFIX", "CONDA_DIR")
+    env_variables: tuple[str] = ("CONDA_PREFIX", "CONDA_DIR"),
 ) -> str:
     env = os.environ
     for conda_var in env_variables:

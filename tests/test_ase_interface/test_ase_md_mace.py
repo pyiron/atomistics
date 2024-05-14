@@ -19,10 +19,7 @@ class TestASEMD(unittest.TestCase):
     def test_ase_langevin(self):
         structure = bulk("Al", cubic=True).repeat([2, 2, 2])
         ase_calculator = mace_mp(
-            model="medium",
-            dispersion=False,
-            default_dtype="float32",
-            device='cpu'
+            model="medium", dispersion=False, default_dtype="float32", device="cpu"
         )
         result_dict = calc_molecular_dynamics_langevin_with_ase(
             structure=structure,
@@ -37,9 +34,9 @@ class TestASEMD(unittest.TestCase):
         self.assertEqual(result_dict["velocities"].shape, (10, 32, 3))
         self.assertEqual(result_dict["cell"].shape, (10, 3, 3))
         self.assertEqual(result_dict["forces"].shape, (10, 32, 3))
-        self.assertEqual(result_dict["temperature"].shape, (10, ))
-        self.assertEqual(result_dict["energy_pot"].shape, (10, ))
-        self.assertEqual(result_dict["energy_tot"].shape, (10, ))
+        self.assertEqual(result_dict["temperature"].shape, (10,))
+        self.assertEqual(result_dict["energy_pot"].shape, (10,))
+        self.assertEqual(result_dict["energy_tot"].shape, (10,))
         self.assertEqual(result_dict["pressure"].shape, (10, 3, 3))
         self.assertTrue(result_dict["temperature"][-1] > 25)
         self.assertTrue(result_dict["temperature"][-1] < 75)

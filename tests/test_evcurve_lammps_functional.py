@@ -11,9 +11,7 @@ from atomistics.workflows.evcurve.helper import (
 
 
 try:
-    from atomistics.calculators import (
-        evaluate_with_lammps, get_potential_by_name
-    )
+    from atomistics.calculators import evaluate_with_lammps, get_potential_by_name
 
     skip_lammps_test = False
 except ImportError:
@@ -27,7 +25,7 @@ class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve_functional(self):
         structure = bulk("Al", cubic=True)
         df_pot_selected = get_potential_by_name(
-            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         result_dict = evaluate_with_lammps(
@@ -39,7 +37,7 @@ class TestEvCurve(unittest.TestCase):
             vol_range=0.05,
             num_points=11,
             strain_lst=None,
-            axes=('x', 'y', 'z'),
+            axes=("x", "y", "z"),
         )
         result_dict = evaluate_with_lammps(
             task_dict={"calc_energy": structure_dict},
@@ -49,7 +47,7 @@ class TestEvCurve(unittest.TestCase):
             output_dict=result_dict,
             structure_dict=structure_dict,
             fit_type="polynomial",
-            fit_order=3
+            fit_order=3,
         )
         thermal_properties_dict = get_thermal_properties(
             fit_dict=fit_dict,
@@ -61,10 +59,13 @@ class TestEvCurve(unittest.TestCase):
             constant_volume=False,
             output_keys=["temperatures", "volumes"],
         )
-        temperatures_ev, volumes_ev = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
-        self.assertAlmostEqual(fit_dict['volume_eq'], 66.43019790724685)
-        self.assertAlmostEqual(fit_dict['bulkmodul_eq'], 77.72501703646152)
-        self.assertAlmostEqual(fit_dict['b_prime_eq'], 1.2795467367276832)
+        temperatures_ev, volumes_ev = (
+            thermal_properties_dict["temperatures"],
+            thermal_properties_dict["volumes"],
+        )
+        self.assertAlmostEqual(fit_dict["volume_eq"], 66.43019790724685)
+        self.assertAlmostEqual(fit_dict["bulkmodul_eq"], 77.72501703646152)
+        self.assertAlmostEqual(fit_dict["b_prime_eq"], 1.2795467367276832)
         self.assertEqual(len(temperatures_ev), 2)
         self.assertEqual(len(volumes_ev), 2)
         self.assertTrue(volumes_ev[0] < volumes_ev[-1])

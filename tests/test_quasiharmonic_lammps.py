@@ -7,9 +7,7 @@ import unittest
 from atomistics.workflows import QuasiHarmonicWorkflow, optimize_positions_and_volume
 
 try:
-    from atomistics.calculators import (
-        evaluate_with_lammps, get_potential_by_name
-    )
+    from atomistics.calculators import evaluate_with_lammps, get_potential_by_name
 
     skip_lammps_test = False
 except ImportError:
@@ -23,7 +21,7 @@ class TestPhonons(unittest.TestCase):
     def test_calc_phonons(self):
         structure = bulk("Al", cubic=True)
         df_pot_selected = get_potential_by_name(
-            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         task_dict = optimize_positions_and_volume(structure=structure)
@@ -47,9 +45,19 @@ class TestPhonons(unittest.TestCase):
             task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
-        eng_internal_dict, phonopy_collect_dict = workflow.analyse_structures(output_dict=result_dict)
-        tp_collect_dict = workflow.get_thermal_properties(t_min=1, t_max=1500, t_step=50, temperatures=None)
-        for key in ["temperatures", "free_energy", "volumes", "entropy", "heat_capacity"]:
+        eng_internal_dict, phonopy_collect_dict = workflow.analyse_structures(
+            output_dict=result_dict
+        )
+        tp_collect_dict = workflow.get_thermal_properties(
+            t_min=1, t_max=1500, t_step=50, temperatures=None
+        )
+        for key in [
+            "temperatures",
+            "free_energy",
+            "volumes",
+            "entropy",
+            "heat_capacity",
+        ]:
             self.assertTrue(len(tp_collect_dict[key]), 31)
         self.assertEqual(tp_collect_dict["temperatures"][0], 1.0)
         self.assertEqual(tp_collect_dict["temperatures"][-1], 1501.0)
@@ -72,15 +80,21 @@ class TestPhonons(unittest.TestCase):
         thermal_properties_dict = workflow.get_thermal_properties(
             temperatures=[100, 1000],
             output_keys=["temperatures", "volumes"],
-            quantum_mechanical=True
+            quantum_mechanical=True,
         )
-        temperatures_qh_qm, volumes_qh_qm = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
+        temperatures_qh_qm, volumes_qh_qm = (
+            thermal_properties_dict["temperatures"],
+            thermal_properties_dict["volumes"],
+        )
         thermal_properties_dict = workflow.get_thermal_properties(
             temperatures=[100, 1000],
             output_keys=["temperatures", "volumes"],
-            quantum_mechanical=False
+            quantum_mechanical=False,
         )
-        temperatures_qh_cl, volumes_qh_cl = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
+        temperatures_qh_cl, volumes_qh_cl = (
+            thermal_properties_dict["temperatures"],
+            thermal_properties_dict["volumes"],
+        )
         self.assertEqual(len(eng_internal_dict.keys()), 11)
         self.assertEqual(len(tp_collect_dict.keys()), 5)
         self.assertEqual(len(temperatures_qh_qm), 2)

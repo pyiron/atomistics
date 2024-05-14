@@ -41,8 +41,8 @@ def lammps_run(
         lmp.interactive_lib_command(c)
 
     if input_template is not None:
-        for l in input_template.split("\n"):
-            lmp.interactive_lib_command(l)
+        for line in input_template.split("\n"):
+            lmp.interactive_lib_command(line)
 
     return lmp
 
@@ -131,8 +131,8 @@ def lammps_thermal_expansion_loop(
             Pstop=Pstop,
             Pdamp=Pdamp,
         )
-        for l in run_str_rendered.split("\n"):
-            lmp_instance.interactive_lib_command(l)
+        for line in run_str_rendered.split("\n"):
+            lmp_instance.interactive_lib_command(line)
         volume_md_lst.append(lmp_instance.interactive_volume_getter())
         temperature_md_lst.append(lmp_instance.interactive_temperatures_getter())
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)

@@ -5,7 +5,7 @@ that evaluate a task dictionary.
 
 from __future__ import annotations
 
-from typing import NewType, Union, Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from atomistics.calculators.interface import TaskEnum, TaskOutputEnum
 
@@ -13,9 +13,7 @@ if TYPE_CHECKING:
     from ase import Atoms
     from atomistics.calculators.interface import (
         TaskName,
-        TaskSpec,
         TaskDict,
-        TaskResults,
         ResultsDict,
         SimpleEvaluator,
     )

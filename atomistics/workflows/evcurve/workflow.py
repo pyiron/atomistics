@@ -9,7 +9,6 @@ from atomistics.workflows.evcurve.debye import (
     OutputThermodynamic,
 )
 from atomistics.workflows.evcurve.helper import (
-    get_volume_lst,
     generate_structures_helper,
     analyse_structures_helper,
 )

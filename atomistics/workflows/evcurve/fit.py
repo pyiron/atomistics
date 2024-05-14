@@ -135,7 +135,8 @@ def fit_leastsq(
     """
     # http://stackoverflow.com/questions/14581358/getting-standard-errors-on-fitted-parameters-using-the-optimize-leastsq-method-i
 
-    errfunc = lambda p, x, y, fittype: fitfunction(p, x, fittype) - y
+    def errfunc(p, x, y, fittype):
+        return fitfunction(p, x, fittype) - y
 
     pfit, pcov, infodict, errmsg, success = scipy.optimize.leastsq(
         errfunc, p0, args=(datax, datay, fittype), full_output=1, epsfcn=0.0001
@@ -153,7 +154,7 @@ def fit_leastsq(
     for i in range(len(pfit)):
         try:
             error.append(np.absolute(pcov[i][i]) ** 0.5)
-        except:
+        except TypeError:
             error.append(0.00)
     pfit_leastsq = pfit
     perr_leastsq = np.array(error)

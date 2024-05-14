@@ -12,9 +12,7 @@ from atomistics.workflows.quasiharmonic import (
 )
 
 try:
-    from atomistics.calculators import (
-        evaluate_with_lammps, get_potential_by_name
-    )
+    from atomistics.calculators import evaluate_with_lammps, get_potential_by_name
 
     skip_lammps_test = False
 except ImportError:
@@ -28,25 +26,30 @@ class TestPhonons(unittest.TestCase):
     def test_calc_phonons(self):
         structure = bulk("Al", cubic=True)
         df_pot_selected = get_potential_by_name(
-            potential_name='1999--Mishin-Y--Al--LAMMPS--ipr1',
+            potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         result_dict = evaluate_with_lammps(
             task_dict={"optimize_positions_and_volume": structure},
             potential_dataframe=df_pot_selected,
         )
-        phonopy_dict, repeat_vector, structure_energy_dict, structure_forces_dict = generate_structures_helper(
-            structure=result_dict["structure_with_optimized_positions_and_volume"],
-            vol_range=0.05,
-            num_points=11,
-            strain_lst=None,
-            displacement=0.01,
-            number_of_snapshots=None,
-            interaction_range=10,
-            factor=VaspToTHz,
+        phonopy_dict, repeat_vector, structure_energy_dict, structure_forces_dict = (
+            generate_structures_helper(
+                structure=result_dict["structure_with_optimized_positions_and_volume"],
+                vol_range=0.05,
+                num_points=11,
+                strain_lst=None,
+                displacement=0.01,
+                number_of_snapshots=None,
+                interaction_range=10,
+                factor=VaspToTHz,
+            )
         )
         result_dict = evaluate_with_lammps(
-            task_dict={"calc_energy": structure_energy_dict, "calc_forces": structure_forces_dict},
+            task_dict={
+                "calc_energy": structure_energy_dict,
+                "calc_forces": structure_forces_dict,
+            },
             potential_dataframe=df_pot_selected,
         )
         eng_internal_dict, phonopy_collect_dict = analyse_structures_helper(
@@ -67,7 +70,13 @@ class TestPhonons(unittest.TestCase):
             t_step=50,
             temperatures=None,
         )
-        for key in ["temperatures", "free_energy", "volumes", "entropy", "heat_capacity"]:
+        for key in [
+            "temperatures",
+            "free_energy",
+            "volumes",
+            "entropy",
+            "heat_capacity",
+        ]:
             self.assertTrue(len(tp_collect_dict[key]), 31)
         self.assertEqual(tp_collect_dict["temperatures"][0], 1.0)
         self.assertEqual(tp_collect_dict["temperatures"][-1], 1501.0)
@@ -98,7 +107,10 @@ class TestPhonons(unittest.TestCase):
             output_keys=["free_energy", "temperatures", "volumes"],
             quantum_mechanical=True,
         )
-        temperatures_qh_qm, volumes_qh_qm = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
+        temperatures_qh_qm, volumes_qh_qm = (
+            thermal_properties_dict["temperatures"],
+            thermal_properties_dict["volumes"],
+        )
         thermal_properties_dict = get_thermal_properties(
             eng_internal_dict=eng_internal_dict,
             phonopy_dict=phonopy_dict,
@@ -110,7 +122,10 @@ class TestPhonons(unittest.TestCase):
             output_keys=["temperatures", "volumes"],
             quantum_mechanical=False,
         )
-        temperatures_qh_cl, volumes_qh_cl = thermal_properties_dict["temperatures"], thermal_properties_dict["volumes"]
+        temperatures_qh_cl, volumes_qh_cl = (
+            thermal_properties_dict["temperatures"],
+            thermal_properties_dict["volumes"],
+        )
         self.assertEqual(len(eng_internal_dict.keys()), 11)
         self.assertEqual(len(tp_collect_dict.keys()), 5)
         self.assertEqual(len(temperatures_qh_qm), 2)

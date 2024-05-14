@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import NewType, Union, Any, TYPE_CHECKING
+from typing import Union, Any, TYPE_CHECKING
 
 # best would be StrEnum from py3.11
 import sys
