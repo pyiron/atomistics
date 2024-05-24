@@ -6,7 +6,7 @@ dependencies:
 - scipy =1.13.1
 - spglib =2.4.0
 - phonopy =2.23.1
-- structuretoolkit =0.0.22
+- structuretoolkit =0.0.23
 - seekpath =2.1.0
 - gpaw =24.1.0
 - lammps =2024.02.07
