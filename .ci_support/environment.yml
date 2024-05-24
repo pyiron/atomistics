@@ -4,9 +4,9 @@ dependencies:
 - ase =3.22.1
 - coverage
 - numpy =1.26.4
-- scipy =1.13.0
+- scipy =1.13.1
 - spglib =2.4.0
 - phonopy =2.23.1
-- structuretoolkit =0.0.22
+- structuretoolkit =0.0.23
 - seekpath =2.1.0
 - tqdm =4.66.4
