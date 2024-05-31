@@ -6,6 +6,6 @@ dependencies:
 - gpaw =24.1.0
 - lammps =2024.02.07
 - pandas =2.2.2
-- pylammpsmpi =0.2.18
+- pylammpsmpi =0.2.19
 - jinja2 =3.1.4
 - dynaphopy =1.17.15
