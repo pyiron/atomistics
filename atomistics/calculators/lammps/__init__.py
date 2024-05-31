@@ -19,6 +19,7 @@ try:
     from atomistics.calculators.lammps.phonon import (
         calc_molecular_dynamics_phonons_with_lammps,
     )
+
     __all__ = [
         calc_molecular_dynamics_phonons_with_lammps,
     ]
