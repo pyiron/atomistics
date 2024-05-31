@@ -19,11 +19,14 @@ try:
     from atomistics.calculators.lammps.phonon import (
         calc_molecular_dynamics_phonons_with_lammps,
     )
+    __all__ = [
+        calc_molecular_dynamics_phonons_with_lammps,
+    ]
 except ImportError:
-    pass
+    __all__ = []
 
 
-__all__ = [
+__all__ += [
     calc_molecular_dynamics_thermal_expansion_with_lammps,
     calc_molecular_dynamics_nph_with_lammps,
     calc_molecular_dynamics_npt_with_lammps,
@@ -36,5 +39,4 @@ __all__ = [
     optimize_positions_with_lammps,
     get_potential_dataframe,
     get_potential_by_name,
-    calc_molecular_dynamics_phonons_with_lammps,
 ]
