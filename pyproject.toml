@@ -46,12 +46,12 @@ gpaw = [
     "gpaw==24.1.0",
 ]
 lammps = [
-    "pylammpsmpi==0.2.18",
+    "pylammpsmpi==0.2.19",
     "jinja2==3.1.4",
     "pandas==2.2.2",
 ]
 lammps_phonons = [
-    "pylammpsmpi==0.2.18",
+    "pylammpsmpi==0.2.19",
     "jinja2==3.1.4",
     "pandas==2.2.2",
     "dynaphopy==1.17.15",
