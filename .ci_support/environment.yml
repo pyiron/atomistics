@@ -1,7 +1,7 @@
 channels:
 - conda-forge
 dependencies:
-- ase =3.22.1
+- ase =3.23.0
 - coverage
 - numpy =1.26.4
 - scipy =1.13.1
