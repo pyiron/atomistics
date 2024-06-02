@@ -1,7 +1,7 @@
 import shutil
 
 from ase.build import bulk
-from ase.calculators.espresso import Espresso
+from ase.calculators.espresso import Espresso, EspressoProfile
 import unittest
 
 from atomistics.calculators import evaluate_with_ase
@@ -53,6 +53,10 @@ class TestEvCurve(unittest.TestCase):
                 tstress=True,
                 tprnfor=True,
                 kpts=(3, 3, 3),
+                profile=EspressoProfile(
+                    command="pw.x",
+                    pseudo_dir="tests/static/qe",
+                ),
             ),
         )
         fit_dict = workflow.analyse_structures(output_dict=result_dict)

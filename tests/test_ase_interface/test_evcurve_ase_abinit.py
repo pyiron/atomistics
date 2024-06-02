@@ -1,7 +1,8 @@
+import os
 import shutil
 
 from ase.build import bulk
-from ase.calculators.abinit import Abinit
+from ase.calculators.abinit import Abinit, AbinitProfile
 from ase.units import Ry
 import unittest
 
@@ -47,12 +48,16 @@ class TestEvCurve(unittest.TestCase):
         result_dict = evaluate_with_ase(
             task_dict=task_dict,
             ase_calculator=Abinit(
-                label="abinit_evcurve",
                 nbands=32,
                 ecut=10 * Ry,
                 kpts=(3, 3, 3),
                 toldfe=1.0e-2,
-                v8_legacy_format=False,
+                profile=AbinitProfile(
+                    command="abinit",
+                    pp_paths=os.path.join(
+                        os.environ["CONDA_PREFIX"], "share/abinit/LDA_FHI"
+                    ),
+                ),
             ),
         )
         fit_dict = workflow.analyse_structures(output_dict=result_dict)
