@@ -54,8 +54,8 @@ class TestEvCurve(unittest.TestCase):
                 toldfe=1.0e-2,
                 v8_legacy_format=False,
                 profile=AbinitProfile(
-                    command='abinit', 
-                    pp_paths='/usr/share/miniconda3/envs/my-env/share/abinit/LDA_FHI',
+                    command="abinit",
+                    pp_paths="/usr/share/miniconda3/envs/my-env/share/abinit/LDA_FHI",
                 ),
             ),
         )
