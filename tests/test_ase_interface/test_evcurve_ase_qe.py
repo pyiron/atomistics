@@ -54,7 +54,7 @@ class TestEvCurve(unittest.TestCase):
                 tprnfor=True,
                 kpts=(3, 3, 3),
                 profile=EspressoProfile(
-                    command=['pw.x'], 
+                    command=["pw.x"],
                     pseudo_dir="tests/static/qe",
                 ),
             ),
