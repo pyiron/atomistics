@@ -47,12 +47,10 @@ class TestEvCurve(unittest.TestCase):
         result_dict = evaluate_with_ase(
             task_dict=task_dict,
             ase_calculator=Abinit(
-                label="abinit_evcurve",
                 nbands=32,
                 ecut=10 * Ry,
                 kpts=(3, 3, 3),
                 toldfe=1.0e-2,
-                v8_legacy_format=False,
                 profile=AbinitProfile(
                     command="abinit",
                     pp_paths="/usr/share/miniconda3/envs/my-env/share/abinit/LDA_FHI",
