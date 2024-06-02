@@ -1,3 +1,4 @@
+import os
 import shutil
 
 from ase.build import bulk
@@ -53,7 +54,7 @@ class TestEvCurve(unittest.TestCase):
                 toldfe=1.0e-2,
                 profile=AbinitProfile(
                     command="abinit",
-                    pp_paths="/usr/share/miniconda3/envs/my-env/share/abinit/LDA_FHI",
+                    pp_paths=path.join(os.environ["CONDA_PREFIX"], "share/abinit/LDA_FHI"),
                 ),
             ),
         )
