@@ -1,4 +1,4 @@
 channels:
 - conda-forge
 dependencies:
-- matgl =1.1.1
+- matgl =1.1.2
