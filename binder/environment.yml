@@ -3,7 +3,7 @@ channels:
 dependencies:
 - ase =3.23.0
 - numpy =1.26.4
-- scipy =1.13.1
+- scipy =1.14.0
 - spglib =2.4.0
 - phonopy =2.24.3
 - structuretoolkit =0.0.25
