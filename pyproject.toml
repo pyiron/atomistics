@@ -26,7 +26,7 @@ classifiers = [
 dependencies = [
     "ase==3.23.0",
     "numpy==1.26.4",
-    "scipy==1.13.1",
+    "scipy==1.14.0",
     "spglib==2.4.0",
 ]
 dynamic = ["version"]
@@ -40,7 +40,7 @@ Repository = "https://github.com/pyiron/atomistics"
 phonopy = [
     "phonopy==2.24.3",
     "seekpath==2.1.0",
-    "structuretoolkit==0.0.25",
+    "structuretoolkit==0.0.26",
 ]
 gpaw = [
     "gpaw==24.6.0",
