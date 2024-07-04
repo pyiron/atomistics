@@ -1,14 +1,13 @@
+import dynaphopy.dynamics as dyn
+import numpy as np
 import pandas
 from ase.atoms import Atoms
 from dynaphopy.atoms import Structure
-import dynaphopy.dynamics as dyn
-from dynaphopy.power_spectrum import _progress_bar
 from dynaphopy.interface.iofile import get_correct_arrangement
 from dynaphopy.interface.phonopy_link import ForceConstants
+from dynaphopy.power_spectrum import _progress_bar
 
 from atomistics.calculators.lammps.helpers import lammps_run
-
-import numpy as np
 
 
 def generate_pylammps_trajectory(

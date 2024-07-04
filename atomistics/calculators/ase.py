@@ -1,19 +1,20 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+import numpy as np
 from ase import units
+from ase.calculators.calculator import PropertyNotImplementedError
+from ase.constraints import UnitCellFilter
 from ase.md.langevin import Langevin
 from ase.md.npt import NPT
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
-from ase.constraints import UnitCellFilter
-from ase.calculators.calculator import PropertyNotImplementedError
-import numpy as np
-from typing import TYPE_CHECKING
 
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.shared.output import (
-    OutputStatic,
     OutputMolecularDynamics,
+    OutputStatic,
     OutputThermalExpansion,
 )
 from atomistics.shared.thermal_expansion import get_thermal_expansion_output
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.calculators.calculator import Calculator as ASECalculator
     from ase.optimize.optimize import Optimizer
+
     from atomistics.calculators.interface import TaskName
 
 

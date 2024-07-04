@@ -1,6 +1,7 @@
+from typing import List, Optional
+
 import numpy as np
 from ase.atoms import Atoms
-from typing import Optional, List
 
 from atomistics.shared.output import OutputEnergyVolumeCurve
 from atomistics.workflows.evcurve.fit import EnergyVolumeFit

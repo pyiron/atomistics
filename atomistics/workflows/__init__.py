@@ -9,7 +9,6 @@ from atomistics.workflows.structure_optimization import (
     optimize_positions_and_volume,
 )
 
-
 __all__ = [
     ElasticMatrixWorkflow,
     EnergyVolumeCurveWorkflow,

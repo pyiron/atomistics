@@ -1,17 +1,18 @@
-import numpy as np
-from ase.atoms import Atoms
 from collections import OrderedDict
 
+import numpy as np
+from ase.atoms import Atoms
+
 from atomistics.shared.output import OutputEnergyVolumeCurve
-from atomistics.workflows.interface import Workflow
 from atomistics.workflows.evcurve.debye import (
-    get_thermal_properties,
     OutputThermodynamic,
+    get_thermal_properties,
 )
 from atomistics.workflows.evcurve.helper import (
-    generate_structures_helper,
     analyse_structures_helper,
+    generate_structures_helper,
 )
+from atomistics.workflows.interface import Workflow
 
 
 class EnergyVolumeCurveWorkflow(Workflow):

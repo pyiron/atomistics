@@ -1,14 +1,14 @@
 import os
 import subprocess
 
-from ase.atoms import Atoms
 import numpy as np
+from ase.atoms import Atoms
 from ase.io import write
 from pwtools import io
 
 from atomistics.calculators.interface import get_quantities_from_tasks
-from atomistics.shared.output import OutputStatic
 from atomistics.calculators.wrapper import as_task_dict_evaluator
+from atomistics.shared.output import OutputStatic
 
 
 class QEStaticParser(object):

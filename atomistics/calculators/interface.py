@@ -1,8 +1,7 @@
-from enum import Enum
-from typing import Union, Any, TYPE_CHECKING
-
 # best would be StrEnum from py3.11
 import sys
+from enum import Enum
+from typing import TYPE_CHECKING, Any, Union
 
 if sys.version_info.minor < 11:
     # official impl' is not significantly different

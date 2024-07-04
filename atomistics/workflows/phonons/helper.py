@@ -1,12 +1,12 @@
 from typing import Optional
 
-from ase.atoms import Atoms
 import numpy as np
-from phonopy import Phonopy
 import scipy.constants
 import structuretoolkit
+from ase.atoms import Atoms
+from phonopy import Phonopy
 
-from atomistics.shared.output import OutputThermodynamic, OutputPhonons
+from atomistics.shared.output import OutputPhonons, OutputThermodynamic
 from atomistics.workflows.phonons.units import VaspToTHz, kJ_mol_to_eV
 
 

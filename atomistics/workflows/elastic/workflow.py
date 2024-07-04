@@ -1,12 +1,12 @@
-from ase.atoms import Atoms
 import numpy as np
+from ase.atoms import Atoms
 
 from atomistics.shared.output import OutputElastic
-from atomistics.workflows.interface import Workflow
 from atomistics.workflows.elastic.helper import (
-    generate_structures_helper,
     analyse_structures_helper,
+    generate_structures_helper,
 )
+from atomistics.workflows.interface import Workflow
 
 
 class ElasticMatrixWorkflow(Workflow):

@@ -7,9 +7,9 @@ import scipy.constants
 from atomistics.shared.output import OutputElastic
 from atomistics.workflows.elastic.elastic_moduli import ElasticProperties
 from atomistics.workflows.elastic.symmetry import (
-    symmetry_analysis,
-    get_C_from_A2,
     Ls_Dic,
+    get_C_from_A2,
+    symmetry_analysis,
 )
 
 
