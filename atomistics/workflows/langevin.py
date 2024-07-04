@@ -1,9 +1,8 @@
-from ase.atoms import Atoms
 import numpy as np
+from ase.atoms import Atoms
 from scipy.constants import physical_constants
 
 from atomistics.workflows.interface import Workflow
-
 
 KB = physical_constants["Boltzmann constant in eV/K"][0]
 EV_TO_U_ANGSQ_PER_FSSQ = physical_constants["Faraday constant"][0] / 10**7

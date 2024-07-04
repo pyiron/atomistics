@@ -2,7 +2,6 @@ import numpy as np
 import scipy.constants
 import scipy.optimize
 
-
 eV_div_A3_to_GPa = (
     1e21 / scipy.constants.physical_constants["joule-electron volt relationship"][0]
 )

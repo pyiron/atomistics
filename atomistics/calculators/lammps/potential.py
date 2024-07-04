@@ -1,7 +1,8 @@
-from typing import Union
-import pandas
-from pathlib import Path
 import os
+from pathlib import Path
+from typing import Union
+
+import pandas
 from ase.atoms import Atoms
 
 

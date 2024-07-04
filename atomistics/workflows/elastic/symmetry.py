@@ -1,6 +1,6 @@
-from ase.atoms import Atoms
 import numpy as np
 import spglib
+from ase.atoms import Atoms
 
 
 def ase_to_spglib(structure: Atoms) -> tuple:

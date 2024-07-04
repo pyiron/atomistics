@@ -1,42 +1,42 @@
 from __future__ import annotations
 
-import pandas
-from jinja2 import Template
-import numpy as np
 from typing import TYPE_CHECKING
 
+import numpy as np
+import pandas
+from jinja2 import Template
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.interface import get_quantities_from_tasks
+from atomistics.calculators.lammps.commands import (
+    LAMMPS_ENSEMBLE_NPH,
+    LAMMPS_ENSEMBLE_NPT,
+    LAMMPS_ENSEMBLE_NVT,
+    LAMMPS_LANGEVIN,
+    LAMMPS_MINIMIZE,
+    LAMMPS_MINIMIZE_VOLUME,
+    LAMMPS_NVE,
+    LAMMPS_RUN,
+    LAMMPS_THERMO,
+    LAMMPS_THERMO_STYLE,
+    LAMMPS_TIMESTEP,
+    LAMMPS_VELOCITY,
+)
 from atomistics.calculators.lammps.helpers import (
     lammps_calc_md,
     lammps_run,
-    lammps_thermal_expansion_loop,
     lammps_shutdown,
-)
-from atomistics.calculators.lammps.commands import (
-    LAMMPS_THERMO_STYLE,
-    LAMMPS_THERMO,
-    LAMMPS_ENSEMBLE_NPT,
-    LAMMPS_ENSEMBLE_NPH,
-    LAMMPS_ENSEMBLE_NVT,
-    LAMMPS_LANGEVIN,
-    LAMMPS_NVE,
-    LAMMPS_VELOCITY,
-    LAMMPS_TIMESTEP,
-    LAMMPS_MINIMIZE,
-    LAMMPS_RUN,
-    LAMMPS_MINIMIZE_VOLUME,
+    lammps_thermal_expansion_loop,
 )
 from atomistics.calculators.wrapper import as_task_dict_evaluator
+from atomistics.shared.output import OutputMolecularDynamics, OutputStatic
 from atomistics.shared.thermal_expansion import OutputThermalExpansion
-from atomistics.shared.output import OutputStatic, OutputMolecularDynamics
-
 
 if TYPE_CHECKING:
     from ase import Atoms
     from pandas import DataFrame
     from pylammpsmpi import LammpsASELibrary
+
     from atomistics.calculators.interface import TaskName
 
 
