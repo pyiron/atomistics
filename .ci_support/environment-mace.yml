@@ -1,4 +1,4 @@
 channels:
 - conda-forge
 dependencies:
-- pymace =0.3.4
+- pymace =0.3.6
