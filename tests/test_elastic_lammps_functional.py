@@ -56,9 +56,9 @@ class TestElastic(unittest.TestCase):
                         [114.10311701, 60.51102935, 60.51102935, 0.0, 0.0, 0.0],
                         [60.51102935, 114.10311701, 60.51102935, 0.0, 0.0, 0.0],
                         [60.51102935, 60.51102935, 114.10311701, 0.0, 0.0, 0.0],
-                        [0.0, 0.0, 0.0, 51.23853765, 0.0, 0.0],
-                        [0.0, 0.0, 0.0, 0.0, 51.23853765, 0.0],
-                        [0.0, 0.0, 0.0, 0.0, 0.0, 51.23853765],
+                        [0.0, 0.0, 0.0, 31.67489592, 0.0, 0.0],
+                        [0.0, 0.0, 0.0, 0.0, 31.67489592, 0.0],
+                        [0.0, 0.0, 0.0, 0.0, 0.0, 31.67489592],
                     ]
                 ),
             ).all()
@@ -90,14 +90,14 @@ class TestElastic(unittest.TestCase):
                             (-0.0025, -13.439544638502628),
                             (0.0, -13.439999952735112),
                             (0.0024999999999999996, -13.43954822781134),
-                            (0.005, -13.438204192615181),
+                            (0.005, -13.438204192615178),
                         ],
                         [
-                            (-0.005, -13.436741954502294),
-                            (-0.0025, -13.439195465714551),
+                            (-0.005, -13.437971451918395),
+                            (-0.0025, -13.439501038418321),
                             (0.0, -13.439999952735112),
-                            (0.0024999999999999996, -13.439213491269701),
-                            (0.005, -13.436885713447486),
+                            (0.0024999999999999996, -13.439515785430654),
+                            (0.005, -13.438089441277942),
                         ],
                     ]
                 ),
@@ -105,13 +105,13 @@ class TestElastic(unittest.TestCase):
         )
         self.assertTrue(
             np.isclose(
-                sym_dict["A2"], np.array([2.20130388, 1.08985578, 1.91883479])
+                sym_dict["A2"], np.array([[2.20130388, 1.08985578, 1.1861949]])
             ).all()
         )
         self.assertAlmostEqual(elastic_dict["bulkmodul_voigt"], 78.37505857279467)
-        self.assertAlmostEqual(elastic_dict["shearmodul_voigt"], 41.46154012284969)
-        self.assertAlmostEqual(elastic_dict["youngsmodul_voigt"], 105.73882997912072)
-        self.assertAlmostEqual(elastic_dict["poissonsratio_voigt"], 0.2751435386362729)
+        self.assertAlmostEqual(elastic_dict["shearmodul_voigt"], 29.723355082523486)
+        self.assertAlmostEqual(elastic_dict["youngsmodul_voigt"], 79.16270932956571)
+        self.assertAlmostEqual(elastic_dict["poissonsratio_voigt"], 0.3316583728482119)
         self.assertTrue(
             np.isclose(
                 elastic_dict["elastic_matrix_inverse"],
@@ -120,19 +120,19 @@ class TestElastic(unittest.TestCase):
                         [0.01385733, -0.00480214, -0.00480214, 0.0, 0.0, 0.0],
                         [-0.00480214, 0.01385733, -0.00480214, 0.0, 0.0, 0.0],
                         [-0.00480214, -0.00480214, 0.01385733, 0.0, 0.0, 0.0],
-                        [0.0, 0.0, 0.0, 0.01951656, 0.0, 0.0],
-                        [0.0, 0.0, 0.0, 0.0, 0.01951656, 0.0],
-                        [0.0, 0.0, 0.0, 0.0, 0.0, 0.01951656],
+                        [0.0, 0.0, 0.0, 0.03157074, 0.0, 0.0],
+                        [0.0, 0.0, 0.0, 0.0, 0.03157074, 0.0],
+                        [0.0, 0.0, 0.0, 0.0, 0.0, 0.03157074],
                     ]
                 ),
             ).all()
         )
         self.assertAlmostEqual(elastic_dict["bulkmodul_reuss"], 78.37505857279469)
-        self.assertAlmostEqual(elastic_dict["shearmodul_reuss"], 37.54104251720356)
-        self.assertAlmostEqual(elastic_dict["youngsmodul_reuss"], 97.11702764970639)
-        self.assertAlmostEqual(elastic_dict["poissonsratio_reuss"], 0.29347803281170937)
+        self.assertAlmostEqual(elastic_dict["shearmodul_reuss"], 29.524633432574454)
+        self.assertAlmostEqual(elastic_dict["youngsmodul_reuss"], 78.69249533327846)
+        self.assertAlmostEqual(elastic_dict["poissonsratio_reuss"], 0.3326582955380103)
         self.assertAlmostEqual(elastic_dict["bulkmodul_hill"], 78.37505857279467)
-        self.assertAlmostEqual(elastic_dict["shearmodul_hill"], 39.501291320026624)
-        self.assertAlmostEqual(elastic_dict["youngsmodul_hill"], 101.45869947879392)
-        self.assertAlmostEqual(elastic_dict["poissonsratio_hill"], 0.2842453510798992)
-        self.assertAlmostEqual(elastic_dict["AVR"], 4.962492964955925)
+        self.assertAlmostEqual(elastic_dict["shearmodul_hill"], 29.623994257548972)
+        self.assertAlmostEqual(elastic_dict["youngsmodul_hill"], 78.9276905674883)
+        self.assertAlmostEqual(elastic_dict["poissonsratio_hill"], 0.33215814655674686)
+        self.assertAlmostEqual(elastic_dict["AVR"], 0.3354065765429198)
