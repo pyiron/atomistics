@@ -38,7 +38,9 @@ class TestReferenceData(unittest.TestCase):
         al_data = get_chemical_information_from_wolframalpha(chemical_element="Al")
         self.assertEqual(al_data["latticeconstant"], "(404.95, 404.95, 404.95)")
 
-    @unittest.skipIf(lxml_not_available, "lxml is not installed, so the lxml tests are skipped.")
+    @unittest.skipIf(
+        lxml_not_available, "lxml is not installed, so the lxml tests are skipped."
+    )
     def test_get_experimental_elastic_property_wikipedia(self):
         al_data = get_experimental_elastic_property_wikipedia(chemical_symbol="Al")
         self.assertEqual(
