@@ -7,6 +7,7 @@ dependencies:
 - iprpy-data =2023.07.25
 - jinja2 =2.11.3
 - lammps =2022.06.23
+- lxml =4.9.1
 - mendeleev =0.10.0
 - numpy =1.23.5
 - pandas =1.5.3

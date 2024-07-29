@@ -57,6 +57,7 @@ lammps_phonons = [
     "dynaphopy==1.17.16",
 ]
 experimental = [
+    "lxml==5.2.2",
     "mendeleev==0.17.0",
     "pandas==2.2.2",
     "requests==2.32.3",
