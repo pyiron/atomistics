@@ -226,7 +226,7 @@ def _wolframalpha_download():
     result["volume"] = result.apply(
         lambda x: _get_volume(lat_lst=x.latticeconstant, crystal=x.crystal), axis=1
     )
-    data_path = os.path.join(os.path.dirname(__file__), "..", "data")
+    data_path = os.path.join(os.path.dirname(__file__), "data")
     os.makedirs(data_path, exist_ok=True)
     result.to_csv(os.path.join(data_path, "wolfram.csv"))
 
@@ -257,7 +257,7 @@ def get_chemical_information_from_wolframalpha(chemical_element):
             mass: average atomic weight in atomic mass units
             volume: Volume
     """
-    filename = os.path.join(os.path.dirname(__file__), "..", "data", "wolfram.csv")
+    filename = os.path.join(os.path.dirname(__file__), "data", "wolfram.csv")
     if not os.path.exists(filename):
         _wolframalpha_download()
     df = pandas.read_csv(filename)
