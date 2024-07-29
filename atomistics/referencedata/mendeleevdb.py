@@ -110,5 +110,5 @@ def get_chemical_information_from_mendeleev(chemical_symbol: str) -> dict:
             vdw_radius: Van der Waals radius in pm
             zeff: Effective nuclear charge
     """
-    df = fetch_table('elements')
+    df = fetch_table("elements")
     return df[df.symbol == chemical_symbol].squeeze(axis=0).to_dict()
