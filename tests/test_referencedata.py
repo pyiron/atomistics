@@ -19,5 +19,10 @@ class TestReferenceData(unittest.TestCase):
         al_data = get_experimental_elastic_property_wikipedia(chemical_symbol="Al")
         self.assertEqual(
             al_data,
-            {'bulk_modulus': 76.0, 'poissons_ratio': 0.35, 'shear_modulus': 26.0, 'youngs_modulus': 70.0}
+            {
+                "bulk_modulus": 76.0,
+                "poissons_ratio": 0.35,
+                "shear_modulus": 26.0,
+                "youngs_modulus": 70.0,
+            },
         )
