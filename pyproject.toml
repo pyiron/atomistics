@@ -56,6 +56,11 @@ lammps_phonons = [
     "pandas==2.2.2",
     "dynaphopy==1.17.16",
 ]
+experimental = [
+    "mendeleev==0.17.0",
+    "pandas==2.2.2",
+    "requests==2.32.3",
+]
 qe = [
     "pwtools==1.2.3"
 ]

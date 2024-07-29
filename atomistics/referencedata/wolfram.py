@@ -4,7 +4,6 @@ import numpy as np
 import pandas
 import requests
 from mendeleev.fetch import fetch_table
-from tqdm import tqdm
 
 
 def _get_content_from_url(url):
@@ -218,7 +217,7 @@ def _wolframalpha_download():
                 select_function=v["select_function"],
                 current_filter=v["current_filter"],
             ).set_index("element")
-            for k, v in tqdm(data_dict.items())
+            for k, v in data_dict.items()
         ],
         axis=1,
         sort=False,
