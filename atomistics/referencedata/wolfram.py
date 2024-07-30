@@ -192,8 +192,8 @@ def _extract_lst(df: pandas.DataFrame, column: str, select_function: Callable, c
             if current_filter(v):
                 element_lst.append(el)
                 property_lst.append(select_function(v))
-    except ValueError:
-        raise ValueError(column, el, v)
+    except ValueError as e:
+        raise ValueError(f"Error extracting {column} for element {el} with value {v}") from e
     return element_lst, property_lst
 
 
@@ -238,9 +238,7 @@ def _get_volume(lat_lst: Union[float, Tuple[float, float, float]], crystal: str)
         The volume of the crystal unit cell in cubic meters, or None if the input is invalid.
     """
     if not isinstance(lat_lst, float) and len(lat_lst) == 3:
-        if crystal == "Face-centered Cubic":
-            return lat_lst[0] * lat_lst[1] * lat_lst[2] / 100 / 100 / 100
-        elif crystal == "Body-centered Cubic":
+        if crystal in ["Face-centered Cubic", "Body-centered Cubic"]:
             return lat_lst[0] * lat_lst[1] * lat_lst[2] / 100 / 100 / 100
         elif crystal == "Simple Hexagonal":
             return (
