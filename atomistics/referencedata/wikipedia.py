@@ -1,7 +1,7 @@
 import pandas
 
 
-def get_elastic_properties_from_wikipedia(chemical_symbol: str) -> dict:
+def get_elastic_properties(chemical_symbol: str) -> dict:
     """
     Looks up elastic properties for a given chemical symbol from the Wikipedia: https://en.wikipedia.org/wiki/Elastic_properties_of_the_elements_(data_page) sourced from webelements.com.
 

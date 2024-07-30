@@ -1,7 +1,7 @@
 from mendeleev.fetch import fetch_table
 
 
-def get_chemical_information_from_mendeleev(chemical_symbol: str) -> dict:
+def get_chemical_information(chemical_symbol: str) -> dict:
     """
     Get information of a given chemical element
 
