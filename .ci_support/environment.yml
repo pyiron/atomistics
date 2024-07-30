@@ -5,7 +5,7 @@ dependencies:
 - coverage
 - lxml =5.2.2
 - mendeleev =0.17.0
-- numpy =1.26.4
+- numpy =2.0.1
 - pandas =2.2.2
 - phonopy =2.26.6
 - requests =2.32.3
