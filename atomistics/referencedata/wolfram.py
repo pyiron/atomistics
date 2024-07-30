@@ -198,7 +198,9 @@ def _extract_lst(
                 element_lst.append(el)
                 property_lst.append(select_function(v))
     except ValueError as e:
-        raise ValueError(f"Error extracting {column} for element {el} with value {v}") from e
+        raise ValueError(
+            f"Error extracting {column} for element {el} with value {v}"
+        ) from e
     return element_lst, property_lst
 
 
