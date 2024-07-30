@@ -1,5 +1,5 @@
 import os
-from typing import Tuple, Union, Optional, Callable, List
+from typing import Callable, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas
@@ -43,10 +43,10 @@ def _select_function_density(v: str) -> float:
 def _select_function_split(v: Union[str, float]) -> float:
     """
     Splits a string and returns the first element as a float.
-    
+
     Args:
         v (Union[str, float]): The input value to be processed.
-        
+
     Returns:
         float: The first element of the input string as a float, or the input value if it's already a float.
     """
@@ -168,7 +168,12 @@ def _select_function_mass(v: Union[str, float]) -> Union[float, str]:
         return v
 
 
-def _extract_lst(df: pandas.DataFrame, column: str, select_function: Callable, current_filter: Callable) -> Tuple[List[str], List[str]]:
+def _extract_lst(
+    df: pandas.DataFrame,
+    column: str,
+    select_function: Callable,
+    current_filter: Callable,
+) -> Tuple[List[str], List[str]]:
     """
     Extracts element and property lists from a DataFrame based on the given column, select function, and current filter.
 
@@ -197,7 +202,9 @@ def _extract_lst(df: pandas.DataFrame, column: str, select_function: Callable, c
     return element_lst, property_lst
 
 
-def _collect(url: str, column: str, select_function: callable, current_filter: callable) -> pandas.DataFrame:
+def _collect(
+    url: str, column: str, select_function: callable, current_filter: callable
+) -> pandas.DataFrame:
     """
     Collect data from a given URL and extract specific properties.
 
@@ -226,7 +233,9 @@ def _collect(url: str, column: str, select_function: callable, current_filter: c
     )
 
 
-def _get_volume(lat_lst: Union[float, Tuple[float, float, float]], crystal: str) -> Optional[float]:
+def _get_volume(
+    lat_lst: Union[float, Tuple[float, float, float]], crystal: str
+) -> Optional[float]:
     """
     Calculate the volume of a crystal unit cell.
 
