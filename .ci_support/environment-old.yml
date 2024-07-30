@@ -10,7 +10,7 @@ dependencies:
 - lxml =4.9.1
 - mendeleev =0.12.0
 - numpy =1.23.5
-- pandas =1.5.3
+- pandas =2.0.0
 - phonopy =2.20.0
 - pylammpsmpi =0.2.1
 - requests =2.24.0
