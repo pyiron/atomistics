@@ -3,10 +3,14 @@ channels:
 dependencies:
 - ase =3.23.0
 - coverage
+- lxml =5.2.2
+- mendeleev =0.17.0
 - numpy =1.26.4
-- scipy =1.14.0
-- spglib =2.5.0
+- pandas =2.2.2
 - phonopy =2.26.6
-- structuretoolkit =0.0.27
+- requests =2.32.3
+- scipy =1.14.0
 - seekpath =2.1.0
+- spglib =2.5.0
+- structuretoolkit =0.0.27
 - tqdm =4.66.4
