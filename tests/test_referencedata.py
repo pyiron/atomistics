@@ -35,7 +35,7 @@ class TestReferenceData(unittest.TestCase):
         "mendeleev is not installed, so the mendeleev tests are skipped.",
     )
     def test_get_chemical_information_from_wolframalpha(self):
-        al_data = get_chemical_information_from_wolframalpha(chemical_element="Al")
+        al_data = get_chemical_information_from_wolframalpha(chemical_symbol="Al")
         self.assertEqual(al_data["latticeconstant"], "(404.95, 404.95, 404.95)")
 
     @unittest.skipIf(
