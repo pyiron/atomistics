@@ -1,5 +1,5 @@
 import unittest
-from atomistics.referencedata import get_experimental_elastic_property_wikipedia
+from atomistics.referencedata import get_elastic_properties_from_wikipedia
 
 
 try:
@@ -42,7 +42,7 @@ class TestReferenceData(unittest.TestCase):
         lxml_not_available, "lxml is not installed, so the lxml tests are skipped."
     )
     def test_get_experimental_elastic_property_wikipedia(self):
-        al_data = get_experimental_elastic_property_wikipedia(chemical_symbol="Al")
+        al_data = get_elastic_properties_from_wikipedia(chemical_symbol="Al")
         self.assertEqual(
             al_data,
             {

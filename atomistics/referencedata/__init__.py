@@ -1,4 +1,4 @@
-from atomistics.referencedata.wiki import get_experimental_elastic_property_wikipedia
+from atomistics.referencedata.wiki import get_elastic_properties_from_wikipedia
 
 try:
     from atomistics.referencedata.mendeleevdb import (
@@ -14,4 +14,4 @@ else:
     ]
 
 
-__all__ += [get_experimental_elastic_property_wikipedia]
+__all__ += [get_elastic_properties_from_wikipedia]
