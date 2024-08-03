@@ -55,7 +55,7 @@ class TestPhonons(unittest.TestCase):
         )
         thermal_properties_dict = workflow.get_thermal_properties(
             temperatures=[100, 500],
-            output_keys=["temperatures", "volumes"],
+            output_keys=["free_energy", "temperatures", "volumes"],
             quantum_mechanical=True,
         )
         temperatures_qh_qm, volumes_qh_qm = (
@@ -64,7 +64,7 @@ class TestPhonons(unittest.TestCase):
         )
         thermal_properties_dict = workflow.get_thermal_properties(
             temperatures=[100, 500],
-            output_keys=["temperatures", "volumes"],
+            output_keys=["free_energy", "temperatures", "volumes"],
             quantum_mechanical=False,
         )
         temperatures_qh_cl, volumes_qh_cl = (

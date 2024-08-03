@@ -104,7 +104,7 @@ class TestPhonons(unittest.TestCase):
             fit_type="polynomial",
             fit_order=3,
             temperatures=[100, 1000],
-            output_keys=["free_energy", "temperatures", "volumes"],
+            output_keys=["free_energy", "free_energy", "temperatures", "volumes"],
             quantum_mechanical=True,
         )
         temperatures_qh_qm, volumes_qh_qm = (
@@ -119,7 +119,7 @@ class TestPhonons(unittest.TestCase):
             fit_type="polynomial",
             fit_order=3,
             temperatures=[100, 1000],
-            output_keys=["temperatures", "volumes"],
+            output_keys=["free_energy", "temperatures", "volumes"],
             quantum_mechanical=False,
         )
         temperatures_qh_cl, volumes_qh_cl = (
