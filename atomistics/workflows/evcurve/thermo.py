@@ -441,7 +441,7 @@ class ThermoBulk:
         plt.xlabel("Volume [$\AA^3$]")
         plt.ylabel("Temperature [K]")
 
-    def plot_contourf(self, ax=None, show_min_erg_path=False) -> plt.Axes:
+    def plot_contourf(self, ax=None, show_min_erg_path=False):
         """
         Plot the contourf of energies.
 
