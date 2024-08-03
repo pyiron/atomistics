@@ -5,13 +5,14 @@ from typing import List
 import numpy as np
 from ase import units
 from ase.atoms import Atoms
-from ase.calculators.calculator import Calculator as ASECalculator, PropertyNotImplementedError
+from ase.calculators.calculator import Calculator as ASECalculator
+from ase.calculators.calculator import PropertyNotImplementedError
 from ase.constraints import UnitCellFilter
 from ase.md.langevin import Langevin
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.optimize.optimize import Optimizer
 
-from atomistics.calculators.interface import get_quantities_from_tasks, TaskName
+from atomistics.calculators.interface import TaskName, get_quantities_from_tasks
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.shared.output import (
     OutputMolecularDynamics,
