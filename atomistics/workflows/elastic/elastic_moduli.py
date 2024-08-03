@@ -1,4 +1,5 @@
 from functools import cache
+from typing import Tuple
 
 import numpy as np
 
