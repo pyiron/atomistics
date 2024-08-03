@@ -43,9 +43,21 @@ class PhonopyWorkflow(Workflow):
         factor: float = VaspToTHz,
         displacement: float = 0.01,
         dos_mesh: int = 20,
-        primitive_matrix: np.ndarray = None,
-        number_of_snapshots: int = None,
+        primitive_matrix: Optional[np.ndarray] = None,
+        number_of_snapshots: Optional[int] = None,
     ):
+        """
+        Initialize the PhonopyWorkflow.
+
+        Args:
+            structure (Atoms): The structure used in the reference job.
+            interaction_range (float, optional): The interaction range. Defaults to 10.0.
+            factor (float, optional): The conversion factor. Defaults to VaspToTHz.
+            displacement (float, optional): The displacement. Defaults to 0.01.
+            dos_mesh (int, optional): The DOS mesh. Defaults to 20.
+            primitive_matrix (np.ndarray, optional): The primitive matrix. Defaults to None.
+            number_of_snapshots (int, optional): The number of snapshots. Defaults to None.
+        """
         self._interaction_range = interaction_range
         self._displacement = displacement
         self._dos_mesh = dos_mesh
@@ -57,6 +69,12 @@ class PhonopyWorkflow(Workflow):
         self._phonopy_dict = {}
 
     def generate_structures(self) -> dict:
+        """
+        Generate structures.
+
+        Returns:
+            dict: The generated structures.
+        """
         self.phonopy, structure_dict = generate_structures_helper(
             structure=self.structure,
             primitive_matrix=self._primitive_matrix,
@@ -71,9 +89,14 @@ class PhonopyWorkflow(Workflow):
         self, output_dict: dict, output_keys: tuple[str] = OutputPhonons.keys()
     ) -> dict:
         """
+        Analyse structures.
+
+        Args:
+            output_dict (dict): The output dictionary.
+            output_keys (tuple[str], optional): The output keys. Defaults to OutputPhonons.keys().
 
         Returns:
-
+            dict: The analysed structures.
         """
         self._phonopy_dict = analyse_structures_helper(
             phonopy=self.phonopy,
@@ -89,26 +112,29 @@ class PhonopyWorkflow(Workflow):
         t_min: float = 1.0,
         t_max: float = 1500.0,
         t_step: float = 50.0,
-        temperatures: np.ndarray = None,
-        cutoff_frequency: float = None,
+        temperatures: Optional[np.ndarray] = None,
+        cutoff_frequency: Optional[float] = None,
         pretend_real: bool = False,
-        band_indices: np.ndarray = None,
+        band_indices: Optional[np.ndarray] = None,
         is_projection: bool = False,
         output_keys: tuple[str] = OutputThermodynamic.keys(),
     ) -> dict:
         """
-        Returns thermal properties at constant volume in the given temperature range.  Can only be called after job
-        successfully ran.
+        Get thermal properties.
 
         Args:
-            t_min (float): minimum sample temperature
-            t_max (float): maximum sample temperature
-            t_step (int):  tempeature sample interval
-            temperatures (array_like, float):  custom array of temperature samples, if given t_min, t_max, t_step are
-                                               ignored.
+            t_min (float, optional): The minimum sample temperature. Defaults to 1.0.
+            t_max (float, optional): The maximum sample temperature. Defaults to 1500.0.
+            t_step (float, optional): The temperature sample interval. Defaults to 50.0.
+            temperatures (np.ndarray, optional): Custom array of temperature samples. Defaults to None.
+            cutoff_frequency (float, optional): The cutoff frequency. Defaults to None.
+            pretend_real (bool, optional): Whether to pretend real. Defaults to False.
+            band_indices (np.ndarray, optional): The band indices. Defaults to None.
+            is_projection (bool, optional): Whether it is a projection. Defaults to False.
+            output_keys (tuple[str], optional): The output keys. Defaults to OutputThermodynamic.keys().
 
         Returns:
-            :class:`Thermal`: thermal properties as returned by Phonopy
+            dict: The thermal properties.
         """
         return get_thermal_properties(
             phonopy=self.phonopy,
@@ -125,9 +151,13 @@ class PhonopyWorkflow(Workflow):
 
     def get_dynamical_matrix(self, npoints: int = 101) -> np.ndarray:
         """
+        Get the dynamical matrix.
+
+        Args:
+            npoints (int, optional): The number of points. Defaults to 101.
 
         Returns:
-
+            np.ndarray: The dynamical matrix.
         """
         self.phonopy.auto_band_structure(
             npoints=npoints,
@@ -141,26 +171,25 @@ class PhonopyWorkflow(Workflow):
 
     def dynamical_matrix_at_q(self, q: np.ndarray) -> np.ndarray:
         """
+        Get the dynamical matrix at a given q.
 
         Args:
-            q:
+            q (np.ndarray): The q value.
 
         Returns:
-
+            np.ndarray: The dynamical matrix.
         """
         return np.real_if_close(self.phonopy.get_dynamical_matrix_at_q(q))
 
     def write_phonopy_force_constants(
-        self, file_name: str = "FORCE_CONSTANTS", cwd: str = None
+        self, file_name: str = "FORCE_CONSTANTS", cwd: Optional[str] = None
     ):
         """
+        Write the Phonopy force constants.
 
         Args:
-            file_name:
-            cwd:
-
-        Returns:
-
+            file_name (str, optional): The file name. Defaults to "FORCE_CONSTANTS".
+            cwd (str, optional): The current working directory. Defaults to None.
         """
         if cwd is not None:
             file_name = posixpath.join(cwd, file_name)
@@ -169,6 +198,12 @@ class PhonopyWorkflow(Workflow):
         )
 
     def get_hesse_matrix(self) -> np.ndarray:
+        """
+        Get the Hesse matrix.
+
+        Returns:
+            np.ndarray: The Hesse matrix.
+        """
         return get_hesse_matrix(force_constants=self.phonopy.force_constants)
 
     def get_band_structure(
@@ -177,6 +212,17 @@ class PhonopyWorkflow(Workflow):
         with_eigenvectors: bool = False,
         with_group_velocities: bool = False,
     ):
+        """
+        Get the band structure.
+
+        Args:
+            npoints (int, optional): The number of points. Defaults to 101.
+            with_eigenvectors (bool, optional): Whether to include eigenvectors. Defaults to False.
+            with_group_velocities (bool, optional): Whether to include group velocities. Defaults to False.
+
+        Returns:
+            [type]: [description]
+        """
         return get_band_structure(
             phonopy=self.phonopy,
             npoints=npoints,
@@ -187,6 +233,16 @@ class PhonopyWorkflow(Workflow):
     def plot_band_structure(
         self, axis=None, *args, label: Optional[str] = None, **kwargs
     ):
+        """
+        Plot the band structure.
+
+        Args:
+            axis ([type], optional): The axis. Defaults to None.
+            label (str, optional): The label. Defaults to None.
+
+        Returns:
+            [type]: [description]
+        """
         try:
             results = self.phonopy.get_band_structure_dict()
         except RuntimeError:
@@ -206,6 +262,15 @@ class PhonopyWorkflow(Workflow):
         )
 
     def plot_dos(self, *args, axis=None, **kwargs):
+        """
+        Plot the DOS.
+
+        Args:
+            axis ([type], optional): The axis. Defaults to None.
+
+        Returns:
+            [type]: [description]
+        """
         return plot_dos(
             dos_energies=self._phonopy_dict["total_dos_dict"]["frequency_points"],
             dos_total=self._phonopy_dict["total_dos_dict"]["total_dos"],

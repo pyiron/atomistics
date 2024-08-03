@@ -11,24 +11,68 @@ from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.shared.output import OutputStatic
 
 
-class QEStaticParser(object):
-    def __init__(self, filename):
+class QEStaticParser:
+    """
+    Class for parsing Quantum Espresso static calculations output file.
+    """
+
+    def __init__(self, filename: str):
+        """
+        Initialize the QEStaticParser.
+
+        Args:
+            filename (str): The path to the Quantum Espresso output file.
+        """
         self.parser = io.read_pw_scf(filename=filename, use_alat=True)
 
     def forces(self) -> np.ndarray:
+        """
+        Get the forces from the calculation.
+
+        Returns:
+            np.ndarray: The forces array.
+        """
         return self.parser.forces
 
     def energy(self) -> float:
+        """
+        Get the total energy from the calculation.
+
+        Returns:
+            float: The total energy.
+        """
         return self.parser.etot
 
     def stress(self) -> np.ndarray:
+        """
+        Get the stress tensor from the calculation.
+
+        Returns:
+            np.ndarray: The stress tensor.
+        """
         return self.parser.stress
 
     def volume(self) -> float:
+        """
+        Get the volume from the calculation.
+
+        Returns:
+            float: The volume.
+        """
         return self.parser.volume
 
 
-def call_qe_via_ase_command(calculation_name: str, working_directory: str):
+def call_qe_via_ase_command(calculation_name: str, working_directory: str) -> None:
+    """
+    Call Quantum Espresso via ASE command.
+
+    Args:
+        calculation_name (str): The name of the calculation.
+        working_directory (str): The working directory.
+
+    Returns:
+        None
+    """
     subprocess.check_output(
         os.environ["ASE_ESPRESSO_COMMAND"].replace("PREFIX", calculation_name),
         shell=True,
@@ -37,7 +81,17 @@ def call_qe_via_ase_command(calculation_name: str, working_directory: str):
     )
 
 
-def set_pseudo_potentials(pseudopotentials: dict, structure: Atoms):
+def set_pseudo_potentials(pseudopotentials: dict, structure: Atoms) -> dict:
+    """
+    Set the pseudopotentials for the given structure.
+
+    Args:
+        pseudopotentials (dict): A dictionary mapping element symbols to pseudopotential filenames.
+        structure (Atoms): The atomic structure.
+
+    Returns:
+        dict: A dictionary mapping element symbols to pseudopotential filenames.
+    """
     if pseudopotentials is not None:
         return pseudopotentials
     else:
@@ -134,7 +188,16 @@ def set_pseudo_potentials(pseudopotentials: dict, structure: Atoms):
         }
 
 
-def generate_input_data(**kwargs):
+def generate_input_data(**kwargs) -> dict:
+    """
+    Generate input data for Quantum Espresso calculation.
+
+    Args:
+        **kwargs: Additional keyword arguments.
+
+    Returns:
+        dict: The input data dictionary.
+    """
     return kwargs
 
 
@@ -147,7 +210,23 @@ def optimize_positions_and_volume_with_qe(
     tstress: bool = True,
     tprnfor: bool = True,
     **kwargs,
-):
+) -> Atoms:
+    """
+    Optimize the positions and volume of a structure using Quantum Espresso.
+
+    Args:
+        structure (Atoms): The atomic structure.
+        calculation_name (str, optional): The name of the calculation. Defaults to "espresso".
+        working_directory (str, optional): The working directory. Defaults to ".".
+        kpts (tuple[int], optional): The k-points for the calculation. Defaults to (3, 3, 3).
+        pseudopotentials (dict, optional): A dictionary mapping element symbols to pseudopotential filenames. Defaults to None.
+        tstress (bool, optional): Whether to calculate the stress. Defaults to True.
+        tprnfor (bool, optional): Whether to print forces. Defaults to True.
+        **kwargs: Additional keyword arguments.
+
+    Returns:
+        Atoms: The optimized atomic structure.
+    """
     input_file_name = os.path.join(working_directory, calculation_name + ".pwi")
     output_file_name = os.path.join(working_directory, calculation_name + ".pwo")
     input_data = generate_input_data(
@@ -185,7 +264,24 @@ def calc_static_with_qe(
     tprnfor: bool = True,
     output_keys: tuple[str] = OutputStatic.keys(),
     **kwargs,
-):
+) -> OutputStatic:
+    """
+    Calculate static properties of a structure using Quantum Espresso.
+
+    Args:
+        structure (Atoms): The atomic structure.
+        calculation_name (str, optional): The name of the calculation. Defaults to "espresso".
+        working_directory (str, optional): The working directory. Defaults to ".".
+        kpts (tuple[int], optional): The k-points for the calculation. Defaults to (3, 3, 3).
+        pseudopotentials (dict, optional): A dictionary mapping element symbols to pseudopotential filenames. Defaults to None.
+        tstress (bool, optional): Whether to calculate the stress. Defaults to True.
+        tprnfor (bool, optional): Whether to print forces. Defaults to True.
+        output_keys (tuple[str], optional): The keys of the output properties to retrieve. Defaults to OutputStatic.keys().
+        **kwargs: Additional keyword arguments.
+
+    Returns:
+        OutputStatic: The static output properties.
+    """
     input_file_name = os.path.join(working_directory, calculation_name + ".pwi")
     output_file_name = os.path.join(working_directory, calculation_name + ".pwo")
     os.makedirs(working_directory, exist_ok=True)
@@ -227,6 +323,23 @@ def evaluate_with_qe(
     tprnfor: bool = True,
     **kwargs,
 ) -> dict:
+    """
+    Evaluate tasks using Quantum Espresso.
+
+    Args:
+        structure (Atoms): The atomic structure.
+        tasks (dict): The tasks to evaluate.
+        calculation_name (str, optional): The name of the calculation. Defaults to "espresso".
+        working_directory (str, optional): The working directory. Defaults to ".".
+        kpts (tuple[int], optional): The k-points for the calculation. Defaults to (3, 3, 3).
+        pseudopotentials (dict, optional): A dictionary mapping element symbols to pseudopotential filenames. Defaults to None.
+        tstress (bool, optional): Whether to calculate the stress. Defaults to True.
+        tprnfor (bool, optional): Whether to print forces. Defaults to True.
+        **kwargs: Additional keyword arguments.
+
+    Returns:
+        dict: The results of the evaluated tasks.
+    """
     results = {}
     if "optimize_positions_and_volume" in tasks:
         results["structure_with_optimized_positions_and_volume"] = (

@@ -3,11 +3,30 @@ import dataclasses
 
 @dataclasses.dataclass
 class Output:
+    """
+    Base class for output data.
+    """
+
     @classmethod
-    def keys(cls):
+    def keys(cls) -> tuple:
+        """
+        Get the keys of the output data class.
+
+        Returns:
+            tuple: The keys of the output data class.
+        """
         return tuple(field.name for field in dataclasses.fields(cls))
 
     def get(self, output_keys: tuple) -> dict:
+        """
+        Get the specified output data.
+
+        Args:
+            output_keys (tuple): The keys of the output data to retrieve.
+
+        Returns:
+            dict: The output data.
+        """
         return {q: getattr(self, q)() for q in output_keys}
 
 

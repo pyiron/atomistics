@@ -11,7 +11,19 @@ eV_div_A3_to_GPa = (
 def birchmurnaghan_energy(
     V: np.ndarray, E0: float, B0: float, BP: float, V0: float
 ) -> np.ndarray:
-    "BirchMurnaghan equation from PRB 70, 224107"
+    """
+    BirchMurnaghan equation from PRB 70, 224107
+
+    Args:
+        V (np.ndarray): Array of volumes
+        E0 (float): Energy at equilibrium volume
+        B0 (float): Bulk modulus at equilibrium volume
+        BP (float): Pressure derivative of bulk modulus
+        V0 (float): Equilibrium volume
+
+    Returns:
+        np.ndarray: Array of energies
+    """
     eta = (V0 / V) ** (1 / 3)
     return E0 + 9 * B0 * V0 / 16 * (eta**2 - 1) ** 2 * (
         6 + BP * (eta**2 - 1) - 4 * eta**2
@@ -21,7 +33,19 @@ def birchmurnaghan_energy(
 def vinet_energy(
     V: np.ndarray, E0: float, B0: float, BP: float, V0: float
 ) -> np.ndarray:
-    "Vinet equation from PRB 70, 224107"
+    """
+    Vinet equation from PRB 70, 224107
+
+    Args:
+        V (np.ndarray): Array of volumes
+        E0 (float): Energy at equilibrium volume
+        B0 (float): Bulk modulus at equilibrium volume
+        BP (float): Pressure derivative of bulk modulus
+        V0 (float): Equilibrium volume
+
+    Returns:
+        np.ndarray: Array of energies
+    """
     eta = (V / V0) ** (1 / 3)
     return E0 + 2 * B0 * V0 / (BP - 1) ** 2 * (
         2 - (5 + 3 * BP * (eta - 1) - 3 * eta) * np.exp(-3 * (BP - 1) * (eta - 1) / 2)
@@ -29,18 +53,37 @@ def vinet_energy(
 
 
 def murnaghan(V: np.ndarray, E0: float, B0: float, BP: float, V0: float) -> np.ndarray:
-    "From PRB 28,5480 (1983"
+    """
+    Murnaghan equation from PRB 28, 5480 (1983)
+
+    Args:
+        V (np.ndarray): Array of volumes
+        E0 (float): Energy at equilibrium volume
+        B0 (float): Bulk modulus at equilibrium volume
+        BP (float): Pressure derivative of bulk modulus
+        V0 (float): Equilibrium volume
+
+    Returns:
+        np.ndarray: Array of energies
+    """
     E = E0 + B0 * V / BP * (((V0 / V) ** BP) / (BP - 1) + 1) - V0 * B0 / (BP - 1)
     return E
 
 
 def birch(V: np.ndarray, E0: float, B0: float, BP: float, V0: float) -> np.ndarray:
     """
-    From Intermetallic compounds: Principles and Practice, Vol. I: Principles
+    Birch equation from Intermetallic compounds: Principles and Practice, Vol. I: Principles
     Chapter 9 pages 195-210 by M. Mehl. B. Klein, D. Papaconstantopoulos
-    paper downloaded from Web
 
-    case where n=0
+    Args:
+        V (np.ndarray): Array of volumes
+        E0 (float): Energy at equilibrium volume
+        B0 (float): Bulk modulus at equilibrium volume
+        BP (float): Pressure derivative of bulk modulus
+        V0 (float): Equilibrium volume
+
+    Returns:
+        np.ndarray: Array of energies
     """
     E = (
         E0
@@ -53,7 +96,19 @@ def birch(V: np.ndarray, E0: float, B0: float, BP: float, V0: float) -> np.ndarr
 def pouriertarantola(
     V: np.ndarray, E0: float, B0: float, BP: float, V0: float
 ) -> np.ndarray:
-    "Pourier-Tarantola equation from PRB 70, 224107"
+    """
+    Pourier-Tarantola equation from PRB 70, 224107
+
+    Args:
+        V (np.ndarray): Array of volumes
+        E0 (float): Energy at equilibrium volume
+        B0 (float): Bulk modulus at equilibrium volume
+        BP (float): Pressure derivative of bulk modulus
+        V0 (float): Equilibrium volume
+
+    Returns:
+        np.ndarray: Array of energies
+    """
     eta = (V / V0) ** (1 / 3)
     squiggle = -3 * np.log(eta)
 
@@ -95,6 +150,16 @@ def fitfunction(
 
 
 def interpolate_energy(fit_dict: dict, volumes: np.ndarray) -> np.ndarray:
+    """
+    Interpolate the energy values for given volumes using the fit_dict.
+
+    Args:
+        fit_dict (dict): Dictionary containing the fit results
+        volumes (np.ndarray): Array of volumes for which to interpolate energy values
+
+    Returns:
+        np.ndarray: Array of interpolated energy values
+    """
     if fit_dict["fit_dict"]["fit_type"] == "polynomial":
         return np.poly1d(fit_dict["fit_dict"]["poly_fit"])(volumes)
     elif fit_dict["fit_dict"]["fit_type"] in [
@@ -189,14 +254,15 @@ def fit_leastsq_eos(
 
 def get_error(x_lst: np.ndarray, y_lst: np.ndarray, p_fit) -> float:
     """
+    Calculate the mean squared error between the observed and predicted values.
 
     Args:
-        x_lst:
-        y_lst:
-        p_fit:
+        x_lst (np.ndarray): Array of x values
+        y_lst (np.ndarray): Array of observed y values
+        p_fit (np.poly1d): Polynomial fit function
 
     Returns:
-        numpy.dnarray
+        float: Mean squared error
     """
     y_fit_lst = np.array(p_fit(x_lst))
     error_lst = (y_lst - y_fit_lst) ** 2
@@ -206,6 +272,17 @@ def get_error(x_lst: np.ndarray, y_lst: np.ndarray, p_fit) -> float:
 def fit_equation_of_state(
     volume_lst: np.ndarray, energy_lst: np.ndarray, fittype: str
 ) -> dict:
+    """
+    Fit the equation of state to the given volume and energy data.
+
+    Args:
+        volume_lst (np.ndarray): Array of volumes
+        energy_lst (np.ndarray): Array of energies
+        fittype (str): Type of fit to perform
+
+    Returns:
+        dict: Dictionary containing the fit results
+    """
     fit_dict = {}
     pfit_leastsq, perr_leastsq = fit_leastsq_eos(
         volume_lst=volume_lst, energy_lst=energy_lst, fittype=fittype
@@ -225,6 +302,17 @@ def fit_equation_of_state(
 def fit_polynomial(
     volume_lst: np.ndarray, energy_lst: np.ndarray, fit_order: int
 ) -> dict:
+    """
+    Fit a polynomial to the given volume and energy data.
+
+    Args:
+        volume_lst (np.ndarray): Array of volumes
+        energy_lst (np.ndarray): Array of energies
+        fit_order (int): Order of the polynomial fit
+
+    Returns:
+        dict: Dictionary containing the fit results
+    """
     fit_dict = {}
 
     # compute a polynomial fit
@@ -237,7 +325,6 @@ def fit_polynomial(
     p_deriv_1 = np.polyder(p_fit, 1)
     roots = np.roots(p_deriv_1)
 
-    # volume_eq_lst = np.array([np.real(r) for r in roots if np.abs(np.imag(r)) < 1e-10])
     volume_eq_lst = np.array(
         [
             np.real(r)
@@ -252,7 +339,6 @@ def fit_polynomial(
 
     e_eq_lst = p_fit(volume_eq_lst)
     arg = np.argsort(e_eq_lst)
-    # print ("v_eq:", arg, e_eq_lst)
     if len(e_eq_lst) == 0:
         return None
     e_eq = e_eq_lst[arg][0]
@@ -302,28 +388,65 @@ class EnergyVolumeFit(object):
     """
 
     def __init__(self, volume_lst: np.ndarray = None, energy_lst: np.ndarray = None):
+        """
+        Initialize the EnergyVolumeFit object.
+
+        Args:
+            volume_lst (np.ndarray, optional): Vector of volumes. Defaults to None.
+            energy_lst (np.ndarray, optional): Vector of energies. Defaults to None.
+        """
         self._volume_lst = volume_lst
         self._energy_lst = energy_lst
         self._fit_dict = None
 
     @property
     def volume_lst(self) -> np.ndarray:
+        """
+        Get the vector of volumes.
+
+        Returns:
+            np.ndarray: Vector of volumes.
+        """
         return self._volume_lst
 
     @volume_lst.setter
     def volume_lst(self, vol_lst: np.ndarray):
+        """
+        Set the vector of volumes.
+
+        Args:
+            vol_lst (np.ndarray): Vector of volumes.
+        """
         self._volume_lst = vol_lst
 
     @property
     def energy_lst(self) -> np.ndarray:
+        """
+        Get the vector of energies.
+
+        Returns:
+            np.ndarray: Vector of energies.
+        """
         return self._energy_lst
 
     @energy_lst.setter
     def energy_lst(self, eng_lst: np.ndarray):
+        """
+        Set the vector of energies.
+
+        Args:
+            eng_lst (np.ndarray): Vector of energies.
+        """
         self._energy_lst = eng_lst
 
     @property
     def fit_dict(self) -> dict:
+        """
+        Get the fit dictionary.
+
+        Returns:
+            dict: Fit dictionary.
+        """
         return self._fit_dict
 
     def _get_volume_and_energy_lst(
@@ -350,6 +473,16 @@ class EnergyVolumeFit(object):
         return volume_lst, energy_lst
 
     def fit(self, fit_type: str = "polynomial", fit_order: int = 3) -> dict:
+        """
+        Fit the energy volume curves.
+
+        Args:
+            fit_type (str, optional): Type of fit to perform. Defaults to "polynomial".
+            fit_order (int, optional): Order of the polynomial fit. Defaults to 3.
+
+        Returns:
+            dict: Dictionary containing the fit results.
+        """
         if fit_type == "polynomial":
             self._fit_dict = self.fit_polynomial(fit_order=fit_order)
         elif fit_type in [
@@ -374,17 +507,17 @@ class EnergyVolumeFit(object):
         volume_lst: np.ndarray = None,
         energy_lst: np.ndarray = None,
         fittype: str = "birchmurnaghan",
-    ):
+    ) -> dict:
         """
-        Fit on of the equations of state
+        Fit one of the equations of state.
 
         Args:
-            volume_lst (list/numpy.dnarray/None): vector of volumes
-            energy_lst (list/numpy.dnarray/None): vector of energies
-            fittype (str): on of the following ['birch', 'birchmurnaghan', 'murnaghan', 'pouriertarantola', 'vinet']
+            volume_lst (np.ndarray, optional): Vector of volumes. Defaults to None.
+            energy_lst (np.ndarray, optional): Vector of energies. Defaults to None.
+            fittype (str, optional): Type of fit to perform. Defaults to "birchmurnaghan".
 
         Returns:
-            dict: dictionary with fit results
+            dict: Dictionary containing the fit results.
         """
         volume_lst, energy_lst = self._get_volume_and_energy_lst(
             volume_lst=volume_lst, energy_lst=energy_lst
@@ -398,17 +531,17 @@ class EnergyVolumeFit(object):
         volume_lst: np.ndarray = None,
         energy_lst: np.ndarray = None,
         fit_order: int = 3,
-    ):
+    ) -> dict:
         """
-        Fit a polynomial
+        Fit a polynomial.
 
         Args:
-            volume_lst (list/numpy.dnarray/None): vector of volumes
-            energy_lst (list/numpy.dnarray/None): vector of energies
-            fit_order (int): Degree of the polynomial
+            volume_lst (np.ndarray, optional): Vector of volumes. Defaults to None.
+            energy_lst (np.ndarray, optional): Vector of energies. Defaults to None.
+            fit_order (int, optional): Order of the polynomial fit. Defaults to 3.
 
         Returns:
-            dict: dictionary with fit results
+            dict: Dictionary containing the fit results.
         """
         volume_lst, energy_lst = self._get_volume_and_energy_lst(
             volume_lst=volume_lst, energy_lst=energy_lst
@@ -419,14 +552,13 @@ class EnergyVolumeFit(object):
 
     def interpolate_energy(self, volume_lst: np.ndarray) -> np.ndarray:
         """
-        Gives the energy value for the corresponding energy volume fit defined in the fit dictionary.
+        Interpolate the energy values for the corresponding energy volume fit defined in the fit dictionary.
 
         Args:
-            volume_lst: list of volumes
+            volume_lst (np.ndarray): List of volumes.
 
         Returns:
-            list of energies
-
+            np.ndarray: List of energies.
         """
         if not self._fit_dict:
             return ValueError("parameter 'fit_dict' has to be defined!")
@@ -438,6 +570,16 @@ class EnergyVolumeFit(object):
     ) -> np.ndarray:
         """
         BirchMurnaghan equation from PRB 70, 224107
+
+        Args:
+            V (np.ndarray): Vector of volumes.
+            E0 (float): Energy at equilibrium volume.
+            B0 (float): Bulk modulus at equilibrium volume.
+            BP (float): Pressure derivative of bulk modulus at equilibrium volume.
+            V0 (float): Equilibrium volume.
+
+        Returns:
+            np.ndarray: Vector of energies.
         """
         return birchmurnaghan_energy(V, E0, B0, BP, V0)
 
@@ -447,6 +589,16 @@ class EnergyVolumeFit(object):
     ) -> np.ndarray:
         """
         Vinet equation from PRB 70, 224107
+
+        Args:
+            V (np.ndarray): Vector of volumes.
+            E0 (float): Energy at equilibrium volume.
+            B0 (float): Bulk modulus at equilibrium volume.
+            BP (float): Pressure derivative of bulk modulus at equilibrium volume.
+            V0 (float): Equilibrium volume.
+
+        Returns:
+            np.ndarray: Vector of energies.
         """
         return vinet_energy(V, E0, B0, BP, V0)
 
@@ -455,18 +607,38 @@ class EnergyVolumeFit(object):
         V: np.ndarray, E0: float, B0: float, BP: float, V0: float
     ) -> np.ndarray:
         """
-        From PRB 28,5480 (1983)
+        Murnaghan equation from PRB 28,5480 (1983)
+
+        Args:
+            V (np.ndarray): Vector of volumes.
+            E0 (float): Energy at equilibrium volume.
+            B0 (float): Bulk modulus at equilibrium volume.
+            BP (float): Pressure derivative of bulk modulus at equilibrium volume.
+            V0 (float): Equilibrium volume.
+
+        Returns:
+            np.ndarray: Vector of energies.
         """
         return murnaghan(V, E0, B0, BP, V0)
 
     @staticmethod
     def birch(V: np.ndarray, E0: float, B0: float, BP: float, V0: float) -> np.ndarray:
         """
-        From Intermetallic compounds: Principles and Practice, Vol. I: Principles
+        Birch equation from Intermetallic compounds: Principles and Practice, Vol. I: Principles
         Chapter 9 pages 195-210 by M. Mehl. B. Klein, D. Papaconstantopoulos
         paper downloaded from Web
 
         case where n=0
+
+        Args:
+            V (np.ndarray): Vector of volumes.
+            E0 (float): Energy at equilibrium volume.
+            B0 (float): Bulk modulus at equilibrium volume.
+            BP (float): Pressure derivative of bulk modulus at equilibrium volume.
+            V0 (float): Equilibrium volume.
+
+        Returns:
+            np.ndarray: Vector of energies.
         """
         return birch(V, E0, B0, BP, V0)
 
@@ -474,10 +646,33 @@ class EnergyVolumeFit(object):
     def pouriertarantola(
         V: np.ndarray, E0: float, B0: float, BP: float, V0: float
     ) -> np.ndarray:
+        """
+        Pouriertarantola equation
+
+        Args:
+            V (np.ndarray): Vector of volumes.
+            E0 (float): Energy at equilibrium volume.
+            B0 (float): Bulk modulus at equilibrium volume.
+            BP (float): Pressure derivative of bulk modulus at equilibrium volume.
+            V0 (float): Equilibrium volume.
+
+        Returns:
+            np.ndarray: Vector of energies.
+        """
         return pouriertarantola(V, E0, B0, BP, V0)
 
 
 def get_energy_volume_curve_fit(
     volume_lst: np.ndarray = None, energy_lst: np.ndarray = None
-):
+) -> EnergyVolumeFit:
+    """
+    Create an instance of EnergyVolumeFit class with the given volume and energy lists.
+
+    Args:
+        volume_lst (np.ndarray, optional): Vector of volumes. Defaults to None.
+        energy_lst (np.ndarray, optional): Vector of energies. Defaults to None.
+
+    Returns:
+        EnergyVolumeFit: Instance of EnergyVolumeFit class.
+    """
     return EnergyVolumeFit(volume_lst=volume_lst, energy_lst=energy_lst)

@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from typing import Any, Dict, List, Optional, Tuple
 
 import ase.atoms
 import numpy as np
@@ -19,11 +20,19 @@ def generate_structures_helper(
     num_of_point: int,
     zero_strain_job_name: str = "s_e_0",
     sqrt_eta: bool = True,
-):
+) -> Tuple[Dict[str, int], Dict[str, ase.atoms.Atoms]]:
     """
+    Generate structures for elastic analysis.
+
+    Args:
+        structure (ase.atoms.Atoms): The input structure.
+        eps_range (float): The range of strain.
+        num_of_point (int): The number of points in the strain range.
+        zero_strain_job_name (str, optional): The name of the zero strain job. Defaults to "s_e_0".
+        sqrt_eta (bool, optional): Whether to take the square root of the eta matrix. Defaults to True.
 
     Returns:
-
+        Tuple[Dict[str, int], Dict[str, ase.atoms.Atoms]]: A tuple containing the symmetry dictionary and the structure dictionary.
     """
     SGN, v0, LC, Lag_strain_list, epss = symmetry_analysis(
         structure=structure,
@@ -96,7 +105,20 @@ def analyse_structures_helper(
     fit_order: int = 2,
     zero_strain_job_name: str = "s_e_0",
     output_keys: tuple = OutputElastic.keys(),
-):
+) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    """
+    Analyze structures and calculate elastic properties.
+
+    Args:
+        output_dict (dict): The dictionary containing the output data.
+        sym_dict (dict): The symmetry dictionary.
+        fit_order (int, optional): The order of the polynomial fit. Defaults to 2.
+        zero_strain_job_name (str, optional): The name of the zero strain job. Defaults to "s_e_0".
+        output_keys (tuple, optional): The keys to include in the output dictionary. Defaults to OutputElastic.keys().
+
+    Returns:
+        Tuple[Dict[str, Any], Dict[str, Any]]: A tuple containing the updated symmetry dictionary and the elastic properties dictionary.
+    """
     elastic_matrix, A2, strain_energy, ene0 = _get_elastic_matrix(
         output_dict=output_dict,
         Lag_strain_list=sym_dict["Lag_strain_list"],
@@ -122,15 +144,21 @@ def _get_elastic_matrix(
     LC: str,
     fit_order: int = 2,
     zero_strain_job_name: str = "s_e_0",
-):
+) -> Tuple[np.ndarray, np.ndarray, List[List[Tuple[float, float]]], Optional[float]]:
     """
+    Calculate the elastic matrix and other properties.
 
     Args:
-        output_dict (dict):
-        output (tuple):
+        output_dict (dict): The dictionary containing the output data.
+        Lag_strain_list (list[float]): The list of Lagrangian strains.
+        epss (float): The list of strains.
+        v0 (float): The volume of the unit cell.
+        LC (str): The lattice constant.
+        fit_order (int, optional): The order of the polynomial fit. Defaults to 2.
+        zero_strain_job_name (str, optional): The name of the zero strain job. Defaults to "s_e_0".
 
     Returns:
-
+        Tuple[np.ndarray, np.ndarray, List[List[Tuple[float, float]]], Optional[float]]: A tuple containing the elastic matrix, A2 coefficients, strain energy data, and ene0 value.
     """
     if "energy" in output_dict.keys():
         output_dict = output_dict["energy"]
@@ -156,24 +184,34 @@ def _get_elastic_matrix(
     return elastic_matrix, A2, strain_energy, ene0
 
 
-def _subjob_name(i: int, eps: float):
+def _subjob_name(i: int, eps: float) -> str:
     """
+    Generate the subjob name.
 
     Args:
-        i:
-        eps:
+        i (int): The index.
+        eps (float): The strain value.
 
     Returns:
-
+        str: The subjob name.
     """
     return ("s_%s_e_%.5f" % (i, eps)).replace(".", "_").replace("-", "m")
 
 
-def _fit_elastic_matrix(strain_ene: list, v0: float, LC: str, fit_order: int):
+def _fit_elastic_matrix(
+    strain_ene: list[list[tuple[float, float]]], v0: float, LC: str, fit_order: int
+) -> Tuple[np.ndarray, np.ndarray]:
     """
+    Fit the elastic matrix from strain-energy data.
+
+    Args:
+        strain_ene (list[list[tuple[float, float]]]): The strain-energy data.
+        v0 (float): The volume of the unit cell.
+        LC (str): The lattice constant.
+        fit_order (int): The order of the polynomial fit.
 
     Returns:
-
+        Tuple[np.ndarray, np.ndarray]: A tuple containing the elastic matrix and the A2 coefficients.
     """
     A2 = []
     for s_e in strain_ene:
