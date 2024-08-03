@@ -1,27 +1,15 @@
 from __future__ import annotations
 
-<<<<<<< HEAD
 from typing import List
-=======
-from typing import TYPE_CHECKING, Dict, List, Union
->>>>>>> 4deddf7f2296fcb54d25fd8a526f1790aa57d363
 
 import numpy as np
 from ase import units
 from ase.atoms import Atoms
-<<<<<<< HEAD
 from ase.calculators.calculator import Calculator as ASECalculator, PropertyNotImplementedError
-=======
-from ase.calculators.calculator import Calculator, PropertyNotImplementedError
->>>>>>> 4deddf7f2296fcb54d25fd8a526f1790aa57d363
 from ase.constraints import UnitCellFilter
 from ase.md.langevin import Langevin
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
-<<<<<<< HEAD
 from ase.optimize.optimize import Optimizer
-=======
-from ase.units import units
->>>>>>> 4deddf7f2296fcb54d25fd8a526f1790aa57d363
 
 from atomistics.calculators.interface import get_quantities_from_tasks, TaskName
 from atomistics.calculators.wrapper import as_task_dict_evaluator
