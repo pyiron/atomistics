@@ -270,7 +270,7 @@ def calc_molecular_dynamics_langevin_with_ase(
     timestep: float = 1.0,
     temperature: float = 100.0,
     friction: float = 0.002,
-    output_keys: List[str] = ["energy", "forces", "positions"],
+    output_keys: List[str] = OutputMolecularDynamics.keys(),
 ) -> dict:
     """
     Perform molecular dynamics simulation using the Langevin algorithm with ASE.
