@@ -9,6 +9,7 @@ from ase.calculators.calculator import Calculator as ASECalculator
 from ase.calculators.calculator import PropertyNotImplementedError
 from ase.constraints import UnitCellFilter
 from ase.md.langevin import Langevin
+from ase.md.npt import NPT
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.optimize.optimize import Optimizer
 
@@ -445,17 +446,21 @@ def calc_molecular_dynamics_npt_with_ase(
     Returns:
         dict: A dictionary containing the calculated properties at each MD step.
     """
-    dyn = Langevin(
-        atoms=structure,
-        timestep=timestep,
-        temperature_K=temperature,
-        friction=0.002,
-        externalstress=externalstress,
-        pfactor=pfactor,
-        ttime=ttime,
-    )
     return _calc_molecular_dynamics_with_ase(
-        dyn=dyn,
+        dyn=NPT(
+            atoms=structure,
+            timestep=timestep,
+            temperature=None,
+            externalstress=externalstress,
+            ttime=ttime,
+            pfactor=pfactor,
+            temperature_K=temperature,
+            mask=None,
+            trajectory=None,
+            logfile=None,
+            loginterval=1,
+            append_trajectory=False,
+        ),
         structure=structure,
         ase_calculator=ase_calculator,
         temperature=temperature,
@@ -463,46 +468,6 @@ def calc_molecular_dynamics_npt_with_ase(
         thermo=thermo,
         output_keys=output_keys,
     )
-
-
-def _calc_molecular_dynamics_with_ase(
-    dyn,
-    structure: Atoms,
-    ase_calculator: ASECalculator,
-    temperature: float,
-    run: int,
-    thermo: int,
-    output_keys: List[str],
-) -> dict:
-    """
-    Perform molecular dynamics simulation using ASE.
-
-    Args:
-        dyn: The ASE dynamics object.
-        structure (Atoms): The atomic structure to simulate.
-        ase_calculator (ASECalculator): The ASE calculator to use for energy and force calculations.
-        temperature (float): The desired temperature in Kelvin.
-        run (int): The number of MD steps to perform.
-        thermo (int): The interval at which to print thermodynamic properties.
-        output_keys (List[str]): The keys of the properties to include in the output dictionary.
-
-    Returns:
-        dict: A dictionary containing the calculated properties at each MD step.
-    """
-    structure.calc = ase_calculator
-    MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
-    cache = {q: [] for q in output_keys}
-    for i in range(int(run / thermo)):
-        dyn.run(thermo)
-        ase_instance = ASEExecutor(
-            ase_structure=structure, ase_calculator=ase_calculator
-        )
-        calc_dict = OutputMolecularDynamics(
-            **{k: getattr(ase_instance, k) for k in OutputMolecularDynamics.keys()}
-        ).get(output_keys=output_keys)
-        for k, v in calc_dict.items():
-            cache[k].append(v)
-    return {q: np.array(cache[q]) for q in output_keys}
 
 
 def _calc_molecular_dynamics_with_ase(
