@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
 import scipy.constants
@@ -447,9 +447,9 @@ def plot_dos(
     dos_energies: np.ndarray,
     dos_total: np.ndarray,
     *args,
-    axis: Optional[matplotlib.axes._subplots.AxesSubplot] = None,
+    axis: Optional[Any] = None,
     **kwargs,
-) -> matplotlib.axes._subplots.AxesSubplot:
+):
     """
     Plot the DOS.
 
@@ -530,11 +530,11 @@ def plot_band_structure(
     results: dict,
     path_connections: list[str],
     labels: str,
-    axis: Optional[matplotlib.axes._subplots.AxesSubplot] = None,
+    axis: Optional[Any] = None,
     *args,
     label: Optional[str] = None,
     **kwargs,
-) -> matplotlib.axes._subplots.AxesSubplot:
+):
     """
     Plot bandstructure calculated with :meth:`.get_bandstructure`.
 
