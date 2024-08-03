@@ -11,7 +11,7 @@ from ase.md.langevin import Langevin
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.optimize.optimize import Optimizer
 
-from atomistics.calculators.interface import get_quantities_from_tasks, TaskName
+from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.shared.output import (
     OutputMolecularDynamics,
@@ -145,7 +145,7 @@ class ASEExecutor(object):
 @as_task_dict_evaluator
 def evaluate_with_ase(
     structure: Atoms,
-    tasks: list[TaskName],
+    tasks: List[str],
     ase_calculator: ASECalculator,
     ase_optimizer: Optimizer = None,
     ase_optimizer_kwargs: dict = {},
@@ -263,7 +263,7 @@ def optimize_positions_and_volume_with_ase(
 
 def calc_molecular_dynamics_langevin_with_ase(
     structure: Atoms,
-    ase_calculator: Calculator,
+    ase_calculator: ASECalculator,
     run: int = 100,
     thermo: int = 100,
     timestep: float = 1.0,
