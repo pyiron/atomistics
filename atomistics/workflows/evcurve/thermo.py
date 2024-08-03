@@ -6,35 +6,29 @@ import numpy as np
 import scipy.constants
 
 
-class ThermoBulk(object):
+class ThermoBulk:
     """
     Class should provide all tools to compute bulk thermodynamic quantities. Central quantity is the Free Energy F(V,T).
     ToDo: Make it a (light weight) pyiron object (introduce a new tool rather than job object).
-
-    Args:
-        project:
-        name:
-
     """
 
     eV_to_J_per_mol = scipy.constants.electron_volt * scipy.constants.Avogadro
     kB = 1 / scipy.constants.physical_constants["Boltzmann constant in eV/K"][0]
 
     def __init__(self):
-        self._volumes = None
-        self._temperatures = None
-        self._energies = None
-        self._entropy = None
-        self._pressure = None
-        self._num_atoms = None
+        self._volumes: Optional[np.ndarray] = None
+        self._temperatures: Optional[np.ndarray] = None
+        self._energies: Optional[np.ndarray] = None
+        self._entropy: Optional[np.ndarray] = None
+        self._pressure: Optional[np.ndarray] = None
+        self._num_atoms: Optional[int] = None
 
         self._fit_order = 3
 
-    def copy(self):
+    def copy(self) -> "ThermoBulk":
         """
-
         Returns:
-
+            A copy of the ThermoBulk object.
         """
         cls = self.__class__
         result = cls.__new__(cls)
@@ -47,9 +41,7 @@ class ThermoBulk(object):
 
     def _reset_energy(self):
         """
-
-        Returns:
-
+        Reset the energy array.
         """
         if self._volumes is not None:
             if self._temperatures is not None:
@@ -59,9 +51,10 @@ class ThermoBulk(object):
     @property
     def num_atoms(self) -> int:
         """
+        Get the number of atoms.
 
         Returns:
-
+            The number of atoms.
         """
         if self._num_atoms is None:
             return 1  # normalize per cell if number of atoms unknown
@@ -70,60 +63,60 @@ class ThermoBulk(object):
     @num_atoms.setter
     def num_atoms(self, num: int):
         """
+        Set the number of atoms.
 
         Args:
-            num:
-
-        Returns:
-
+            num: The number of atoms.
         """
         self._num_atoms = num
 
     @property
-    def _coeff(self):
+    def _coeff(self) -> np.ndarray:
         """
+        Get the coefficients of the polynomial fit.
 
         Returns:
-
+            The coefficients of the polynomial fit.
         """
         return np.polyfit(self._volumes, self._energies.T, deg=self._fit_order)
 
     @property
     def temperatures(self) -> np.ndarray:
         """
+        Get the temperatures.
 
         Returns:
-
+            The temperatures.
         """
         return self._temperatures
 
     @property
     def _d_temp(self) -> float:
         """
+        Get the temperature step size.
 
         Returns:
-
+            The temperature step size.
         """
         return self.temperatures[1] - self.temperatures[0]
 
     @property
     def _d_vol(self) -> float:
         """
+        Get the volume step size.
 
         Returns:
-
+            The volume step size.
         """
         return self.volumes[1] - self.volumes[0]
 
     @temperatures.setter
     def temperatures(self, temp_lst: np.ndarray):
         """
+        Set the temperatures.
 
         Args:
-            temp_lst:
-
-        Returns:
-
+            temp_lst: The temperatures.
         """
         if not hasattr(temp_lst, "__len__"):
             raise ValueError("Requires list as input parameter")
@@ -137,21 +130,20 @@ class ThermoBulk(object):
     @property
     def volumes(self) -> np.ndarray:
         """
+        Get the volumes.
 
         Returns:
-
+            The volumes.
         """
         return self._volumes
 
     @volumes.setter
     def volumes(self, volume_lst: np.ndarray):
         """
+        Set the volumes.
 
         Args:
-            volume_lst:
-
-        Returns:
-
+            volume_lst: The volumes.
         """
         if not hasattr(volume_lst, "__len__"):
             raise ValueError("Requires list as input parameter")
@@ -165,9 +157,10 @@ class ThermoBulk(object):
     @property
     def entropy(self) -> np.ndarray:
         """
+        Get the entropy.
 
         Returns:
-
+            The entropy.
         """
         if self._entropy is None:
             self._compute_thermo()
@@ -176,9 +169,10 @@ class ThermoBulk(object):
     @property
     def pressure(self) -> np.ndarray:
         """
+        Get the pressure.
 
         Returns:
-
+            The pressure.
         """
         if self._pressure is None:
             self._compute_thermo()
@@ -187,21 +181,20 @@ class ThermoBulk(object):
     @property
     def energies(self) -> np.ndarray:
         """
+        Get the energies.
 
         Returns:
-
+            The energies.
         """
         return self._energies
 
     @energies.setter
     def energies(self, erg_lst: np.ndarray):
         """
+        Set the energies.
 
         Args:
-            erg_lst:
-
-        Returns:
-
+            erg_lst: The energies.
         """
         if np.ndim(erg_lst) == 2:
             self._energies = erg_lst
@@ -222,14 +215,12 @@ class ThermoBulk(object):
         temperature_steps: float = 50.0,
     ):
         """
+        Set the temperatures.
 
         Args:
-            temperature_min:
-            temperature_max:
-            temperature_steps:
-
-        Returns:
-
+            temperature_min: The minimum temperature.
+            temperature_max: The maximum temperature.
+            temperature_steps: The number of temperature steps.
         """
         self.temperatures = np.linspace(
             temperature_min, temperature_max, temperature_steps
@@ -239,14 +230,12 @@ class ThermoBulk(object):
         self, volume_min: float, volume_max: float = None, volume_steps: int = 10
     ):
         """
+        Set the volumes.
 
         Args:
-            volume_min:
-            volume_max:
-            volume_steps:
-
-        Returns:
-
+            volume_min: The minimum volume.
+            volume_max: The maximum volume.
+            volume_steps: The number of volume steps.
         """
         if volume_max is None:
             volume_max = 1.1 * volume_min
@@ -254,20 +243,22 @@ class ThermoBulk(object):
 
     def meshgrid(self) -> np.ndarray:
         """
+        Create a meshgrid of volumes and temperatures.
 
         Returns:
-
+            The meshgrid of volumes and temperatures.
         """
         return np.meshgrid(self.volumes, self.temperatures)
 
     def get_minimum_energy_path(self, pressure: np.ndarray = None) -> np.ndarray:
         """
+        Get the minimum energy path.
 
         Args:
-            pressure:
+            pressure: The pressure.
 
         Returns:
-
+            The minimum energy path.
         """
         if pressure is not None:
             raise NotImplementedError()
@@ -287,13 +278,14 @@ class ThermoBulk(object):
         self, vol: np.ndarray, pressure: np.ndarray = None
     ) -> np.ndarray:
         """
+        Get the free energy.
 
         Args:
-            vol:
-            pressure:
+            vol: The volume.
+            pressure: The pressure.
 
         Returns:
-
+            The free energy.
         """
         if not pressure:
             return np.polyval(self._coeff, vol)
@@ -302,13 +294,14 @@ class ThermoBulk(object):
 
     def interpolate_volume(self, volumes: np.ndarray, fit_order: int = None):
         """
+        Interpolate the volumes.
 
         Args:
-            volumes:
-            fit_order:
+            volumes: The volumes.
+            fit_order: The order of the polynomial fit.
 
         Returns:
-
+            The interpolated volume.
         """
         if fit_order is not None:
             self._fit_order = fit_order
@@ -319,9 +312,7 @@ class ThermoBulk(object):
 
     def _compute_thermo(self):
         """
-
-        Returns:
-
+        Compute the thermodynamic quantities.
         """
         self._entropy, self._pressure = np.gradient(
             -self.energies, self._d_temp, self._d_vol
@@ -329,27 +320,30 @@ class ThermoBulk(object):
 
     def get_free_energy_p(self) -> np.ndarray:
         """
+        Get the free energy at the minimum energy path.
 
         Returns:
-
+            The free energy at the minimum energy path.
         """
         coeff = np.polyfit(self._volumes, self.energies.T, deg=self._fit_order)
         return np.polyval(coeff, self.get_minimum_energy_path())
 
     def get_entropy_p(self) -> np.ndarray:
         """
+        Get the entropy at the minimum energy path.
 
         Returns:
-
+            The entropy at the minimum energy path.
         """
         s_coeff = np.polyfit(self._volumes, self.entropy.T, deg=self._fit_order)
         return np.polyval(s_coeff, self.get_minimum_energy_path())
 
     def get_entropy_v(self) -> np.ndarray:
         """
+        Get the entropy at constant volume.
 
         Returns:
-
+            The entropy at constant volume.
         """
         eq_volume = self.volumes[0]
         s_coeff = np.polyfit(self.volumes, self.entropy.T, deg=self._fit_order)
@@ -358,9 +352,7 @@ class ThermoBulk(object):
 
     def plot_free_energy(self):
         """
-
-        Returns:
-
+        Plot the free energy.
         """
         try:
             import pylab as plt
@@ -372,9 +364,7 @@ class ThermoBulk(object):
 
     def plot_entropy(self):
         """
-
-        Returns:
-
+        Plot the entropy.
         """
         try:
             import pylab as plt
@@ -396,12 +386,10 @@ class ThermoBulk(object):
 
     def plot_heat_capacity(self, to_kB: bool = True):
         """
+        Plot the heat capacity.
 
         Args:
-            to_kB:
-
-        Returns:
-
+            to_kB: Convert the heat capacity to kB units.
         """
         try:
             import pylab as plt
@@ -421,11 +409,9 @@ class ThermoBulk(object):
         plt.legend(loc="lower right")
         plt.xlabel("Temperature [K]")
 
-    def contour_pressure(self):
+    def contour_pressure(self) -> None:
         """
-
-        Returns:
-
+        Plot the contour of pressure.
         """
         try:
             import pylab as plt
@@ -439,11 +425,9 @@ class ThermoBulk(object):
         plt.xlabel("Volume [$\AA^3$]")
         plt.ylabel("Temperature [K]")
 
-    def contour_entropy(self):
+    def contour_entropy(self) -> None:
         """
-
-        Returns:
-
+        Plot the contour of entropy.
         """
         try:
             import pylab as plt
@@ -457,15 +441,16 @@ class ThermoBulk(object):
         plt.xlabel("Volume [$\AA^3$]")
         plt.ylabel("Temperature [K]")
 
-    def plot_contourf(self, ax=None, show_min_erg_path=False):
+    def plot_contourf(self, ax=None, show_min_erg_path=False) -> plt.Axes:
         """
+        Plot the contourf of energies.
 
         Args:
-            ax:
-            show_min_erg_path:
+            ax: The matplotlib axes object.
+            show_min_erg_path: Whether to show the minimum energy path.
 
         Returns:
-
+            The matplotlib axes object.
         """
         try:
             import pylab as plt
@@ -483,14 +468,15 @@ class ThermoBulk(object):
 
     def plot_min_energy_path(self, *args, ax=None, **qwargs):
         """
+        Plot the minimum energy path.
 
         Args:
-            *args:
-            ax:
-            **qwargs:
+            *args: Additional arguments to pass to the plot function.
+            ax: The matplotlib axes object.
+            **qwargs: Additional keyword arguments to pass to the plot function.
 
         Returns:
-
+            The matplotlib axes object.
         """
         try:
             import pylab as plt
@@ -504,7 +490,17 @@ class ThermoBulk(object):
         return ax
 
 
-def get_thermo_bulk_model(temperatures: np.ndarray, debye_model):
+def get_thermo_bulk_model(temperatures: np.ndarray, debye_model: DebyeModel) -> ThermoBulk:
+    """
+    Get the thermo bulk model.
+
+    Args:
+        temperatures: The temperatures.
+        debye_model: The Debye model.
+
+    Returns:
+        The thermo bulk model.
+    """
     thermo = ThermoBulk()
     thermo.temperatures = temperatures
     thermo.volumes = debye_model.volume

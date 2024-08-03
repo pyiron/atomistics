@@ -1,6 +1,7 @@
 import numpy as np
 import spglib
 from ase.atoms import Atoms
+from typing import List, Tuple
 
 
 def ase_to_spglib(structure: Atoms) -> tuple:
@@ -19,6 +20,15 @@ def ase_to_spglib(structure: Atoms) -> tuple:
 
 
 def find_symmetry_group_number(struct: tuple) -> int:
+    """
+    Find the symmetry group number (SGN) of a given structure.
+
+    Parameters:
+    struct (tuple): The structure in the format of (basis vectors, atomic points, types).
+
+    Returns:
+    int: The symmetry group number (SGN) of the structure.
+    """
     dataset = spglib.get_symmetry_dataset(cell=ase_to_spglib(struct))
     SGN = dataset["number"]
     return SGN
@@ -74,6 +84,15 @@ Ls_Dic = {
 
 
 def get_symmetry_family_from_SGN(SGN: int) -> str:
+    """
+    Get the symmetry family (LC) from the symmetry group number (SGN).
+
+    Parameters:
+    SGN (int): The symmetry group number.
+
+    Returns:
+    str: The symmetry family (LC).
+    """
     if 1 <= SGN <= 2:  # Triclinic
         LC = "N"
     elif 3 <= SGN <= 15:  # Monoclinic
@@ -102,6 +121,15 @@ def get_symmetry_family_from_SGN(SGN: int) -> str:
 
 
 def get_LAG_Strain_List(LC: str) -> list[str]:
+    """
+    Get the Lag_strain_list based on the symmetry family (LC).
+
+    Parameters:
+    LC (str): The symmetry family.
+
+    Returns:
+    list[str]: The Lag_strain_list.
+    """
     if LC == "CI" or LC == "CII":
         Lag_strain_list = ["01", "08", "23"]
     elif LC == "HI" or LC == "HII":
@@ -335,11 +363,18 @@ def get_C_from_A2(A2: np.ndarray, LC: str) -> np.ndarray:
     return C
 
 
-def symmetry_analysis(structure: Atoms, eps_range: float, num_of_point: int):
+def symmetry_analysis(structure: Atoms, eps_range: float, num_of_point: int) -> Tuple[int, float, str, List[str], np.ndarray]:
     """
-
+    Perform symmetry analysis on a given atomic structure.
+    
+    Parameters:
+        structure (Atoms): The atomic structure.
+        eps_range (float): The range of epsilon values.
+        num_of_point (int): The number of points to evaluate.
+        
     Returns:
-
+        Tuple[int, float, str, List[str], np.ndarray]: The symmetry group number, volume, symmetry family,
+        list of Lagrangian strain types, and array of epsilon values.
     """
     SGN = find_symmetry_group_number(structure)
     v0 = structure.get_volume()

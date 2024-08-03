@@ -18,6 +18,16 @@ class ElasticMatrixWorkflow(Workflow):
         sqrt_eta: bool = True,
         fit_order: int = 2,
     ):
+        """
+        Initialize the ElasticMatrixWorkflow object.
+
+        Args:
+            structure (Atoms): The atomic structure.
+            num_of_point (int, optional): The number of strain points. Defaults to 5.
+            eps_range (float, optional): The range of strain. Defaults to 0.005.
+            sqrt_eta (bool, optional): Whether to take the square root of eta. Defaults to True.
+            fit_order (int, optional): The order of polynomial fit. Defaults to 2.
+        """
         self.structure = structure.copy()
         self.num_of_point = num_of_point
         self.eps_range = eps_range
@@ -31,9 +41,10 @@ class ElasticMatrixWorkflow(Workflow):
 
     def generate_structures(self) -> dict:
         """
+        Generate the structures for elastic matrix calculation.
 
         Returns:
-
+            dict: The generated structures.
         """
         self._data, self._structure_dict = generate_structures_helper(
             structure=self.structure,
@@ -48,13 +59,15 @@ class ElasticMatrixWorkflow(Workflow):
         self, output_dict: dict, output_keys: tuple = OutputElastic.keys()
     ) -> dict:
         """
+        Analyze the structures and calculate the elastic matrix.
 
         Args:
-            output_dict (dict):
-            output_keys (tuple):
+            output_dict (dict): The output dictionary.
+            output_keys (tuple, optional): The keys to extract from the output dictionary.
+                Defaults to OutputElastic.keys().
 
         Returns:
-
+            dict: The calculated elastic matrix.
         """
         self._data, elastic_dict = analyse_structures_helper(
             output_dict=output_dict,

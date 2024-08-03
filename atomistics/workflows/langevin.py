@@ -14,16 +14,18 @@ def langevin_delta_v(
     time_step: float,
     masses: np.ndarray,
     velocities: np.ndarray,
-    damping_timescale: float = None,
-) -> float:
+    damping_timescale: float = None
+) -> np.ndarray:
     """
     Velocity changes due to the Langevin thermostat.
+    
     Args:
         temperature (float): The target temperature in K.
         time_step (float): The MD time step in fs.
         masses (numpy.ndarray): Per-atom masses in u with a shape (N_atoms, 1).
         damping_timescale (float): The characteristic timescale of the thermostat in fs.
         velocities (numpy.ndarray): Per-atom velocities in angstrom/fs.
+    
     Returns:
         (numpy.ndarray): Per atom accelerations to use for changing velocities.
     """
@@ -43,12 +45,33 @@ def langevin_delta_v(
 
 
 def convert_to_acceleration(forces: np.ndarray, masses: np.ndarray) -> np.ndarray:
+    """
+    Convert forces to accelerations.
+    
+    Args:
+        forces (numpy.ndarray): Per-atom forces in eV/angstrom.
+        masses (numpy.ndarray): Per-atom masses in u.
+    
+    Returns:
+        (numpy.ndarray): Per-atom accelerations in angstrom/fs^2.
+    """
     return forces * EV_TO_U_ANGSQ_PER_FSSQ / masses
 
 
 def get_initial_velocities(
     temperature: float, masses: np.ndarray, overheat_fraction: float = 2.0
 ) -> np.ndarray:
+    """
+    Generate initial velocities for the Langevin thermostat.
+    
+    Args:
+        temperature (float): The target temperature in K.
+        masses (numpy.ndarray): Per-atom masses in u with a shape (N_atoms, 1).
+        overheat_fraction (float): The factor to overheat the system by (default: 2.0).
+    
+    Returns:
+        (numpy.ndarray): Per-atom velocities in angstrom/fs.
+    """
     vel_scale = np.sqrt(EV_TO_U_ANGSQ_PER_FSSQ * KB * temperature / masses) * np.sqrt(
         overheat_fraction
     )
@@ -61,11 +84,51 @@ def get_initial_velocities(
 def get_first_half_step(
     forces: np.ndarray, masses: np.ndarray, time_step: float, velocities: np.ndarray
 ) -> np.ndarray:
+    """
+    Calculate the velocities at the first half step of the Langevin workflow.
+    
+    Args:
+        forces (numpy.ndarray): Per-atom forces in eV/angstrom.
+        masses (numpy.ndarray): Per-atom masses in u.
+        time_step (float): The MD time step in fs.
+        velocities (numpy.ndarray): Per-atom velocities in angstrom/fs.
+    
+    Returns:
+        (numpy.ndarray): Per-atom velocities at the first half step in angstrom/fs.
+    """
     acceleration = convert_to_acceleration(forces, masses)
     return velocities + 0.5 * acceleration * time_step
 
 
 class LangevinWorkflow(Workflow):
+    """
+    LangevinWorkflow class represents a workflow for performing Langevin dynamics simulation.
+
+    Args:
+        structure (ase.Atoms): The atomic structure.
+        temperature (float, optional): The temperature in Kelvin. Default is 1000.0.
+        overheat_fraction (float, optional): The fraction by which to overheat the system. Default is 2.0.
+        damping_timescale (float, optional): The damping timescale in fs. Default is 100.0.
+        time_step (int, optional): The time step in fs. Default is 1.
+
+    Attributes:
+        structure (ase.Atoms): The atomic structure.
+        temperature (float): The temperature in Kelvin.
+        overheat_fraction (float): The fraction by which the system is overheated.
+        damping_timescale (float): The damping timescale in fs.
+        time_step (int): The time step in fs.
+        masses (numpy.ndarray): The masses of the atoms.
+        positions (numpy.ndarray): The positions of the atoms.
+        velocities (numpy.ndarray): The velocities of the atoms.
+        gamma (numpy.ndarray): The damping coefficients of the atoms.
+        forces (numpy.ndarray): The forces on the atoms.
+
+    Methods:
+        generate_structures: Generates the structures for the Langevin dynamics simulation.
+        analyse_structures: Analyzes the structures generated in the Langevin dynamics simulation.
+
+    """
+
     def __init__(
         self,
         structure: Atoms,
@@ -89,11 +152,12 @@ class LangevinWorkflow(Workflow):
         self.gamma = self.masses / self.damping_timescale
         self.forces = None
 
-    def generate_structures(self) -> dict:
+    def generate_structures(self) -> Dict[str, Dict[int, Atoms]]:
         """
+        Generates the structures for the Langevin dynamics simulation.
 
         Returns:
-            (dict)
+            dict: A dictionary containing the generated structures.
         """
         if self.forces is not None:
             # first half step
@@ -121,7 +185,16 @@ class LangevinWorkflow(Workflow):
             structure = self.structure
         return {"calc_forces": {0: structure}, "calc_energy": {0: structure}}
 
-    def analyse_structures(self, output_dict: dict):
+    def analyse_structures(self, output_dict: Dict[str, Dict[int, Atoms]]):
+        """
+        Analyzes the structures generated in the Langevin dynamics simulation.
+
+        Args:
+            output_dict (dict): A dictionary containing the output structures.
+
+        Returns:
+            tuple: A tuple containing the potential energy and kinetic energy.
+        """
         self.forces, eng_pot = output_dict["forces"][0], output_dict["energy"][0]
 
         # second half step

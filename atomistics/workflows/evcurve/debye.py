@@ -19,6 +19,19 @@ class DebyeThermalProperties(object):
         constant_volume: bool = False,
         num_steps: int = 50,
     ):
+        """
+        Initialize the DebyeThermalProperties class.
+
+        Parameters:
+        - fit_dict (dict): The fit dictionary containing the volume and bulk modulus information.
+        - masses (list[float]): The masses of the atoms in the system.
+        - t_min (float): The minimum temperature in Kelvin. Default is 1.0.
+        - t_max (float): The maximum temperature in Kelvin. Default is 1500.0.
+        - t_step (float): The temperature step size in Kelvin. Default is 50.0.
+        - temperatures (np.ndarray): The array of temperatures. If None, it will be generated based on t_min, t_max, and t_step. Default is None.
+        - constant_volume (bool): Whether to calculate properties at constant volume. Default is False.
+        - num_steps (int): The number of steps for volume interpolation. Default is 50.
+        """
         if temperatures is None:
             temperatures = np.arange(t_min, t_max + t_step, t_step)
         self._temperatures = temperatures
@@ -32,15 +45,33 @@ class DebyeThermalProperties(object):
         self._constant_volume = constant_volume
 
     def free_energy(self) -> np.ndarray:
+        """
+        Calculate the free energy.
+
+        Returns:
+        - np.ndarray: The array of free energy values.
+        """
         return (
             self._pes.get_free_energy_p()
             - self._debye_model.interpolate(volumes=self._pes.get_minimum_energy_path())
         ) / self._pes.num_atoms
 
     def temperatures(self) -> np.ndarray:
+        """
+        Get the array of temperatures.
+
+        Returns:
+        - np.ndarray: The array of temperatures.
+        """
         return self._temperatures
 
     def entropy(self) -> np.ndarray:
+        """
+        Calculate the entropy.
+
+        Returns:
+        - np.ndarray: The array of entropy values.
+        """
         if not self._constant_volume:
             return (
                 self._pes.eV_to_J_per_mol
@@ -55,6 +86,12 @@ class DebyeThermalProperties(object):
             )
 
     def heat_capacity(self) -> np.ndarray:
+        """
+        Calculate the heat capacity.
+
+        Returns:
+        - np.ndarray: The array of heat capacity values.
+        """
         if not self._constant_volume:
             heat_capacity = (
                 self._pes.eV_to_J_per_mol
@@ -70,6 +107,12 @@ class DebyeThermalProperties(object):
         return np.array(heat_capacity.tolist() + [np.nan, np.nan])
 
     def volumes(self) -> np.ndarray:
+        """
+        Get the array of volumes.
+
+        Returns:
+        - np.ndarray: The array of volumes.
+        """
         if not self._constant_volume:
             return self._pes.get_minimum_energy_path()
         else:
@@ -77,14 +120,41 @@ class DebyeThermalProperties(object):
 
 
 def _debye_kernel(xi: np.ndarray) -> np.ndarray:
+    """
+    Calculate the Debye kernel.
+
+    Parameters:
+    - xi (np.ndarray): The array of values.
+
+    Returns:
+    - np.ndarray: The array of Debye kernel values.
+    """
     return xi**3 / (np.exp(xi) - 1)
 
 
 def debye_integral(x: np.ndarray) -> np.ndarray:
+    """
+    Calculate the Debye integral for a given array of values.
+
+    Parameters:
+        x (np.ndarray): Array of values for which the Debye integral is calculated.
+
+    Returns:
+        np.ndarray: Array of Debye integral values corresponding to the input values.
+    """
     return scipy.integrate.quad(_debye_kernel, 0, x)[0]
 
 
 def debye_function(x: np.ndarray) -> np.ndarray:
+    """
+    Calculate the Debye function for a given array of values.
+
+    Parameters:
+        x (np.ndarray): Array of values for which the Debye function is calculated.
+
+    Returns:
+        np.ndarray: Array of Debye function values corresponding to the input values.
+    """
     if hasattr(x, "__len__"):
         return np.array([3 / xx**3 * debye_integral(xx) for xx in x])
     return 3 / x**3 * debye_integral(x)
@@ -96,10 +166,17 @@ class DebyeModel(object):
     """
 
     def __init__(self, fit_dict: dict, masses: list[float], num_steps: int = 50):
+        """
+        Initialize the DebyeModel class.
+
+        Parameters:
+        - fit_dict (dict): The fit dictionary containing the volume and bulk modulus information.
+        - masses (list[float]): The masses of the atoms in the system.
+        - num_steps (int): The number of steps for volume interpolation. Default is 50.
+        """
         self._fit_dict = fit_dict
         self._masses = masses
 
-        # self._atoms_per_cell = len(murnaghan.structure)
         self._v_min = None
         self._v_max = None
         self._num_steps = None
@@ -112,25 +189,49 @@ class DebyeModel(object):
         self._debye_T = None
 
     def _init_volume(self):
+        """
+        Initialize the minimum and maximum volume values.
+        """
         vol = self._fit_dict["volume"]
         self._v_min, self._v_max = np.min(vol), np.max(vol)
 
     def _set_volume(self):
+        """
+        Set the volume array based on the minimum and maximum volume values.
+        """
         if self._v_min and self._v_max and self._num_steps:
             self._volume = np.linspace(self._v_min, self._v_max, self._num_steps)
             self._reset()
 
     @property
     def num_steps(self) -> int:
+        """
+        Get the number of steps for volume interpolation.
+
+        Returns:
+        - int: The number of steps.
+        """
         return self._num_steps
 
     @num_steps.setter
     def num_steps(self, val: int):
+        """
+        Set the number of steps for volume interpolation.
+
+        Parameters:
+        - val (int): The number of steps.
+        """
         self._num_steps = val
         self._set_volume()
 
     @property
     def volume(self) -> np.ndarray:
+        """
+        Get the array of volumes.
+
+        Returns:
+        - np.ndarray: The array of volumes.
+        """
         if self._volume is None:
             self._init_volume()
             self._set_volume()
@@ -138,21 +239,45 @@ class DebyeModel(object):
 
     @volume.setter
     def volume(self, volume_lst: np.ndarray):
+        """
+        Set the array of volumes.
+
+        Parameters:
+        - volume_lst (np.ndarray): The array of volumes.
+        """
         self._volume = volume_lst
         self._v_min = np.min(volume_lst)
         self._v_max = np.max(volume_lst)
         self._reset()
 
     def _reset(self):
+        """
+        Reset the Debye temperature.
+        """
         self._debye_T = None
 
     def interpolate(self, volumes: np.ndarray = None) -> np.ndarray:
+        """
+        Interpolate the energy based on the fit dictionary and volumes.
+
+        Parameters:
+        - volumes (np.ndarray): The array of volumes. If None, use the volume array of the DebyeModel.
+
+        Returns:
+        - np.ndarray: The interpolated energy values.
+        """
         if volumes is None:
             volumes = self.volume
         return interpolate_energy(fit_dict=self._fit_dict, volumes=volumes)
 
     @property
     def debye_temperature(self) -> tuple[float]:
+        """
+        Get the Debye temperature.
+
+        Returns:
+        - tuple[float]: The Debye temperature values.
+        """
         if self._debye_T is not None:
             return self._debye_T
 
@@ -180,9 +305,7 @@ class DebyeModel(object):
 
         r0 = (3 * V0 * Ang3_to_Bohr3 / (4 * np.pi)) ** (1.0 / 3.0)
         debye_zero = empirical * convert * np.sqrt(r0 * B0 * GPaTokBar / mass)
-        # print('r0, B0, Bp, mass, V0', r0, B0, Bp, mass, V0)
-        # print('gamma_low, gamma_high: ', gamma_low, gamma_high)
-        # print('debye_zero, V0: ', debye_zero, V0)
+
         if vol is None:
             print("WARNING: vol: ", vol)
 
@@ -195,6 +318,17 @@ class DebyeModel(object):
     def energy_vib(
         self, T: np.ndarray, debye_T: tuple[float] = None, low_T_limit: bool = True
     ):
+        """
+        Calculate the vibrational energy.
+
+        Parameters:
+        - T (np.ndarray): The array of temperatures.
+        - debye_T (tuple[float]): The Debye temperature values. If None, use the Debye temperature of the DebyeModel.
+        - low_T_limit (bool): Whether to use the low temperature limit. Default is True.
+
+        Returns:
+        - np.ndarray: The array of vibrational energy values.
+        """
         kB = scipy.constants.physical_constants["Boltzmann constant in eV/K"][0]
         if debye_T is None:
             if low_T_limit:
@@ -216,7 +350,18 @@ class DebyeModel(object):
         return atoms_per_cell * val
 
 
-def get_debye_model(fit_dict: dict, masses: list[float], num_steps: int = 50):
+def get_debye_model(fit_dict: Dict[str, float], masses: List[float], num_steps: int = 50) -> DebyeModel:
+    """
+    Create a DebyeModel object with the given parameters.
+
+    Args:
+        fit_dict (Dict[str, float]): A dictionary containing the fit parameters.
+        masses (List[float]): A list of masses for the atoms in the system.
+        num_steps (int, optional): The number of steps to use in the Debye model. Defaults to 50.
+
+    Returns:
+        DebyeModel: A DebyeModel object initialized with the given parameters.
+    """
     return DebyeModel(fit_dict=fit_dict, masses=masses, num_steps=num_steps)
 
 
@@ -231,6 +376,23 @@ def get_thermal_properties(
     num_steps: int = 50,
     output_keys: tuple = OutputThermodynamic.keys(),
 ) -> dict:
+    """
+    Calculate the thermal properties based on the Debye model.
+
+    Parameters:
+    - fit_dict (dict): The fit dictionary containing the volume and bulk modulus information.
+    - masses (list[float]): The masses of the atoms in the system.
+    - t_min (float): The minimum temperature. Default is 1.0.
+    - t_max (float): The maximum temperature. Default is 1500.0.
+    - t_step (float): The temperature step. Default is 50.0.
+    - temperatures (np.ndarray): The array of temperatures. If None, it will be generated based on t_min, t_max, and t_step.
+    - constant_volume (bool): Whether to calculate the properties at constant volume. Default is False.
+    - num_steps (int): The number of steps for volume interpolation. Default is 50.
+    - output_keys (tuple): The keys of the output properties to include in the result. Default is OutputThermodynamic.keys().
+
+    Returns:
+    - dict: A dictionary containing the calculated thermal properties.
+    """
     debye_model = DebyeThermalProperties(
         fit_dict=fit_dict,
         masses=masses,

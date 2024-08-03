@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import numpy as np
 from ase.atoms import Atoms
 
@@ -5,9 +7,24 @@ from atomistics.calculators.wrapper import as_task_dict_evaluator
 
 
 def check_force_constants(structure: Atoms, force_constants: np.ndarray) -> np.ndarray:
+    """
+    Check the shape of the force constants array and return a valid force constants array.
+
+    Args:
+        structure (Atoms): The reference structure.
+        force_constants (np.ndarray): The force constants array.
+
+    Returns:
+        np.ndarray: The valid force constants array.
+
+    Raises:
+        ValueError: If the reference structure is not set or the force constants shape is not recognized.
+    """
     if structure is None:
         raise ValueError("Set reference structure via set_reference_structure() first")
+    
     n_atom = len(structure.positions)
+    
     if len(np.array([force_constants]).flatten()) == 1:
         return force_constants * np.eye(3 * n_atom)
     elif np.array(force_constants).shape == (3 * n_atom, 3 * n_atom):
@@ -33,6 +50,16 @@ def check_force_constants(structure: Atoms, force_constants: np.ndarray) -> np.n
 
 
 def get_displacement(structure_equilibrium: Atoms, structure: Atoms) -> np.ndarray:
+    """
+    Calculate the displacements between two structures.
+
+    Args:
+        structure_equilibrium (Atoms): The equilibrium structure.
+        structure (Atoms): The current structure.
+
+    Returns:
+        np.ndarray: The displacements between the two structures.
+    """
     displacements = structure.get_scaled_positions()
     displacements -= structure_equilibrium.get_scaled_positions()
     displacements -= np.rint(displacements)
@@ -41,17 +68,41 @@ def get_displacement(structure_equilibrium: Atoms, structure: Atoms) -> np.ndarr
 
 def calc_forces_transformed(
     force_constants: np.ndarray, structure_equilibrium: Atoms, structure: Atoms
-) -> np.ndarray:
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Calculate the transformed forces and displacements.
+
+    Args:
+        force_constants (np.ndarray): The force constants array.
+        structure_equilibrium (Atoms): The equilibrium structure.
+        structure (Atoms): The current structure.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray]: The transformed forces and displacements.
+    """
     displacements = get_displacement(structure_equilibrium, structure)
     position_transformed = displacements.reshape(
         displacements.shape[0] * displacements.shape[1]
     )
-    return -np.dot(force_constants, position_transformed), displacements
+    forces_transformed = -np.dot(force_constants, position_transformed)
+    return forces_transformed, displacements
 
 
 def get_forces(
     force_constants: np.ndarray, structure_equilibrium: Atoms, structure: Atoms
 ) -> np.ndarray:
+    """
+    Calculate the forces on atoms based on the force constants, equilibrium structure, and current structure.
+
+    Args:
+        force_constants (np.ndarray): The force constants array.
+        structure_equilibrium (Atoms): The equilibrium structure.
+        structure (Atoms): The current structure.
+
+    Returns:
+        np.ndarray: The forces on atoms.
+
+    """
     displacements = get_displacement(structure_equilibrium, structure)
     position_transformed = displacements.reshape(
         displacements.shape[0] * displacements.shape[1]
@@ -67,6 +118,19 @@ def get_energy_pot(
     bulk_modulus: float = 0.0,
     shear_modulus: float = 0.0,
 ) -> float:
+    """
+    Calculate the potential energy of the system.
+
+    Args:
+        force_constants (np.ndarray): The force constants array.
+        structure_equilibrium (Atoms): The equilibrium structure.
+        structure (Atoms): The current structure.
+        bulk_modulus (float, optional): The bulk modulus. Defaults to 0.0.
+        shear_modulus (float, optional): The shear modulus. Defaults to 0.0.
+
+    Returns:
+        float: The potential energy of the system.
+    """
     displacements = get_displacement(structure_equilibrium, structure)
     position_transformed = displacements.reshape(
         displacements.shape[0] * displacements.shape[1]
@@ -86,6 +150,17 @@ def get_energy_pot(
 def get_stiffness_tensor(
     bulk_modulus: float = 0.0, shear_modulus: float = 0.0
 ) -> np.ndarray:
+    """
+    Calculate the stiffness tensor based on the bulk modulus and shear modulus.
+
+    Args:
+        bulk_modulus (float, optional): The bulk modulus. Defaults to 0.0.
+        shear_modulus (float, optional): The shear modulus. Defaults to 0.0.
+
+    Returns:
+        np.ndarray: The stiffness tensor.
+
+    """
     stiffness_tensor = np.zeros((6, 6))
     stiffness_tensor[:3, :3] = bulk_modulus - 2 * shear_modulus / 3
     stiffness_tensor[:3, :3] += np.eye(3) * 2 * shear_modulus
@@ -96,6 +171,17 @@ def get_stiffness_tensor(
 def get_pressure_times_volume(
     stiffness_tensor: np.ndarray, structure_equilibrium: Atoms, structure: Atoms
 ) -> float:
+    """
+    Calculate the pressure times volume.
+
+    Args:
+        stiffness_tensor (np.ndarray): The stiffness tensor.
+        structure_equilibrium (Atoms): The equilibrium structure.
+        structure (Atoms): The current structure.
+
+    Returns:
+        float: The pressure times volume.
+    """
     if np.sum(stiffness_tensor) != 0:
         epsilon = np.einsum(
             "ij,jk->ik",
@@ -120,7 +206,24 @@ def evaluate_with_hessian(
     force_constants: np.ndarray,
     bulk_modulus: float = 0.0,
     shear_modulus: float = 0.0,
-):
+) -> dict[str, Union[float, np.ndarray]]:
+    """
+    Evaluate the specified tasks using the Hessian calculator.
+
+    Args:
+        structure (Atoms): The current structure.
+        tasks (dict[str, dict]): The tasks to evaluate.
+        structure_equilibrium (Atoms): The equilibrium structure.
+        force_constants (np.ndarray): The force constants array.
+        bulk_modulus (float, optional): The bulk modulus. Defaults to 0.0.
+        shear_modulus (float, optional): The shear modulus. Defaults to 0.0.
+
+    Returns:
+        dict[str, Union[float, np.ndarray]]: The results of the evaluated tasks.
+
+    Raises:
+        ValueError: If the specified tasks are not supported.
+    """
     results = {}
     if "calc_energy" in tasks or "calc_forces" in tasks:
         force_constants = check_force_constants(

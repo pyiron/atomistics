@@ -47,6 +47,16 @@ if TYPE_CHECKING:
 
 
 def get_quantities_from_tasks(tasks: dict) -> list:
+    """
+    Get a list of quantities based on the given tasks.
+
+    Args:
+        tasks (dict): A dictionary of tasks.
+
+    Returns:
+        list: A list of quantities.
+
+    """
     quantities = []
     if "calc_energy" in tasks:
         quantities.append("energy")

@@ -9,6 +9,15 @@ except ImportError:
 
 
 def get_tqdm_iterator(lst: list) -> Iterator:
+    """
+    Returns an iterator with tqdm progress bar if tqdm is available, otherwise returns the original list iterator.
+
+    Args:
+        lst (list): The list to iterate over.
+
+    Returns:
+        Iterator: An iterator with tqdm progress bar if tqdm is available, otherwise the original list iterator.
+    """
     if tqdm_available:
         return tqdm(lst)
     else:

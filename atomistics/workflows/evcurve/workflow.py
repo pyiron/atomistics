@@ -26,6 +26,18 @@ class EnergyVolumeCurveWorkflow(Workflow):
         axes: tuple[str, str, str] = ("x", "y", "z"),
         strains: list = None,
     ):
+        """
+        Initialize the EnergyVolumeCurveWorkflow object.
+
+        Args:
+            structure (Atoms): The atomic structure.
+            num_points (int, optional): The number of points in the energy-volume curve. Defaults to 11.
+            fit_type (str, optional): The type of fitting function. Defaults to "polynomial".
+            fit_order (int, optional): The order of the fitting function. Defaults to 3.
+            vol_range (float, optional): The range of volume variation. Defaults to 0.05.
+            axes (tuple[str, str, str], optional): The axes along which to vary the volume. Defaults to ("x", "y", "z").
+            strains (list, optional): The list of strains to apply. Defaults to None.
+        """
         self.structure = structure
         self.num_points = num_points
         self.fit_type = fit_type
@@ -38,13 +50,20 @@ class EnergyVolumeCurveWorkflow(Workflow):
 
     @property
     def fit_dict(self) -> dict:
+        """
+        Get the fit dictionary.
+
+        Returns:
+            dict: The fit dictionary.
+        """
         return self._fit_dict
 
     def generate_structures(self) -> dict:
         """
+        Generate the structures for the energy-volume curve.
 
         Returns:
-            (dict)
+            dict: The generated structures.
         """
         self._structure_dict = OrderedDict(
             generate_structures_helper(
@@ -60,6 +79,16 @@ class EnergyVolumeCurveWorkflow(Workflow):
     def analyse_structures(
         self, output_dict: dict, output_keys: tuple = OutputEnergyVolumeCurve.keys()
     ) -> dict:
+        """
+        Analyse the structures and fit the energy-volume curve.
+
+        Args:
+            output_dict (dict): The output dictionary.
+            output_keys (tuple, optional): The keys to include in the output. Defaults to OutputEnergyVolumeCurve.keys().
+
+        Returns:
+            dict: The fit dictionary.
+        """
         self._fit_dict = analyse_structures_helper(
             output_dict=output_dict,
             structure_dict=self._structure_dict,
@@ -78,6 +107,20 @@ class EnergyVolumeCurveWorkflow(Workflow):
         constant_volume: bool = False,
         output_keys: tuple[str] = OutputThermodynamic.keys(),
     ) -> dict:
+        """
+        Get the thermal properties of the system.
+
+        Args:
+            t_min (float, optional): The minimum temperature. Defaults to 1.0.
+            t_max (float, optional): The maximum temperature. Defaults to 1500.0.
+            t_step (float, optional): The temperature step. Defaults to 50.0.
+            temperatures (np.ndarray, optional): The array of temperatures. Defaults to None.
+            constant_volume (bool, optional): Whether to calculate properties at constant volume. Defaults to False.
+            output_keys (tuple[str], optional): The keys to include in the output. Defaults to OutputThermodynamic.keys().
+
+        Returns:
+            dict: The thermal properties.
+        """
         return get_thermal_properties(
             fit_dict=self.fit_dict,
             masses=self.structure.get_masses(),
