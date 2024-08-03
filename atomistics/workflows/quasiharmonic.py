@@ -746,7 +746,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         is_projection: bool = False,
         quantum_mechanical: bool = True,
         output_keys: tuple[str] = OutputThermodynamic.keys(),
-    ) -> Thermal:
+    ) -> dict:
         """
         Returns thermal properties at constant volume in the given temperature range. Can only be called after job
         successfully ran.
