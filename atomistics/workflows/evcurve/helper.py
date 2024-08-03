@@ -36,7 +36,10 @@ def _strain_axes(
 
 
 def apply_strain(
-    structure: Atoms, epsilon: Union[float, List[float], np.ndarray], return_box: bool = False, mode: str = "linear"
+    structure: Atoms,
+    epsilon: Union[float, List[float], np.ndarray],
+    return_box: bool = False,
+    mode: str = "linear",
 ) -> Atoms:
     """
     Apply a given strain on the structure. It applies the matrix `F` in the manner:
@@ -206,7 +209,7 @@ def generate_structures_helper(
     vol_range: Optional[float] = None,
     num_points: Optional[int] = None,
     strain_lst: Optional[List[float]] = None,
-    axes: tuple[str, str, str] = ("x", "y", "z")
+    axes: tuple[str, str, str] = ("x", "y", "z"),
 ) -> dict:
     """
     Generate a dictionary of strained structures.

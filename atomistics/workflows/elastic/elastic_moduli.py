@@ -239,7 +239,9 @@ def get_AVR(shearmodul_voigt: float, shearmodul_reuss: float) -> float:
     )
 
 
-def get_elastic_matrix_eigval(elastic_matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def get_elastic_matrix_eigval(
+    elastic_matrix: np.ndarray,
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Calculate the eigenvalues and eigenvectors of the elastic matrix.
 

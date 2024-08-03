@@ -1,7 +1,8 @@
+from typing import List, Tuple
+
 import numpy as np
 import spglib
 from ase.atoms import Atoms
-from typing import List, Tuple
 
 
 def ase_to_spglib(structure: Atoms) -> tuple:
@@ -363,15 +364,17 @@ def get_C_from_A2(A2: np.ndarray, LC: str) -> np.ndarray:
     return C
 
 
-def symmetry_analysis(structure: Atoms, eps_range: float, num_of_point: int) -> Tuple[int, float, str, List[str], np.ndarray]:
+def symmetry_analysis(
+    structure: Atoms, eps_range: float, num_of_point: int
+) -> Tuple[int, float, str, List[str], np.ndarray]:
     """
     Perform symmetry analysis on a given atomic structure.
-    
+
     Parameters:
         structure (Atoms): The atomic structure.
         eps_range (float): The range of epsilon values.
         num_of_point (int): The number of points to evaluate.
-        
+
     Returns:
         Tuple[int, float, str, List[str], np.ndarray]: The symmetry group number, volume, symmetry family,
         list of Lagrangian strain types, and array of epsilon values.

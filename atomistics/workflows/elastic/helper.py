@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import Dict, Tuple, Any
+from typing import Any, Dict, Tuple
 
 import ase.atoms
 import numpy as np
@@ -198,7 +198,9 @@ def _subjob_name(i: int, eps: float) -> str:
     return ("s_%s_e_%.5f" % (i, eps)).replace(".", "_").replace("-", "m")
 
 
-def _fit_elastic_matrix(strain_ene: list[list[tuple[float, float]]], v0: float, LC: str, fit_order: int) -> Tuple[np.ndarray, np.ndarray]:
+def _fit_elastic_matrix(
+    strain_ene: list[list[tuple[float, float]]], v0: float, LC: str, fit_order: int
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Fit the elastic matrix from strain-energy data.
 

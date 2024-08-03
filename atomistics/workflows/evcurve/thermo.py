@@ -490,7 +490,9 @@ class ThermoBulk:
         return ax
 
 
-def get_thermo_bulk_model(temperatures: np.ndarray, debye_model: DebyeModel) -> ThermoBulk:
+def get_thermo_bulk_model(
+    temperatures: np.ndarray, debye_model: DebyeModel
+) -> ThermoBulk:
     """
     Get the thermo bulk model.
 

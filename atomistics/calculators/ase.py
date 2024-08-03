@@ -1,17 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Union, Dict
+from typing import TYPE_CHECKING, Dict, List, Union
 
 import numpy as np
 from ase.atoms import Atoms
-from ase.md.npt import NPT
-from ase.calculators.calculator import Calculator
-from ase.units import units
-from ase.calculators.calculator import PropertyNotImplementedError
+from ase.calculators.calculator import Calculator, PropertyNotImplementedError
 from ase.constraints import UnitCellFilter
 from ase.md.langevin import Langevin
 from ase.md.npt import NPT
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
+from ase.units import units
 
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.wrapper import as_task_dict_evaluator
@@ -269,6 +267,7 @@ def optimize_positions_and_volume_with_ase(
     dyn.run(fmax=0.05, volume=True)
     return structure
 
+
 def calc_molecular_dynamics_langevin_with_ase(
     structure: Atoms,
     ase_calculator: Calculator,
@@ -277,7 +276,7 @@ def calc_molecular_dynamics_langevin_with_ase(
     timestep: float = 1.0,
     temperature: float = 100.0,
     friction: float = 0.002,
-    output_keys: List[str] = ['energy', 'forces', 'positions'],
+    output_keys: List[str] = ["energy", "forces", "positions"],
 ) -> dict:
     """
     Perform molecular dynamics simulation using the Langevin algorithm with ASE.

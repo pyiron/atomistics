@@ -22,9 +22,9 @@ def check_force_constants(structure: Atoms, force_constants: np.ndarray) -> np.n
     """
     if structure is None:
         raise ValueError("Set reference structure via set_reference_structure() first")
-    
+
     n_atom = len(structure.positions)
-    
+
     if len(np.array([force_constants]).flatten()) == 1:
         return force_constants * np.eye(3 * n_atom)
     elif np.array(force_constants).shape == (3 * n_atom, 3 * n_atom):
