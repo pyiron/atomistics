@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.constants
 import scipy.optimize
+from typing import List, Dict
 
 from atomistics.shared.output import OutputThermodynamic
 from atomistics.workflows.evcurve.fit import interpolate_energy
