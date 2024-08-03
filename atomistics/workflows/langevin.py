@@ -14,18 +14,18 @@ def langevin_delta_v(
     time_step: float,
     masses: np.ndarray,
     velocities: np.ndarray,
-    damping_timescale: float = None
+    damping_timescale: float = None,
 ) -> np.ndarray:
     """
     Velocity changes due to the Langevin thermostat.
-    
+
     Args:
         temperature (float): The target temperature in K.
         time_step (float): The MD time step in fs.
         masses (numpy.ndarray): Per-atom masses in u with a shape (N_atoms, 1).
         damping_timescale (float): The characteristic timescale of the thermostat in fs.
         velocities (numpy.ndarray): Per-atom velocities in angstrom/fs.
-    
+
     Returns:
         (numpy.ndarray): Per atom accelerations to use for changing velocities.
     """
@@ -47,11 +47,11 @@ def langevin_delta_v(
 def convert_to_acceleration(forces: np.ndarray, masses: np.ndarray) -> np.ndarray:
     """
     Convert forces to accelerations.
-    
+
     Args:
         forces (numpy.ndarray): Per-atom forces in eV/angstrom.
         masses (numpy.ndarray): Per-atom masses in u.
-    
+
     Returns:
         (numpy.ndarray): Per-atom accelerations in angstrom/fs^2.
     """
@@ -63,12 +63,12 @@ def get_initial_velocities(
 ) -> np.ndarray:
     """
     Generate initial velocities for the Langevin thermostat.
-    
+
     Args:
         temperature (float): The target temperature in K.
         masses (numpy.ndarray): Per-atom masses in u with a shape (N_atoms, 1).
         overheat_fraction (float): The factor to overheat the system by (default: 2.0).
-    
+
     Returns:
         (numpy.ndarray): Per-atom velocities in angstrom/fs.
     """
@@ -86,13 +86,13 @@ def get_first_half_step(
 ) -> np.ndarray:
     """
     Calculate the velocities at the first half step of the Langevin workflow.
-    
+
     Args:
         forces (numpy.ndarray): Per-atom forces in eV/angstrom.
         masses (numpy.ndarray): Per-atom masses in u.
         time_step (float): The MD time step in fs.
         velocities (numpy.ndarray): Per-atom velocities in angstrom/fs.
-    
+
     Returns:
         (numpy.ndarray): Per-atom velocities at the first half step in angstrom/fs.
     """

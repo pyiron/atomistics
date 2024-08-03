@@ -350,7 +350,9 @@ class DebyeModel(object):
         return atoms_per_cell * val
 
 
-def get_debye_model(fit_dict: Dict[str, float], masses: List[float], num_steps: int = 50) -> DebyeModel:
+def get_debye_model(
+    fit_dict: Dict[str, float], masses: List[float], num_steps: int = 50
+) -> DebyeModel:
     """
     Create a DebyeModel object with the given parameters.
 

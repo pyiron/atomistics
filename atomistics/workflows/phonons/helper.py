@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Dict
+from typing import Dict, Optional, Tuple
 
 import numpy as np
 import scipy.constants
