@@ -1,3 +1,5 @@
+from typing import Dict
+
 import numpy as np
 from ase.atoms import Atoms
 from scipy.constants import physical_constants
