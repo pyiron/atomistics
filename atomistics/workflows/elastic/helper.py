@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import Any, Dict, Tuple, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import ase.atoms
 import numpy as np
