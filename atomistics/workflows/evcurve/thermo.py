@@ -491,7 +491,7 @@ class ThermoBulk:
 
 
 def get_thermo_bulk_model(
-    temperatures: np.ndarray, debye_model: DebyeModel
+    temperatures: np.ndarray, debye_model
 ) -> ThermoBulk:
     """
     Get the thermo bulk model.
