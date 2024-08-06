@@ -13,4 +13,4 @@ dependencies:
 - seekpath =2.1.0
 - spglib =2.5.0
 - structuretoolkit =0.0.27
-- tqdm =4.66.4
+- tqdm =4.66.5
