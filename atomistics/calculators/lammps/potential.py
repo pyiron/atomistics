@@ -5,7 +5,6 @@ from typing import Union
 import pandas
 from ase.atoms import Atoms
 
-
 potential_installation = """
 Potential installation guide:
 
@@ -153,7 +152,9 @@ class PotentialAbstract(object):
                             ),
                         },
                     )
-        raise ValueError("Was not able to locate the potential files." + potential_installation)
+        raise ValueError(
+            "Was not able to locate the potential files." + potential_installation
+        )
 
 
 class LammpsPotentialFile(PotentialAbstract):
