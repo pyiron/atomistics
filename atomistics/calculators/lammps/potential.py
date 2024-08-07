@@ -6,6 +6,35 @@ import pandas
 from ase.atoms import Atoms
 
 
+potential_installation = """
+Potential installation guide:
+
+1. Check whether iprpy-data is installed. If not, install it using:
+
+`conda install -c conda-forge iprpy-data`
+
+2. Check whether the resource path is set via:
+
+```python
+import os
+print(os.environ["CONDA_PREFIX"])
+```
+
+3. If the resource path is set, you can call the potential using:
+
+```python
+from atomistics.calculators import get_potential_by_name
+
+
+get_potential_by_name(
+    potential_name=my_potential,
+    resource_path=os.path.join(os.environ["CONDA_PREFIX"], "share", "iprpy"),
+)
+```
+
+"""
+
+
 class PotentialAbstract(object):
     """
     The PotentialAbstract class loads a list of available potentials and sorts them. Afterwards the potentials can be
@@ -124,7 +153,7 @@ class PotentialAbstract(object):
                             ),
                         },
                     )
-        raise ValueError("Was not able to locate the potential files.")
+        raise ValueError("Was not able to locate the potential files." + potential_installation)
 
 
 class LammpsPotentialFile(PotentialAbstract):
@@ -310,7 +339,7 @@ def get_resource_path_from_conda(
             resource_path = os.path.join(env[conda_var], "share", "iprpy")
             if os.path.exists(resource_path):
                 return resource_path
-    raise ValueError("No resource_path found")
+    raise ValueError("No resource_path found" + potential_installation)
 
 
 def get_potential_dataframe(structure: Atoms, resource_path=None):
