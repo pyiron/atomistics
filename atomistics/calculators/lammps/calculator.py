@@ -477,7 +477,7 @@ def evaluate_with_lammps(
     logger=None,
     log_file=None,
     library=None,
-    diable_log_file: bool = True,
+    disable_log_file: bool = True,
     lmp_optimizer_kwargs={},
 ) -> dict:
     lmp = LammpsASELibrary(
@@ -487,7 +487,7 @@ def evaluate_with_lammps(
         logger=logger,
         log_file=log_file,
         library=library,
-        diable_log_file=diable_log_file,
+        disable_log_file=disable_log_file,
     )
     results_dict = evaluate_with_lammps_library(
         task_dict=task_dict,
