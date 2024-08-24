@@ -124,7 +124,7 @@ def calc_molecular_dynamics_phonons_with_lammps(
         potential_dataframe=potential_dataframe,
         input_template=None,
         lmp=None,
-        diable_log_file=False,
+        disable_log_file=False,
         working_directory=".",
     )
     (
