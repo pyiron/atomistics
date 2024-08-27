@@ -30,7 +30,10 @@ jobs:
     - uses: actions/checkout@v4
     - name: Setup environment (windows)
       if: matrix.operating-system == 'windows-latest'
-      run: cp .ci_support/environment.yml environment.yml
+      shell: bash -l {0}
+      run: |
+        cp .ci_support/environment.yml environment.yml
+        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup environment (unix)
       if: matrix.operating-system != 'windows-latest'
       shell: bash -l {0}
