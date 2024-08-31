@@ -30,7 +30,9 @@ def _convert_task_lst_to_task_dict(task_lst: list) -> dict:
     return task_dict
 
 
-def evaluate_with_parallel_executor(evaluate_function: callable, task_dict: dict, executor: Executor, **kwargs) -> dict:
+def evaluate_with_parallel_executor(
+    evaluate_function: callable, task_dict: dict, executor: Executor, **kwargs
+) -> dict:
     future_lst = [
         executor.submit(evaluate_function, task_dict=task, **kwargs)
         for task in _convert_task_dict_to_task_lst(task_dict=task_dict)
