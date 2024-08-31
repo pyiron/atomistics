@@ -37,14 +37,13 @@ class TestEvCurve(unittest.TestCase):
                 executor=exe,
                 potential_dataframe=df_pot_selected,
             )
-        structure_dict = generate_structures_helper(
-            structure=result_dict["structure_with_optimized_positions_and_volume"],
-            vol_range=0.05,
-            num_points=11,
-            strain_lst=None,
-            axes=("x", "y", "z"),
-        )
-        with ProcessPoolExecutor() as exe:
+            structure_dict = generate_structures_helper(
+                structure=result_dict["structure_with_optimized_positions_and_volume"],
+                vol_range=0.05,
+                num_points=11,
+                strain_lst=None,
+                axes=("x", "y", "z"),
+            )
             result_dict = evaluate_with_parallel_executor(
                 evaluate_function=evaluate_with_lammps,
                 task_dict={"calc_energy": structure_dict},
