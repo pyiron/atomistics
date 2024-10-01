@@ -1,4 +1,4 @@
-name: MatGL Unittest Linux 3.11
+name: MatGL Unittest Linux 3.12
 
 on:
   push:
