@@ -7,7 +7,7 @@ dependencies:
 - mendeleev =0.18.1
 - numpy =1.26.4
 - pandas =2.2.3
-- phonopy =2.26.6
+- phonopy =2.29.0
 - requests =2.32.3
 - scipy =1.14.1
 - seekpath =2.1.0
