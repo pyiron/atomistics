@@ -38,7 +38,7 @@ Repository = "https://github.com/pyiron/atomistics"
 
 [project.optional-dependencies]
 phonopy = [
-    "phonopy==2.26.6",
+    "phonopy==2.33.3",
     "seekpath==2.1.0",
     "structuretoolkit==0.0.28",
 ]
@@ -47,12 +47,12 @@ gpaw = [
 ]
 lammps = [
     "pylammpsmpi==0.2.26",
-    "jinja2==3.1.4",
+    "jinja2==3.1.5",
     "pandas==2.2.3",
 ]
 lammps_phonons = [
     "pylammpsmpi==0.2.26",
-    "jinja2==3.1.4",
+    "jinja2==3.1.5",
     "pandas==2.2.3",
     "dynaphopy==1.17.16",
 ]
