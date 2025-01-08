@@ -12,5 +12,5 @@ dependencies:
 - scipy =1.14.1
 - seekpath =2.1.0
 - spglib =2.5.0
-- structuretoolkit =0.0.28
+- structuretoolkit =0.0.29
 - tqdm =4.67.1
