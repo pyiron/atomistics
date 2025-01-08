@@ -6,7 +6,7 @@ dependencies:
 - sphinx_rtd_theme
 - myst-parser
 - numpy
-- ase =3.23.0
+- ase =3.24.0
 - coverage
 - numpy =1.26.3
 - scipy =1.14.1
