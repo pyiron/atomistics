@@ -43,7 +43,7 @@ phonopy = [
     "structuretoolkit==0.0.30",
 ]
 gpaw = [
-    "gpaw==24.6.0",
+    "gpaw==25.1.0",
 ]
 lammps = [
     "pylammpsmpi==0.2.26",
