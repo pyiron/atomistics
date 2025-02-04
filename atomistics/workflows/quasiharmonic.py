@@ -254,7 +254,9 @@ def _get_thermal_properties_classical(
                 cond = freqs_ev > cutoff_frequency
                 t_property += (
                     np.sum(
-                        get_free_energy_classical(frequency=freqs_ev[cond], temperature=t)
+                        get_free_energy_classical(
+                            frequency=freqs_ev[cond], temperature=t
+                        )
                     )
                     * w
                 )

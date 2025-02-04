@@ -86,9 +86,7 @@ class PotentialAbstract:
     def find_by_name(self, potential_name: str) -> pandas.DataFrame:
         mask = self._potential_df["Name"] == potential_name
         if not mask.any():
-            raise ValueError(
-                f"Potential '{potential_name}' not found in database."
-            )
+            raise ValueError(f"Potential '{potential_name}' not found in database.")
         return self._potential_df[mask]
 
     def list(self) -> pandas.DataFrame:
