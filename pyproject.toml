@@ -116,6 +116,8 @@ ignore = [
     "PLR0915",
     # ignore overwritten variables in for-loop
     "PLW2901",
+    # ignore key in type
+    "SIM118",
 ]
 
 [tool.versioneer]
