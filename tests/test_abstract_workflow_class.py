@@ -4,7 +4,11 @@ from atomistics.workflows.interface import Workflow
 
 
 class WorkflowClass(Workflow):
-    pass
+    def generate_structures(self) -> dict:
+        raise NotImplementedError()
+
+    def analyse_structures(self, output_dict: dict) -> None:
+        raise NotImplementedError()
 
 
 class TestWorkflowClass(unittest.TestCase):
