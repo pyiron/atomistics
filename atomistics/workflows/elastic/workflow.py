@@ -33,8 +33,8 @@ class ElasticMatrixWorkflow(Workflow):
         self.eps_range = eps_range
         self.sqrt_eta = sqrt_eta
         self.fit_order = fit_order
-        self._data = dict()
-        self._structure_dict = dict()
+        self._data = {}
+        self._structure_dict = {}
         self.Lag_strain_list = []
         self.epss = np.array([])
         self.zero_strain_job_name = "s_e_0"

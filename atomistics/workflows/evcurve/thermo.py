@@ -1,6 +1,5 @@
-from __future__ import print_function
-
 from copy import copy
+from typing import Optional
 
 import numpy as np
 import scipy.constants
@@ -43,10 +42,8 @@ class ThermoBulk:
         """
         Reset the energy array.
         """
-        if self._volumes is not None:
-            if self._temperatures is not None:
-                self._energies = np.zeros((len(self._temperatures), len(self._volumes)))
-                # self.energies = 0
+        if self._volumes is not None and self._temperatures is not None:
+            self._energies = np.zeros((len(self._temperatures), len(self._volumes)))
 
     @property
     def num_atoms(self) -> int:

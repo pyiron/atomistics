@@ -364,7 +364,7 @@ def fit_polynomial(
     return fit_dict
 
 
-class EnergyVolumeFit(object):
+class EnergyVolumeFit:
     """
     Fit energy volume curves
 

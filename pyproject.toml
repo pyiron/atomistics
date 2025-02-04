@@ -75,6 +75,51 @@ include = ["atomistics*"]
 [tool.setuptools.dynamic]
 version = {attr = "atomistics.__version__"}
 
+[tool.ruff]
+exclude = [".ci_support", "docs", "notebooks", "tests", "setup.py", "_version.py"]
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # flake8-comprehensions
+    "C4",
+    # eradicate
+    "ERA",
+    # pylint
+    "PL",
+]
+ignore = [
+    # ignore function call in argument defaults
+    "B008",
+    # ignore cache
+    "B019",
+    # ignore star-arg unpacking after a keyword argument
+    "B026",
+    # ignore line-length violations
+    "E501",
+    # Too many arguments in function definition
+    "PLR0913",
+    # Magic value used in comparison
+    "PLR2004",
+    # Too many statements
+    "PLR0915",
+    # ignore overwritten variables in for-loop
+    "PLW2901",
+    # ignore key in type
+    "SIM118",
+]
+
 [tool.versioneer]
 VCS = "git"
 style = "pep440-pre"

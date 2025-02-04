@@ -1,5 +1,3 @@
-from typing import List, Tuple
-
 import numpy as np
 import spglib
 from ase.atoms import Atoms
@@ -131,9 +129,9 @@ def get_LAG_Strain_List(LC: str) -> list[str]:
     Returns:
     list[str]: The Lag_strain_list.
     """
-    if LC == "CI" or LC == "CII":
+    if LC in ("CI", "CII"):
         Lag_strain_list = ["01", "08", "23"]
-    elif LC == "HI" or LC == "HII":
+    elif LC in ("HI", "HII"):
         Lag_strain_list = ["01", "26", "04", "03", "17"]
     elif LC == "RI":
         Lag_strain_list = ["01", "08", "04", "02", "05", "10"]
@@ -192,7 +190,7 @@ def get_C_from_A2(A2: np.ndarray, LC: str) -> np.ndarray:
     C = np.zeros((6, 6))
 
     # %!%!%--- Cubic structures ---%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%
-    if LC == "CI" or LC == "CII":
+    if LC in ("CI", "CII"):
         C[0, 0] = -2.0 * (A2[0] - 3.0 * A2[1]) / 3.0
         C[1, 1] = C[0, 0]
         C[2, 2] = C[0, 0]
@@ -205,7 +203,7 @@ def get_C_from_A2(A2: np.ndarray, LC: str) -> np.ndarray:
     # --------------------------------------------------------------------------------------------------
 
     # %!%!%--- Hexagonal structures ---%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%!%
-    if LC == "HI" or LC == "HII":
+    if LC in ("HI", "HII"):
         C[0, 0] = 2.0 * A2[3]
         C[0, 1] = 2.0 / 3.0 * A2[0] + 4.0 / 3.0 * A2[1] - 2.0 * A2[2] - 2.0 * A2[3]
         C[0, 2] = 1.0 / 6.0 * A2[0] - 2.0 / 3.0 * A2[1] + 0.5 * A2[2]
@@ -366,7 +364,7 @@ def get_C_from_A2(A2: np.ndarray, LC: str) -> np.ndarray:
 
 def symmetry_analysis(
     structure: Atoms, eps_range: float, num_of_point: int
-) -> Tuple[int, float, str, List[str], np.ndarray]:
+) -> tuple[int, float, str, list[str], np.ndarray]:
     """
     Perform symmetry analysis on a given atomic structure.
 

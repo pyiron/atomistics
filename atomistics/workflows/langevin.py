@@ -1,5 +1,3 @@
-from typing import Dict
-
 import numpy as np
 from ase.atoms import Atoms
 from scipy.constants import physical_constants
@@ -154,7 +152,7 @@ class LangevinWorkflow(Workflow):
         self.gamma = self.masses / self.damping_timescale
         self.forces = None
 
-    def generate_structures(self) -> Dict[str, Dict[int, Atoms]]:
+    def generate_structures(self) -> dict[str, dict[int, Atoms]]:
         """
         Generates the structures for the Langevin dynamics simulation.
 
@@ -187,7 +185,7 @@ class LangevinWorkflow(Workflow):
             structure = self.structure
         return {"calc_forces": {0: structure}, "calc_energy": {0: structure}}
 
-    def analyse_structures(self, output_dict: Dict[str, Dict[int, Atoms]]):
+    def analyse_structures(self, output_dict: dict[str, dict[int, Atoms]]):
         """
         Analyzes the structures generated in the Langevin dynamics simulation.
 

@@ -1,5 +1,3 @@
-from typing import Dict, List
-
 import numpy as np
 import scipy.constants
 import scipy.optimize
@@ -9,7 +7,7 @@ from atomistics.workflows.evcurve.fit import interpolate_energy
 from atomistics.workflows.evcurve.thermo import get_thermo_bulk_model
 
 
-class DebyeThermalProperties(object):
+class DebyeThermalProperties:
     def __init__(
         self,
         fit_dict: dict,
@@ -162,7 +160,7 @@ def debye_function(x: np.ndarray) -> np.ndarray:
     return 3 / x**3 * debye_integral(x)
 
 
-class DebyeModel(object):
+class DebyeModel:
     """
     Calculate Thermodynamic Properties based on the Murnaghan output
     """
@@ -353,7 +351,7 @@ class DebyeModel(object):
 
 
 def get_debye_model(
-    fit_dict: Dict[str, float], masses: List[float], num_steps: int = 50
+    fit_dict: dict[str, float], masses: list[float], num_steps: int = 50
 ) -> DebyeModel:
     """
     Create a DebyeModel object with the given parameters.

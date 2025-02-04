@@ -68,8 +68,8 @@ def as_task_dict_evaluator(
     ) -> ResultsDict:
         task_dict = _convert_task_dict(task_dict)
         results_dict = {}
-        for label, (structure, tasks) in task_dict.items():
-            tasks = [TaskEnum(t) for t in tasks]
+        for label, (structure, task_lst) in task_dict.items():
+            tasks = [TaskEnum(t) for t in task_lst]
             output = calculate(structure, tasks, *calculate_args, **calculate_kwargs)
             for task_name in tasks:
                 result_name = TaskOutputEnum(task_name).name

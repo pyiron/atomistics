@@ -426,8 +426,10 @@ def evaluate_with_lammps_library(
     tasks: list[TaskName],
     potential_dataframe: DataFrame,
     lmp: LammpsASELibrary,
-    lmp_optimizer_kwargs: dict = {},
+    lmp_optimizer_kwargs: dict = None,
 ) -> dict:
+    if lmp_optimizer_kwargs is None:
+        lmp_optimizer_kwargs = {}
     results = {}
     if "optimize_positions_and_volume" in tasks:
         results["structure_with_optimized_positions_and_volume"] = (
@@ -478,8 +480,10 @@ def evaluate_with_lammps(
     log_file=None,
     library=None,
     disable_log_file: bool = True,
-    lmp_optimizer_kwargs={},
+    lmp_optimizer_kwargs=None,
 ) -> dict:
+    if lmp_optimizer_kwargs is None:
+        lmp_optimizer_kwargs = {}
     lmp = LammpsASELibrary(
         working_directory=working_directory,
         cores=cores,

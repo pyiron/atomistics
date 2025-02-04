@@ -1,3 +1,5 @@
+import sys
+
 import dynaphopy.dynamics as dyn
 import numpy as np
 import pandas
@@ -24,27 +26,27 @@ def generate_pylammps_trajectory(
     sampling_interval: int = 1,  # in timesteps
 ):
     lmp.interactive_lib_command("neighbor 0.3 bin")
-    lmp.interactive_lib_command("timestep {}".format(time_step))
+    lmp.interactive_lib_command(f"timestep {time_step}")
 
     # Force reset temperature (overwrites lammps script)
     # This forces NVT simulation
     if temperature is not None:
         lmp.interactive_lib_command(
-            "fix int all nvt temp {0} {0} {1}".format(temperature, thermostat_mass)
+            f"fix int all nvt temp {temperature} {temperature} {thermostat_mass}"
         )
 
     # Check if correct number of atoms
     if lmp._interactive_library.extract_global("natoms", 0) < 2:
         print("Number of atoms in MD should be higher than 1!")
-        exit()
+        sys.exit()
 
     # Check if initial velocities all zero
     if not np.array(lmp._interactive_library.gather_atoms("v", 1, 3)).any():
         t = temperature if temperature is not None else 100
         lmp.interactive_lib_command(
-            "velocity all create {} 3627941 dist gaussian mom yes".format(t)
+            f"velocity all create {t} 3627941 dist gaussian mom yes"
         )
-        lmp.interactive_lib_command("velocity all scale {}".format(t))
+        lmp.interactive_lib_command(f"velocity all scale {t}")
 
     lmp.interactive_lib_command("run 0")
     simulation_cell = lmp.interactive_cells_getter()
@@ -57,7 +59,7 @@ def generate_pylammps_trajectory(
     template = get_correct_arrangement(reference, structure)
     indexing = np.argsort(template)
 
-    lmp.interactive_lib_command("run {}".format(int(relaxation_time / time_step)))
+    lmp.interactive_lib_command(f"run {int(relaxation_time / time_step)}")
 
     if not silent:
         _progress_bar(0, "lammps")
@@ -70,7 +72,7 @@ def generate_pylammps_trajectory(
                 "lammps",
             )
 
-        lmp.interactive_lib_command("run {}".format(sampling_interval))
+        lmp.interactive_lib_command(f"run {sampling_interval}")
         energy.append(lmp.interactive_energy_pot_getter())
         velocity.append(lmp.interactive_velocities_getter()[indexing, :])
 
@@ -103,11 +105,13 @@ def calc_molecular_dynamics_phonons_with_lammps(
     time_step: float = 0.001,  # ps
     relaxation_time: int = 5,  # ps
     silent: bool = True,
-    supercell: list[int] = [2, 2, 2],
+    supercell: list[int] = None,
     memmap: bool = False,
     velocity_only: bool = True,
     temperature: float = 300.0,
 ):
+    if supercell is None:
+        supercell = [2, 2, 2]
     dp_structure = Structure(
         cell=phonopy_unitcell.get_cell(),
         scaled_positions=phonopy_unitcell.get_scaled_positions(),

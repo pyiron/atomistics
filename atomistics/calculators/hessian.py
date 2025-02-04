@@ -1,4 +1,4 @@
-from typing import Tuple, Union
+from typing import Union
 
 import numpy as np
 from ase.atoms import Atoms
@@ -68,7 +68,7 @@ def get_displacement(structure_equilibrium: Atoms, structure: Atoms) -> np.ndarr
 
 def calc_forces_transformed(
     force_constants: np.ndarray, structure_equilibrium: Atoms, structure: Atoms
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Calculate the transformed forces and displacements.
 

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 import numpy as np
 from ase.atoms import Atoms
@@ -137,7 +137,7 @@ def get_thermal_properties(
     eng_int_lst = np.array(list(eng_internal_dict.values()))
 
     vol_lst, eng_lst = [], []
-    for i, temp in enumerate(temperatures):
+    for i, _temp in enumerate(temperatures):
         free_eng_lst = (
             np.array([tp_collect_dict[s]["free_energy"][i] for s in strain_lst])
             + eng_int_lst
@@ -250,11 +250,13 @@ def _get_thermal_properties_classical(
         for t in temperatures:
             t_property = 0.0
             for freqs, w in zip(phono.mesh.frequencies, phono.mesh.weights):
-                freqs = np.array(freqs) * THzToEv
-                cond = freqs > cutoff_frequency
+                freqs_ev = np.array(freqs) * THzToEv
+                cond = freqs_ev > cutoff_frequency
                 t_property += (
                     np.sum(
-                        get_free_energy_classical(frequency=freqs[cond], temperature=t)
+                        get_free_energy_classical(
+                            frequency=freqs_ev[cond], temperature=t
+                        )
                     )
                     * w
                 )
@@ -266,7 +268,7 @@ def _get_thermal_properties_classical(
     return tp_collect_dict
 
 
-class QuasiHarmonicThermalProperties(object):
+class QuasiHarmonicThermalProperties:
     def __init__(
         self,
         temperatures: np.ndarray,
@@ -366,7 +368,7 @@ def generate_structures_helper(
     structure: Atoms,
     vol_range: Optional[float] = None,
     num_points: Optional[int] = None,
-    strain_lst: Optional[List[float]] = None,
+    strain_lst: Optional[list[float]] = None,
     displacement: float = 0.01,
     number_of_snapshots: int = None,
     interaction_range: float = 10.0,

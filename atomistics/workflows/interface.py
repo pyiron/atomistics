@@ -1,7 +1,8 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 class Workflow(ABC):
+    @abstractmethod
     def generate_structures(self) -> dict:
         """
         Generate structures for the workflow.
@@ -11,6 +12,7 @@ class Workflow(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def analyse_structures(self, output_dict: dict):
         """
         Analyse the generated structures.
