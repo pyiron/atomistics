@@ -52,5 +52,5 @@ def get_thermal_expansion_output(
         temperatures_lst=temperatures_lst, volumes_lst=volumes_lst
     )
     return OutputThermalExpansion(
-        **{k: getattr(thermal, k) for k in OutputThermalExpansion}
+        **{k: getattr(thermal, k) for k in OutputThermalExpansion.keys()}
     ).get(output_keys=output_keys)

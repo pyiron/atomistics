@@ -306,7 +306,7 @@ def calc_static_with_qe(
         calculation_name=calculation_name, working_directory=working_directory
     )
     parser = QEStaticParser(filename=output_file_name)
-    return OutputStatic(**{k: getattr(parser, k) for k in OutputStatic}).get(
+    return OutputStatic(**{k: getattr(parser, k) for k in OutputStatic.keys()}).get(
         output_keys=output_keys
     )
 

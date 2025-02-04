@@ -349,7 +349,7 @@ def analyse_structures_helper(
         use_tetrahedron_method=True,
         npoints=101,
     )
-    return OutputPhonons(**{k: getattr(phono, k) for k in OutputPhonons}).get(
+    return OutputPhonons(**{k: getattr(phono, k) for k in OutputPhonons.keys()}).get(
         output_keys=output_keys
     )
 
@@ -397,7 +397,7 @@ def get_thermal_properties(
     )
     phono = PhonopyThermalProperties(phonopy_instance=phonopy)
     return OutputThermodynamic(
-        **{k: getattr(phono, k) for k in OutputThermodynamic}
+        **{k: getattr(phono, k) for k in OutputThermodynamic.keys()}
     ).get(output_keys=output_keys)
 
 

@@ -487,6 +487,6 @@ class ElasticProperties:
         Returns:
             dict: The ElasticProperties object as a dictionary.
         """
-        return OutputElastic(**{k: getattr(self, k) for k in OutputElastic}).get(
+        return OutputElastic(**{k: getattr(self, k) for k in OutputElastic.keys()}).get(
             output_keys=output_keys
         )

@@ -407,5 +407,5 @@ def get_thermal_properties(
         num_steps=num_steps,
     )
     return OutputThermodynamic(
-        **{k: getattr(debye_model, k) for k in OutputThermodynamic}
+        **{k: getattr(debye_model, k) for k in OutputThermodynamic.keys()}
     ).get(output_keys=output_keys)

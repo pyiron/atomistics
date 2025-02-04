@@ -360,5 +360,5 @@ class EnergyVolumeCurveProperties:
             dict: The converted dictionary.
         """
         return OutputEnergyVolumeCurve(
-            **{k: getattr(self, k) for k in OutputEnergyVolumeCurve}
+            **{k: getattr(self, k) for k in OutputEnergyVolumeCurve.keys()}
         ).get(output_keys=output_keys)

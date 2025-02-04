@@ -210,7 +210,7 @@ def calc_static_with_ase(
         dict: Dictionary containing the calculated static properties.
     """
     ase_exe = ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator)
-    return OutputStatic(**{k: getattr(ase_exe, k) for k in OutputStatic}).get(
+    return OutputStatic(**{k: getattr(ase_exe, k) for k in OutputStatic.keys()}).get(
         output_keys=output_keys
     )
 
@@ -455,7 +455,7 @@ def _calc_molecular_dynamics_with_ase(
             ase_structure=structure, ase_calculator=ase_calculator
         )
         calc_dict = OutputMolecularDynamics(
-            **{k: getattr(ase_instance, k) for k in OutputMolecularDynamics}
+            **{k: getattr(ase_instance, k) for k in OutputMolecularDynamics.keys()}
         ).get(output_keys=output_keys)
         for k, v in calc_dict.items():
             cache[k].append(v)

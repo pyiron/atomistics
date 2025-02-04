@@ -163,7 +163,7 @@ def get_thermal_properties(
         volumes_selected_lst=vol_lst,
     )
     return OutputThermodynamic(
-        **{k: getattr(qhp, k) for k in OutputThermodynamic}
+        **{k: getattr(qhp, k) for k in OutputThermodynamic.keys()}
     ).get(output_keys=output_keys)
 
 
