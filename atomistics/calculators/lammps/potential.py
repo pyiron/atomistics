@@ -34,7 +34,7 @@ get_potential_by_name(
 """
 
 
-class PotentialAbstract(object):
+class PotentialAbstract:
     """
     The PotentialAbstract class loads a list of available potentials and sorts them. Afterwards the potentials can be
     accessed through:
@@ -70,17 +70,15 @@ class PotentialAbstract(object):
             list: of possible potentials for the element or the combination of elements
 
         """
-        if isinstance(element, set):
-            element = element
-        elif isinstance(element, list):
+        if isinstance(element, list):
             element = set(element)
         elif isinstance(element, str):
-            element = set([element])
-        else:
+            element = {element}
+        elif not isinstance(element, set):
             raise TypeError("Only, str, list and set supported!")
         return self._potential_df[
             [
-                True if set(element).issubset(species) else False
+                bool(set(element).issubset(species))
                 for species in self._potential_df["Species"].values
             ]
         ]
@@ -89,7 +87,7 @@ class PotentialAbstract(object):
         mask = self._potential_df["Name"] == potential_name
         if not mask.any():
             raise ValueError(
-                "Potential '{}' not found in database.".format(potential_name)
+                f"Potential '{potential_name}' not found in database."
             )
         return self._potential_df[mask]
 
@@ -128,7 +126,7 @@ class PotentialAbstract(object):
         Returns:
             pandas.DataFrame:
         """
-        for path, folder_lst, file_lst in os.walk(resource_path):
+        for path, _folder_lst, file_lst in os.walk(resource_path):
             for periodic_table_file_name in file_name_lst:
                 if (
                     periodic_table_file_name in file_lst
@@ -180,7 +178,7 @@ class LammpsPotentialFile(PotentialAbstract):
                 file_name_lst={"potentials_lammps.csv"},
                 resource_path=resource_path,
             )
-        super(LammpsPotentialFile, self).__init__(
+        super().__init__(
             potential_df=potential_df,
             default_df=default_df,
             selected_atoms=selected_atoms,
@@ -209,13 +207,11 @@ class LammpsPotentialFile(PotentialAbstract):
             list: of possible potentials for the element or the combination of elements
 
         """
-        if isinstance(element, set):
-            element = element
-        elif isinstance(element, list):
+        if isinstance(element, list):
             element = set(element)
         elif isinstance(element, str):
-            element = set([element])
-        else:
+            element = {element}
+        elif not isinstance(element, set):
             raise TypeError("Only, str, list and set supported!")
         element_lst = list(element)
         if self._default_df is not None:
@@ -237,7 +233,7 @@ class LammpsPotentialFile(PotentialAbstract):
         )
 
 
-class PotentialAvailable(object):
+class PotentialAvailable:
     def __init__(self, list_of_potentials):
         self._list_of_potentials = {
             "pot_" + v.replace("-", "_").replace(".", "_"): v
@@ -245,7 +241,7 @@ class PotentialAvailable(object):
         }
 
     def __getattr__(self, name):
-        if name in self._list_of_potentials.keys():
+        if name in self._list_of_potentials:
             return self._list_of_potentials[name]
         else:
             raise AttributeError
@@ -336,7 +332,7 @@ def get_resource_path_from_conda(
 ) -> str:
     env = os.environ
     for conda_var in env_variables:
-        if conda_var in env.keys():
+        if conda_var in env:
             resource_path = os.path.join(env[conda_var], "share", "iprpy")
             if os.path.exists(resource_path):
                 return resource_path

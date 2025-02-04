@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 import ase.atoms
 import numpy as np
@@ -20,7 +20,7 @@ def generate_structures_helper(
     num_of_point: int,
     zero_strain_job_name: str = "s_e_0",
     sqrt_eta: bool = True,
-) -> Tuple[Dict[str, int], Dict[str, ase.atoms.Atoms]]:
+) -> tuple[dict[str, int], dict[str, ase.atoms.Atoms]]:
     """
     Generate structures for elastic analysis.
 
@@ -79,7 +79,7 @@ def generate_structures_helper(
             norm = 1.0
             eps_matrix = eta_matrix
             if np.linalg.norm(eta_matrix) > 0.7:
-                raise Exception("Too large deformation %g" % eps)
+                raise Exception(f"Too large deformation {eps:g}")
 
             if sqrt_eta:
                 while norm > 1.0e-10:
@@ -105,7 +105,7 @@ def analyse_structures_helper(
     fit_order: int = 2,
     zero_strain_job_name: str = "s_e_0",
     output_keys: tuple = OutputElastic.keys(),
-) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+) -> tuple[dict[str, Any], dict[str, Any]]:
     """
     Analyze structures and calculate elastic properties.
 
@@ -144,7 +144,7 @@ def _get_elastic_matrix(
     LC: str,
     fit_order: int = 2,
     zero_strain_job_name: str = "s_e_0",
-) -> Tuple[np.ndarray, np.ndarray, List[List[Tuple[float, float]]], Optional[float]]:
+) -> tuple[np.ndarray, np.ndarray, list[list[tuple[float, float]]], Optional[float]]:
     """
     Calculate the elastic matrix and other properties.
 
@@ -160,7 +160,7 @@ def _get_elastic_matrix(
     Returns:
         Tuple[np.ndarray, np.ndarray, List[List[Tuple[float, float]]], Optional[float]]: A tuple containing the elastic matrix, A2 coefficients, strain energy data, and ene0 value.
     """
-    if "energy" in output_dict.keys():
+    if "energy" in output_dict:
         output_dict = output_dict["energy"]
 
     ene0 = None
@@ -170,7 +170,7 @@ def _get_elastic_matrix(
     for lag_strain in Lag_strain_list:
         strain_energy.append([])
         for eps in epss:
-            if not eps == 0.0:
+            if eps != 0.0:
                 ene = output_dict[_subjob_name(i=lag_strain, eps=eps)]
             else:
                 ene = ene0
@@ -195,12 +195,12 @@ def _subjob_name(i: int, eps: float) -> str:
     Returns:
         str: The subjob name.
     """
-    return ("s_%s_e_%.5f" % (i, eps)).replace(".", "_").replace("-", "m")
+    return (f"s_{i}_e_{eps:.5f}").replace(".", "_").replace("-", "m")
 
 
 def _fit_elastic_matrix(
     strain_ene: list[list[tuple[float, float]]], v0: float, LC: str, fit_order: int
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Fit the elastic matrix from strain-energy data.
 

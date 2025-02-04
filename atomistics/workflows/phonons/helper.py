@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional
 
 import numpy as np
 import scipy.constants
@@ -10,7 +10,7 @@ from atomistics.shared.output import OutputPhonons, OutputThermodynamic
 from atomistics.workflows.phonons.units import VaspToTHz, kJ_mol_to_eV
 
 
-class PhonopyProperties(object):
+class PhonopyProperties:
     def __init__(
         self,
         phonopy_instance: Phonopy,
@@ -165,7 +165,7 @@ class PhonopyProperties(object):
         return self._force_constants
 
 
-class PhonopyThermalProperties(object):
+class PhonopyThermalProperties:
     def __init__(self, phonopy_instance: Phonopy):
         """
         Initialize the PhonopyThermalProperties object.
@@ -267,7 +267,7 @@ def generate_structures_helper(
     number_of_snapshots: Optional[int] = None,
     interaction_range: float = 10.0,
     factor: float = VaspToTHz,
-) -> Tuple[Phonopy, Dict[int, Atoms]]:
+) -> tuple[Phonopy, dict[int, Atoms]]:
     """
     Generate structures with displacements for phonon calculations.
 
@@ -328,7 +328,7 @@ def analyse_structures_helper(
     Returns:
         dict: The calculated phonon properties.
     """
-    if "forces" in output_dict.keys():
+    if "forces" in output_dict:
         output_dict = output_dict["forces"]
     forces_lst = [output_dict[k] for k in sorted(output_dict.keys())]
     phonopy.forces = forces_lst
@@ -349,7 +349,7 @@ def analyse_structures_helper(
         use_tetrahedron_method=True,
         npoints=101,
     )
-    return OutputPhonons(**{k: getattr(phono, k) for k in OutputPhonons.keys()}).get(
+    return OutputPhonons(**{k: getattr(phono, k) for k in OutputPhonons}).get(
         output_keys=output_keys
     )
 
@@ -397,7 +397,7 @@ def get_thermal_properties(
     )
     phono = PhonopyThermalProperties(phonopy_instance=phonopy)
     return OutputThermodynamic(
-        **{k: getattr(phono, k) for k in OutputThermodynamic.keys()}
+        **{k: getattr(phono, k) for k in OutputThermodynamic}
     ).get(output_keys=output_keys)
 
 

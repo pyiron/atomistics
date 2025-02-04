@@ -37,13 +37,10 @@ def _convert_task_lst_to_task_dict(task_lst: list) -> dict:
     for task in task_lst:
         for task_name, task_data in task.items():
             if isinstance(task_data, dict):
-                if task_name not in task_dict.keys():
+                if task_name not in task_dict:
                     task_dict[task_name] = {}
                 task_dict[task_name].update(
-                    {
-                        task_parameter: task_object
-                        for task_parameter, task_object in task_data.items()
-                    }
+                    dict(task_data.items())
                 )
             else:
                 task_dict[task_name] = task_data

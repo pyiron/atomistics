@@ -1,5 +1,5 @@
 import os
-from typing import Callable, List, Optional, Tuple, Union
+from typing import Callable, Optional, Union
 
 import numpy as np
 import pandas
@@ -173,7 +173,7 @@ def _extract_lst(
     column: str,
     select_function: Callable,
     current_filter: Callable,
-) -> Tuple[List[str], List[str]]:
+) -> tuple[list[str], list[str]]:
     """
     Extracts element and property lists from a DataFrame based on the given column, select function, and current filter.
 
@@ -220,9 +220,7 @@ def _collect(
         A pandas DataFrame containing the extracted data.
     """
     return pandas.DataFrame(
-        {
-            n: d
-            for n, d in zip(
+        dict(zip(
                 ["element", column],
                 _extract_lst(
                     df=_get_content_from_url(url=url),
@@ -230,13 +228,12 @@ def _collect(
                     select_function=select_function,
                     current_filter=current_filter,
                 ),
-            )
-        }
+            ))
     )
 
 
 def _get_volume(
-    lat_lst: Union[float, Tuple[float, float, float]], crystal: str
+    lat_lst: Union[float, tuple[float, float, float]], crystal: str
 ) -> Optional[float]:
     """
     Calculate the volume of a crystal unit cell.

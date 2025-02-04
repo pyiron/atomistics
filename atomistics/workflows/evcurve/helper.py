@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import numpy as np
 from ase.atoms import Atoms
@@ -37,7 +37,7 @@ def _strain_axes(
 
 def apply_strain(
     structure: Atoms,
-    epsilon: Union[float, List[float], np.ndarray],
+    epsilon: Union[float, list[float], np.ndarray],
     return_box: bool = False,
     mode: str = "linear",
 ) -> Atoms:
@@ -73,10 +73,7 @@ def apply_strain(
     epsilon = epsilon.reshape(3, 3)
     if epsilon.min() < -1.0:
         raise ValueError("Strain value too negative")
-    if return_box:
-        structure_copy = structure.copy()
-    else:
-        structure_copy = structure
+    structure_copy = structure.copy() if return_box else structure
     cell = structure_copy.cell.copy()
     if mode == "linear":
         F = epsilon + np.eye(3)
@@ -93,7 +90,7 @@ def apply_strain(
         return structure_copy
 
 
-def get_energy_lst(output_dict: dict, structure_dict: dict) -> List[float]:
+def get_energy_lst(output_dict: dict, structure_dict: dict) -> list[float]:
     """
     Get a list of energy values from the output dictionary for each structure in the structure dictionary.
 
@@ -105,10 +102,10 @@ def get_energy_lst(output_dict: dict, structure_dict: dict) -> List[float]:
         List[float]: A list of energy values.
 
     """
-    return [output_dict["energy"][k] for k in structure_dict.keys()]
+    return [output_dict["energy"][k] for k in structure_dict]
 
 
-def get_volume_lst(structure_dict: dict) -> List[float]:
+def get_volume_lst(structure_dict: dict) -> list[float]:
     """
     Get a list of volume values from the structure dictionary.
 
@@ -173,7 +170,7 @@ def fit_ev_curve(
 def get_strains(
     vol_range: Optional[float] = None,
     num_points: Optional[int] = None,
-    strain_lst: Optional[List[float]] = None,
+    strain_lst: Optional[list[float]] = None,
 ) -> np.ndarray:
     """
     Generate an array of strain values.
@@ -208,7 +205,7 @@ def generate_structures_helper(
     structure: Atoms,
     vol_range: Optional[float] = None,
     num_points: Optional[int] = None,
-    strain_lst: Optional[List[float]] = None,
+    strain_lst: Optional[list[float]] = None,
     axes: tuple[str, str, str] = ("x", "y", "z"),
 ) -> dict:
     """
@@ -236,7 +233,7 @@ def generate_structures_helper(
         _strain_axes(structure=structure, axes=axes, volume_strain=strain)
         for strain in strain_lst
     ]
-    return {key: value for key, value in zip(key_lst, value_lst)}
+    return dict(zip(key_lst, value_lst))
 
 
 def analyse_structures_helper(
@@ -348,7 +345,7 @@ class EnergyVolumeCurveProperties:
         return {
             k: self._fit_module.fit_dict[k]
             for k in ["fit_type", "least_square_error", "poly_fit", "fit_order"]
-            if k in self._fit_module.fit_dict.keys()
+            if k in self._fit_module.fit_dict
         }
 
     def to_dict(self, output_keys: tuple = OutputEnergyVolumeCurve.keys()) -> dict:
@@ -363,5 +360,5 @@ class EnergyVolumeCurveProperties:
             dict: The converted dictionary.
         """
         return OutputEnergyVolumeCurve(
-            **{k: getattr(self, k) for k in OutputEnergyVolumeCurve.keys()}
+            **{k: getattr(self, k) for k in OutputEnergyVolumeCurve}
         ).get(output_keys=output_keys)

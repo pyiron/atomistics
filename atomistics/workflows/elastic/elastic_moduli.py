@@ -1,5 +1,4 @@
 from functools import cache
-from typing import Tuple
 
 import numpy as np
 
@@ -242,7 +241,7 @@ def get_AVR(shearmodul_voigt: float, shearmodul_reuss: float) -> float:
 
 def get_elastic_matrix_eigval(
     elastic_matrix: np.ndarray,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Calculate the eigenvalues and eigenvectors of the elastic matrix.
 
@@ -469,7 +468,7 @@ class ElasticProperties:
         )
 
     @cache
-    def elastic_matrix_eigval(self) -> Tuple[np.ndarray, np.ndarray]:
+    def elastic_matrix_eigval(self) -> tuple[np.ndarray, np.ndarray]:
         """
         Calculate the eigenvalues and eigenvectors of the elastic matrix.
 
@@ -488,6 +487,6 @@ class ElasticProperties:
         Returns:
             dict: The ElasticProperties object as a dictionary.
         """
-        return OutputElastic(**{k: getattr(self, k) for k in OutputElastic.keys()}).get(
+        return OutputElastic(**{k: getattr(self, k) for k in OutputElastic}).get(
             output_keys=output_keys
         )

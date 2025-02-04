@@ -13,9 +13,9 @@ except ImportError:
     __all__ = []
 else:
     __all__ = [
-        get_chemical_information_from_mendeleev,
-        get_chemical_information_from_wolframalpha,
+        "get_chemical_information_from_mendeleev",
+        "get_chemical_information_from_wolframalpha",
     ]
 
 
-__all__ += [get_elastic_properties_from_wikipedia]
+__all__ += ["get_elastic_properties_from_wikipedia"]

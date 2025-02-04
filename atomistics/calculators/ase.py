@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import List
-
 import numpy as np
 from ase import units
 from ase.atoms import Atoms
@@ -24,7 +22,7 @@ from atomistics.shared.thermal_expansion import get_thermal_expansion_output
 from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 
 
-class ASEExecutor(object):
+class ASEExecutor:
     def __init__(self, ase_structure: Atoms, ase_calculator: ASECalculator) -> None:
         """
         Initialize the ASEExecutor.
@@ -147,10 +145,10 @@ class ASEExecutor(object):
 @as_task_dict_evaluator
 def evaluate_with_ase(
     structure: Atoms,
-    tasks: List[str],
+    tasks: list[str],
     ase_calculator: ASECalculator,
     ase_optimizer: Optimizer = None,
-    ase_optimizer_kwargs: dict = {},
+    ase_optimizer_kwargs: dict = None,
 ) -> dict:
     """
     Evaluate tasks using ASE calculator.
@@ -165,6 +163,8 @@ def evaluate_with_ase(
     Returns:
         dict: Dictionary containing the results of the evaluated tasks.
     """
+    if ase_optimizer_kwargs is None:
+        ase_optimizer_kwargs = {}
     results = {}
     if "optimize_positions" in tasks:
         results["structure_with_optimized_positions"] = optimize_positions_with_ase(
@@ -210,57 +210,9 @@ def calc_static_with_ase(
         dict: Dictionary containing the calculated static properties.
     """
     ase_exe = ASEExecutor(ase_structure=structure, ase_calculator=ase_calculator)
-    return OutputStatic(**{k: getattr(ase_exe, k) for k in OutputStatic.keys()}).get(
+    return OutputStatic(**{k: getattr(ase_exe, k) for k in OutputStatic}).get(
         output_keys=output_keys
     )
-
-
-def optimize_positions_with_ase(
-    structure: Atoms,
-    ase_calculator: ASECalculator,
-    ase_optimizer: Optimizer,
-    ase_optimizer_kwargs: dict,
-) -> Atoms:
-    """
-    Optimize the atomic positions of the structure using ASE optimizer.
-
-    Args:
-        structure (Atoms): The ASE structure object.
-        ase_calculator (ASECalculator): The ASE calculator object.
-        ase_optimizer (Optimizer): The ASE optimizer object.
-        ase_optimizer_kwargs (dict): Keyword arguments for the ASE optimizer.
-
-    Returns:
-        Atoms: The optimized structure.
-    """
-    structure.set_calculator(ase_calculator)
-    dyn = ase_optimizer(structure, **ase_optimizer_kwargs)
-    dyn.run(fmax=0.05)
-    return structure
-
-
-def optimize_positions_and_volume_with_ase(
-    structure: Atoms,
-    ase_calculator: ASECalculator,
-    ase_optimizer: Optimizer,
-    ase_optimizer_kwargs: dict,
-) -> Atoms:
-    """
-    Optimize the atomic positions and cell volume of the structure using ASE optimizer.
-
-    Args:
-        structure (Atoms): The ASE structure object.
-        ase_calculator (ASECalculator): The ASE calculator object.
-        ase_optimizer (Optimizer): The ASE optimizer object.
-        ase_optimizer_kwargs (dict): Keyword arguments for the ASE optimizer.
-
-    Returns:
-        Atoms: The optimized structure.
-    """
-    structure.set_calculator(ase_calculator)
-    dyn = ase_optimizer(structure, **ase_optimizer_kwargs)
-    dyn.run(fmax=0.05, volume=True)
-    return structure
 
 
 def calc_molecular_dynamics_langevin_with_ase(
@@ -271,7 +223,7 @@ def calc_molecular_dynamics_langevin_with_ase(
     timestep: float = 1.0,
     temperature: float = 100.0,
     friction: float = 0.002,
-    output_keys: List[str] = OutputMolecularDynamics.keys(),
+    output_keys: list[str] = OutputMolecularDynamics.keys(),
 ) -> dict:
     """
     Perform molecular dynamics simulation using the Langevin algorithm with ASE.
@@ -367,7 +319,7 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
     ttime: float = 100 * units.fs,
     pfactor: float = 2e6 * units.GPa * (units.fs**2),
     externalstress: np.ndarray = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
-    output_keys: List[str] = OutputThermalExpansion.keys(),
+    output_keys: list[str] = OutputThermalExpansion.keys(),
 ) -> dict:
     """
     Calculate thermal expansion using molecular dynamics simulation with ASE.
@@ -426,7 +378,7 @@ def calc_molecular_dynamics_npt_with_ase(
     pfactor: float = 2e6 * units.GPa * (units.fs**2),
     temperature: float = 300.0,
     externalstress: np.ndarray = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
-    output_keys: List[str] = OutputMolecularDynamics.keys(),
+    output_keys: list[str] = OutputMolecularDynamics.keys(),
 ) -> dict:
     """
     Perform NPT molecular dynamics simulation using ASE.
@@ -477,7 +429,7 @@ def _calc_molecular_dynamics_with_ase(
     temperature: float,
     run: int,
     thermo: int,
-    output_keys: List[str],
+    output_keys: list[str],
 ) -> dict:
     """
     Perform molecular dynamics simulation using ASE.
@@ -497,13 +449,13 @@ def _calc_molecular_dynamics_with_ase(
     structure.calc = ase_calculator
     MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
     cache = {q: [] for q in output_keys}
-    for i in range(int(run / thermo)):
+    for _i in range(int(run / thermo)):
         dyn.run(thermo)
         ase_instance = ASEExecutor(
             ase_structure=structure, ase_calculator=ase_calculator
         )
         calc_dict = OutputMolecularDynamics(
-            **{k: getattr(ase_instance, k) for k in OutputMolecularDynamics.keys()}
+            **{k: getattr(ase_instance, k) for k in OutputMolecularDynamics}
         ).get(output_keys=output_keys)
         for k, v in calc_dict.items():
             cache[k].append(v)
