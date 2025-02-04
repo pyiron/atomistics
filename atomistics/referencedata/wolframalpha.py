@@ -220,7 +220,8 @@ def _collect(
         A pandas DataFrame containing the extracted data.
     """
     return pandas.DataFrame(
-        dict(zip(
+        dict(
+            zip(
                 ["element", column],
                 _extract_lst(
                     df=_get_content_from_url(url=url),
@@ -228,7 +229,8 @@ def _collect(
                     select_function=select_function,
                     current_filter=current_filter,
                 ),
-            ))
+            )
+        )
     )
 
 

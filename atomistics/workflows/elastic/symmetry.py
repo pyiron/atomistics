@@ -1,4 +1,3 @@
-
 import numpy as np
 import spglib
 from ase.atoms import Atoms

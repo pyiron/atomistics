@@ -17,8 +17,6 @@ class Output:
         """
         return tuple(field.name for field in dataclasses.fields(cls))
 
-
-
     def get(self, output_keys: tuple) -> dict:
         """
         Get the specified output data.
