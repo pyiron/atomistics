@@ -127,6 +127,7 @@ jobs:
           ../.ci_support/build_notebooks.sh
 
   pip_check:
+    needs: [black]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
