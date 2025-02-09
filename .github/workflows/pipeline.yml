@@ -1,0 +1,402 @@
+name: Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  black:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: psf/black@stable
+      with:
+        options: "--check --diff"
+        src: ./${{ github.event.repository.name }}
+
+  black_fix:  # in most cases pre-commit is faster
+    needs: [black]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.DEPENDABOT_WORKFLOW_TOKEN }}
+        ref: ${{ github.event.pull_request.head.ref }} # Check out the head of the actual branch, not the PR
+        fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
+    - name: format black
+      uses: psf/black@stable
+      with:
+        options: ""
+        src: "./${{ github.event.repository.name }}"
+    - name: commit
+      run: |
+        git config --local user.email "pyiron@mpie.de"
+        git config --local user.name "pyiron-runner"
+        git commit -m "Format black" -a
+    - name: push
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.DEPENDABOT_WORKFLOW_TOKEN }}
+        branch: ${{ github.event.pull_request.head.ref }}
+
+  coverage:
+    needs: [black]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup environment
+      shell: bash -l {0}
+      run: |
+        cp .ci_support/environment.yml environment.yml
+        tail --lines=+4 .ci_support/environment-lammps.yml >> environment.yml
+        tail --lines=+4 .ci_support/environment-qe.yml >> environment.yml
+        sed -i 's/- scipy =1.13.0/- scipy =1.12.0/g' environment.yml
+        echo -e "channels:\n  - conda-forge\n" > .condarc
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: '3.11'
+        miniforge-version: latest
+        condarc-file: .condarc
+        environment-file: environment.yml
+    - name: Test
+      shell: bash -l {0}
+      timeout-minutes: 30
+      run: |
+        pip install versioneer[toml]==0.29
+        pip install . --no-deps --no-build-isolation
+        coverage run --omit="atomistics/_version.py,tests/*" -m unittest discover tests
+        coverage xml
+      env:
+        ASE_ESPRESSO_COMMAND: "pw.x -in PREFIX.pwi > PREFIX.pwo"
+        ESPRESSO_PSEUDO: tests/static/qe
+        OMPI_MCA_plm: isolated
+        OMPI_MCA_btl_vader_single_copy_mechanism: none
+        OMPI_MCA_rmaps_base_oversubscribe: yes
+    - name: Coveralls
+      uses: coverallsapp/github-action@v2
+
+  minimal:
+    needs: [black]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Conda config
+      run: echo -e "channels:\n  - conda-forge\n" > .condarc
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: '3.12'
+        miniforge-version: latest
+        condarc-file: .condarc
+        environment-file: .ci_support/environment.yml
+    - name: Test
+      shell: bash -l {0}
+      timeout-minutes: 30
+      run: |
+        pip install versioneer[toml]==0.29
+        pip install . --no-deps --no-build-isolation
+        python -m unittest discover tests
+
+  notebooks:
+    needs: [black]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Merge Notebook environment
+        run: |
+          cp .ci_support/environment.yml environment.yml
+          tail --lines=+4 .ci_support/environment-notebooks.yml >> environment.yml
+          echo -e "channels:\n  - conda-forge\n" > .condarc
+      - name: Setup Mambaforge
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: "3.12"
+          miniforge-version: latest
+          condarc-file: .condarc
+          environment-file: environment.yml
+      - name: Test
+        shell: bash -l {0}
+        run: |
+          pip install versioneer[toml]==0.29
+          pip install . --no-deps --no-build-isolation
+          cd notebooks
+          cp -r ../tests/static .
+          ../.ci_support/build_notebooks.sh
+
+  pip_check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Conda config
+      run: echo -e "channels:\n  - conda-forge\n" > .condarc
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: '3.12'
+        miniforge-version: latest
+        condarc-file: .condarc
+        environment-file: .ci_support/environment.yml
+    - name: Pip check
+      shell: bash -l {0}
+      run: |
+        pip install versioneer[toml]==0.29
+        pip install . --no-deps --no-build-isolation
+        pip check
+
+  unittest_matrix:
+    needs: [black]
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        include:
+        - operating-system: macos-latest
+          python-version: '3.12'
+
+        - operating-system: ubuntu-latest
+          python-version: '3.12'
+
+        - operating-system: windows-latest
+          python-version: '3.12'
+
+        - operating-system: ubuntu-latest
+          python-version: '3.11'
+
+        - operating-system: ubuntu-latest
+          python-version: '3.10'
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup environment (windows)
+      if: matrix.operating-system == 'windows-latest'
+      shell: bash -l {0}
+      run: |
+        cp .ci_support/environment.yml environment.yml
+        echo -e "channels:\n  - conda-forge\n" > .condarc
+    - name: Setup environment (unix)
+      if: matrix.operating-system != 'windows-latest'
+      shell: bash -l {0}
+      run: |
+        cp .ci_support/environment.yml environment.yml
+        tail --lines=+4 .ci_support/environment-lammps.yml >> environment.yml
+        echo -e "channels:\n  - conda-forge\n" > .condarc
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+        miniforge-version: latest
+        condarc-file: .condarc
+        environment-file: environment.yml
+    - name: Test
+      shell: bash -l {0}
+      timeout-minutes: 30
+      run: |
+        pip install versioneer[toml]==0.29
+        pip install . --no-deps --no-build-isolation
+        python -m unittest discover tests
+
+  unittest_abinit:
+    needs: [black]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Merge Notebook environment
+      run: |
+        cp .ci_support/environment.yml environment.yml
+        tail --lines=+4 .ci_support/environment-abinit.yml >> environment.yml
+        echo -e "channels:\n  - conda-forge\n" > .condarc
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: '3.12'
+        miniforge-version: latest
+        condarc-file: .condarc
+        environment-file: environment.yml
+    - name: Test
+      shell: bash -l {0}
+      timeout-minutes: 30
+      run: |
+        pip install versioneer[toml]==0.29
+        pip install . --no-deps --no-build-isolation
+        python -m unittest tests/test_ase_interface/test_evcurve_ase_abinit.py
+      env:
+        ABINIT_PP_PATH: '/usr/share/miniconda3/envs/my-env/share/abinit/LDA_FHI'
+        ABI_PSPDIR: '/usr/share/miniconda3/envs/my-env/share/abinit/LDA_FHI'
+        ASE_ABINIT_COMMAND: 'abinit PREFIX.in > PREFIX.log'
+
+  unittest_gpaw:
+    needs: [black]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Merge Notebook environment
+      run: |
+        cp .ci_support/environment.yml environment.yml
+        tail --lines=+4 .ci_support/environment-gpaw.yml >> environment.yml
+        echo -e "channels:\n  - conda-forge\n" > .condarc
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: '3.12'
+        miniforge-version: latest
+        condarc-file: .condarc
+        environment-file: environment.yml
+    - name: Test
+      shell: bash -l {0}
+      timeout-minutes: 30
+      run: |
+        pip install versioneer[toml]==0.29
+        pip install . --no-deps --no-build-isolation
+        python -m unittest tests/test_ase_interface/test_evcurve_ase_gpaw.py
+        python -m unittest tests/test_ase_interface/test_elastic_ase_gpaw.py
+        python -m unittest tests/test_ase_interface/test_phonons_ase_gpaw.py
+
+  unittest_mace:
+    needs: [black]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Merge Notebook environment
+      run: |
+        cp .ci_support/environment.yml environment.yml
+        tail --lines=+4 .ci_support/environment-mace.yml >> environment.yml
+        echo -e "channels:\n  - conda-forge\n" > .condarc
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: '3.12'
+        miniforge-version: latest
+        condarc-file: .condarc
+        environment-file: environment.yml
+    - name: Test
+      shell: bash -l {0}
+      timeout-minutes: 60
+      run: |
+        pip install versioneer[toml]==0.29
+        pip install . --no-deps --no-build-isolation
+        python -m unittest tests/test_ase_interface/test_evcurve_ase_mace.py
+        python -m unittest tests/test_ase_interface/test_phonons_ase_mace.py
+        python -m unittest tests/test_ase_interface/test_quasiharmonic_ase_mace.py
+        python -m unittest tests/test_ase_interface/test_ase_md_mace.py
+
+  unittest_matgl:
+    needs: [black]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Merge Notebook environment
+      run: |
+        cp .ci_support/environment.yml environment.yml
+        tail --lines=+4 .ci_support/environment-matgl.yml >> environment.yml
+        echo -e "channels:\n  - conda-forge\n" > .condarc
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: '3.11'
+        miniforge-version: latest
+        condarc-file: .condarc
+        environment-file: environment.yml
+    - name: Test
+      shell: bash -l {0}
+      timeout-minutes: 60
+      run: |
+        pip install versioneer[toml]==0.29
+        pip install . --no-deps --no-build-isolation
+        python -m unittest tests/test_ase_interface/test_evcurve_ase_matgl.py
+        python -m unittest tests/test_ase_interface/test_phonons_ase_matgl.py
+        python -m unittest tests/test_ase_interface/test_quasiharmonic_ase_matgl.py
+        python -m unittest tests/test_ase_interface/test_ase_md_matgl.py
+
+  unittest_qe:
+    needs: [black]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Merge Notebook environment
+      run: |
+        cp .ci_support/environment.yml environment.yml
+        tail --lines=+4 .ci_support/environment-qe.yml >> environment.yml
+        echo -e "channels:\n  - conda-forge\n" > .condarc
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: '3.11'
+        miniforge-version: latest
+        condarc-file: .condarc
+        environment-file: environment.yml
+    - name: Test
+      shell: bash -l {0}
+      timeout-minutes: 60
+      run: |
+        pip install versioneer[toml]==0.29
+        pip install . --no-deps --no-build-isolation
+        python -m unittest tests/test_ase_interface/test_evcurve_ase_qe.py
+      env:
+        ASE_ESPRESSO_COMMAND: "pw.x -in PREFIX.pwi > PREFIX.pwo"
+        ESPRESSO_PSEUDO: tests/static/qe
+        OMPI_MCA_plm: isolated
+        OMPI_MCA_btl_vader_single_copy_mechanism: none
+        OMPI_MCA_rmaps_base_oversubscribe: yes
+
+  unittest_siesta:
+    needs: [black]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Merge Notebook environment
+      run: |
+        cp .ci_support/environment.yml environment.yml
+        tail --lines=+4 .ci_support/environment-siesta.yml >> environment.yml
+        echo -e "channels:\n  - conda-forge\n" > .condarc
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: '3.12'
+        miniforge-version: latest
+        condarc-file: .condarc
+        environment-file: environment.yml
+    - name: Test
+      shell: bash -l {0}
+      timeout-minutes: 30
+      run: |
+        pip install versioneer[toml]==0.29
+        pip install . --no-deps --no-build-isolation
+        python -m unittest tests/test_ase_interface/test_evcurve_ase_siesta.py
+
+  unittest_old:
+    needs: [black]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Conda config
+      run: echo -e "channels:\n  - conda-forge\n" > .condarc
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: '3.9'
+        miniforge-version: latest
+        condarc-file: .condarc
+        environment-file: .ci_support/environment-old.yml
+    - name: Test
+      shell: bash -l {0}
+      timeout-minutes: 30
+      run: |
+        pip install versioneer[toml]==0.29
+        pip install . --no-deps --no-build-isolation
+        python -m unittest discover tests
+
+  autobot:
+    needs: [unittest_old, unittest_siesta, unittest_qe, unittest_matgl, unittest_mace, unittest_gpaw, unittest_abinit, unittest_matrix, pip_check, notebooks, minimal, coverage]
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    if: (github.event.pull_request.user.login == 'dependabot[bot]' || github.event.pull_request.user.login == 'pre-commit-ci[bot]')
+    steps:
+      - name: Enable auto-merge for bot PRs
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
