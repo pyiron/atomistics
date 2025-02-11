@@ -75,8 +75,10 @@ jobs:
         OMPI_MCA_plm: isolated
         OMPI_MCA_btl_vader_single_copy_mechanism: none
         OMPI_MCA_rmaps_base_oversubscribe: yes
-    - name: Coveralls
-      uses: coverallsapp/github-action@v2
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
 
   minimal:
     needs: [black]
