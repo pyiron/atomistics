@@ -1,6 +1,6 @@
 # atomistics
 [![Pipeline](https://github.com/pyiron/atomistics/actions/workflows/pipeline.yml/badge.svg)](https://github.com/pyiron/atomistics/actions/workflows/pipeline.yml)
-[![Coverage Status](https://coveralls.io/repos/github/pyiron/atomistics/badge.svg?branch=main)](https://coveralls.io/github/pyiron/atomistics?branch=main)
+[![codecov](https://codecov.io/gh/pyiron/atomistics/graph/badge.svg?token=8LET56AS45)](https://codecov.io/gh/pyiron/atomistics)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pyiron/atomistics/HEAD)
 
 The `atomistics` package consists of two primary components. On the one hand it provides interfaces to atomistic
