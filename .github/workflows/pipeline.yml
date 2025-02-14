@@ -146,7 +146,7 @@ jobs:
         python-version: '3.12'
         miniforge-version: latest
         condarc-file: .condarc
-        environment-file: .ci_support/environment.yml
+        environment-file: environment.yml
     - name: Pip check
       shell: bash -l {0}
       run: |
