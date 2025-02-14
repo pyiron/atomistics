@@ -137,7 +137,6 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-lammps.yml >> environment.yml
-        tail --lines=+4 .ci_support/environment-qe.yml >> environment.yml
         tail --lines=+4 .ci_support/environment-gpaw.yml >> environment.yml
         echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
