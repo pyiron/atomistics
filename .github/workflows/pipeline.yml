@@ -134,18 +134,24 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Conda config
-      run: echo -e "channels:\n  - conda-forge\n" > .condarc
+      run: |
+        cp .ci_support/environment.yml environment.yml
+        tail --lines=+4 .ci_support/environment-lammps.yml >> environment.yml
+        tail --lines=+4 .ci_support/environment-gpaw.yml >> environment.yml
+        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
         condarc-file: .condarc
-        environment-file: .ci_support/environment.yml
+        environment-file: environment.yml
     - name: Pip check
       shell: bash -l {0}
       run: |
-        pip install versioneer[toml]==0.29
+        pip install versioneer[toml]==0.29 tomlkit
+        python .ci_support/check.py
+        cat pyproject.toml
         pip install . --no-deps --no-build-isolation
         pip check
 
