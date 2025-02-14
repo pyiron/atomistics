@@ -2,3 +2,4 @@ channels:
 - conda-forge
 dependencies:
 - pymace =0.3.6
+- pytorch =2.5.1
