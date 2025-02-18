@@ -9,7 +9,7 @@ dependencies:
 - pandas =2.2.3
 - phonopy =2.37.0
 - requests =2.32.3
-- scipy =1.15.1
+- scipy =1.15.2
 - seekpath =2.1.0
 - spglib =2.5.0
 - structuretoolkit =0.0.30
