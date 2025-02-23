@@ -10,7 +10,7 @@ from atomistics.workflows import (
 )
 
 try:
-    from atomistics.calculators import evaluate_with_lammps, get_potential_by_name
+    from atomistics.calculators import evaluate_with_lammpslib, get_potential_by_name
 
     skip_lammps_test = False
 except ImportError:
@@ -28,7 +28,7 @@ class TestEvCurve(unittest.TestCase):
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         task_dict = optimize_positions_and_volume(structure=structure)
-        result_dict = evaluate_with_lammps(
+        result_dict = evaluate_with_lammpslib(
             task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
@@ -42,7 +42,7 @@ class TestEvCurve(unittest.TestCase):
             strains=None,
         )
         task_dict = workflow.generate_structures()
-        result_dict = evaluate_with_lammps(
+        result_dict = evaluate_with_lammpslib(
             task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )

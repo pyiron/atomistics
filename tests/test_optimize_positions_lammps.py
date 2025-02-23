@@ -7,7 +7,7 @@ import unittest
 from atomistics.workflows import optimize_positions
 
 try:
-    from atomistics.calculators import evaluate_with_lammps, get_potential_by_name
+    from atomistics.calculators import evaluate_with_lammpslib, get_potential_by_name
 
     skip_lammps_test = False
 except ImportError:
@@ -20,7 +20,7 @@ def optimize_structure(structure, potential_name, resource_path=None):
         resource_path=resource_path,
     )
     task_dict = optimize_positions(structure=structure)
-    result_dict = evaluate_with_lammps(
+    result_dict = evaluate_with_lammpslib(
         task_dict=task_dict,
         potential_dataframe=df_pot_selected,
         lmp_optimizer_kwargs={"ftol": 0.000001},

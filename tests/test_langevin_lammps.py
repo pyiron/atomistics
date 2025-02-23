@@ -9,7 +9,7 @@ from atomistics.workflows import LangevinWorkflow
 
 try:
     from atomistics.calculators import (
-        evaluate_with_lammps_library,
+        evaluate_with_lammpslib_library_interface,
         get_potential_by_name,
         LammpsASELibrary,
     )
@@ -49,7 +49,7 @@ class TestLangevin(unittest.TestCase):
         eng_pot_lst, eng_kin_lst = [], []
         for i in range(steps):
             task_dict = workflow.generate_structures()
-            result_dict = evaluate_with_lammps_library(
+            result_dict = evaluate_with_lammpslib_library_interface(
                 task_dict=task_dict,
                 potential_dataframe=df_pot_selected,
                 lmp=lmp,

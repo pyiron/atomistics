@@ -12,8 +12,8 @@ from atomistics.calculators import calc_molecular_dynamics_thermal_expansion_wit
 
 try:
     from atomistics.calculators import (
-        calc_molecular_dynamics_thermal_expansion_with_lammps,
-        evaluate_with_lammps,
+        calc_molecular_dynamics_thermal_expansion_with_lammpslib,
+        evaluate_with_lammpslib,
         get_potential_by_name,
     )
 
@@ -33,7 +33,7 @@ class TestMolecularDynamicsThermalExpansion(unittest.TestCase):
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
         task_dict = calc_molecular_dynamics_thermal_expansion(structure=structure)
-        result_dict = evaluate_with_lammps(
+        result_dict = evaluate_with_lammpslib(
             task_dict=task_dict,
             potential_dataframe=df_pot_selected,
             lmp_optimizer_kwargs={
@@ -54,7 +54,7 @@ class TestMolecularDynamicsThermalExpansion(unittest.TestCase):
             potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
-        results_dict = calc_molecular_dynamics_thermal_expansion_with_lammps(
+        results_dict = calc_molecular_dynamics_thermal_expansion_with_lammpslib(
             structure=structure,
             potential_dataframe=df_pot_selected,
             Tstart=50,
