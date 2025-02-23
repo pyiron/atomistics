@@ -441,11 +441,13 @@ def evaluate_with_lammpslib_library_interface(
             )
         )
     elif "optimize_positions" in tasks:
-        results["structure_with_optimized_positions"] = optimize_positions_with_lammpslib(
-            structure=structure,
-            potential_dataframe=potential_dataframe,
-            lmp=lmp,
-            **lmp_optimizer_kwargs,
+        results["structure_with_optimized_positions"] = (
+            optimize_positions_with_lammpslib(
+                structure=structure,
+                potential_dataframe=potential_dataframe,
+                lmp=lmp,
+                **lmp_optimizer_kwargs,
+            )
         )
     elif "calc_molecular_dynamics_thermal_expansion" in tasks:
         results_dict = calc_molecular_dynamics_thermal_expansion_with_lammpslib(
