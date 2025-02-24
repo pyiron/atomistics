@@ -7,10 +7,10 @@ import unittest
 
 try:
     from atomistics.calculators import (
-        calc_molecular_dynamics_nvt_with_lammps,
-        calc_molecular_dynamics_npt_with_lammps,
-        calc_molecular_dynamics_nph_with_lammps,
-        calc_molecular_dynamics_langevin_with_lammps,
+        calc_molecular_dynamics_nvt_with_lammpslib,
+        calc_molecular_dynamics_npt_with_lammpslib,
+        calc_molecular_dynamics_nph_with_lammpslib,
+        calc_molecular_dynamics_langevin_with_lammpslib,
         get_potential_by_name,
     )
 
@@ -29,7 +29,7 @@ class TestLammpsMD(unittest.TestCase):
             potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
-        result_dict = calc_molecular_dynamics_nvt_with_lammps(
+        result_dict = calc_molecular_dynamics_nvt_with_lammpslib(
             structure=structure,
             potential_dataframe=df_pot_selected,
             Tstart=100,
@@ -59,7 +59,7 @@ class TestLammpsMD(unittest.TestCase):
             potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
-        result_dict = calc_molecular_dynamics_nvt_with_lammps(
+        result_dict = calc_molecular_dynamics_nvt_with_lammpslib(
             structure=structure,
             potential_dataframe=df_pot_selected,
             Tstart=100,
@@ -84,7 +84,7 @@ class TestLammpsMD(unittest.TestCase):
             potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
-        result_dict = calc_molecular_dynamics_npt_with_lammps(
+        result_dict = calc_molecular_dynamics_npt_with_lammpslib(
             structure=structure,
             potential_dataframe=df_pot_selected,
             Tstart=100,
@@ -117,7 +117,7 @@ class TestLammpsMD(unittest.TestCase):
             potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
-        result_dict = calc_molecular_dynamics_nph_with_lammps(
+        result_dict = calc_molecular_dynamics_nph_with_lammpslib(
             structure=structure,
             potential_dataframe=df_pot_selected,
             Tstart=100,
@@ -148,7 +148,7 @@ class TestLammpsMD(unittest.TestCase):
             potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
-        result_dict = calc_molecular_dynamics_langevin_with_lammps(
+        result_dict = calc_molecular_dynamics_langevin_with_lammpslib(
             structure=structure,
             potential_dataframe=df_pot_selected,
             Tstart=100,
@@ -174,7 +174,7 @@ class TestLammpsMD(unittest.TestCase):
 
     def test_calc_molecular_dynamics_signature(self):
         self.assertEqual(
-            inspect.signature(calc_molecular_dynamics_nvt_with_lammps)
+            inspect.signature(calc_molecular_dynamics_nvt_with_lammpslib)
             .parameters["output_keys"]
             .default,
             (

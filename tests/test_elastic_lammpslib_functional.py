@@ -4,10 +4,13 @@ from ase.build import bulk
 import numpy as np
 import unittest
 
-from atomistics.workflows import ElasticMatrixWorkflow, optimize_positions_and_volume
+from atomistics.workflows.elastic.workflow import (
+    analyse_structures_helper,
+    generate_structures_helper,
+)
 
 try:
-    from atomistics.calculators import evaluate_with_lammps, get_potential_by_name
+    from atomistics.calculators import evaluate_with_lammpslib, get_potential_by_name
 
     skip_lammps_test = False
 except ImportError:
@@ -18,30 +21,33 @@ except ImportError:
     skip_lammps_test, "LAMMPS is not installed, so the LAMMPS tests are skipped."
 )
 class TestElastic(unittest.TestCase):
-    def test_calc_elastic(self):
+    def test_calc_elastic_functions(self):
         structure = bulk("Al", cubic=True)
         df_pot_selected = get_potential_by_name(
             potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
-        task_dict = optimize_positions_and_volume(structure=structure)
-        result_dict = evaluate_with_lammps(
-            task_dict=task_dict,
+        result_dict = evaluate_with_lammpslib(
+            task_dict={"optimize_positions_and_volume": structure},
             potential_dataframe=df_pot_selected,
         )
-        workflow = ElasticMatrixWorkflow(
+        sym_dict, structure_dict = generate_structures_helper(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
-            num_of_point=5,
             eps_range=0.005,
+            num_of_point=5,
+            zero_strain_job_name="s_e_0",
             sqrt_eta=True,
-            fit_order=2,
         )
-        task_dict = workflow.generate_structures()
-        result_dict = evaluate_with_lammps(
-            task_dict=task_dict,
+        result_dict = evaluate_with_lammpslib(
+            task_dict={"calc_energy": structure_dict},
             potential_dataframe=df_pot_selected,
         )
-        elastic_dict = workflow.analyse_structures(output_dict=result_dict)
+        sym_dict, elastic_dict = analyse_structures_helper(
+            output_dict=result_dict,
+            sym_dict=sym_dict,
+            fit_order=2,
+            zero_strain_job_name="s_e_0",
+        )
         self.assertTrue(
             np.isclose(
                 elastic_dict["elastic_matrix"],
@@ -57,19 +63,19 @@ class TestElastic(unittest.TestCase):
                 ),
             ).all()
         )
-        self.assertEqual(workflow._data["SGN"], 225)
-        self.assertEqual(workflow._data["LC"], "CI")
-        self.assertEqual(workflow._data["Lag_strain_list"], ["01", "08", "23"])
+        self.assertEqual(sym_dict["SGN"], 225)
+        self.assertEqual(sym_dict["LC"], "CI")
+        self.assertEqual(sym_dict["Lag_strain_list"], ["01", "08", "23"])
         self.assertTrue(
             np.isclose(
-                workflow._data["epss"], np.array([-0.005, -0.0025, 0.0, 0.0025, 0.005])
+                sym_dict["epss"], np.array([-0.005, -0.0025, 0.0, 0.0025, 0.005])
             ).all()
         )
-        self.assertAlmostEqual(workflow._data["v0"], 66.43035441556098)
-        self.assertAlmostEqual(workflow._data["e0"], -13.439999952735112)
+        self.assertAlmostEqual(sym_dict["v0"], 66.43035441556098)
+        self.assertAlmostEqual(sym_dict["e0"], -13.439999952735112)
         self.assertTrue(
             np.isclose(
-                workflow._data["strain_energy"],
+                sym_dict["strain_energy"],
                 np.array(
                     [
                         [
@@ -99,7 +105,7 @@ class TestElastic(unittest.TestCase):
         )
         self.assertTrue(
             np.isclose(
-                workflow._data["A2"], np.array([2.20130388, 1.08985578, 1.1861949])
+                sym_dict["A2"], np.array([[2.20130388, 1.08985578, 1.1861949]])
             ).all()
         )
         self.assertAlmostEqual(elastic_dict["bulkmodul_voigt"], 78.37505857279467)

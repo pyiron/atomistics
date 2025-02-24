@@ -40,7 +40,7 @@ if TYPE_CHECKING:
     from atomistics.calculators.interface import TaskName
 
 
-def optimize_positions_and_volume_with_lammps(
+def optimize_positions_and_volume_with_lammpslib(
     structure: Atoms,
     potential_dataframe: DataFrame,
     min_style: str = "cg",
@@ -82,7 +82,7 @@ def optimize_positions_and_volume_with_lammps(
     return structure_copy
 
 
-def optimize_positions_with_lammps(
+def optimize_positions_with_lammpslib(
     structure: Atoms,
     potential_dataframe: DataFrame,
     min_style: str = "cg",
@@ -115,7 +115,7 @@ def optimize_positions_with_lammps(
     return structure_copy
 
 
-def calc_static_with_lammps(
+def calc_static_with_lammpslib(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
     lmp=None,
@@ -143,7 +143,7 @@ def calc_static_with_lammps(
     return result_dict
 
 
-def calc_molecular_dynamics_nvt_with_lammps(
+def calc_molecular_dynamics_nvt_with_lammpslib(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
     Tstart: float = 100.0,
@@ -197,7 +197,7 @@ def calc_molecular_dynamics_nvt_with_lammps(
     return result_dict
 
 
-def calc_molecular_dynamics_npt_with_lammps(
+def calc_molecular_dynamics_npt_with_lammpslib(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
     Tstart: float = 100.0,
@@ -257,7 +257,7 @@ def calc_molecular_dynamics_npt_with_lammps(
     return result_dict
 
 
-def calc_molecular_dynamics_nph_with_lammps(
+def calc_molecular_dynamics_nph_with_lammpslib(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
     run: int = 100,
@@ -312,7 +312,7 @@ def calc_molecular_dynamics_nph_with_lammps(
     return result_dict
 
 
-def calc_molecular_dynamics_langevin_with_lammps(
+def calc_molecular_dynamics_langevin_with_lammpslib(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
     run: int = 100,
@@ -368,7 +368,7 @@ def calc_molecular_dynamics_langevin_with_lammps(
     return result_dict
 
 
-def calc_molecular_dynamics_thermal_expansion_with_lammps(
+def calc_molecular_dynamics_thermal_expansion_with_lammpslib(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
     Tstart: float = 15.0,
@@ -421,7 +421,7 @@ def calc_molecular_dynamics_thermal_expansion_with_lammps(
 
 
 @as_task_dict_evaluator
-def evaluate_with_lammps_library(
+def evaluate_with_lammpslib_library_interface(
     structure: Atoms,
     tasks: list[TaskName],
     potential_dataframe: DataFrame,
@@ -433,7 +433,7 @@ def evaluate_with_lammps_library(
     results = {}
     if "optimize_positions_and_volume" in tasks:
         results["structure_with_optimized_positions_and_volume"] = (
-            optimize_positions_and_volume_with_lammps(
+            optimize_positions_and_volume_with_lammpslib(
                 structure=structure,
                 potential_dataframe=potential_dataframe,
                 lmp=lmp,
@@ -441,14 +441,16 @@ def evaluate_with_lammps_library(
             )
         )
     elif "optimize_positions" in tasks:
-        results["structure_with_optimized_positions"] = optimize_positions_with_lammps(
-            structure=structure,
-            potential_dataframe=potential_dataframe,
-            lmp=lmp,
-            **lmp_optimizer_kwargs,
+        results["structure_with_optimized_positions"] = (
+            optimize_positions_with_lammpslib(
+                structure=structure,
+                potential_dataframe=potential_dataframe,
+                lmp=lmp,
+                **lmp_optimizer_kwargs,
+            )
         )
     elif "calc_molecular_dynamics_thermal_expansion" in tasks:
-        results_dict = calc_molecular_dynamics_thermal_expansion_with_lammps(
+        results_dict = calc_molecular_dynamics_thermal_expansion_with_lammpslib(
             structure=structure,
             potential_dataframe=potential_dataframe,
             lmp=lmp,
@@ -459,7 +461,7 @@ def evaluate_with_lammps_library(
             results_dict["volumes"],
         )
     elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
-        return calc_static_with_lammps(
+        return calc_static_with_lammpslib(
             structure=structure,
             potential_dataframe=potential_dataframe,
             lmp=lmp,
@@ -470,7 +472,7 @@ def evaluate_with_lammps_library(
     return results
 
 
-def evaluate_with_lammps(
+def evaluate_with_lammpslib(
     task_dict: dict[str, dict[str, Atoms]],
     potential_dataframe: DataFrame,
     working_directory=None,
@@ -493,7 +495,7 @@ def evaluate_with_lammps(
         library=library,
         disable_log_file=disable_log_file,
     )
-    results_dict = evaluate_with_lammps_library(
+    results_dict = evaluate_with_lammpslib_library_interface(
         task_dict=task_dict,
         potential_dataframe=potential_dataframe,
         lmp=lmp,

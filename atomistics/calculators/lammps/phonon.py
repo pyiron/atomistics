@@ -94,7 +94,7 @@ def generate_pylammps_trajectory(
     return structure, positions, velocity, time, energy, simulation_cell, memmap
 
 
-def calc_molecular_dynamics_phonons_with_lammps(
+def calc_molecular_dynamics_phonons_with_lammpslib(
     structure_ase: Atoms,
     potential_dataframe: pandas.DataFrame,
     force_constants: np.ndarray,

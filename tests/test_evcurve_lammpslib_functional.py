@@ -1,5 +1,4 @@
 import os
-from concurrent.futures import ProcessPoolExecutor
 
 from ase.build import bulk
 import unittest
@@ -9,11 +8,10 @@ from atomistics.workflows.evcurve.helper import (
     analyse_structures_helper,
     generate_structures_helper,
 )
-from atomistics.shared.parallel import evaluate_with_parallel_executor
 
 
 try:
-    from atomistics.calculators import evaluate_with_lammps, get_potential_by_name
+    from atomistics.calculators import evaluate_with_lammpslib, get_potential_by_name
 
     skip_lammps_test = False
 except ImportError:
@@ -30,26 +28,21 @@ class TestEvCurve(unittest.TestCase):
             potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
-        with ProcessPoolExecutor() as exe:
-            result_dict = evaluate_with_parallel_executor(
-                evaluate_function=evaluate_with_lammps,
-                task_dict={"optimize_positions_and_volume": structure},
-                executor=exe,
-                potential_dataframe=df_pot_selected,
-            )
-            structure_dict = generate_structures_helper(
-                structure=result_dict["structure_with_optimized_positions_and_volume"],
-                vol_range=0.05,
-                num_points=11,
-                strain_lst=None,
-                axes=("x", "y", "z"),
-            )
-            result_dict = evaluate_with_parallel_executor(
-                evaluate_function=evaluate_with_lammps,
-                task_dict={"calc_energy": structure_dict},
-                executor=exe,
-                potential_dataframe=df_pot_selected,
-            )
+        result_dict = evaluate_with_lammpslib(
+            task_dict={"optimize_positions_and_volume": structure},
+            potential_dataframe=df_pot_selected,
+        )
+        structure_dict = generate_structures_helper(
+            structure=result_dict["structure_with_optimized_positions_and_volume"],
+            vol_range=0.05,
+            num_points=11,
+            strain_lst=None,
+            axes=("x", "y", "z"),
+        )
+        result_dict = evaluate_with_lammpslib(
+            task_dict={"calc_energy": structure_dict},
+            potential_dataframe=df_pot_selected,
+        )
         fit_dict = analyse_structures_helper(
             output_dict=result_dict,
             structure_dict=structure_dict,

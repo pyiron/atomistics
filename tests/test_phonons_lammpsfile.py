@@ -1,61 +1,75 @@
 import os
+import shutil
+import subprocess
 
 from ase.build import bulk
 from phonopy.units import VaspToTHz
 import unittest
 
-from atomistics.workflows.phonons.helper import (
-    get_hesse_matrix,
-    get_thermal_properties,
-    generate_structures_helper,
-    analyse_structures_helper,
-)
+from atomistics.workflows import PhonopyWorkflow, optimize_positions_and_volume
 
 try:
-    from atomistics.calculators import evaluate_with_lammps, get_potential_by_name
+    from atomistics.calculators.lammps.potential import get_potential_by_name
+    from atomistics.calculators.lammps.filecalculator import evaluate_with_lammpsfile
 
     skip_lammps_test = False
 except ImportError:
     skip_lammps_test = True
 
 
+def evaluate_lammps(working_directory):
+    command = "mpiexec -n 1 --oversubscribe lmp_mpi -in lmp.in"
+    output = subprocess.check_output(
+        command, cwd=working_directory, shell=True, universal_newlines=True, env=os.environ.copy()
+    )
+    print(output)
+    return output
+
+
 @unittest.skipIf(
     skip_lammps_test, "LAMMPS is not installed, so the LAMMPS tests are skipped."
 )
 class TestPhonons(unittest.TestCase):
+    def setUp(self):
+        self.working_directory = os.path.abspath(os.path.join(__file__, "..", "lammps"))
+        os.makedirs(self.working_directory, exist_ok=True)
+
+    def tearDown(self):
+        if os.path.exists(self.working_directory):
+            shutil.rmtree(self.working_directory)
+
     def test_calc_phonons(self):
         structure = bulk("Al", cubic=True)
         df_pot_selected = get_potential_by_name(
             potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
-        result_dict = evaluate_with_lammps(
-            task_dict={"optimize_positions_and_volume": structure},
+        task_dict = optimize_positions_and_volume(structure=structure)
+        result_dict = evaluate_with_lammpsfile(
+            task_dict=task_dict,
             potential_dataframe=df_pot_selected,
+            working_directory=self.working_directory,
+            executable_function=evaluate_lammps,
         )
-        phonopy_obj, structure_dict = generate_structures_helper(
+        workflow = PhonopyWorkflow(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
+            interaction_range=10,
+            factor=VaspToTHz,
+            displacement=0.01,
+            dos_mesh=20,
             primitive_matrix=None,
             number_of_snapshots=None,
-            displacement=0.01,
-            interaction_range=10.0,
-            factor=VaspToTHz,
         )
-        result_dict = evaluate_with_lammps(
-            task_dict={"calc_forces": structure_dict},
+        task_dict = workflow.generate_structures()
+        result_dict = evaluate_with_lammpsfile(
+            task_dict=task_dict,
             potential_dataframe=df_pot_selected,
+            working_directory=self.working_directory,
+            executable_function=evaluate_lammps,
         )
-        phonopy_dict = analyse_structures_helper(
-            phonopy=phonopy_obj,
-            output_dict=result_dict,
-            dos_mesh=20,
-            number_of_snapshots=None,
-        )
+        phonopy_dict = workflow.analyse_structures(output_dict=result_dict)
         mesh_dict, dos_dict = phonopy_dict["mesh_dict"], phonopy_dict["total_dos_dict"]
-        self.assertEqual(
-            (324, 324),
-            get_hesse_matrix(force_constants=phonopy_obj.force_constants).shape,
-        )
+        self.assertEqual((324, 324), workflow.get_hesse_matrix().shape)
         self.assertTrue("qpoints" in mesh_dict.keys())
         self.assertTrue("weights" in mesh_dict.keys())
         self.assertTrue("frequencies" in mesh_dict.keys())
@@ -63,8 +77,7 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue("group_velocities" in mesh_dict.keys())
         self.assertTrue("frequency_points" in dos_dict.keys())
         self.assertTrue("total_dos" in dos_dict.keys())
-        thermal_dict = get_thermal_properties(
-            phonopy=phonopy_obj,
+        thermal_dict = workflow.get_thermal_properties(
             t_min=1,
             t_max=1500,
             t_step=50,
@@ -100,8 +113,7 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue(thermal_dict["volumes"][-1] > 66.4)
         self.assertTrue(thermal_dict["volumes"][0] < 66.5)
         self.assertTrue(thermal_dict["volumes"][0] > 66.4)
-        thermal_dict = get_thermal_properties(
-            phonopy=phonopy_obj,
+        thermal_dict = workflow.get_thermal_properties(
             t_min=1,
             t_max=1500,
             t_step=50,

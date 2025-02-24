@@ -9,8 +9,8 @@ dependencies:
 - lammps =2022.06.23
 - lxml =4.9.1
 - mendeleev =0.12.0
-- numpy =1.23.5
-- pandas =2.0.0
+- numpy =1.26.0
+- pandas =2.0.3
 - phonopy =2.20.0
 - pylammpsmpi =0.2.1
 - requests =2.24.0
@@ -19,3 +19,4 @@ dependencies:
 - spglib =2.0.2
 - structuretoolkit =0.0.10
 - tqdm =4.44.0
+- pyiron_lammps =0.3.2

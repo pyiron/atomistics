@@ -4,10 +4,15 @@ from ase.build import bulk
 from phonopy.units import VaspToTHz
 import unittest
 
-from atomistics.workflows import PhonopyWorkflow, optimize_positions_and_volume
+from atomistics.workflows.phonons.helper import (
+    get_hesse_matrix,
+    get_thermal_properties,
+    generate_structures_helper,
+    analyse_structures_helper,
+)
 
 try:
-    from atomistics.calculators import evaluate_with_lammps, get_potential_by_name
+    from atomistics.calculators import evaluate_with_lammpslib, get_potential_by_name
 
     skip_lammps_test = False
 except ImportError:
@@ -24,28 +29,33 @@ class TestPhonons(unittest.TestCase):
             potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
-        task_dict = optimize_positions_and_volume(structure=structure)
-        result_dict = evaluate_with_lammps(
-            task_dict=task_dict,
+        result_dict = evaluate_with_lammpslib(
+            task_dict={"optimize_positions_and_volume": structure},
             potential_dataframe=df_pot_selected,
         )
-        workflow = PhonopyWorkflow(
+        phonopy_obj, structure_dict = generate_structures_helper(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
-            interaction_range=10,
-            factor=VaspToTHz,
-            displacement=0.01,
-            dos_mesh=20,
             primitive_matrix=None,
             number_of_snapshots=None,
+            displacement=0.01,
+            interaction_range=10.0,
+            factor=VaspToTHz,
         )
-        task_dict = workflow.generate_structures()
-        result_dict = evaluate_with_lammps(
-            task_dict=task_dict,
+        result_dict = evaluate_with_lammpslib(
+            task_dict={"calc_forces": structure_dict},
             potential_dataframe=df_pot_selected,
         )
-        phonopy_dict = workflow.analyse_structures(output_dict=result_dict)
+        phonopy_dict = analyse_structures_helper(
+            phonopy=phonopy_obj,
+            output_dict=result_dict,
+            dos_mesh=20,
+            number_of_snapshots=None,
+        )
         mesh_dict, dos_dict = phonopy_dict["mesh_dict"], phonopy_dict["total_dos_dict"]
-        self.assertEqual((324, 324), workflow.get_hesse_matrix().shape)
+        self.assertEqual(
+            (324, 324),
+            get_hesse_matrix(force_constants=phonopy_obj.force_constants).shape,
+        )
         self.assertTrue("qpoints" in mesh_dict.keys())
         self.assertTrue("weights" in mesh_dict.keys())
         self.assertTrue("frequencies" in mesh_dict.keys())
@@ -53,7 +63,8 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue("group_velocities" in mesh_dict.keys())
         self.assertTrue("frequency_points" in dos_dict.keys())
         self.assertTrue("total_dos" in dos_dict.keys())
-        thermal_dict = workflow.get_thermal_properties(
+        thermal_dict = get_thermal_properties(
+            phonopy=phonopy_obj,
             t_min=1,
             t_max=1500,
             t_step=50,
@@ -89,7 +100,8 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue(thermal_dict["volumes"][-1] > 66.4)
         self.assertTrue(thermal_dict["volumes"][0] < 66.5)
         self.assertTrue(thermal_dict["volumes"][0] > 66.4)
-        thermal_dict = workflow.get_thermal_properties(
+        thermal_dict = get_thermal_properties(
+            phonopy=phonopy_obj,
             t_min=1,
             t_max=1500,
             t_step=50,
