@@ -1,10 +1,10 @@
 import os
 
-from ase.atoms import Atoms
 import pandas
+from ase.atoms import Atoms
 from jinja2 import Template
-from pyiron_lammps.structure import write_lammps_datafile
 from pyiron_lammps.output import parse_lammps_output
+from pyiron_lammps.structure import write_lammps_datafile
 
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.lammps.commands import (
@@ -58,8 +58,13 @@ def calc_static_with_lammpsfile(
         "dump 1 all custom 100 dump.out id type xsu ysu zsu fx fy fz vx vy vz\n",
         'dump_modify 1 sort id format line "%d %d %20.15g %20.15g %20.15g %20.15g %20.15g %20.15g %20.15g %20.15g %20.15g"\n',
     ]
-    input_str = "".join(init_commands) + "\n".join(potential_dataframe["Config"]) + "\n" + "".join(
-        dump_commands) + input_template
+    input_str = (
+        "".join(init_commands)
+        + "\n".join(potential_dataframe["Config"])
+        + "\n"
+        + "".join(dump_commands)
+        + input_template
+    )
     with open(os.path.join(working_directory, "lmp.in"), "w") as f:
         f.writelines(input_str)
 
@@ -67,8 +72,8 @@ def calc_static_with_lammpsfile(
         structure=structure,
         el_eam_lst=potential_dataframe["Species"],
         bond_dict=None,
-        units='metal',
-        file_name='lammps.data',
+        units="metal",
+        file_name="lammps.data",
         cwd=working_directory,
     )
 
@@ -79,9 +84,9 @@ def calc_static_with_lammpsfile(
         potential_elements=potential_dataframe["Species"],
         units="metal",
         prism=None,
-        dump_h5_file_name='dump.h5',
-        dump_out_file_name='dump.out',
-        log_lammps_file_name='log.lammps',
+        dump_h5_file_name="dump.h5",
+        dump_out_file_name="dump.out",
+        log_lammps_file_name="log.lammps",
     )
     output_obj = GenericOutput(output_dict=output)
     result_dict = OutputStatic(
