@@ -17,7 +17,6 @@ from atomistics.calculators.lammps.commands import (
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.shared.output import OutputStatic
 
-
 DUMP_COMMANDS = [
     "dump 1 all custom 100 dump.out id type xsu ysu zsu fx fy fz vx vy vz\n",
     'dump_modify 1 sort id format line "%d %d %20.15g %20.15g %20.15g %20.15g %20.15g %20.15g %20.15g %20.15g %20.15g"\n',
@@ -54,7 +53,9 @@ def _lammps_file_initialization(structure):
     return init_commands
 
 
-def _write_lammps_input_file(working_directory, structure, potential_dataframe, input_template):
+def _write_lammps_input_file(
+    working_directory, structure, potential_dataframe, input_template
+):
     _write_lammps_datafile(
         structure=structure,
         el_eam_lst=potential_dataframe["Species"],
