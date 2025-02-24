@@ -76,8 +76,7 @@ def calc_static_with_lammpsfile(
         file_name="lammps.data",
         cwd=working_directory,
     )
-
-    print(executable_function(working_directory))
+    executable_function(working_directory)
     output = parse_lammps_output(
         working_directory=working_directory,
         structure=structure,

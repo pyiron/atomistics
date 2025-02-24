@@ -20,9 +20,11 @@ except ImportError:
 
 def evaluate_lammps(working_directory):
     command = "mpiexec -n 1 --oversubscribe lmp_mpi -in lmp.in"
-    return subprocess.check_output(
+    output = subprocess.check_output(
         command, cwd=working_directory, shell=True, universal_newlines=True, env=os.environ.copy()
     )
+    print(output)
+    return output
 
 
 @unittest.skipIf(
