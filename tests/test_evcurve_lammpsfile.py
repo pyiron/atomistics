@@ -7,6 +7,7 @@ import unittest
 
 from atomistics.workflows import (
     EnergyVolumeCurveWorkflow,
+    optimize_positions_and_volume,
 )
 
 try:
@@ -45,14 +46,15 @@ class TestEvCurve(unittest.TestCase):
             potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
-        # task_dict = optimize_positions_and_volume(structure=structure)
-        # result_dict = evaluate_with_lammpsfile(
-        #     task_dict=task_dict,
-        #     potential_dataframe=df_pot_selected,
-        # )
+        task_dict = optimize_positions_and_volume(structure=structure)
+        result_dict = evaluate_with_lammpsfile(
+            task_dict=task_dict,
+            potential_dataframe=df_pot_selected,
+            working_directory=self.working_directory,
+            executable_function=evaluate_lammps,
+        )
         workflow = EnergyVolumeCurveWorkflow(
-            # structure=result_dict["structure_with_optimized_positions_and_volume"],
-            structure=structure,
+            structure=result_dict["structure_with_optimized_positions_and_volume"],
             num_points=11,
             fit_type="polynomial",
             fit_order=3,
@@ -75,9 +77,9 @@ class TestEvCurve(unittest.TestCase):
             thermal_properties_dict["temperatures"],
             thermal_properties_dict["volumes"],
         )
-        self.assertAlmostEqual(fit_dict["volume_eq"], 66.4301985310378)
-        self.assertAlmostEqual(fit_dict["bulkmodul_eq"], 77.72501358963902)
-        self.assertAlmostEqual(fit_dict["b_prime_eq"], 1.2795024591433375)
+        self.assertAlmostEqual(fit_dict["volume_eq"], 66.43019790724603)
+        self.assertAlmostEqual(fit_dict["bulkmodul_eq"], 77.72501703646152)
+        self.assertAlmostEqual(fit_dict["b_prime_eq"], 1.2795467367276832)
         self.assertEqual(len(temperatures_ev), 2)
         self.assertEqual(len(volumes_ev), 2)
         self.assertTrue(volumes_ev[0] < volumes_ev[-1])
