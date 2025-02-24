@@ -19,3 +19,4 @@ dependencies:
 - spglib =2.0.2
 - structuretoolkit =0.0.10
 - tqdm =4.44.0
+- pyiron_lammps =0.3.2
