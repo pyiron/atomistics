@@ -90,15 +90,6 @@ class OutputParser:
         raise NotImplementedError()
 
 
-def _get_output(working_directory: str):
-    output_dict = collect_eval_forces(os.path.join(working_directory, "relaxHist.sx"))
-    forces = output_dict["forces"]
-    energy_scf_int = collect_energy_dat(os.path.join(working_directory, "energy.dat"))[
-        "scf_energy_int"
-    ][-1][-1]
-    return energy_scf_int, forces
-
-
 def calc_static_with_sphinxdft(
     structure: Atoms,
     working_directory: str,
