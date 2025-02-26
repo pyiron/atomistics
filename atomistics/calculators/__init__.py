@@ -77,3 +77,14 @@ try:
     __all__ += ["calc_molecular_dynamics_phonons_with_lammpslib"]
 except ImportError:
     pass
+
+try:
+    from atomistics.calculators.sphinxdft import (
+        evaluate_with_sphinx,
+    )
+
+    __all__ += [
+        "evaluate_with_sphinx",
+    ]
+except ImportError:
+    pass
