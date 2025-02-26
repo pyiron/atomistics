@@ -3,10 +3,8 @@ import os
 import pandas
 from ase.atoms import Atoms
 from jinja2 import Template
-from pyiron_lammps import (
-    parse_lammps_output_files as _parse_lammps_output_files,
-    write_lammps_structure as _write_lammps_structure
-)
+from pyiron_lammps import parse_lammps_output_files as _parse_lammps_output_files
+from pyiron_lammps import write_lammps_structure as _write_lammps_structure
 
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.lammps.commands import (
