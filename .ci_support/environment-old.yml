@@ -9,7 +9,7 @@ dependencies:
 - lammps =2022.06.23
 - lxml =4.9.1
 - mendeleev =0.12.0
-- numpy =1.26.0
+- numpy =1.26.4
 - pandas =2.0.3
 - phonopy =2.20.0
 - pylammpsmpi =0.2.1
