@@ -17,8 +17,19 @@ def _write_input(
     working_directory: str,
     maxSteps: int = 100,
     eCut: float = 25,
-    kpoint_coords: list[float, float, float] = [0.5, 0.5, 0.5],
-    kpoint_folding: list[int, int, int] = [4, 4, 4],
+ def _write_input(
+     structure: Atoms,
+     working_directory: str,
+     maxSteps: int = 100,
+     eCut: float = 25,
+     kpoint_coords: list[float, float, float] | None = None,
+     kpoint_folding: list[int, int, int] | None = None,
+ ):
+     if kpoint_coords is None:
+         kpoint_coords = [0.5, 0.5, 0.5]
+     if kpoint_folding is None:
+         kpoint_folding = [4, 4, 4]
+     # Rest of the function body...
 ):
     struct_group, spin_lst = get_structure_group(structure)
     main_group = sphinx.main.create(
