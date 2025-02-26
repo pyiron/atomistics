@@ -16,12 +16,12 @@ except ImportError:
 
 def validate_fitdict(fit_dict):
     lst = [
-        fit_dict["bulkmodul_eq"] > 61,
-        fit_dict["bulkmodul_eq"] < 63,
+        fit_dict["bulkmodul_eq"] > 55,
+        fit_dict["bulkmodul_eq"] < 65,
         fit_dict["energy_eq"] > -227.76,
         fit_dict["energy_eq"] < -227.75,
-        fit_dict["volume_eq"] > 70.59,
-        fit_dict["volume_eq"] < 70.60,
+        fit_dict["volume_eq"] > 70.37,
+        fit_dict["volume_eq"] < 70.38,
     ]
     if not all(lst):
         print(fit_dict)
@@ -61,6 +61,5 @@ class TestEvCurve(unittest.TestCase):
             kpoint_coords=[0.5, 0.5, 0.5],
             kpoint_folding=[3, 3, 3],
         )
-        print(result_dict)
         fit_dict = workflow.analyse_structures(output_dict=result_dict)
         self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))

@@ -1,8 +1,8 @@
 import os
 from typing import Optional
 
-from ase.atoms import Atoms
 import scipy.constants
+from ase.atoms import Atoms
 from sphinx_parser.ase import get_structure_group, id_spx_to_ase
 from sphinx_parser.input import sphinx
 from sphinx_parser.output import collect_energy_dat, collect_eval_forces
@@ -12,7 +12,6 @@ from sphinx_parser.toolkit import to_sphinx
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.shared.output import OutputStatic
-
 
 BOHR_TO_ANGSTROM = (
     scipy.constants.physical_constants["Bohr radius"][0] / scipy.constants.angstrom
@@ -69,14 +68,20 @@ class OutputParser:
         self._structure = structure
 
     def get_energy(self):
-        return collect_energy_dat(os.path.join(self._working_directory, "energy.dat"))[
-            "scf_energy_int"
-        ][-1][-1] * HARTREE_TO_EV
+        return (
+            collect_energy_dat(os.path.join(self._working_directory, "energy.dat"))[
+                "scf_energy_int"
+            ][-1][-1]
+            * HARTREE_TO_EV
+        )
 
     def get_forces(self):
-        return collect_eval_forces(
-            os.path.join(self._working_directory, "relaxHist.sx")
-        )["forces"][-1][id_spx_to_ase(self._structure)] * HARTREE_OVER_BOHR_TO_EV_OVER_ANGSTROM
+        return (
+            collect_eval_forces(os.path.join(self._working_directory, "relaxHist.sx"))[
+                "forces"
+            ][-1][id_spx_to_ase(self._structure)]
+            * HARTREE_OVER_BOHR_TO_EV_OVER_ANGSTROM
+        )
 
     def get_volume(self):
         return self._structure.get_volume()
