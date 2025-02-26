@@ -2,7 +2,7 @@ import os
 from typing import Optional
 
 from ase.atoms import Atoms
-from sphinx_parser.ase import get_structure_group
+from sphinx_parser.ase import get_structure_group, id_spx_to_ase
 from sphinx_parser.input import sphinx
 from sphinx_parser.output import collect_energy_dat, collect_eval_forces
 from sphinx_parser.potential import get_paw_from_structure
@@ -68,7 +68,7 @@ class OutputParser:
     def get_forces(self):
         return collect_eval_forces(
             os.path.join(self._working_directory, "relaxHist.sx")
-        )["forces"][-1]
+        )["forces"][-1][id_spx_to_ase(self._structure)]
 
     def get_volume(self):
         return self._structure.get_volume()
