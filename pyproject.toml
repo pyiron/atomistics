@@ -64,6 +64,9 @@ experimental = [
     "pandas==2.2.3",
     "requests==2.32.3",
 ]
+sphinxdft = [
+    "sphinx-parser==0.0.1"
+]
 qe = [
     "pwtools==1.2.3"
 ]

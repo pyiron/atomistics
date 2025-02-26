@@ -20,3 +20,4 @@ dependencies:
 - structuretoolkit =0.0.10
 - tqdm =4.44.0
 - pyiron_lammps =0.3.2
+- sphinx_parser =0.0.1
