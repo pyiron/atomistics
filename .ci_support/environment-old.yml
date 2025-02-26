@@ -1,7 +1,7 @@
 channels:
 - conda-forge
 dependencies:
-- ase =3.22.1
+- ase =3.23.0
 - dynaphopy =1.17.5
 - gpaw =20.1.0
 - iprpy-data =2023.07.25
@@ -9,7 +9,7 @@ dependencies:
 - lammps =2022.06.23
 - lxml =4.9.1
 - mendeleev =0.12.0
-- numpy =1.26.0
+- numpy =1.26.4
 - pandas =2.0.3
 - phonopy =2.20.0
 - pylammpsmpi =0.2.1
