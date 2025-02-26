@@ -111,7 +111,7 @@ def calc_static_with_sphinxdft(
 
 
 @as_task_dict_evaluator
-def evaluate_with_lammpsfile(
+def evaluate_with_sphinx(
     structure: Atoms,
     tasks: list,
     working_directory: str,
