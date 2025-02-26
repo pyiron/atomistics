@@ -14,12 +14,12 @@ from atomistics.shared.output import OutputStatic
 
 
 def _write_input(
-     structure: Atoms,
-     working_directory: str,
-     maxSteps: int = 100,
-     eCut: float = 25.0,
-     kpoint_coords: Optional[list[float, float, float]] = None,
-     kpoint_folding: Optional[list[int, int, int]] = None,
+    structure: Atoms,
+    working_directory: str,
+    maxSteps: int = 100,
+    eCut: float = 25.0,
+    kpoint_coords: Optional[list[float, float, float]] = None,
+    kpoint_folding: Optional[list[int, int, int]] = None,
 ):
     if kpoint_coords is None:
         kpoint_coords = [0.5, 0.5, 0.5]
