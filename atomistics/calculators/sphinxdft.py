@@ -1,11 +1,11 @@
 import os
 
 from ase.atoms import Atoms
-from sphinx_parser.input import sphinx
 from sphinx_parser.ase import get_structure_group
-from sphinx_parser.toolkit import to_sphinx
-from sphinx_parser.potential import get_paw_from_structure
+from sphinx_parser.input import sphinx
 from sphinx_parser.output import collect_energy_dat, collect_eval_forces
+from sphinx_parser.potential import get_paw_from_structure
+from sphinx_parser.toolkit import to_sphinx
 
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.wrapper import as_task_dict_evaluator
@@ -33,8 +33,10 @@ def _write_input(
     )
     paw_group = sphinx.PAWHamiltonian.create(xc=1, spinPolarized=False, ekt=0.2)
     initial_guess_group = sphinx.initialGuess.create(
-        waves=sphinx.initialGuess.waves.create(lcao=sphinx.initialGuess.waves.lcao.create()),
-        rho=sphinx.initialGuess.rho.create(atomicOrbitals=True)
+        waves=sphinx.initialGuess.waves.create(
+            lcao=sphinx.initialGuess.waves.lcao.create()
+        ),
+        rho=sphinx.initialGuess.rho.create(atomicOrbitals=True),
     )
     input_sx = sphinx.create(
         pawPot=pawPot_group,
@@ -54,10 +56,14 @@ class OutputParser:
         self._structure = structure
 
     def get_energy(self):
-        return collect_energy_dat(os.path.join(self._working_directory, "energy.dat"))['scf_energy_int'][-1][-1]
+        return collect_energy_dat(os.path.join(self._working_directory, "energy.dat"))[
+            "scf_energy_int"
+        ][-1][-1]
 
     def get_forces(self):
-        return collect_eval_forces(os.path.join(self._working_directory, "relaxHist.sx"))['forces'][-1]
+        return collect_eval_forces(
+            os.path.join(self._working_directory, "relaxHist.sx")
+        )["forces"][-1]
 
     def get_volume(self):
         return self._structure.get_volume()
@@ -68,8 +74,10 @@ class OutputParser:
 
 def _get_output(working_directory: str):
     output_dict = collect_eval_forces(os.path.join(working_directory, "relaxHist.sx"))
-    forces = output_dict['forces']
-    energy_scf_int = collect_energy_dat(os.path.join(working_directory, "energy.dat"))['scf_energy_int'][-1][-1]
+    forces = output_dict["forces"]
+    energy_scf_int = collect_energy_dat(os.path.join(working_directory, "energy.dat"))[
+        "scf_energy_int"
+    ][-1][-1]
     return energy_scf_int, forces
 
 
