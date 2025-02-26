@@ -421,7 +421,7 @@ jobs:
         python -m unittest discover tests
 
   autobot:
-    needs: [unittest_old, unittest_siesta, unittest_qe, unittest_matgl, unittest_mace, unittest_gpaw, unittest_abinit, unittest_matrix, pip_check, notebooks, minimal, coverage]
+    needs: [unittest_old, unittest_siesta, unittest_qe, unittest_matgl, unittest_mace, unittest_gpaw, unittest_abinit, unittest_grace, unittest_matrix, pip_check, notebooks, minimal, coverage]
     permissions:
       contents: write
       pull-requests: write
