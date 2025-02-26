@@ -11,7 +11,7 @@ from atomistics.workflows import (
 
 
 try:
-    from tensorpoential.calculator import grace_fm
+    from tensorpotential.calculator import grace_fm
 
     skip_grace_test = False
 except ImportError:
