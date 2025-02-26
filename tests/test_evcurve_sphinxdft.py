@@ -1,16 +1,17 @@
 import os
+import shutil
 import subprocess
 
 from ase.build import bulk
 import unittest
 
+from atomistics.calculators import evaluate_with_sphinx
 from atomistics.workflows import EnergyVolumeCurveWorkflow
 
-try:
-    from atomistics.calculators import evaluate_with_sphinx
-
+sphinx_command = "sphinx"
+if shutil.which(sphinx_command) is not None:
     skip_sphinx_test = False
-except ImportError:
+else:
     skip_sphinx_test = True
 
 
@@ -30,7 +31,7 @@ def validate_fitdict(fit_dict):
 
 def evaluate_sphinx(working_directory):
     output = subprocess.check_output(
-        "sphinx", cwd=working_directory, shell=True, universal_newlines=True, env=os.environ.copy()
+        sphinx_command, cwd=working_directory, shell=True, universal_newlines=True, env=os.environ.copy()
     )
     print(output)
     return output
