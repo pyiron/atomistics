@@ -24,7 +24,7 @@ def _write_input(
     if kpoint_coords is None:
         kpoint_coords = [0.5, 0.5, 0.5]
     if kpoint_folding is None:
-        kpoint_folding = [4, 4, 4]
+        kpoint_folding = [3, 3, 3]
     struct_group, spin_lst = get_structure_group(structure)
     main_group = sphinx.main.create(
         scfDiag=sphinx.main.scfDiag.create(maxSteps=maxSteps, blockCCG={}),
@@ -99,7 +99,7 @@ def calc_static_with_sphinxdft(
     if kpoint_coords is None:
         kpoint_coords = [0.5, 0.5, 0.5]
     if kpoint_folding is None:
-        kpoint_folding = [4, 4, 4]
+        kpoint_folding = [3, 3, 3]
     _write_input(
         structure=structure,
         working_directory=working_directory,
