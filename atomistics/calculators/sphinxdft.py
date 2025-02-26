@@ -87,8 +87,21 @@ def calc_static_with_sphinxdft(
     executable_function: callable,
     maxSteps: int = 100,
     eCut: float = 25,
-    kpoint_coords: list[float, float, float] = [0.5, 0.5, 0.5],
-    kpoint_folding: list[int, int, int] = [4, 4, 4],
+def calc_static_with_sphinxdft(
+    structure: Atoms,
+    working_directory: str,
+    executable_function: callable,
+    maxSteps: int = 100,
+    eCut: float = 25,
+    kpoint_coords: list[float, float, float] | None = None,
+    kpoint_folding: list[int, int, int] | None = None,
+    output_keys=OutputStatic.keys(),
+) -> dict:
+    if kpoint_coords is None:
+        kpoint_coords = [0.5, 0.5, 0.5]
+    if kpoint_folding is None:
+        kpoint_folding = [4, 4, 4]
+    # ... rest of the function body ...
     output_keys=OutputStatic.keys(),
 ) -> dict:
     _write_input(
