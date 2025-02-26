@@ -43,7 +43,7 @@ def evaluate_sphinx(working_directory):
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         workflow = EnergyVolumeCurveWorkflow(
-            structure=bulk("Al", a=4.15, cubic=True),
+            structure=bulk("Al", a=4.04, cubic=True),
             num_points=7,
             fit_type="polynomial",
             fit_order=3,
@@ -59,7 +59,7 @@ class TestEvCurve(unittest.TestCase):
             maxSteps=100,
             eCut=25,
             kpoint_coords=[0.5, 0.5, 0.5],
-            kpoint_folding=[4, 4, 4],
+            kpoint_folding=[3, 3, 3],
         )
         fit_dict = workflow.analyse_structures(output_dict=result_dict)
         self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))

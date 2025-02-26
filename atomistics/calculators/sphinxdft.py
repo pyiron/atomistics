@@ -119,7 +119,7 @@ def evaluate_with_sphinx(
     maxSteps: int = 100,
     eCut: float = 25,
     kpoint_coords: list[float, float, float] = [0.5, 0.5, 0.5],
-    kpoint_folding: list[int, int, int] = [4, 4, 4],
+    kpoint_folding: list[int, int, int] = [3, 3, 3],
 ) -> dict:
     if "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
         return calc_static_with_sphinxdft(
