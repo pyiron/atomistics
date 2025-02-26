@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 from ase.atoms import Atoms
 from sphinx_parser.ase import get_structure_group
@@ -13,24 +14,17 @@ from atomistics.shared.output import OutputStatic
 
 
 def _write_input(
-    structure: Atoms,
-    working_directory: str,
-    maxSteps: int = 100,
-    eCut: float = 25,
- def _write_input(
      structure: Atoms,
      working_directory: str,
      maxSteps: int = 100,
-     eCut: float = 25,
-     kpoint_coords: list[float, float, float] | None = None,
-     kpoint_folding: list[int, int, int] | None = None,
- ):
-     if kpoint_coords is None:
-         kpoint_coords = [0.5, 0.5, 0.5]
-     if kpoint_folding is None:
-         kpoint_folding = [4, 4, 4]
-     # Rest of the function body...
+     eCut: float = 25.0,
+     kpoint_coords: Optional[list[float, float, float]] = None,
+     kpoint_folding: Optional[list[int, int, int]] = None,
 ):
+    if kpoint_coords is None:
+        kpoint_coords = [0.5, 0.5, 0.5]
+    if kpoint_folding is None:
+        kpoint_folding = [4, 4, 4]
     struct_group, spin_lst = get_structure_group(structure)
     main_group = sphinx.main.create(
         scfDiag=sphinx.main.scfDiag.create(maxSteps=maxSteps, blockCCG={}),
@@ -98,23 +92,14 @@ def calc_static_with_sphinxdft(
     executable_function: callable,
     maxSteps: int = 100,
     eCut: float = 25,
-def calc_static_with_sphinxdft(
-    structure: Atoms,
-    working_directory: str,
-    executable_function: callable,
-    maxSteps: int = 100,
-    eCut: float = 25,
-    kpoint_coords: list[float, float, float] | None = None,
-    kpoint_folding: list[int, int, int] | None = None,
+    kpoint_coords: Optional[list[float, float, float]] = None,
+    kpoint_folding: Optional[list[int, int, int]] = None,
     output_keys=OutputStatic.keys(),
 ) -> dict:
     if kpoint_coords is None:
         kpoint_coords = [0.5, 0.5, 0.5]
     if kpoint_folding is None:
         kpoint_folding = [4, 4, 4]
-    # ... rest of the function body ...
-    output_keys=OutputStatic.keys(),
-) -> dict:
     _write_input(
         structure=structure,
         working_directory=working_directory,
