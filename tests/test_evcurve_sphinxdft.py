@@ -7,7 +7,7 @@ import unittest
 from atomistics.workflows import EnergyVolumeCurveWorkflow
 
 try:
-    from atomistics.calculators.sphinxdft import evaluate_with_sphinx
+    from atomistics.calculators import evaluate_with_sphinx
 
     skip_sphinx_test = False
 except ImportError:
@@ -16,12 +16,12 @@ except ImportError:
 
 def validate_fitdict(fit_dict):
     lst = [
-        fit_dict["bulkmodul_eq"] > 50,
-        fit_dict["bulkmodul_eq"] < 80,
-        fit_dict["energy_eq"] > -2148.2,
-        fit_dict["energy_eq"] < -2148.1,
-        fit_dict["volume_eq"] > 70,
-        fit_dict["volume_eq"] < 72,
+        fit_dict["bulkmodul_eq"] > 61,
+        fit_dict["bulkmodul_eq"] < 63,
+        fit_dict["energy_eq"] > -227.76,
+        fit_dict["energy_eq"] < -227.75,
+        fit_dict["volume_eq"] > 70.59,
+        fit_dict["volume_eq"] < 70.60,
     ]
     if not all(lst):
         print(fit_dict)
@@ -43,7 +43,7 @@ def evaluate_sphinx(working_directory):
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         workflow = EnergyVolumeCurveWorkflow(
-            structure=bulk("Al", a=4.04, cubic=True),
+            structure=bulk("Al", a=4.11, cubic=True),
             num_points=7,
             fit_type="polynomial",
             fit_order=3,
@@ -61,5 +61,6 @@ class TestEvCurve(unittest.TestCase):
             kpoint_coords=[0.5, 0.5, 0.5],
             kpoint_folding=[3, 3, 3],
         )
+        print(result_dict)
         fit_dict = workflow.analyse_structures(output_dict=result_dict)
         self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))
