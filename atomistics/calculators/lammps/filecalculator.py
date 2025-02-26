@@ -3,8 +3,8 @@ import os
 import pandas
 from ase.atoms import Atoms
 from jinja2 import Template
-from pyiron_lammps.output import parse_lammps_output as _parse_lammps_output
-from pyiron_lammps.structure import write_lammps_datafile as _write_lammps_datafile
+from pyiron_lammps import parse_lammps_output_files as _parse_lammps_output_files
+from pyiron_lammps import write_lammps_structure as _write_lammps_structure
 
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.lammps.commands import (
@@ -56,13 +56,13 @@ def _lammps_file_initialization(structure):
 def _write_lammps_input_file(
     working_directory, structure, potential_dataframe, input_template
 ):
-    _write_lammps_datafile(
+    _write_lammps_structure(
         structure=structure,
-        el_eam_lst=potential_dataframe["Species"],
+        potential_elements=potential_dataframe["Species"],
         bond_dict=None,
         units="metal",
         file_name="lammps.data",
-        cwd=working_directory,
+        working_directory=working_directory,
     )
     input_str = (
         "".join(_lammps_file_initialization(structure=structure))
@@ -111,7 +111,7 @@ def optimize_positions_and_volume_with_lammpsfile(
         input_template=input_template,
     )
     executable_function(working_directory)
-    output = _parse_lammps_output(
+    output = _parse_lammps_output_files(
         working_directory=working_directory,
         structure=structure,
         potential_elements=potential_dataframe["Species"],
@@ -155,7 +155,7 @@ def optimize_positions_with_lammpsfile(
         input_template=input_template,
     )
     executable_function(working_directory)
-    output = _parse_lammps_output(
+    output = _parse_lammps_output_files(
         working_directory=working_directory,
         structure=structure,
         potential_elements=potential_dataframe["Species"],
@@ -189,7 +189,7 @@ def calc_static_with_lammpsfile(
         input_template=input_template,
     )
     executable_function(working_directory)
-    output = _parse_lammps_output(
+    output = _parse_lammps_output_files(
         working_directory=working_directory,
         structure=structure,
         potential_elements=potential_dataframe["Species"],
