@@ -88,7 +88,7 @@ class TestSphinxParser(unittest.TestCase):
         )))
 
     def test_optimize_positions_with_sphinxdft(self):
-        results = optimize_positions_with_sphinxdft(
+        structure_result = optimize_positions_with_sphinxdft(
             structure=self._structure,
             working_directory=self._output_directory,
             executable_function=executable_function,
@@ -100,8 +100,7 @@ class TestSphinxParser(unittest.TestCase):
             dEnergy=1.0e-6,
             max_ionic_steps=50,
         )
-        self.assertTrue("structure_with_optimized_positions" in results.keys())
-        self.assertEqual(len(results), 1)
+        self.assertEqual(len(structure_result), len(self._structure))
 
     def test_evaluate_with_sphinx_energy_and_forces(self):
         results = evaluate_with_sphinx(
