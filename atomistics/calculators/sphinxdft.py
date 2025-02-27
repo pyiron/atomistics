@@ -5,6 +5,7 @@ import scipy.constants
 from ase.atoms import Atoms
 from sphinx_parser.ase import get_structure_group, id_spx_to_ase
 from sphinx_parser.input import sphinx
+from sphinx_parser.jobs import apply_minimization
 from sphinx_parser.output import collect_energy_dat, collect_eval_forces
 from sphinx_parser.potential import get_paw_from_structure
 from sphinx_parser.toolkit import to_sphinx
@@ -20,11 +21,10 @@ HARTREE_TO_EV = scipy.constants.physical_constants["Hartree energy in eV"][0]
 HARTREE_OVER_BOHR_TO_EV_OVER_ANGSTROM = HARTREE_TO_EV / BOHR_TO_ANGSTROM
 
 
-def _write_input(
+def _generate_input(
     structure: Atoms,
-    working_directory: str,
     maxSteps: int = 100,
-    eCut: float = 25.0,
+    energy_cutoff_in_eV: float = 25.0,
     kpoint_coords: Optional[list[float, float, float]] = None,
     kpoint_folding: Optional[list[int, int, int]] = None,
 ):
@@ -39,7 +39,7 @@ def _write_input(
     )
     pawPot_group = get_paw_from_structure(structure)
     basis_group = sphinx.basis.create(
-        eCut=eCut,
+        eCut=energy_cutoff_in_eV / HARTREE_TO_EV,
         kPoint=sphinx.basis.kPoint.create(coords=kpoint_coords),
         folding=kpoint_folding,
     )
@@ -50,7 +50,7 @@ def _write_input(
         ),
         rho=sphinx.initialGuess.rho.create(atomicOrbitals=True),
     )
-    input_sx = sphinx.create(
+    return sphinx.create(
         pawPot=pawPot_group,
         structure=struct_group,
         main=main_group,
@@ -58,8 +58,6 @@ def _write_input(
         PAWHamiltonian=paw_group,
         initialGuess=initial_guess_group,
     )
-    with open(os.path.join(working_directory, "input.sx"), "w") as f:
-        f.write(to_sphinx(input_sx))
 
 
 class OutputParser:
@@ -90,12 +88,54 @@ class OutputParser:
         raise NotImplementedError()
 
 
+def optimize_positions_with_sphinxdft(
+    structure: Atoms,
+    working_directory: str,
+    executable_function: callable,
+    max_electronic_steps: int = 100,
+    energy_cutoff_in_eV: float = 500.0,
+    mode: str = "linQN",
+    dEnergy: float = 1.0e-6,
+    max_ionic_steps: int = 50,
+    kpoint_coords: Optional[list[float, float, float]] = None,
+    kpoint_folding: Optional[list[int, int, int]] = None,
+) -> Atoms:
+    if kpoint_coords is None:
+        kpoint_coords = [0.5, 0.5, 0.5]
+    if kpoint_folding is None:
+        kpoint_folding = [3, 3, 3]
+    input_sx = _generate_input(
+        structure=structure,
+        maxSteps=max_electronic_steps,
+        energy_cutoff_in_eV=energy_cutoff_in_eV,
+        kpoint_coords=kpoint_coords,
+        kpoint_folding=kpoint_folding,
+    )
+    input_sx = apply_minimization(
+        sphinx_input=input_sx,
+        mode=mode,
+        dEnergy=dEnergy,
+        maxSteps=max_ionic_steps,
+    )
+    with open(os.path.join(working_directory, "input.sx"), "w") as f:
+        f.write(to_sphinx(input_sx))
+    executable_function(working_directory)
+    structure_copy = structure.copy()
+    structure_copy.positions = (
+        collect_eval_forces(os.path.join(working_directory, "relaxHist.sx"))[
+            "positions"
+        ][-1][id_spx_to_ase(structure)]
+        / BOHR_TO_ANGSTROM
+    )
+    return structure_copy
+
+
 def calc_static_with_sphinxdft(
     structure: Atoms,
     working_directory: str,
     executable_function: callable,
-    maxSteps: int = 100,
-    eCut: float = 25,
+    max_electronic_steps: int = 100,
+    energy_cutoff_in_eV: float = 500.0,
     kpoint_coords: Optional[list[float, float, float]] = None,
     kpoint_folding: Optional[list[int, int, int]] = None,
     output_keys=OutputStatic.keys(),
@@ -104,14 +144,15 @@ def calc_static_with_sphinxdft(
         kpoint_coords = [0.5, 0.5, 0.5]
     if kpoint_folding is None:
         kpoint_folding = [3, 3, 3]
-    _write_input(
+    input_sx = _generate_input(
         structure=structure,
-        working_directory=working_directory,
-        maxSteps=maxSteps,
-        eCut=eCut,
+        maxSteps=max_electronic_steps,
+        energy_cutoff_in_eV=energy_cutoff_in_eV,
         kpoint_coords=kpoint_coords,
         kpoint_folding=kpoint_folding,
     )
+    with open(os.path.join(working_directory, "input.sx"), "w") as f:
+        f.write(to_sphinx(input_sx))
     executable_function(working_directory)
     output_obj = OutputParser(working_directory=working_directory, structure=structure)
     result_dict = OutputStatic(
@@ -129,20 +170,37 @@ def evaluate_with_sphinx(
     tasks: list,
     working_directory: str,
     executable_function: callable,
-    maxSteps: int = 100,
-    eCut: float = 25,
+    max_electronic_steps: int = 100,
+    energy_cutoff_in_eV: float = 500,
     kpoint_coords: Optional[list[float, float, float]] = None,
     kpoint_folding: Optional[list[int, int, int]] = None,
+    sphinx_optimizer_kwargs: Optional[dict] = None,
 ) -> dict:
     if kpoint_coords is None:
         kpoint_coords = [0.5, 0.5, 0.5]
     if kpoint_folding is None:
         kpoint_folding = [3, 3, 3]
-    if "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
+    if sphinx_optimizer_kwargs is None:
+        sphinx_optimizer_kwargs = {}
+    results = {}
+    if "optimize_positions" in tasks:
+        results["structure_with_optimized_positions"] = (
+            optimize_positions_with_sphinxdft(
+                structure=structure,
+                max_electronic_steps=max_electronic_steps,
+                energy_cutoff_in_eV=energy_cutoff_in_eV,
+                kpoint_coords=kpoint_coords,
+                kpoint_folding=kpoint_folding,
+                working_directory=working_directory,
+                executable_function=executable_function,
+                **sphinx_optimizer_kwargs,
+            )
+        )
+    elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
         return calc_static_with_sphinxdft(
             structure=structure,
-            maxSteps=maxSteps,
-            eCut=eCut,
+            max_electronic_steps=max_electronic_steps,
+            energy_cutoff_in_eV=energy_cutoff_in_eV,
             kpoint_coords=kpoint_coords,
             kpoint_folding=kpoint_folding,
             working_directory=working_directory,
@@ -151,3 +209,4 @@ def evaluate_with_sphinx(
         )
     else:
         raise ValueError("The SphinxDFT calculator does not implement:", tasks)
+    return results

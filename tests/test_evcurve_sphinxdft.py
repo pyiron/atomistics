@@ -19,10 +19,10 @@ def validate_fitdict(fit_dict):
     lst = [
         fit_dict["bulkmodul_eq"] > 55,
         fit_dict["bulkmodul_eq"] < 65,
-        fit_dict["energy_eq"] > -227.76,
-        fit_dict["energy_eq"] < -227.75,
-        fit_dict["volume_eq"] > 70.37,
-        fit_dict["volume_eq"] < 70.38,
+        fit_dict["energy_eq"] > -227.72,
+        fit_dict["energy_eq"] < -227.71,
+        fit_dict["volume_eq"] > 70.92,
+        fit_dict["volume_eq"] < 70.93,
     ]
     if not all(lst):
         print(fit_dict)
@@ -57,8 +57,8 @@ class TestEvCurve(unittest.TestCase):
             task_dict=task_dict,
             working_directory=os.path.abspath("."),
             executable_function=evaluate_sphinx,
-            maxSteps=100,
-            eCut=25,
+            max_electronic_steps=100,
+            energy_cutoff_in_eV=500.0,
             kpoint_coords=[0.5, 0.5, 0.5],
             kpoint_folding=[3, 3, 3],
         )

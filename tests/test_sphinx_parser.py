@@ -6,7 +6,17 @@ import numpy as np
 from ase.build import bulk
 
 try:
-    from atomistics.calculators.sphinxdft import OutputParser, _write_input, calc_static_with_sphinxdft, evaluate_with_sphinx, HARTREE_TO_EV, HARTREE_OVER_BOHR_TO_EV_OVER_ANGSTROM, BOHR_TO_ANGSTROM
+    from sphinx_parser.toolkit import to_sphinx
+    from atomistics.calculators.sphinxdft import (
+        OutputParser,
+        _generate_input,
+        calc_static_with_sphinxdft,
+        optimize_positions_with_sphinxdft,
+        evaluate_with_sphinx,
+        HARTREE_TO_EV,
+        HARTREE_OVER_BOHR_TO_EV_OVER_ANGSTROM,
+        BOHR_TO_ANGSTROM,
+    )
 
     skip_sphinx_test = False
 except ImportError:
@@ -37,30 +47,25 @@ class TestSphinxParser(unittest.TestCase):
     def test_write_input(self):
         folder = "test"
         os.makedirs(folder, exist_ok=True)
-        _write_input(
+        input_sx = to_sphinx(_generate_input(
             structure=self._structure,
-            working_directory=folder,
             maxSteps=100,
-            eCut=25.0,
+            energy_cutoff_in_eV=25.0 * HARTREE_TO_EV,
             kpoint_coords=None,
             kpoint_folding=None,
-        )
-        file = os.path.join(folder, "input.sx")
-        self.assertTrue(os.path.exists(file))
-        with open(file, "r") as f:
-            lines = f.readlines()
+        ))
 
         self.assertEqual(
-            "	eCut = 25.0;\n",
-            "".join([l for l in lines if "eCut" in l])
+            "	eCut = " + str(25.0 * HARTREE_TO_EV / HARTREE_TO_EV) + ";",
+            "".join([l for l in input_sx.split("\n") if "eCut" in l])
         )
         self.assertEqual(
-            "	folding = [3, 3, 3];\n",
-            "".join([l for l in lines if "folding" in l])
+            "	folding = [3, 3, 3];",
+            "".join([l for l in input_sx.split("\n") if "folding" in l])
         )
         self.assertEqual(
-            "		potType = \"AtomPAW\";\n",
-            "".join([l for l in lines if "potType" in l])
+            "		potType = \"AtomPAW\";",
+            "".join([l for l in input_sx.split("\n") if "potType" in l])
         )
         shutil.rmtree(folder)
 
@@ -69,8 +74,8 @@ class TestSphinxParser(unittest.TestCase):
             structure=self._structure,
             working_directory=self._output_directory,
             executable_function=executable_function,
-            maxSteps=100,
-            eCut=25,
+            max_electronic_steps=100,
+            energy_cutoff_in_eV=25.0 * HARTREE_TO_EV,
             kpoint_coords=None,
             kpoint_folding=None,
             output_keys=["volume", "forces", "energy"],
@@ -82,13 +87,28 @@ class TestSphinxParser(unittest.TestCase):
             np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]),
         )))
 
-    def test_evaluate_with_sphinx(self):
+    def test_optimize_positions_with_sphinxdft(self):
+        structure_result = optimize_positions_with_sphinxdft(
+            structure=self._structure,
+            working_directory=self._output_directory,
+            executable_function=executable_function,
+            max_electronic_steps=100,
+            energy_cutoff_in_eV=25.0 * HARTREE_TO_EV,
+            kpoint_coords=None,
+            kpoint_folding=None,
+            mode="linQN",
+            dEnergy=1.0e-6,
+            max_ionic_steps=50,
+        )
+        self.assertEqual(len(structure_result), len(self._structure))
+
+    def test_evaluate_with_sphinx_energy_and_forces(self):
         results = evaluate_with_sphinx(
             task_dict={"calc_energy": self._structure, "calc_forces": self._structure},
             working_directory=self._output_directory,
             executable_function=executable_function,
-            maxSteps=100,
-            eCut=25,
+            max_electronic_steps=100,
+            energy_cutoff_in_eV=25.0 * HARTREE_TO_EV,
             kpoint_coords=None,
             kpoint_folding=None,
         )
@@ -97,3 +117,21 @@ class TestSphinxParser(unittest.TestCase):
             results["forces"],
             np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]),
         )))
+
+    def test_evaluate_with_sphinx_structure_optimization(self):
+        results = evaluate_with_sphinx(
+            task_dict={"optimize_positions": self._structure},
+            working_directory=self._output_directory,
+            executable_function=executable_function,
+            max_electronic_steps=100,
+            energy_cutoff_in_eV=25.0 * HARTREE_TO_EV,
+            kpoint_coords=None,
+            kpoint_folding=None,
+            sphinx_optimizer_kwargs={
+                "mode": "linQN",
+                "dEnergy": 1.0e-6,
+                "max_ionic_steps": 50,
+            },
+        )
+        self.assertTrue("structure_with_optimized_positions" in results.keys())
+        self.assertEqual(len(results), 1)
