@@ -121,7 +121,12 @@ def optimize_positions_with_sphinxdft(
         f.write(to_sphinx(input_sx))
     executable_function(working_directory)
     structure_copy = structure.copy()
-    structure_copy.positions = collect_eval_forces(os.path.join(working_directory, "relaxHist.sx"))["positions"][-1][id_spx_to_ase(structure)] / BOHR_TO_ANGSTROM
+    structure_copy.positions = (
+        collect_eval_forces(os.path.join(working_directory, "relaxHist.sx"))[
+            "positions"
+        ][-1][id_spx_to_ase(structure)]
+        / BOHR_TO_ANGSTROM
+    )
     return structure_copy
 
 
