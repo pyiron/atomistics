@@ -57,8 +57,8 @@ class TestEvCurve(unittest.TestCase):
             task_dict=task_dict,
             working_directory=os.path.abspath("."),
             executable_function=evaluate_sphinx,
-            maxSteps=100,
-            eCut=25,
+            max_electronic_steps=100,
+            energy_cutoff_in_eV=500.0,
             kpoint_coords=[0.5, 0.5, 0.5],
             kpoint_folding=[3, 3, 3],
         )
