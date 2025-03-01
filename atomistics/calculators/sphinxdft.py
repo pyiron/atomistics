@@ -24,7 +24,7 @@ HARTREE_OVER_BOHR_TO_EV_OVER_ANGSTROM = HARTREE_TO_EV / BOHR_TO_ANGSTROM
 def _generate_input(
     structure: Atoms,
     maxSteps: int = 100,
-    energy_cutoff_in_eV: float = 25.0,
+    energy_cutoff_in_eV: float = 500.0,
     kpoint_coords: Optional[list[float, float, float]] = None,
     kpoint_folding: Optional[list[int, int, int]] = None,
 ):
