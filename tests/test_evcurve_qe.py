@@ -7,6 +7,7 @@ from atomistics.workflows import EnergyVolumeCurveWorkflow
 
 try:
     from atomistics.calculators import evaluate_with_qe
+
     skip_quantum_espresso_test = False
 except ImportError:
     skip_quantum_espresso_test = True
