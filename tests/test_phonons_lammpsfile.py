@@ -131,3 +131,9 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue(thermal_dict["free_energy"][0] > 0.1)
         self.assertTrue(thermal_dict["free_energy"][-1] < -2.6)
         self.assertTrue(thermal_dict["free_energy"][-1] > -2.7)
+        dynmat_shape = workflow.get_dynamical_matrix().shape
+        self.assertEqual(dynmat_shape[0], 12)
+        self.assertEqual(dynmat_shape[1], 12)
+        hessmat_shape = workflow.get_hesse_matrix().shape
+        self.assertEqual(hessmat_shape[0], 324)
+        self.assertEqual(hessmat_shape[1], 324)
