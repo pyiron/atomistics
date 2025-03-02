@@ -55,3 +55,23 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue("group_velocities" in mesh_dict.keys())
         self.assertTrue("frequency_points" in dos_dict.keys())
         self.assertTrue("total_dos" in dos_dict.keys())
+        dynmat_shape = workflow.get_dynamical_matrix().shape
+        self.assertEqual(dynmat_shape[0], 12)
+        self.assertEqual(dynmat_shape[1], 12)
+        hessmat_shape = workflow.get_hesse_matrix().shape
+        self.assertEqual(hessmat_shape[0], 324)
+        self.assertEqual(hessmat_shape[1], 324)
+        band_dict = workflow.get_band_structure()
+        self.assertEqual(len(band_dict['qpoints']), 6)
+        for vec in band_dict['qpoints']:
+            self.assertTrue(vec.shape[0] in [34, 39, 78, 101, 95])
+            self.assertEqual(vec.shape[1], 3)
+        self.assertEqual(len(band_dict['distances']), 6)
+        for vec in band_dict['distances']:
+            self.assertTrue(vec.shape[0] in [34, 39, 78, 101, 95])
+        self.assertEqual(len(band_dict['frequencies']), 6)
+        for vec in band_dict['frequencies']:
+            self.assertTrue(vec.shape[0] in [34, 39, 78, 101, 95])
+            self.assertEqual(vec.shape[1], 12)
+        self.assertIsNone(band_dict['eigenvectors'])
+        self.assertIsNone(band_dict['group_velocities'])
