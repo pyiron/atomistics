@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 from ase.atoms import Atoms
 from ase.calculators.vasp.create_input import GenerateVaspInput
@@ -45,10 +46,12 @@ def calc_static_with_vasp(
     lreal: bool = False,
     lwave: bool = False,
     lorbit: int = 0,
-    kpts: list[int, int, int] = [4, 4, 4],
+    kpts: Optional[list[int, int, int]] = None,
     output_keys: dict = OutputStatic.keys(),
     **kwargs,
 ) -> dict:
+    if kpts is None:
+        kpts = [4, 4, 4]
     write_input(
         working_directory=working_directory,
         atoms=structure,
@@ -83,9 +86,11 @@ def optimize_positions_with_vasp(
     isif: int = 2,
     ibrion: int = 2,
     nsw: int = 100,
-    kpts: list[int, int, int] = [4, 4, 4],
+    kpts: Optional[list[int, int, int]] = None,
     **kwargs,
 ) -> Atoms:
+    if kpts is None:
+        kpts = [4, 4, 4]
     write_input(
         working_directory=working_directory,
         atoms=structure,
@@ -121,9 +126,11 @@ def optimize_positions_and_volume_with_vasp(
     isif: int = 3,
     ibrion: int = 2,
     nsw: int = 100,
-    kpts: list[int, int, int] = [4, 4, 4],
+    kpts: Optional[list[int, int, int]] = None,
     **kwargs,
 ) -> Atoms:
+    if kpts is None:
+        kpts = [4, 4, 4]
     write_input(
         working_directory=working_directory,
         atoms=structure,
@@ -159,9 +166,11 @@ def evaluate_with_vasp(
     lreal: bool = False,
     lwave: bool = False,
     lorbit: int = 0,
-    kpts: list[int, int, int] = [4, 4, 4],
+    kpts: Optional[list[int, int, int]] = None,
     **kwargs,
 ) -> dict:
+    if kpts is None:
+        kpts = [4, 4, 4]
     results = {}
     if "optimize_positions_and_volume" in tasks:
         results["structure_with_optimized_positions_and_volume"] = (
