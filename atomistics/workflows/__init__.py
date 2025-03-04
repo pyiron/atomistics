@@ -18,6 +18,7 @@ __all__ = [
     "optimize_positions_and_volume",
 ]
 
+
 try:  # in case phonopy is not installed
     from atomistics.workflows.phonons.workflow import PhonopyWorkflow
     from atomistics.workflows.quasiharmonic import QuasiHarmonicWorkflow
