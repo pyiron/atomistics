@@ -343,6 +343,29 @@ jobs:
         python -m unittest tests/test_ase_interface/test_quasiharmonic_ase_matgl.py
         python -m unittest tests/test_ase_interface/test_ase_md_matgl.py
 
+  unittest_orb:
+    needs: [black]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Merge Notebook environment
+      run: |
+        echo -e "channels:\n  - conda-forge\n" > .condarc
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: '3.12'
+        miniforge-version: latest
+        condarc-file: .condarc
+        environment-file: .ci_support/environment-orb.yml
+    - name: Test
+      shell: bash -l {0}
+      timeout-minutes: 60
+      run: |
+        pip install versioneer[toml]==0.29
+        pip install . --no-deps --no-build-isolation
+        python -m unittest tests/test_ase_interface/test_evcurve_ase_orb.py
+
   unittest_grace:
     needs: [black]
     runs-on: ubuntu-latest
@@ -446,7 +469,7 @@ jobs:
         python -m unittest discover tests
 
   autobot:
-    needs: [unittest_old, unittest_siesta, unittest_qe, unittest_matgl, unittest_mace, unittest_gpaw, unittest_abinit, unittest_matrix, unittest_grace, unittest_sphinxdft, pip_check, notebooks, minimal, coverage]
+    needs: [unittest_old, unittest_siesta, unittest_qe, unittest_matgl, unittest_mace, unittest_gpaw, unittest_abinit, unittest_matrix, unittest_grace, unittest_sphinxdft, unittest_orb, pip_check, notebooks, minimal, coverage]
     permissions:
       contents: write
       pull-requests: write

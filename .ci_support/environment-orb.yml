@@ -1,0 +1,4 @@
+channels:
+- conda-forge
+dependencies:
+- orb-models =0.4.2
