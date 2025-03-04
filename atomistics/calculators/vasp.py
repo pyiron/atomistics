@@ -11,7 +11,9 @@ from atomistics.shared.output import OutputStatic
 
 class OutputParser:
     def __init__(self, working_directory, structure):
-        self._output_dict = parse_vasp_output(working_directory=working_directory, structure=structure)
+        self._output_dict = parse_vasp_output(
+            working_directory=working_directory, structure=structure
+        )
 
     def get_energy(self):
         return self._output_dict["generic"]["energy_tot"][-1]
@@ -99,7 +101,9 @@ def optimize_positions_with_vasp(
         **kwargs,
     )
     executable_function(working_directory)
-    output_dict = parse_vasp_output(working_directory=working_directory, structure=structure)
+    output_dict = parse_vasp_output(
+        working_directory=working_directory, structure=structure
+    )
     structure_copy = structure.copy()
     structure_copy.positions = output_dict["generic"]["positions"][-1]
     return structure_copy
@@ -135,7 +139,9 @@ def optimize_positions_and_volume_with_vasp(
         **kwargs,
     )
     executable_function(working_directory)
-    output_dict = parse_vasp_output(working_directory=working_directory, structure=structure)
+    output_dict = parse_vasp_output(
+        working_directory=working_directory, structure=structure
+    )
     structure_copy = structure.copy()
     structure_copy.set_cell(output_dict["generic"]["cells"][-1], scale_atoms=True)
     structure_copy.positions = output_dict["generic"]["positions"][-1]
@@ -173,19 +179,17 @@ def evaluate_with_vasp(
             )
         )
     elif "optimize_positions" in tasks:
-        results["structure_with_optimized_positions"] = (
-            optimize_positions_with_vasp(
-                structure=structure,
-                working_directory=working_directory,
-                executable_function=executable_function,
-                prec=prec,
-                algo=algo,
-                lreal=lreal,
-                lwave=lwave,
-                lorbit=lorbit,
-                kpts=kpts,
-                **kwargs,
-            )
+        results["structure_with_optimized_positions"] = optimize_positions_with_vasp(
+            structure=structure,
+            working_directory=working_directory,
+            executable_function=executable_function,
+            prec=prec,
+            algo=algo,
+            lreal=lreal,
+            lwave=lwave,
+            lorbit=lorbit,
+            kpts=kpts,
+            **kwargs,
         )
     elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
         return calc_static_with_vasp(
