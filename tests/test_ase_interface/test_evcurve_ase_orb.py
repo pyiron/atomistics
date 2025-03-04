@@ -10,14 +10,14 @@ from atomistics.workflows import (
 )
 
 
-try:
-    from orb_models.forcefield import pretrained
-    from orb_models.forcefield.atomic_system import SystemConfig
-    from orb_models.forcefield.calculator import ORBCalculator
+# try:
+from orb_models.forcefield import pretrained
+from orb_models.forcefield.atomic_system import SystemConfig
+from orb_models.forcefield.calculator import ORBCalculator
 
-    skip_orb_test = False
-except ImportError:
-    skip_orb_test = True
+skip_orb_test = False
+# except ImportError:
+#     skip_orb_test = True
 
 
 @unittest.skipIf(
