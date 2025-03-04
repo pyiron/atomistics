@@ -15,3 +15,4 @@ dependencies:
 - structuretoolkit =0.0.31
 - sphinx_parser =0.0.1
 - tqdm =4.67.1
+- pyiron_vasp =0.2.4
