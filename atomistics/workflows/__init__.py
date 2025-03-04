@@ -1,4 +1,3 @@
-from atomistics.workflows.elastic.workflow import ElasticMatrixWorkflow
 from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
 from atomistics.workflows.langevin import LangevinWorkflow
 from atomistics.workflows.molecular_dynamics import (
@@ -9,8 +8,7 @@ from atomistics.workflows.structure_optimization import (
     optimize_positions_and_volume,
 )
 
-__all__ = [
-    "ElasticMatrixWorkflow",
+__all__ = [,
     "EnergyVolumeCurveWorkflow",
     "LangevinWorkflow",
     "calc_molecular_dynamics_thermal_expansion",
@@ -18,6 +16,12 @@ __all__ = [
     "optimize_positions_and_volume",
 ]
 
+try:  # in case spglib is not installed 
+    from atomistics.workflows.elastic.workflow import ElasticMatrixWorkflow
+
+    __all__ += ["ElasticMatrixWorkflow"]
+except ImportError:
+    pass
 
 try:  # in case phonopy is not installed
     from atomistics.workflows.phonons.workflow import PhonopyWorkflow
