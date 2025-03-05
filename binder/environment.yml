@@ -12,7 +12,7 @@ dependencies:
 - lammps =2024.06.27
 - pandas =2.2.3
 - pylammpsmpi =0.2.31
-- jinja2 =3.1.5
+- jinja2 =3.1.6
 - dynaphopy =1.17.16
 - tqdm =4.67.1
 - pyiron_lammps =0.4.0
