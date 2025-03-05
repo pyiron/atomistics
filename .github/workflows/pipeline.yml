@@ -364,7 +364,13 @@ jobs:
       run: |
         pip install versioneer[toml]==0.29
         pip install . --no-deps --no-build-isolation
-        grace_models download GRACE_2L_OAM_28Jan25
+        # grace_models download GRACE_2L_OAM_28Jan25
+        test_location=$(pwd)
+        mkdir -p .cache/grace
+        cd .cache/grace
+        wget https://github.com/jan-janssen/GRACE-2L-OAM_28Jan25/archive/30b272ca4a10eb709989a7e47c71a7a13529dbdd.tar.gz -o model.tar.gz
+        tar -xvzf model.tar.gz -C GRACE_2L_OAM_28Jan25
+        cd $test_location
         python -m unittest tests/test_ase_interface/test_evcurve_ase_grace.py
 
   unittest_qe:
