@@ -55,7 +55,6 @@ class TestVaspParser(TestCase):
                 "calc_energy": self._structure,
                 "calc_forces": self._structure,
                 "calc_stress": self._structure,
-                "calc_volume": self._structure,
             },
             working_directory="opt_vol_task",
             executable_function=copy_file_funct,
