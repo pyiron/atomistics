@@ -343,29 +343,37 @@ jobs:
         python -m unittest tests/test_ase_interface/test_quasiharmonic_ase_matgl.py
         python -m unittest tests/test_ase_interface/test_ase_md_matgl.py
 
-  # unittest_grace:
-  #   needs: [black]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v4
-  #   - name: Merge Notebook environment
-  #     run: |
-  #       echo -e "channels:\n  - conda-forge\n" > .condarc
-  #   - name: Setup Mambaforge
-  #     uses: conda-incubator/setup-miniconda@v3
-  #     with:
-  #       python-version: '3.11'
-  #       miniforge-version: latest
-  #       condarc-file: .condarc
-  #       environment-file: .ci_support/environment-grace.yml
-  #   - name: Test
-  #     shell: bash -l {0}
-  #     timeout-minutes: 60
-  #     run: |
-  #       pip install versioneer[toml]==0.29
-  #       pip install . --no-deps --no-build-isolation
-  #       grace_models download GRACE_2L_OAM_28Jan25
-  #       python -m unittest tests/test_ase_interface/test_evcurve_ase_grace.py
+  unittest_grace:
+    needs: [black]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Merge Notebook environment
+      run: |
+        echo -e "channels:\n  - conda-forge\n" > .condarc
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: '3.11'
+        miniforge-version: latest
+        condarc-file: .condarc
+        environment-file: .ci_support/environment-grace.yml
+    - name: Test
+      shell: bash -l {0}
+      timeout-minutes: 60
+      run: |
+        pip install versioneer[toml]==0.29
+        pip install . --no-deps --no-build-isolation
+        # grace_models download GRACE_2L_OAM_28Jan25
+        test_location=$(pwd)
+        mkdir -p ~/.cache/grace
+        cd ~/.cache/grace
+        wget https://github.com/jan-janssen/GRACE-2L-OAM_28Jan25/archive/30b272ca4a10eb709989a7e47c71a7a13529dbdd.tar.gz -O model.tar.gz
+        tar -xvzf model.tar.gz
+        mv GRACE-2L-OAM_28Jan25-* GRACE-2L-OAM_28Jan25
+        rm model.tar.gz
+        cd $test_location
+        python -m unittest tests/test_ase_interface/test_evcurve_ase_grace.py
 
   unittest_qe:
     needs: [black]
@@ -446,7 +454,7 @@ jobs:
         python -m unittest discover tests
 
   autobot:
-    needs: [unittest_old, unittest_siesta, unittest_qe, unittest_matgl, unittest_mace, unittest_gpaw, unittest_abinit, unittest_matrix, unittest_sphinxdft, pip_check, notebooks, minimal, coverage]
+    needs: [unittest_old, unittest_siesta, unittest_qe, unittest_matgl, unittest_mace, unittest_gpaw, unittest_abinit, unittest_matrix, unittest_sphinxdft, unittest_grace, pip_check, notebooks, minimal, coverage]
     permissions:
       contents: write
       pull-requests: write
