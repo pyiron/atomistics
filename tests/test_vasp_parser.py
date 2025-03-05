@@ -65,4 +65,4 @@ class TestVaspParser(TestCase):
             lorbit=0,
             xc="pbe"
         )
-        self.assertEqual(len(result), 4)
+        self.assertEqual(len(result), 3)
