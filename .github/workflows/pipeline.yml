@@ -371,6 +371,8 @@ jobs:
         wget https://github.com/jan-janssen/GRACE-2L-OAM_28Jan25/archive/30b272ca4a10eb709989a7e47c71a7a13529dbdd.tar.gz -O model.tar.gz
         tar -xvzf model.tar.gz
         mv GRACE-2L-OAM_28Jan25-* GRACE-2L-OAM_28Jan25
+        ls -al GRACE-2L-OAM_28Jan25
+        ls -al
         cd $test_location
         python -m unittest tests/test_ase_interface/test_evcurve_ase_grace.py
 
