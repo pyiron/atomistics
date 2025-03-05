@@ -366,7 +366,7 @@ jobs:
         pip install . --no-deps --no-build-isolation
         grace_models download GRACE_2L_OAM_28Jan25
         test_location=$(pwd)
-        cd .cache/grace
+        cd ~/.cache/grace
         ls -al 
         rm -rf GRACE*
         wget https://github.com/jan-janssen/GRACE-2L-OAM_28Jan25/archive/30b272ca4a10eb709989a7e47c71a7a13529dbdd.tar.gz -O model.tar.gz
