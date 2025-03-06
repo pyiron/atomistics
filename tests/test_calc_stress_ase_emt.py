@@ -4,7 +4,7 @@ from ase.optimize import LBFGS
 import unittest
 
 from atomistics.calculators import evaluate_with_ase
-from atomistics.workflows import optimize_positions_and_volume
+from atomistics.workflows import optimize_volume
 
 
 class TestStess(unittest.TestCase):
@@ -15,7 +15,7 @@ class TestStess(unittest.TestCase):
             task_dict=task_dict,
             ase_calculator=EMT(),
         )
-        task_dict = optimize_positions_and_volume(structure=structure)
+        task_dict = optimize_volume(structure=structure)
         result_dict = evaluate_with_ase(
             task_dict=task_dict,
             ase_calculator=EMT(),
@@ -23,7 +23,7 @@ class TestStess(unittest.TestCase):
             ase_optimizer_kwargs={"fmax": 0.000001},
         )
         task_dict = {
-            "calc_stress": result_dict["structure_with_optimized_positions_and_volume"]
+            "calc_stress": result_dict["structure_with_optimized_volume"]
         }
         stress_post_dict = evaluate_with_ase(
             task_dict=task_dict,

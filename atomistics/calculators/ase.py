@@ -5,7 +5,8 @@ from ase import units
 from ase.atoms import Atoms
 from ase.calculators.calculator import Calculator as ASECalculator
 from ase.calculators.calculator import PropertyNotImplementedError
-from ase.constraints import UnitCellFilter
+from ase.constraints import FixAtoms
+from ase.filters import UnitCellFilter
 from ase.md.langevin import Langevin
 from ase.md.npt import NPT
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
@@ -182,6 +183,13 @@ def evaluate_with_ase(
                 ase_optimizer_kwargs=ase_optimizer_kwargs,
             )
         )
+    elif "optimize_volume" in tasks:
+        results["structure_with_optimized_volume"] = optimize_volume_with_ase(
+            structure=structure,
+            ase_calculator=ase_calculator,
+            ase_optimizer=ase_optimizer,
+            ase_optimizer_kwargs=ase_optimizer_kwargs,
+        )
     elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
         return calc_static_with_ase(
             structure=structure,
@@ -302,6 +310,34 @@ def optimize_positions_and_volume_with_ase(
     """
     structure_optimized = structure.copy()
     structure_optimized.calc = ase_calculator
+    ase_optimizer_obj = ase_optimizer(UnitCellFilter(structure_optimized))
+    ase_optimizer_obj.run(**ase_optimizer_kwargs)
+    return structure_optimized
+
+
+def optimize_volume_with_ase(
+    structure: Atoms,
+    ase_calculator: ASECalculator,
+    ase_optimizer: Optimizer,
+    ase_optimizer_kwargs: dict,
+) -> Atoms:
+    """
+    Optimize the cell volume of the structure using ASE optimizer.
+
+    Args:
+        structure (Atoms): The ASE structure object.
+        ase_calculator (ASECalculator): The ASE calculator object.
+        ase_optimizer (Optimizer): The ASE optimizer object.
+        ase_optimizer_kwargs (dict): Keyword arguments for the ASE optimizer.
+
+    Returns:
+        Atoms: The optimized structure.
+    """
+    structure_optimized = structure.copy()
+    structure_optimized.calc = ase_calculator
+    structure_optimized.set_constraint(
+        FixAtoms(np.ones(len(structure_optimized), dtype=bool))
+    )
     ase_optimizer_obj = ase_optimizer(UnitCellFilter(structure_optimized))
     ase_optimizer_obj.run(**ase_optimizer_kwargs)
     return structure_optimized
