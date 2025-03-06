@@ -6,7 +6,7 @@ from ase.atoms import Atoms
 from ase.calculators.calculator import Calculator as ASECalculator
 from ase.calculators.calculator import PropertyNotImplementedError
 from ase.constraints import FixAtoms
-from ase.filters import UnitCellFilter
+from ase.filters import FrechetCellFilter
 from ase.md.langevin import Langevin
 from ase.md.npt import NPT
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
@@ -310,7 +310,7 @@ def optimize_positions_and_volume_with_ase(
     """
     structure_optimized = structure.copy()
     structure_optimized.calc = ase_calculator
-    ase_optimizer_obj = ase_optimizer(UnitCellFilter(structure_optimized))
+    ase_optimizer_obj = ase_optimizer(FrechetCellFilter(structure_optimized))
     ase_optimizer_obj.run(**ase_optimizer_kwargs)
     return structure_optimized
 
@@ -338,7 +338,7 @@ def optimize_volume_with_ase(
     structure_optimized.set_constraint(
         FixAtoms(np.ones(len(structure_optimized), dtype=bool))
     )
-    ase_optimizer_obj = ase_optimizer(UnitCellFilter(structure_optimized))
+    ase_optimizer_obj = ase_optimizer(FrechetCellFilter(structure_optimized))
     ase_optimizer_obj.run(**ase_optimizer_kwargs)
     return structure_optimized
 
