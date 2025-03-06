@@ -6,7 +6,7 @@ from ase.atoms import Atoms
 from ase.calculators.calculator import Calculator as ASECalculator
 from ase.calculators.calculator import PropertyNotImplementedError
 from ase.constraints import FixAtoms
-from ase.filters import Filter, UnitCellFilter
+from ase.filters import Filter, FrechetCellFilter
 from ase.md.langevin import Langevin
 from ase.md.npt import NPT
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
@@ -150,7 +150,7 @@ def evaluate_with_ase(
     ase_calculator: ASECalculator,
     ase_optimizer: Optimizer = None,
     ase_optimizer_kwargs: dict = None,
-    filter_class: Filter = UnitCellFilter,
+    filter_class: Filter = FrechetCellFilter,
 ) -> dict:
     """
     Evaluate tasks using ASE calculator.
@@ -299,7 +299,7 @@ def optimize_positions_and_volume_with_ase(
     ase_calculator: ASECalculator,
     ase_optimizer: Optimizer,
     ase_optimizer_kwargs: dict,
-    filter_class: Filter = UnitCellFilter,
+    filter_class: Filter = FrechetCellFilter,
 ) -> Atoms:
     """
     Optimize the atomic positions and cell volume of the structure using ASE optimizer.
@@ -326,7 +326,7 @@ def optimize_volume_with_ase(
     ase_calculator: ASECalculator,
     ase_optimizer: Optimizer,
     ase_optimizer_kwargs: dict,
-    filter_class: Filter = UnitCellFilter,
+    filter_class: Filter = FrechetCellFilter,
     hydrostatic_strain: bool = True,
 ) -> Atoms:
     """
