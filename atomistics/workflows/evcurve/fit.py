@@ -2,11 +2,15 @@ import numpy as np
 import scipy.constants
 import scipy.optimize
 from ase.eos import (
-    birchmurnaghan as birchmurnaghan_energy,
-    vinet as vinet_energy,
-    murnaghan,
     birch,
+    murnaghan,
     pouriertarantola,
+)
+from ase.eos import (
+    birchmurnaghan as birchmurnaghan_energy,
+)
+from ase.eos import (
+    vinet as vinet_energy,
 )
 
 eV_div_A3_to_GPa = (
