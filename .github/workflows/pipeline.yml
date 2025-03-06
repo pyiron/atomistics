@@ -58,6 +58,7 @@ jobs:
       with:
         python-version: '3.11'
         miniforge-version: latest
+        channels: conda-forge
         environment-file: environment.yml
         conda-remove-defaults: true
     - name: Test
@@ -89,6 +90,7 @@ jobs:
       with:
         python-version: '3.12'
         miniforge-version: latest
+        channels: conda-forge
         environment-file: .ci_support/environment.yml
         conda-remove-defaults: true
     - name: Test
@@ -113,6 +115,7 @@ jobs:
         with:
           python-version: "3.12"
           miniforge-version: latest
+          channels: conda-forge
           environment-file: environment.yml
           conda-remove-defaults: true
       - name: Test
@@ -139,6 +142,7 @@ jobs:
       with:
         python-version: '3.12'
         miniforge-version: latest
+        channels: conda-forge
         environment-file: environment.yml
         conda-remove-defaults: true
     - name: Pip check
@@ -189,6 +193,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         miniforge-version: latest
+        channels: conda-forge
         environment-file: environment.yml
         conda-remove-defaults: true
     - name: Test
@@ -213,6 +218,7 @@ jobs:
       with:
         python-version: '3.12'
         miniforge-version: latest
+        channels: conda-forge
         environment-file: environment.yml
         conda-remove-defaults: true
     - name: Test
@@ -241,6 +247,7 @@ jobs:
       with:
         python-version: '3.12'
         miniforge-version: latest
+        channels: conda-forge
         environment-file: environment.yml
         conda-remove-defaults: true
     - name: Test
@@ -267,6 +274,7 @@ jobs:
       with:
         python-version: '3.12'
         miniforge-version: latest
+        channels: conda-forge
         environment-file: environment.yml
         conda-remove-defaults: true
     - name: Test
@@ -291,6 +299,7 @@ jobs:
       with:
         python-version: '3.12'
         miniforge-version: latest
+        channels: conda-forge
         environment-file: environment.yml
         conda-remove-defaults: true
     - name: Test
@@ -318,6 +327,7 @@ jobs:
       with:
         python-version: '3.11'
         miniforge-version: latest
+        channels: conda-forge
         environment-file: environment.yml
         conda-remove-defaults: true
     - name: Test
@@ -345,6 +355,7 @@ jobs:
       with:
         python-version: '3.11'
         miniforge-version: latest
+        channels: conda-forge
         environment-file: environment.yml
         conda-remove-defaults: true
     - name: Test
@@ -378,6 +389,7 @@ jobs:
       with:
         python-version: '3.11'
         miniforge-version: latest
+        channels: conda-forge
         environment-file: environment.yml
         conda-remove-defaults: true
     - name: Test
@@ -408,6 +420,7 @@ jobs:
       with:
         python-version: '3.12'
         miniforge-version: latest
+        channels: conda-forge
         environment-file: environment.yml
         conda-remove-defaults: true
     - name: Test
@@ -428,6 +441,7 @@ jobs:
       with:
         python-version: '3.9'
         miniforge-version: latest
+        channels: conda-forge
         environment-file: .ci_support/environment-old.yml
         conda-remove-defaults: true
     - name: Test
