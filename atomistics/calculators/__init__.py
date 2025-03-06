@@ -106,7 +106,7 @@ try:
         "evaluate_with_vasp",
         "calc_molecular_dynamics_vasp",
         "calc_static_with_vasp",
-        "optimize_positions_and_volume_vasp",
+        "optimize_positions_and_volume_with_vasp",
         "optimize_positions_with_vasp",
         "optimize_cell_with_vasp",
         "optimize_volume_with_vasp",
