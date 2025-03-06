@@ -161,6 +161,7 @@ def spg(
         warnings.warn(
             f"No valid stoichiometries for {elements}, {stoichiometry} <= {max_atoms}!"
         )
+    store = []
     for num_ions in (bar := tqdm(stoichs)):
         if sum(num_ions) == 0:
             continue
@@ -188,7 +189,7 @@ def spg(
         el, ni = zip(*((el, ni) for el, ni in zip(elements, num_ions) if ni > 0))
         # missing checker support
         # pr.create.structure.pyxtal(
-        store = _pyxtal(
+        store += _pyxtal(
             group=range(1, 230 + 1),
             species=el,
             num_ions=ni,
