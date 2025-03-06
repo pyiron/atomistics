@@ -60,7 +60,7 @@ jobs:
         miniforge-version: latest
         channels: conda-forge
         environment-file: environment.yml
-        conda-remove-defaults: true
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
@@ -92,7 +92,7 @@ jobs:
         miniforge-version: latest
         channels: conda-forge
         environment-file: .ci_support/environment.yml
-        conda-remove-defaults: true
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
@@ -117,7 +117,7 @@ jobs:
           miniforge-version: latest
           channels: conda-forge
           environment-file: environment.yml
-          conda-remove-defaults: true
+          conda-remove-defaults: "true"
       - name: Test
         shell: bash -l {0}
         run: |
@@ -144,7 +144,7 @@ jobs:
         miniforge-version: latest
         channels: conda-forge
         environment-file: environment.yml
-        conda-remove-defaults: true
+        conda-remove-defaults: "true"
     - name: Pip check
       shell: bash -l {0}
       run: |
@@ -195,7 +195,7 @@ jobs:
         miniforge-version: latest
         channels: conda-forge
         environment-file: environment.yml
-        conda-remove-defaults: true
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
@@ -220,7 +220,7 @@ jobs:
         miniforge-version: latest
         channels: conda-forge
         environment-file: environment.yml
-        conda-remove-defaults: true
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
@@ -249,7 +249,7 @@ jobs:
         miniforge-version: latest
         channels: conda-forge
         environment-file: environment.yml
-        conda-remove-defaults: true
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
@@ -276,7 +276,7 @@ jobs:
         miniforge-version: latest
         channels: conda-forge
         environment-file: environment.yml
-        conda-remove-defaults: true
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
@@ -301,7 +301,7 @@ jobs:
         miniforge-version: latest
         channels: conda-forge
         environment-file: environment.yml
-        conda-remove-defaults: true
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 60
@@ -329,7 +329,7 @@ jobs:
         miniforge-version: latest
         channels: conda-forge
         environment-file: environment.yml
-        conda-remove-defaults: true
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 60
@@ -357,7 +357,7 @@ jobs:
         miniforge-version: latest
         channels: conda-forge
         environment-file: environment.yml
-        conda-remove-defaults: true
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 60
@@ -391,7 +391,7 @@ jobs:
         miniforge-version: latest
         channels: conda-forge
         environment-file: environment.yml
-        conda-remove-defaults: true
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 60
@@ -422,7 +422,7 @@ jobs:
         miniforge-version: latest
         channels: conda-forge
         environment-file: environment.yml
-        conda-remove-defaults: true
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
@@ -443,7 +443,7 @@ jobs:
         miniforge-version: latest
         channels: conda-forge
         environment-file: .ci_support/environment-old.yml
-        conda-remove-defaults: true
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
