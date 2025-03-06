@@ -5,7 +5,8 @@ from ase import units
 from ase.atoms import Atoms
 from ase.calculators.calculator import Calculator as ASECalculator
 from ase.calculators.calculator import PropertyNotImplementedError
-from ase.constraints import UnitCellFilter
+from ase.constraints import FixAtoms
+from ase.filters import Filter, UnitCellFilter
 from ase.md.langevin import Langevin
 from ase.md.npt import NPT
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
@@ -149,6 +150,7 @@ def evaluate_with_ase(
     ase_calculator: ASECalculator,
     ase_optimizer: Optimizer = None,
     ase_optimizer_kwargs: dict = None,
+    filter_class: Filter = UnitCellFilter,
 ) -> dict:
     """
     Evaluate tasks using ASE calculator.
@@ -159,6 +161,7 @@ def evaluate_with_ase(
         ase_calculator (ASECalculator): The ASE calculator object.
         ase_optimizer (Optimizer, optional): The ASE optimizer object. Defaults to None.
         ase_optimizer_kwargs (dict, optional): Keyword arguments for the ASE optimizer. Defaults to {}.
+        filter_class (Filter): The ASE filter class to use for filtering during structure optimization.
 
     Returns:
         dict: Dictionary containing the results of the evaluated tasks.
@@ -180,7 +183,16 @@ def evaluate_with_ase(
                 ase_calculator=ase_calculator,
                 ase_optimizer=ase_optimizer,
                 ase_optimizer_kwargs=ase_optimizer_kwargs,
+                filter_class=filter_class,
             )
+        )
+    elif "optimize_volume" in tasks:
+        results["structure_with_optimized_volume"] = optimize_volume_with_ase(
+            structure=structure,
+            ase_calculator=ase_calculator,
+            ase_optimizer=ase_optimizer,
+            ase_optimizer_kwargs=ase_optimizer_kwargs,
+            filter_class=filter_class,
         )
     elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
         return calc_static_with_ase(
@@ -287,6 +299,7 @@ def optimize_positions_and_volume_with_ase(
     ase_calculator: ASECalculator,
     ase_optimizer: Optimizer,
     ase_optimizer_kwargs: dict,
+    filter_class: Filter = UnitCellFilter,
 ) -> Atoms:
     """
     Optimize the atomic positions and cell volume of the structure using ASE optimizer.
@@ -296,13 +309,51 @@ def optimize_positions_and_volume_with_ase(
         ase_calculator (ASECalculator): The ASE calculator object.
         ase_optimizer (Optimizer): The ASE optimizer object.
         ase_optimizer_kwargs (dict): Keyword arguments for the ASE optimizer.
+        filter_class (Filter): The ASE filter class to use for filtering during structure optimization.
 
     Returns:
         Atoms: The optimized structure.
     """
     structure_optimized = structure.copy()
     structure_optimized.calc = ase_calculator
-    ase_optimizer_obj = ase_optimizer(UnitCellFilter(structure_optimized))
+    ase_optimizer_obj = ase_optimizer(filter_class(structure_optimized))
+    ase_optimizer_obj.run(**ase_optimizer_kwargs)
+    return structure_optimized
+
+
+def optimize_volume_with_ase(
+    structure: Atoms,
+    ase_calculator: ASECalculator,
+    ase_optimizer: Optimizer,
+    ase_optimizer_kwargs: dict,
+    filter_class: Filter = UnitCellFilter,
+    hydrostatic_strain: bool = True,
+) -> Atoms:
+    """
+    Optimize the cell volume of the structure using ASE optimizer.
+
+    Args:
+        structure (Atoms): The ASE structure object.
+        ase_calculator (ASECalculator): The ASE calculator object.
+        ase_optimizer (Optimizer): The ASE optimizer object.
+        ase_optimizer_kwargs (dict): Keyword arguments for the ASE optimizer.
+        filter_class (Filter): The ASE filter class to use for filtering during structure optimization.
+        hydrostatic_strain (bool): Constrain the cell by only allowing hydrostatic deformation.
+
+    Returns:
+        Atoms: The optimized structure.
+    """
+    structure_optimized = structure.copy()
+    structure_optimized.calc = ase_calculator
+    structure_optimized.set_constraint(
+        FixAtoms(np.ones(len(structure_optimized), dtype=bool))
+    )
+    ase_optimizer_obj = ase_optimizer(
+        filter_class(
+            atoms=structure_optimized,
+            hydrostatic_strain=hydrostatic_strain,
+        )
+    )
     ase_optimizer_obj.run(**ase_optimizer_kwargs)
     return structure_optimized
 
