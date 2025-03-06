@@ -184,13 +184,11 @@ def evaluate_with_ase(
             )
         )
     elif "optimize_volume" in tasks:
-        results["structure_with_optimized_volume"] = (
-            optimize_volume_with_ase(
-                structure=structure,
-                ase_calculator=ase_calculator,
-                ase_optimizer=ase_optimizer,
-                ase_optimizer_kwargs=ase_optimizer_kwargs,
-            )
+        results["structure_with_optimized_volume"] = optimize_volume_with_ase(
+            structure=structure,
+            ase_calculator=ase_calculator,
+            ase_optimizer=ase_optimizer,
+            ase_optimizer_kwargs=ase_optimizer_kwargs,
         )
     elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
         return calc_static_with_ase(
@@ -337,7 +335,9 @@ def optimize_volume_with_ase(
     """
     structure_optimized = structure.copy()
     structure_optimized.calc = ase_calculator
-    structure_optimized.set_constraint(FixAtoms(np.ones(len(structure_optimized), dtype=bool)))
+    structure_optimized.set_constraint(
+        FixAtoms(np.ones(len(structure_optimized), dtype=bool))
+    )
     ase_optimizer_obj = ase_optimizer(FrechetCellFilter(structure_optimized))
     ase_optimizer_obj.run(**ase_optimizer_kwargs)
     return structure_optimized
