@@ -80,7 +80,7 @@ def _pyxtal(
     # return a single structure
     stoich = "".join(f"{s}{n}" for s, n in zip(species, num_ions))
     if repeat == 1 and isinstance(group, int):
-        return [{"structure": generate(group), "identifier": f"{stoich}_{group}_{i}", "symmetry": group, "repeat": repeat}]
+        return [{"structure": generate(group), "identifier": f"{stoich}_{group}_{0}", "symmetry": group, "repeat": repeat}]
     else:
         storage = []
         if isinstance(group, int):
