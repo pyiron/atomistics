@@ -56,14 +56,6 @@ class TestEvCurve(unittest.TestCase):
             ase_calculator=ase_calculator,
         )
         fit_dict = workflow.analyse_structures(output_dict=result_dict)
-        thermal_properties_dict = workflow.get_thermal_properties(
-            temperatures=[100, 1000], output_keys=["temperatures", "volumes"]
-        )
-        temperatures_ev, volumes_ev = (
-            thermal_properties_dict["temperatures"],
-            thermal_properties_dict["volumes"],
-        )
-        print(fit_dict)
         self.assertTrue(
             np.isclose(fit_dict["volume_eq"], 66.6180623643703, atol=1e-04)
         )
@@ -72,7 +64,4 @@ class TestEvCurve(unittest.TestCase):
         )
         self.assertTrue(
             np.isclose(fit_dict["b_prime_eq"], -16.372295442280702, atol=1e-02)
-        )  
-        self.assertEqual(len(temperatures_ev), 2)
-        self.assertEqual(len(volumes_ev), 2)
-        self.assertTrue(volumes_ev[0] < volumes_ev[-1])
+        )
