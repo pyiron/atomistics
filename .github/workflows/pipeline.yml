@@ -359,12 +359,9 @@ jobs:
         miniforge-version: latest
         condarc-file: .condarc
         environment-file: environment.yml
-    - name: Test
+    - name: Download Grace
       shell: bash -l {0}
-      timeout-minutes: 60
       run: |
-        pip install versioneer[toml]==0.29
-        pip install . --no-deps --no-build-isolation
         # grace_models download GRACE_2L_OAM_28Jan25
         test_location=$(pwd)
         mkdir -p ~/.cache/grace
@@ -374,6 +371,12 @@ jobs:
         mv GRACE-2L-OAM_28Jan25-* GRACE-2L-OAM_28Jan25
         rm model.tar.gz
         cd $test_location
+    - name: Test
+      shell: bash -l {0}
+      timeout-minutes: 60
+      run: |
+        pip install versioneer[toml]==0.29
+        pip install . --no-deps --no-build-isolation
         python -m unittest tests/test_ase_interface/test_evcurve_ase_grace.py
 
   unittest_qe:
