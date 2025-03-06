@@ -20,6 +20,7 @@ class TaskEnum(StrEnum):
     optimize_positions = "optimize_positions"
     optimize_positions_and_volume = "optimize_positions_and_volume"
     optimize_volume = "optimize_volume"
+    optimize_cell = "optimize_cell"
     calc_molecular_dynamics_thermal_expansion = (
         "calc_molecular_dynamics_thermal_expansion"
     )
@@ -29,6 +30,7 @@ class TaskOutputEnum(Enum):
     energy = "calc_energy"
     forces = "calc_forces"
     stress = "calc_stress"
+    structure_with_optimized_cell = "optimize_cell"
     structure_with_optimized_positions = "optimize_positions"
     structure_with_optimized_positions_and_volume = "optimize_positions_and_volume"
     structure_with_optimized_volume = "optimize_volume"

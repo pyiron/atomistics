@@ -5,6 +5,7 @@ from atomistics.workflows.molecular_dynamics import (
     calc_molecular_dynamics_thermal_expansion,
 )
 from atomistics.workflows.structure_optimization import (
+    optimize_cell,
     optimize_positions,
     optimize_positions_and_volume,
     optimize_volume,
@@ -15,6 +16,7 @@ __all__ = [
     "EnergyVolumeCurveWorkflow",
     "LangevinWorkflow",
     "calc_molecular_dynamics_thermal_expansion",
+    "optimize_cell",
     "optimize_positions",
     "optimize_positions_and_volume",
     "optimize_volume",
