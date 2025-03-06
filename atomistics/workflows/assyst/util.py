@@ -2,7 +2,7 @@ from collections import defaultdict
 from itertools import combinations_with_replacement
 
 import numpy as np
-
+from structuretoolkit.analyse import get_neighbors
 
 # Extracted from Vasp PBE POTCARs (default valency)
 # (implicitly sorted by atomic number, important!)
@@ -98,7 +98,7 @@ class DistanceFilter:
         # and turn off PBC
         sr = structure.repeat(2)
         sr.pbc = [False, False, False]
-        n = sr.get_neighbors(num_neighbors=len(structure), mode="ragged")
+        n = get_neighbors(structure=sr, num_neighbors=len(structure), mode="ragged")
         for i, (I, D) in enumerate(zip(n.indices, n.distances)):
             for j, d in zip(I, D):
                 ei, ej = sorted((sr.symbols[i], sr.symbols[j]))
