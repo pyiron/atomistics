@@ -294,19 +294,17 @@ def evaluate_with_vasp(
             **kwargs,
         )
     elif "optimize_volume" in tasks:
-        results["structure_with_optimized_volume"] = (
-            optimize_volume_with_vasp(
-                structure=structure,
-                working_directory=working_directory,
-                executable_function=executable_function,
-                prec=prec,
-                algo=algo,
-                lreal=lreal,
-                lwave=lwave,
-                lorbit=lorbit,
-                kpts=kpts,
-                **kwargs,
-            )
+        results["structure_with_optimized_volume"] = optimize_volume_with_vasp(
+            structure=structure,
+            working_directory=working_directory,
+            executable_function=executable_function,
+            prec=prec,
+            algo=algo,
+            lreal=lreal,
+            lwave=lwave,
+            lorbit=lorbit,
+            kpts=kpts,
+            **kwargs,
         )
     elif "calc_energy" in tasks or "calc_forces" in tasks or "calc_stress" in tasks:
         return calc_static_with_vasp(
