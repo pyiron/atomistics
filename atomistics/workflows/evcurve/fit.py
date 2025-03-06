@@ -1,119 +1,21 @@
 import numpy as np
 import scipy.constants
 import scipy.optimize
+from ase.eos import (
+    birch,
+    murnaghan,
+    pouriertarantola,
+)
+from ase.eos import (
+    birchmurnaghan as birchmurnaghan_energy,
+)
+from ase.eos import (
+    vinet as vinet_energy,
+)
 
 eV_div_A3_to_GPa = (
     1e21 / scipy.constants.physical_constants["joule-electron volt relationship"][0]
 )
-
-
-# https://gitlab.com/ase/ase/blob/master/ase/eos.py
-def birchmurnaghan_energy(
-    V: np.ndarray, E0: float, B0: float, BP: float, V0: float
-) -> np.ndarray:
-    """
-    BirchMurnaghan equation from PRB 70, 224107
-
-    Args:
-        V (np.ndarray): Array of volumes
-        E0 (float): Energy at equilibrium volume
-        B0 (float): Bulk modulus at equilibrium volume
-        BP (float): Pressure derivative of bulk modulus
-        V0 (float): Equilibrium volume
-
-    Returns:
-        np.ndarray: Array of energies
-    """
-    eta = (V0 / V) ** (1 / 3)
-    return E0 + 9 * B0 * V0 / 16 * (eta**2 - 1) ** 2 * (
-        6 + BP * (eta**2 - 1) - 4 * eta**2
-    )
-
-
-def vinet_energy(
-    V: np.ndarray, E0: float, B0: float, BP: float, V0: float
-) -> np.ndarray:
-    """
-    Vinet equation from PRB 70, 224107
-
-    Args:
-        V (np.ndarray): Array of volumes
-        E0 (float): Energy at equilibrium volume
-        B0 (float): Bulk modulus at equilibrium volume
-        BP (float): Pressure derivative of bulk modulus
-        V0 (float): Equilibrium volume
-
-    Returns:
-        np.ndarray: Array of energies
-    """
-    eta = (V / V0) ** (1 / 3)
-    return E0 + 2 * B0 * V0 / (BP - 1) ** 2 * (
-        2 - (5 + 3 * BP * (eta - 1) - 3 * eta) * np.exp(-3 * (BP - 1) * (eta - 1) / 2)
-    )
-
-
-def murnaghan(V: np.ndarray, E0: float, B0: float, BP: float, V0: float) -> np.ndarray:
-    """
-    Murnaghan equation from PRB 28, 5480 (1983)
-
-    Args:
-        V (np.ndarray): Array of volumes
-        E0 (float): Energy at equilibrium volume
-        B0 (float): Bulk modulus at equilibrium volume
-        BP (float): Pressure derivative of bulk modulus
-        V0 (float): Equilibrium volume
-
-    Returns:
-        np.ndarray: Array of energies
-    """
-    E = E0 + B0 * V / BP * (((V0 / V) ** BP) / (BP - 1) + 1) - V0 * B0 / (BP - 1)
-    return E
-
-
-def birch(V: np.ndarray, E0: float, B0: float, BP: float, V0: float) -> np.ndarray:
-    """
-    Birch equation from Intermetallic compounds: Principles and Practice, Vol. I: Principles
-    Chapter 9 pages 195-210 by M. Mehl. B. Klein, D. Papaconstantopoulos
-
-    Args:
-        V (np.ndarray): Array of volumes
-        E0 (float): Energy at equilibrium volume
-        B0 (float): Bulk modulus at equilibrium volume
-        BP (float): Pressure derivative of bulk modulus
-        V0 (float): Equilibrium volume
-
-    Returns:
-        np.ndarray: Array of energies
-    """
-    E = (
-        E0
-        + 9 / 8 * B0 * V0 * ((V0 / V) ** (2 / 3) - 1) ** 2
-        + 9 / 16 * B0 * V0 * (BP - 4) * ((V0 / V) ** (2 / 3) - 1) ** 3
-    )
-    return E
-
-
-def pouriertarantola(
-    V: np.ndarray, E0: float, B0: float, BP: float, V0: float
-) -> np.ndarray:
-    """
-    Pourier-Tarantola equation from PRB 70, 224107
-
-    Args:
-        V (np.ndarray): Array of volumes
-        E0 (float): Energy at equilibrium volume
-        B0 (float): Bulk modulus at equilibrium volume
-        BP (float): Pressure derivative of bulk modulus
-        V0 (float): Equilibrium volume
-
-    Returns:
-        np.ndarray: Array of energies
-    """
-    eta = (V / V0) ** (1 / 3)
-    squiggle = -3 * np.log(eta)
-
-    E = E0 + B0 * V0 * squiggle**2 / 6 * (3 + squiggle * (BP - 2))
-    return E
 
 
 def fitfunction(

@@ -1,0 +1,5 @@
+channels:
+- conda-forge
+dependencies:
+- orb-models =0.4.2
+- pynanoflann =0.10.0
