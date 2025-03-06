@@ -110,7 +110,7 @@ class DistanceFilter:
         Return True if structure statifies minimum distance criteria.
         """
         pair = self._element_wise_dist(structure)
-        for ei, ej in combinations_with_replacement(structure.get_species_symbols(), 2):
+        for ei, ej in combinations_with_replacement(set(structure.get_chemical_symbols()), 2):
             ei, ej = sorted((ei, ej))
             if pair[ei, ej] < self._radii[ei] + self._radii[ej]:
                 return False
