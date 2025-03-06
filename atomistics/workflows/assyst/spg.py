@@ -1,17 +1,15 @@
 from typing import Union, List, Tuple
-from logging import getLogger
 from itertools import product
 import warnings
 
-from ase.atoms import Atoms
 from ase.data import atomic_numbers
 from tqdm.auto import tqdm
+from structuretoolkit.common import center_coordinates_in_unit_cell
 from pyxtal import pyxtal
 from pyxtal.msg import Comp_CompatibilityError, VolumeError
 from pyxtal.tolerance import Tol_matrix
 
 from atomistics.workflows.assyst.util import RCORE, DistanceFilter
-from atomistics.workflows.assyst.structure_storage import StructureStorage
 
 
 def _pyxtal(
@@ -20,11 +18,10 @@ def _pyxtal(
     num_ions: Tuple[int],
     dim=3,
     repeat=1,
-    storage=None,
     allow_exceptions=True,
     checker=lambda _: True,
     **kwargs,
-) -> Union[Atoms, StructureStorage]:
+) -> list[dict]:
     """
     Generate random crystal structures with PyXtal.
 
@@ -53,8 +50,6 @@ def _pyxtal(
     Raises:
         ValueError: if stoichiometry and symmetry group are incompatible and allow_exceptions==False or only one structure is requested
     """
-    logger = getLogger("structures")
-
     def generate(group):
         s = pyxtal()
         factor = 1
@@ -63,12 +58,11 @@ def _pyxtal(
                 s.from_random(
                     dim=dim, group=group, species=species, numIons=num_ions, **kwargs
                 )
-                s = s.to_ase()
-                s.center_coordinates_in_unit_cell()
+                s = center_coordinates_in_unit_cell(s.to_ase())
                 return s
             except RuntimeError as err:
                 if err.args[0] == "long time to generate structure, check inputs":
-                    logger.warn(
+                    warnings.warn(
                         f"pyxtal complained: {err.args} {factor} {dim} {group} {species} {num_ions}"
                     )
                 if not err.args[0].startswith("Volume"):
@@ -84,24 +78,23 @@ def _pyxtal(
             )
 
     # return a single structure
+    stoich = "".join(f"{s}{n}" for s, n in zip(species, num_ions))
     if repeat == 1 and isinstance(group, int):
-        return generate(group)
+        return [{"structure": generate(group), "identifier": f"{stoich}_{group}_{i}", "symmetry": group, "repeat": repeat}]
     else:
-        if storage is None:
-            storage = StructureStorage()
+        storage = []
         if isinstance(group, int):
             group = [group]
         failed_groups = []
         for g in tqdm(group, desc="Spacegroups"):
             for i in range(repeat):
-                stoich = "".join(f"{s}{n}" for s, n in zip(species, num_ions))
                 try:
                     for _ in range(5):
                         s = generate(g)
                         if checker(s):
                             break
                     else:
-                        logger.warn("Check failed 5 times in a row, skipping!")
+                        warnings.warn("Check failed 5 times in a row, skipping!")
                         continue
                 except (Comp_CompatibilityError, RuntimeError) as e:
                     if allow_exceptions:
@@ -120,12 +113,12 @@ def _pyxtal(
                 ps = s.get_symmetry().get_primitive_cell()
                 if len(ps) == len(s):
                     s = ps
-                storage.add_structure(
-                    s, identifier=f"{stoich}_{g}_{i}", symmetry=g, repeat=i
+                storage.append(
+                    {"structure": s, "identifier":f"{stoich}_{g}_{i}", "symmetry":g, "repeat":i}
                 )
         if len(failed_groups) > 0:
             stoich = "".join(f"{s}{n}" for s, n in zip(species, num_ions))
-            logger.warning(
+            warnings.warn(
                 f'Groups [{", ".join(map(str,failed_groups))}] could not be generated with stoichiometry {stoich}!'
             )
         return storage
