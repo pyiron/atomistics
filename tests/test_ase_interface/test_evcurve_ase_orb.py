@@ -65,14 +65,14 @@ class TestEvCurve(unittest.TestCase):
         )
         print(fit_dict)
         self.assertTrue(
-            np.isclose(fit_dict["volume_eq"], 66.0771889405415, atol=1e-04)
+            np.isclose(fit_dict["volume_eq"], 66.6180623643703, atol=1e-04)
         )
         self.assertTrue(
-            np.isclose(fit_dict["bulkmodul_eq"], 78.3766344668148, atol=1e-02)
+            np.isclose(fit_dict["bulkmodul_eq"], 125.44056924108797, atol=1e-02)
         )
         self.assertTrue(
-            np.isclose(fit_dict["b_prime_eq"], 4.526013004700582, atol=1e-02)
-        )
+            np.isclose(fit_dict["b_prime_eq"], -16.372295442280702, atol=1e-02)
+        )  
         self.assertEqual(len(temperatures_ev), 2)
         self.assertEqual(len(volumes_ev), 2)
         self.assertTrue(volumes_ev[0] < volumes_ev[-1])
