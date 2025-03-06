@@ -4,6 +4,7 @@ import warnings
 
 from ase.data import atomic_numbers
 from tqdm.auto import tqdm
+from structuretoolkit.analyse import get_symmetry
 from structuretoolkit.common import center_coordinates_in_unit_cell
 from pyxtal import pyxtal
 from pyxtal.msg import Comp_CompatibilityError, VolumeError
@@ -110,7 +111,7 @@ def _pyxtal(
                 # get the primitive cell as per spglib to "normalize" that a bit
                 # at the same time we do *not* want to reduce the size of the cells, because having a few larger super
                 # cells will allow us to sample their displacements a bit more
-                ps = s.get_symmetry().get_primitive_cell()
+                ps = get_symmetry(structure=s).get_primitive_cell()
                 if len(ps) == len(s):
                     s = ps
                 storage.append(
