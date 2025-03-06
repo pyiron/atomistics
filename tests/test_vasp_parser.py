@@ -51,7 +51,7 @@ class TestVaspParser(TestCase):
             lorbit=0,
             xc="pbe"
         )
-        self.assertEqual(len(result), 2)
+        self.assertEqual(len(result), 4)
 
     def test_optimize_positions_and_volume_with_vasp_task(self):
         result = evaluate_with_vasp(
@@ -79,7 +79,7 @@ class TestVaspParser(TestCase):
             lorbit=0,
             xc="pbe"
         )
-        self.assertEqual(len(result), 2)
+        self.assertEqual(len(result), 4)
 
     def test_optimize_cell_with_vasp_task(self):
         result = evaluate_with_vasp(
@@ -107,7 +107,7 @@ class TestVaspParser(TestCase):
             lorbit=0,
             xc="pbe"
         )
-        self.assertEqual(len(result), 2)
+        self.assertEqual(len(result), 4)
 
     def test_optimize_volume_with_vasp_task(self):
         result = evaluate_with_vasp(
@@ -135,7 +135,7 @@ class TestVaspParser(TestCase):
             lorbit=0,
             xc="pbe"
         )
-        self.assertEqual(len(result), 2)
+        self.assertEqual(len(result), 4)
 
     def test_calc_static_task(self):
         result = evaluate_with_vasp(
