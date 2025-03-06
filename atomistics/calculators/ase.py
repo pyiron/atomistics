@@ -327,6 +327,7 @@ def optimize_volume_with_ase(
     ase_optimizer: Optimizer,
     ase_optimizer_kwargs: dict,
     filter_class: Filter = UnitCellFilter,
+    hydrostatic_strain: bool = True,
 ) -> Atoms:
     """
     Optimize the cell volume of the structure using ASE optimizer.
@@ -337,6 +338,7 @@ def optimize_volume_with_ase(
         ase_optimizer (Optimizer): The ASE optimizer object.
         ase_optimizer_kwargs (dict): Keyword arguments for the ASE optimizer.
         filter_class (Filter): The ASE filter class to use for filtering during structure optimization.
+        hydrostatic_strain (bool): Constrain the cell by only allowing hydrostatic deformation.
 
     Returns:
         Atoms: The optimized structure.
@@ -346,7 +348,12 @@ def optimize_volume_with_ase(
     structure_optimized.set_constraint(
         FixAtoms(np.ones(len(structure_optimized), dtype=bool))
     )
-    ase_optimizer_obj = ase_optimizer(filter_class(structure_optimized))
+    ase_optimizer_obj = ase_optimizer(
+        filter_class(
+            atoms=structure_optimized,
+            hydrostatic_strain=hydrostatic_strain,
+        )
+    )
     ase_optimizer_obj.run(**ase_optimizer_kwargs)
     return structure_optimized
 
