@@ -188,10 +188,9 @@ def spg(
         # missing checker support
         # pr.create.structure.pyxtal(
         store = _pyxtal(
-            range(1, 230 + 1),
+            group=range(1, 230 + 1),
             species=el,
             num_ions=ni,
-            storage=None,
             checker=lambda s: check_cell_shape(s) and distance_filter(s),
             factor=1.5,
             tm=tm,
