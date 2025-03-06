@@ -348,10 +348,12 @@ def optimize_volume_with_ase(
     structure_optimized.set_constraint(
         FixAtoms(np.ones(len(structure_optimized), dtype=bool))
     )
-    ase_optimizer_obj = ase_optimizer(filter_class(
-        atoms=structure_optimized,
-        hydrostatic_strain=hydrostatic_strain,
-    ))
+    ase_optimizer_obj = ase_optimizer(
+        filter_class(
+            atoms=structure_optimized,
+            hydrostatic_strain=hydrostatic_strain,
+        )
+    )
     ase_optimizer_obj.run(**ase_optimizer_kwargs)
     return structure_optimized
 
