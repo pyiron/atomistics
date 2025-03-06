@@ -132,13 +132,10 @@ def _pyxtal(
 
 
 def spg(
-    pr,
     elements,
     max_atoms,
     stoichiometry,
-    name="Crystals",
     min_dist=None,
-    delete_existing_job=False,
 ):
     if min_dist is not None:
         if isinstance(min_dist, float):
