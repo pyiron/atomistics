@@ -90,3 +90,24 @@ try:
     ]
 except ImportError:
     pass
+
+try:
+    from atomistics.calculators.vasp import (
+        calc_static_with_vasp,
+        evaluate_with_vasp,
+        optimize_cell_with_vasp,
+        optimize_positions_and_volume_with_vasp,
+        optimize_positions_with_vasp,
+        optimize_volume_with_vasp,
+    )
+
+    __all__ += [
+        "evaluate_with_vasp",
+        "calc_static_with_vasp",
+        "optimize_positions_and_volume_with_vasp",
+        "optimize_positions_with_vasp",
+        "optimize_cell_with_vasp",
+        "optimize_volume_with_vasp",
+    ]
+except ImportError:
+    pass
