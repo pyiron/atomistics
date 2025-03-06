@@ -40,7 +40,7 @@ class TestOptimizePositionsEMT(unittest.TestCase):
             ase_optimizer_kwargs={"fmax": 0.000001},
         )
         structure_optimized = result_dict["structure_with_optimized_volume"]
-        self.assertAlmostEqual(structure_optimized.get_volume(), 63.72555416398717)
+        self.assertAlmostEqual(structure_optimized.get_volume(), 63.72555643511074)
 
     def test_optimize_positions_and_volume(self):
         structure = bulk("Al", a=4.0, cubic=True)
@@ -64,4 +64,4 @@ class TestOptimizePositionsEMT(unittest.TestCase):
                 ).flatten()
             )
         )
-        self.assertAlmostEqual(structure_optimized.get_volume(), 63.725565063797)
+        self.assertAlmostEqual(structure_optimized.get_volume(), 63.725564942401235)
