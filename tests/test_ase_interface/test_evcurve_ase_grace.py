@@ -54,6 +54,7 @@ class TestEvCurve(unittest.TestCase):
             thermal_properties_dict["temperatures"],
             thermal_properties_dict["volumes"],
         )
+        print(fit_dict)
         self.assertTrue(
             np.isclose(fit_dict["volume_eq"], 66.0771889405415, atol=1e-04)
         )
