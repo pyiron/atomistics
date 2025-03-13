@@ -24,7 +24,7 @@ except ImportError:
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         structure = bulk("Al", cubic=True)
-        ase_calculator = grace_fm("GRACE_2L_OAM_28Jan25")
+        ase_calculator = grace_fm("GRACE-2L-OMAT")
         task_dict = optimize_positions_and_volume(structure=structure)
         result_dict = evaluate_with_ase(
             task_dict=task_dict,
@@ -55,13 +55,13 @@ class TestEvCurve(unittest.TestCase):
             thermal_properties_dict["volumes"],
         )
         self.assertTrue(
-            np.isclose(fit_dict["volume_eq"], 66.0771889405415, atol=1e-04)
+            np.isclose(fit_dict["volume_eq"], 65.85877346351901, atol=1e-04)
         )
         self.assertTrue(
-            np.isclose(fit_dict["bulkmodul_eq"], 78.3766344668148, atol=1e-02)
+            np.isclose(fit_dict["bulkmodul_eq"], 79.15475209496557, atol=1e-02)
         )
         self.assertTrue(
-            np.isclose(fit_dict["b_prime_eq"], 4.526013004700582, atol=1e-02)
+            np.isclose(fit_dict["b_prime_eq"], 4.821048515931632, atol=1e-02)
         )
         self.assertEqual(len(temperatures_ev), 2)
         self.assertEqual(len(volumes_ev), 2)
