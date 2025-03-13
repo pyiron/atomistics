@@ -24,7 +24,7 @@ except ImportError:
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         structure = bulk("Al", cubic=True)
-        ase_calculator = grace_fm("GRACE_2L_OAM_28Jan25")
+        ase_calculator = grace_fm("GRACE-2L-OMAT")
         task_dict = optimize_positions_and_volume(structure=structure)
         result_dict = evaluate_with_ase(
             task_dict=task_dict,
