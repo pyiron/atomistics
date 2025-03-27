@@ -1,10 +1,10 @@
 from typing import Optional
 
-from ase.atoms import Atoms
 import numpy as np
+import structuretoolkit
+from ase.atoms import Atoms
 from phono3py import Phono3py
 from phonopy.units import VaspToTHz
-import structuretoolkit
 
 from atomistics.workflows.interface import Workflow
 
@@ -20,13 +20,16 @@ def generate_structures_helper(
     is_symmetry: bool = True,
     is_mesh_symmetry: bool = True,
     use_grg: bool = False,
-    SNF_coordinates: str = 'reciprocal',
+    SNF_coordinates: str = "reciprocal",
     make_r0_average: bool = True,
     symprec: float = 1e-05,
     log_level: int = 0,
 ):
     if primitive_matrix is None:
-        primitive_matrix = structuretoolkit.analyse.get_primitive_cell(structure).cell.array / np.diag(structure.cell.array).mean()
+        primitive_matrix = (
+            structuretoolkit.analyse.get_primitive_cell(structure).cell.array
+            / np.diag(structure.cell.array).mean()
+        )
     if supercell_matrix is None:
         supercell_matrix = [2, 2, 2]
     if phonon_supercell_matrix is None:
@@ -79,7 +82,7 @@ def analyse_structures_helper(
     phono.run_thermal_conductivity()
     return {
         "temperature": phono.thermal_conductivity.get_temperatures(),
-        "kappa": phono.thermal_conductivity.kappa[0]
+        "kappa": phono.thermal_conductivity.kappa[0],
     }
 
 
@@ -96,7 +99,7 @@ class ConductivityWorkflow(Workflow):
         is_symmetry: bool = True,
         is_mesh_symmetry: bool = True,
         use_grg: bool = False,
-        SNF_coordinates: str = 'reciprocal',
+        SNF_coordinates: str = "reciprocal",
         make_r0_average: bool = True,
         symprec: float = 1e-05,
         log_level: int = 0,
@@ -120,30 +123,30 @@ class ConductivityWorkflow(Workflow):
         self._phono = None
 
     def generate_structures(self) -> dict:
-        task_dict_lst, supercell_count, phonocell_count, phono = generate_structures_helper(
-            structure=self._structure,
-            supercell_matrix=self._supercell_matrix,
-            primitive_matrix=self._primitive_matrix,
-            phonon_supercell_matrix=self._phonon_supercell_matrix,
-            mesh_numbers=self._mesh_numbers,
-            cutoff_frequency=self._cutoff_frequency,
-            frequency_factor_to_THz=self._frequency_factor_to_THz,
-            is_symmetry=self._is_symmetry,
-            is_mesh_symmetry=self._is_mesh_symmetry,
-            use_grg=self._use_grg,
-            SNF_coordinates=self._SNF_coordinates,
-            make_r0_average=self._make_r0_average,
-            symprec=self._symprec,
-            log_level=self._log_level,
+        task_dict_lst, supercell_count, phonocell_count, phono = (
+            generate_structures_helper(
+                structure=self._structure,
+                supercell_matrix=self._supercell_matrix,
+                primitive_matrix=self._primitive_matrix,
+                phonon_supercell_matrix=self._phonon_supercell_matrix,
+                mesh_numbers=self._mesh_numbers,
+                cutoff_frequency=self._cutoff_frequency,
+                frequency_factor_to_THz=self._frequency_factor_to_THz,
+                is_symmetry=self._is_symmetry,
+                is_mesh_symmetry=self._is_mesh_symmetry,
+                use_grg=self._use_grg,
+                SNF_coordinates=self._SNF_coordinates,
+                make_r0_average=self._make_r0_average,
+                symprec=self._symprec,
+                log_level=self._log_level,
+            )
         )
         self._supercell_count = supercell_count
         self._phonocell_count = phonocell_count
         self._phono = phono
         return task_dict_lst
 
-    def analyse_structures(
-        self, forces_lst: list
-    ) -> dict:
+    def analyse_structures(self, forces_lst: list) -> dict:
         return analyse_structures_helper(
             phono=self._phono,
             forces_lst=forces_lst,
