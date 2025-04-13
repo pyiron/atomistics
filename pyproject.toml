@@ -74,7 +74,7 @@ tqdm = [
     "tqdm==4.67.1"
 ]
 vasp = [
-    "pyiron_vasp==0.2.4"
+    "pyiron_vasp==0.2.5"
 ]
 
 [tool.setuptools.packages.find]
