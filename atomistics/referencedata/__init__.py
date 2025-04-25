@@ -1,8 +1,14 @@
-import warnings
-
 from atomistics.referencedata.wikipedia import (
     get_elastic_properties as get_elastic_properties_from_wikipedia,
 )
+from atomistics.shared.import_warning import raise_warning
+
+__all__ = ["get_elastic_properties_from_wikipedia"]
+data_functions = [
+    "get_chemical_information_from_mendeleev",
+    "get_chemical_information_from_wolframalpha",
+]
+
 
 try:
     from atomistics.referencedata.mendeleev import (
@@ -12,17 +18,6 @@ try:
         get_chemical_information as get_chemical_information_from_wolframalpha,
     )
 except ImportError as e:
-    warnings.warn(
-        message="get_chemical_information_from_mendeleev() and get_chemical_information_from_wolframalpha() are not available as import failed for"
-        + e.msg[2:],
-        stacklevel=2,
-    )
-    __all__ = []
+    raise_warning(module_list=data_functions, import_error=e)
 else:
-    __all__ = [
-        "get_chemical_information_from_mendeleev",
-        "get_chemical_information_from_wolframalpha",
-    ]
-
-
-__all__ += ["get_elastic_properties_from_wikipedia"]
+    __all__ += data_functions
