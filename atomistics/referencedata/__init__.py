@@ -13,7 +13,7 @@ try:
     )
 except ImportError as e:
     warnings.warn(
-        message="get_chemical_information_from_mendeleev() and get_chemical_information_from_wolframalpha() are not available as import failed for "
+        message="get_chemical_information_from_mendeleev() and get_chemical_information_from_wolframalpha() are not available as import failed for"
         + e.msg[2:],
         stacklevel=2,
     )
