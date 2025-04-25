@@ -1,3 +1,5 @@
+import warnings
+
 from atomistics.calculators.lammps.libcalculator import (
     calc_molecular_dynamics_langevin_with_lammpslib,
     calc_molecular_dynamics_nph_with_lammpslib,
@@ -23,7 +25,10 @@ try:
     __all__ = [
         "calc_molecular_dynamics_phonons_with_lammpslib",
     ]
-except ImportError:
+except ImportError as e:
+    warnings.warn(
+        message="calc_molecular_dynamics_phonons_with_lammpslib() is not available as import failed for " + e.msg[2:]
+    )
     __all__ = []
 
 

@@ -1,3 +1,5 @@
+import warnings
+
 from atomistics.workflows.elastic.workflow import ElasticMatrixWorkflow
 from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
 from atomistics.workflows.langevin import LangevinWorkflow
@@ -26,10 +28,13 @@ __all__ = [
 try:  # in case phonopy is not installed
     from atomistics.workflows.phonons.workflow import PhonopyWorkflow
     from atomistics.workflows.quasiharmonic import QuasiHarmonicWorkflow
-
+except ImportError as e:
+    warnings.warn(
+        message="PhonopyWorkflow() and QuasiHarmonicWorkflow() are not available as import failed for " + e.msg[
+                                                                                                                                                       2:]
+    )
+else:
     __all__ += [
         "PhonopyWorkflow",
         "QuasiHarmonicWorkflow",
     ]
-except ImportError:
-    pass
