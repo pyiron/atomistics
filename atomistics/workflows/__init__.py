@@ -31,7 +31,8 @@ try:  # in case phonopy is not installed
 except ImportError as e:
     warnings.warn(
         message="PhonopyWorkflow() and QuasiHarmonicWorkflow() are not available as import failed for "
-        + e.msg[2:]
+        + e.msg[2:],
+        stacklevel=2,
     )
 else:
     __all__ += [

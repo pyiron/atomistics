@@ -28,7 +28,8 @@ try:
 except ImportError as e:
     warnings.warn(
         message="calc_molecular_dynamics_phonons_with_lammpslib() is not available as import failed for "
-        + e.msg[2:]
+        + e.msg[2:],
+        stacklevel=2,
     )
     __all__ = []
 

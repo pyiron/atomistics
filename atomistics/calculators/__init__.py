@@ -34,7 +34,8 @@ try:
 except ImportError as e:
     warnings.warn(
         message="calc_static_with_qe(), evaluate_with_qe() and optimize_positions_and_volume_with_qe() are not available as import failed for "
-        + e.msg[2:]
+        + e.msg[2:],
+        stacklevel=2,
     )
 else:
     __all__ += [
@@ -71,7 +72,8 @@ except ImportError as e:
         + "get_potential_by_name(), "
         + "optimize_positions_and_volume_with_lammpslib() "
         + "and optimize_positions_with_lammpslib() are not available as import failed for "
-        + e.msg[2:]
+        + e.msg[2:],
+        stacklevel=2,
     )
 else:
     __all__ += [
@@ -96,7 +98,8 @@ try:
 except ImportError as e:
     warnings.warn(
         message="calc_molecular_dynamics_phonons_with_lammpslib() is not available as import failed for "
-        + e.msg[2:]
+        + e.msg[2:],
+        stacklevel=2,
     )
 else:
     __all__ += ["calc_molecular_dynamics_phonons_with_lammpslib"]
@@ -108,7 +111,8 @@ try:
 except ImportError as e:
     warnings.warn(
         message="evaluate_with_sphinx() is not available as import failed for "
-        + e.msg[2:]
+        + e.msg[2:],
+        stacklevel=2,
     )
 else:
     __all__ += ["evaluate_with_sphinx"]
@@ -130,7 +134,8 @@ except ImportError as e:
         + "optimize_positions_with_vasp(), "
         + "optimize_cell_with_vasp(), "
         + "and optimize_volume_with_vasp() are not available as import failed for "
-        + e.msg[2:]
+        + e.msg[2:],
+        stacklevel=2,
     )
 else:
     __all__ += [
