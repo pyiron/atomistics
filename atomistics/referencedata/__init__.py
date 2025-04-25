@@ -3,8 +3,8 @@ from atomistics.referencedata.wikipedia import (
 )
 from atomistics.shared.import_warning import raise_warning
 
-__all__ = ["get_elastic_properties_from_wikipedia"]
-data_functions = [
+__all__: list[str] = ["get_elastic_properties_from_wikipedia"]
+data_functions: list[str] = [
     "get_chemical_information_from_mendeleev",
     "get_chemical_information_from_wolframalpha",
 ]

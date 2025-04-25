@@ -11,7 +11,7 @@ from atomistics.calculators.ase import (
 from atomistics.calculators.hessian import evaluate_with_hessian
 from atomistics.shared.import_warning import raise_warning
 
-__all__ = [
+__all__: list[str] = [
     "calc_molecular_dynamics_langevin_with_ase",
     "calc_molecular_dynamics_npt_with_ase",
     "calc_molecular_dynamics_thermal_expansion_with_ase",
@@ -22,7 +22,7 @@ __all__ = [
     "optimize_volume_with_ase",
     "evaluate_with_hessian",
 ]
-lammps_functions = [
+lammps_functions: list[str] = [
     "calc_molecular_dynamics_thermal_expansion_with_lammpslib",
     "calc_molecular_dynamics_nph_with_lammpslib",
     "calc_molecular_dynamics_npt_with_lammpslib",
@@ -36,14 +36,14 @@ lammps_functions = [
     "optimize_positions_and_volume_with_lammpslib",
     "optimize_positions_with_lammpslib",
 ]
-lammps_phonon_functions = ["calc_molecular_dynamics_phonons_with_lammpslib"]
-quantum_espresso_function = [
+lammps_phonon_functions: list[str] = ["calc_molecular_dynamics_phonons_with_lammpslib"]
+quantum_espresso_function: list[str] = [
     "calc_static_with_qe",
     "evaluate_with_qe",
     "optimize_positions_and_volume_with_qe",
 ]
-sphinx_functions = ["evaluate_with_sphinx"]
-vasp_functions = [
+sphinx_functions: list[str] = ["evaluate_with_sphinx"]
+vasp_functions: list[str] = [
     "evaluate_with_vasp",
     "calc_static_with_vasp",
     "optimize_positions_and_volume_with_vasp",

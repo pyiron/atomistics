@@ -16,7 +16,7 @@ from atomistics.calculators.lammps.potential import (
 )
 from atomistics.shared.import_warning import raise_warning
 
-__all__ = [
+__all__: list[str] = [
     "calc_molecular_dynamics_thermal_expansion_with_lammpslib",
     "calc_molecular_dynamics_nph_with_lammpslib",
     "calc_molecular_dynamics_npt_with_lammpslib",
@@ -30,7 +30,7 @@ __all__ = [
     "get_potential_dataframe",
     "get_potential_by_name",
 ]
-lammps_phonon_functions = ["calc_molecular_dynamics_phonons_with_lammpslib"]
+lammps_phonon_functions: list[str] = ["calc_molecular_dynamics_phonons_with_lammpslib"]
 
 
 try:

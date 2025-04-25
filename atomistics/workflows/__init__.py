@@ -12,7 +12,7 @@ from atomistics.workflows.structure_optimization import (
     optimize_volume,
 )
 
-__all__ = [
+__all__: list[str] = [
     "ElasticMatrixWorkflow",
     "EnergyVolumeCurveWorkflow",
     "LangevinWorkflow",
@@ -22,7 +22,7 @@ __all__ = [
     "optimize_positions_and_volume",
     "optimize_volume",
 ]
-phonopy_workflows = [
+phonopy_workflows: list[str] = [
     "PhonopyWorkflow",
     "QuasiHarmonicWorkflow",
 ]
