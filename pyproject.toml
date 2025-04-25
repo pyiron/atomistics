@@ -116,6 +116,10 @@ ignore = [
     "B026",
     # ignore line-length violations
     "E501",
+    # ignore unused imports in init files
+    "F401",
+    # ignore invalid format for __all__
+    "PLE0605",
     # Too many arguments in function definition
     "PLR0913",
     # Magic value used in comparison
