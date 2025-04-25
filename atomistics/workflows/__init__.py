@@ -30,8 +30,8 @@ try:  # in case phonopy is not installed
     from atomistics.workflows.quasiharmonic import QuasiHarmonicWorkflow
 except ImportError as e:
     warnings.warn(
-        message="PhonopyWorkflow() and QuasiHarmonicWorkflow() are not available as import failed for " + e.msg[
-                                                                                                                                                       2:]
+        message="PhonopyWorkflow() and QuasiHarmonicWorkflow() are not available as import failed for "
+        + e.msg[2:]
     )
 else:
     __all__ += [
