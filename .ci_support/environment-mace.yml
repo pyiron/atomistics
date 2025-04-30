@@ -1,5 +1,5 @@
 channels:
 - conda-forge
 dependencies:
-- pymace =0.3.6
+- pymace =0.3.12
 - pytorch =2.5.1
