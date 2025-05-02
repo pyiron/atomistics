@@ -1,3 +1,4 @@
+from atomistics.shared.import_warning import raise_warning
 from atomistics.workflows.elastic.workflow import ElasticMatrixWorkflow
 from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
 from atomistics.workflows.langevin import LangevinWorkflow
@@ -11,7 +12,7 @@ from atomistics.workflows.structure_optimization import (
     optimize_volume,
 )
 
-__all__ = [
+__all__: list[str] = [
     "ElasticMatrixWorkflow",
     "EnergyVolumeCurveWorkflow",
     "LangevinWorkflow",
@@ -21,15 +22,16 @@ __all__ = [
     "optimize_positions_and_volume",
     "optimize_volume",
 ]
+phonopy_workflows: list[str] = [
+    "PhonopyWorkflow",
+    "QuasiHarmonicWorkflow",
+]
 
 
 try:  # in case phonopy is not installed
     from atomistics.workflows.phonons.workflow import PhonopyWorkflow
     from atomistics.workflows.quasiharmonic import QuasiHarmonicWorkflow
-
-    __all__ += [
-        "PhonopyWorkflow",
-        "QuasiHarmonicWorkflow",
-    ]
-except ImportError:
-    pass
+except ImportError as e:
+    raise_warning(module_list=phonopy_workflows, import_error=e)
+else:
+    __all__ += phonopy_workflows
