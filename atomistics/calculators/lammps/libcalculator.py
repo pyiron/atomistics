@@ -6,6 +6,8 @@ import numpy as np
 import pandas
 from jinja2 import Template
 from pylammpsmpi import LammpsASELibrary
+from semantikon.typing import u
+from semantikon.converter import unit
 
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.lammps.commands import (
@@ -312,12 +314,13 @@ def calc_molecular_dynamics_nph_with_lammpslib(
     return result_dict
 
 
+@units
 def calc_molecular_dynamics_langevin_with_lammpslib(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
     run: int = 100,
     thermo: int = 100,
-    timestep: float = 0.001,
+    timestep: u(float, units="eV/angstrom") = 0.001,
     Tstart: float = 100.0,
     Tstop: float = 100,
     Tdamp: float = 0.1,
@@ -327,6 +330,7 @@ def calc_molecular_dynamics_langevin_with_lammpslib(
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ):
+    print("Force", timestep)
     init_str = (
         LAMMPS_THERMO_STYLE
         + "\n"
