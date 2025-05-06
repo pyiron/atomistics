@@ -7,7 +7,7 @@ import pandas
 from jinja2 import Template
 from pylammpsmpi import LammpsASELibrary
 from semantikon.typing import u
-from semantikon.converter import unit
+from semantikon.converter import units
 
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.lammps.commands import (
@@ -89,13 +89,14 @@ def optimize_positions_with_lammpslib(
     potential_dataframe: DataFrame,
     min_style: str = "cg",
     etol: float = 0.0,
-    ftol: float = 0.0001,
+    ftol: u(float, units="eV/angstrom") = 0.0001,
     maxiter: int = 100000,
     maxeval: int = 10000000,
     thermo: int = 10,
     lmp=None,
     **kwargs,
 ) -> Atoms:
+    print("Force", ftol)
     template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_MINIMIZE
     lmp_instance = lammps_run(
         structure=structure,
@@ -314,13 +315,12 @@ def calc_molecular_dynamics_nph_with_lammpslib(
     return result_dict
 
 
-@units
 def calc_molecular_dynamics_langevin_with_lammpslib(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
     run: int = 100,
     thermo: int = 100,
-    timestep: u(float, units="eV/angstrom") = 0.001,
+    timestep: float = 0.001,
     Tstart: float = 100.0,
     Tstop: float = 100,
     Tdamp: float = 0.1,
