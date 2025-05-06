@@ -42,12 +42,13 @@ if TYPE_CHECKING:
     from atomistics.calculators.interface import TaskName
 
 
+@units
 def optimize_positions_and_volume_with_lammpslib(
     structure: Atoms,
     potential_dataframe: DataFrame,
     min_style: str = "cg",
     etol: float = 0.0,
-    ftol: float = 0.0001,
+    ftol: u(float, units="eV/angstrom") = 0.0001,
     maxiter: int = 100000,
     maxeval: int = 10000000,
     thermo: int = 10,
@@ -84,6 +85,7 @@ def optimize_positions_and_volume_with_lammpslib(
     return structure_copy
 
 
+@units
 def optimize_positions_with_lammpslib(
     structure: Atoms,
     potential_dataframe: DataFrame,
@@ -96,7 +98,6 @@ def optimize_positions_with_lammpslib(
     lmp=None,
     **kwargs,
 ) -> Atoms:
-    print("Force", ftol)
     template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_MINIMIZE
     lmp_instance = lammps_run(
         structure=structure,
@@ -145,16 +146,16 @@ def calc_static_with_lammpslib(
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 
-
+@units
 def calc_molecular_dynamics_nvt_with_lammpslib(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
-    Tstart: float = 100.0,
-    Tstop: float = 100.0,
-    Tdamp: float = 0.1,
+    Tstart: u(float, units="kelvin") = 100.0,
+    Tstop: u(float, units="kelvin") = 100.0,
+    Tdamp: u(float, units="picosecond") = 0.1,
     run: int = 100,
     thermo: int = 10,
-    timestep: float = 0.001,
+    timestep: u(float, units="picosecond") = 0.001,
     seed: int = 4928459,
     dist: str = "gaussian",
     lmp=None,
@@ -199,19 +200,19 @@ def calc_molecular_dynamics_nvt_with_lammpslib(
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 
-
+@units
 def calc_molecular_dynamics_npt_with_lammpslib(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
-    Tstart: float = 100.0,
-    Tstop: float = 100.0,
-    Tdamp: float = 0.1,
+    Tstart: u(float, units="kelvin") = 100.0,
+    Tstop: u(float, units="kelvin") = 100.0,
+    Tdamp: u(float, units="picosecond") = 0.1,
     run: int = 100,
     thermo: int = 100,
-    timestep: float = 0.001,
-    Pstart: float = 0.0,
-    Pstop: float = 0.0,
-    Pdamp: float = 1.0,
+    timestep: u(float, units="picosecond") = 0.001,
+    Pstart: u(float, units="bar") = 0.0,
+    Pstop: u(float, units="bar") = 0.0,
+    Pdamp: u(float, units="picosecond") = 1.0,
     seed: int = 4928459,
     dist: str = "gaussian",
     lmp=None,
@@ -259,17 +260,17 @@ def calc_molecular_dynamics_npt_with_lammpslib(
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 
-
+@units
 def calc_molecular_dynamics_nph_with_lammpslib(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
     run: int = 100,
     thermo: int = 100,
     timestep: float = 0.001,
-    Tstart: float = 100.0,
-    Pstart: float = 0.0,
-    Pstop: float = 0.0,
-    Pdamp: float = 1.0,
+    Tstart: u(float, units="kelvin") = 100.0,
+    Pstart: u(float, units="bar") = 0.0,
+    Pstop: u(float, units="bar") = 0.0,
+    Pdamp: u(float, units="picosecond") = 1.0,
     seed: int = 4928459,
     dist: str = "gaussian",
     lmp=None,
@@ -315,15 +316,16 @@ def calc_molecular_dynamics_nph_with_lammpslib(
     return result_dict
 
 
+@units
 def calc_molecular_dynamics_langevin_with_lammpslib(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
     run: int = 100,
     thermo: int = 100,
-    timestep: float = 0.001,
-    Tstart: float = 100.0,
-    Tstop: float = 100,
-    Tdamp: float = 0.1,
+    timestep: u(float, units="picosecond") = 0.001,
+    Tstart: u(float, units="kelvin") = 100.0,
+    Tstop: u(float, units="kelvin") = 100.0,
+    Tdamp: u(float, units="picosecond") = 0.1,
     seed: int = 4928459,
     dist: str = "gaussian",
     lmp=None,
@@ -372,19 +374,20 @@ def calc_molecular_dynamics_langevin_with_lammpslib(
     return result_dict
 
 
+@units
 def calc_molecular_dynamics_thermal_expansion_with_lammpslib(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
-    Tstart: float = 15.0,
-    Tstop: float = 1500.0,
+    Tstart: u(float, units="kelvin") = 15.0,
+    Tstop: u(float, units="kelvin") = 1500.0,
     Tstep: int = 5,
-    Tdamp: float = 0.1,
+    Tdamp: u(float, units="picosecond") = 0.1,
     run: int = 100,
     thermo: int = 100,
     timestep: float = 0.001,
-    Pstart: float = 0.0,
-    Pstop: float = 0.0,
-    Pdamp: float = 1.0,
+    Pstart: u(float, units="bar") = 0.0,
+    Pstop: u(float, units="bar") = 0.0,
+    Pdamp: u(float, units="picosecond") = 1.0,
     seed: int = 4928459,
     dist: str = "gaussian",
     lmp=None,
