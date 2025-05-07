@@ -335,7 +335,6 @@ def calc_molecular_dynamics_langevin_with_lammpslib(
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ):
-    print("Force", timestep)
     init_str = (
         LAMMPS_THERMO_STYLE
         + "\n"
