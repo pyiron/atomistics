@@ -5,12 +5,11 @@ import scipy.constants
 import structuretoolkit
 from ase.atoms import Atoms
 from phonopy import Phonopy
+from semantikon.converter import units
+from semantikon.typing import u
 
 from atomistics.shared.output import OutputPhonons, OutputThermodynamic
 from atomistics.workflows.phonons.units import VaspToTHz, kJ_mol_to_eV
-
-from semantikon.typing import u
-from semantikon.converter import units
 
 
 class PhonopyProperties:

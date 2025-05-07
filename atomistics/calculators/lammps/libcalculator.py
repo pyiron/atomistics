@@ -6,8 +6,8 @@ import numpy as np
 import pandas
 from jinja2 import Template
 from pylammpsmpi import LammpsASELibrary
-from semantikon.typing import u
 from semantikon.converter import units
+from semantikon.typing import u
 
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.lammps.commands import (
@@ -146,6 +146,7 @@ def calc_static_with_lammpslib(
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
 
+
 @units
 def calc_molecular_dynamics_nvt_with_lammpslib(
     structure: Atoms,
@@ -199,6 +200,7 @@ def calc_molecular_dynamics_nvt_with_lammpslib(
     )
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
+
 
 @units
 def calc_molecular_dynamics_npt_with_lammpslib(
@@ -259,6 +261,7 @@ def calc_molecular_dynamics_npt_with_lammpslib(
     )
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return result_dict
+
 
 @units
 def calc_molecular_dynamics_nph_with_lammpslib(
