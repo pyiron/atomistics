@@ -16,3 +16,4 @@ dependencies:
 - sphinx_parser =0.0.1
 - tqdm =4.67.1
 - pyiron_vasp =0.2.5
+- semantikon =0.0.16

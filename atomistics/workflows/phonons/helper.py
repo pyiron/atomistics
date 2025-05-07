@@ -5,6 +5,8 @@ import scipy.constants
 import structuretoolkit
 from ase.atoms import Atoms
 from phonopy import Phonopy
+from semantikon.converter import units
+from semantikon.typing import u
 
 from atomistics.shared.output import OutputPhonons, OutputThermodynamic
 from atomistics.workflows.phonons.units import VaspToTHz, kJ_mol_to_eV
@@ -260,10 +262,11 @@ def restore_magmoms(
     return structure
 
 
+@units
 def generate_structures_helper(
     structure: Atoms,
     primitive_matrix: Optional[np.ndarray] = None,
-    displacement: float = 0.01,
+    displacement: u(float, units="angstrom") = 0.01,
     number_of_snapshots: Optional[int] = None,
     interaction_range: float = 10.0,
     factor: float = VaspToTHz,
