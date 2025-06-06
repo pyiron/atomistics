@@ -3,7 +3,7 @@ channels:
 dependencies:
 - lammps =2024.06.27=*openmpi*
 - openmpi =4.1.6
-- pandas =2.2.3
+- pandas =2.3.0
 - pylammpsmpi =0.2.35
 - jinja2 =3.1.6
 - iprpy-data =2023.07.25
