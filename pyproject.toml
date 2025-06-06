@@ -48,20 +48,20 @@ gpaw = [
 lammps = [
     "pylammpsmpi==0.2.35",
     "jinja2==3.1.6",
-    "pandas==2.2.3",
+    "pandas==2.3.0",
     "pyiron_lammps==0.4.2",
 ]
 lammps_phonons = [
     "pylammpsmpi==0.2.35",
     "jinja2==3.1.6",
-    "pandas==2.2.3",
+    "pandas==2.3.0",
     "dynaphopy==1.17.16",
     "pyiron_lammps==0.4.2",
 ]
 experimental = [
     "lxml==5.4.0",
     "mendeleev==0.19.0",
-    "pandas==2.2.3",
+    "pandas==2.3.0",
     "requests==2.32.3",
 ]
 sphinxdft = [
