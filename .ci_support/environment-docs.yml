@@ -20,4 +20,4 @@ dependencies:
 - jinja2 =3.1.6
 - jupyter-book =1.0.0
 - pyiron_lammps =0.4.2
-- pyiron_vasp =0.2.5
+- pyiron_vasp =0.2.6
