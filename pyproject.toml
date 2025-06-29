@@ -118,6 +118,8 @@ ignore = [
     "E501",
     # ignore unused imports in init files
     "F401",
+    # ignore imports which are not at the top of a module
+    "PLC0415",
     # ignore invalid format for __all__
     "PLE0605",
     # Too many arguments in function definition
