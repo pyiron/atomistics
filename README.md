@@ -12,6 +12,7 @@ simulation codes - named `calculators`. The supported simulation codes in alphab
 * [LAMMPS](https://www.lammps.org) - Molecular Dynamics
 * [Quantum Espresso](https://www.quantum-espresso.org) - Integrated suite of Open-Source computer codes for electronic-structure calculations
 * [Siesta](https://siesta-project.org) - Electronic structure calculations and ab initio molecular dynamics
+* [SPHInX](https://sxrepo.mpie.de) - Plane wave DFT with interactive tools, charged defect correction and spin constraints
 
 For majority of these simulation codes the `atomistics` package use the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/)
 to interface the underlying C/ C++ and Fortran Codes with the Python programming language. Still this approach limits
