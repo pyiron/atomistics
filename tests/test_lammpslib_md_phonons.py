@@ -47,10 +47,10 @@ class TestLammpsMD(unittest.TestCase):
         trajectory = calc_molecular_dynamics_phonons_with_lammpslib(
             structure_ase=structure,
             potential_dataframe=potential_dataframe,
-            force_constants=workflow.phonopy.get_force_constants(),
-            phonopy_unitcell=workflow.phonopy.get_unitcell(),
-            phonopy_primitive_matrix=workflow.phonopy.get_primitive_matrix(),
-            phonopy_supercell_matrix=workflow.phonopy.get_supercell_matrix(),
+            force_constants=workflow.phonopy.force_constants,
+            phonopy_unitcell=workflow.phonopy.unitcell,
+            phonopy_primitive_matrix=workflow.phonopy.primitive_matrix,
+            phonopy_supercell_matrix=workflow.phonopy.supercell_matrix,
             total_time=20,  # ps
             time_step=0.001,  # ps
             relaxation_time=5,  # ps
