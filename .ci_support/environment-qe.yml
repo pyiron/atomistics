@@ -1,5 +1,5 @@
 channels:
 - conda-forge
 dependencies:
-- qe =7.2
+- qe =7.4
 - pwtools =1.3.0
