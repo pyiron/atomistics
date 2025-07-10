@@ -15,9 +15,9 @@ dependencies:
 - structuretoolkit =0.0.32
 - seekpath =2.1.0
 - lammps =2024.08.29
-- pandas =2.3.0
-- pylammpsmpi =0.2.35
+- pandas =2.3.1
+- pylammpsmpi =0.2.36
 - jinja2 =3.1.6
 - jupyter-book =1.0.0
-- pyiron_lammps =0.4.2
-- pyiron_vasp =0.2.6
+- pyiron_lammps =0.4.3
+- pyiron_vasp =0.2.7
