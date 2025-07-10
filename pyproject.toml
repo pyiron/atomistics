@@ -60,7 +60,7 @@ lammps_phonons = [
 ]
 experimental = [
     "lxml==6.0.0",
-    "mendeleev==0.19.0",
+    "mendeleev==1.1.0",
     "pandas==2.3.1",
     "requests==2.32.4",
 ]
