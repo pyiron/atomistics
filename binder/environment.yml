@@ -16,4 +16,4 @@ dependencies:
 - dynaphopy =1.17.16
 - tqdm =4.67.1
 - pyiron_lammps =0.4.3
-- pyiron_vasp =0.2.6
+- pyiron_vasp =0.2.7
