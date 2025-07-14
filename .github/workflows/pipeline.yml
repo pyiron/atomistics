@@ -52,14 +52,14 @@ jobs:
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-lammps.yml >> environment.yml
         tail --lines=+4 .ci_support/environment-qe.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
         environment-file: environment.yml
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
@@ -84,15 +84,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Conda config
-      run: echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
         environment-file: .ci_support/environment.yml
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
@@ -110,14 +109,14 @@ jobs:
         run: |
           cp .ci_support/environment.yml environment.yml
           tail --lines=+4 .ci_support/environment-notebooks.yml >> environment.yml
-          echo -e "channels:\n  - conda-forge\n" > .condarc
       - name: Setup Mambaforge
         uses: conda-incubator/setup-miniconda@v3
         with:
           python-version: "3.12"
           miniforge-version: latest
-          condarc-file: .condarc
+          channels: conda-forge
           environment-file: environment.yml
+          conda-remove-defaults: "true"
       - name: Test
         shell: bash -l {0}
         run: |
@@ -137,14 +136,14 @@ jobs:
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-lammps.yml >> environment.yml
         tail --lines=+4 .ci_support/environment-gpaw.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
         environment-file: environment.yml
+        conda-remove-defaults: "true"
     - name: Pip check
       shell: bash -l {0}
       run: |
@@ -179,21 +178,20 @@ jobs:
       shell: bash -l {0}
       run: |
         cp .ci_support/environment.yml environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup environment (unix)
       if: matrix.operating-system != 'windows-latest'
       shell: bash -l {0}
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-lammps.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: ${{ matrix.python-version }}
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
         environment-file: environment.yml
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
@@ -211,14 +209,14 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-abinit.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
         environment-file: environment.yml
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
@@ -240,14 +238,14 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-gpaw.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
         environment-file: environment.yml
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
@@ -267,14 +265,14 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-sphinx.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
         environment-file: environment.yml
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
@@ -292,14 +290,14 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-mace.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
         environment-file: environment.yml
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 60
@@ -320,14 +318,14 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-matgl.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.11'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
         environment-file: environment.yml
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 60
@@ -373,14 +371,14 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-grace.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
         environment-file: environment.yml
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 60
@@ -398,14 +396,14 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-qe.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
         environment-file: environment.yml
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 60
@@ -429,14 +427,14 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-siesta.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
         environment-file: environment.yml
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
@@ -450,15 +448,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Conda config
-      run: echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.9'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
         environment-file: .ci_support/environment-old.yml
+        conda-remove-defaults: "true"
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
