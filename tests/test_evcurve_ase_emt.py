@@ -5,7 +5,9 @@ import unittest
 
 from atomistics.calculators import evaluate_with_ase
 from atomistics.workflows import (
-    EnergyVolumeCurveWorkflow,
+    analyse_results_for_energy_volume_curve,
+    get_tasks_for_energy_volume_curve,
+    get_thermal_properties_for_energy_volume_curve,
     optimize_volume,
 )
 
@@ -20,20 +22,27 @@ class TestEvCurve(unittest.TestCase):
             ase_optimizer=LBFGS,
             ase_optimizer_kwargs={"fmax": 0.000001},
         )
-        workflow = EnergyVolumeCurveWorkflow(
+        structure_dict = get_tasks_for_energy_volume_curve(
             structure=result_dict["structure_with_optimized_volume"],
             num_points=11,
-            fit_type="polynomial",
-            fit_order=3,
             vol_range=0.05,
             axes=("x", "y", "z"),
-            strains=None,
         )
-        task_dict = workflow.generate_structures()
-        result_dict = evaluate_with_ase(task_dict=task_dict, ase_calculator=EMT())
-        fit_dict = workflow.analyse_structures(output_dict=result_dict)
-        thermal_properties_dict = workflow.get_thermal_properties(
-            temperatures=[100, 1000], output_keys=["temperatures", "volumes"]
+        result_dict = evaluate_with_ase(
+            task_dict={"calc_energy": structure_dict},
+            ase_calculator=EMT(),
+        )
+        fit_dict = analyse_results_for_energy_volume_curve(
+            output_dict=result_dict,
+            structure_dict=structure_dict,
+            fit_type="polynomial",
+            fit_order=3,
+        )
+        thermal_properties_dict = get_thermal_properties_for_energy_volume_curve(
+            fit_dict=fit_dict,
+            masses=structure.get_masses(),
+            temperatures=[100, 1000],
+            output_keys=["temperatures", "volumes"]
         )
         temperatures_ev, volumes_ev = (
             thermal_properties_dict["temperatures"],
