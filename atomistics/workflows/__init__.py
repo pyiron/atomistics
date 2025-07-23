@@ -1,9 +1,9 @@
 from atomistics.shared.import_warning import raise_warning
 from atomistics.workflows.elastic.workflow import (
+    ElasticMatrixWorkflow,
     analyse_results_for_elastic_matrix,
     get_tasks_for_elastic_matrix,
 )
-from atomistics.workflows.elastic.workflow import ElasticMatrixWorkflow
 from atomistics.workflows.evcurve.debye import (
     get_thermal_properties_for_energy_volume_curve,
 )
@@ -53,16 +53,16 @@ phonopy_workflows: list[str] = [
 
 try:  # in case phonopy is not installed
     from atomistics.workflows.phonons.helper import (
-        get_hesse_matrix,
-        get_thermal_properties_for_harmonic_approximation,
-        get_tasks_for_harmonic_approximation,
         analyse_results_for_harmonic_approximation,
+        get_hesse_matrix,
+        get_tasks_for_harmonic_approximation,
+        get_thermal_properties_for_harmonic_approximation,
     )
     from atomistics.workflows.phonons.workflow import PhonopyWorkflow
     from atomistics.workflows.quasiharmonic import (
         QuasiHarmonicWorkflow,
-        get_tasks_for_quasi_harmonic_approximation,
         analyse_results_for_quasi_harmonic_approximation,
+        get_tasks_for_quasi_harmonic_approximation,
         get_thermal_properties_for_quasi_harmonic_approximation,
     )
 except ImportError as e:
