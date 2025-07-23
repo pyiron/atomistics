@@ -201,7 +201,7 @@ def get_strains(
         return np.array(strain_lst)
 
 
-def generate_structures_helper(
+def get_tasks_for_energy_volume_curve(
     structure: Atoms,
     vol_range: Optional[float] = None,
     num_points: Optional[int] = None,
@@ -236,7 +236,7 @@ def generate_structures_helper(
     return dict(zip(key_lst, value_lst))
 
 
-def analyse_structures_helper(
+def analyse_results_for_energy_volume_curve(
     output_dict: dict,
     structure_dict: dict,
     fit_type: str = "polynomial",

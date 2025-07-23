@@ -4,7 +4,8 @@ from ase.build import bulk
 from phonopy.units import VaspToTHz
 import unittest
 
-from atomistics.workflows import QuasiHarmonicWorkflow, optimize_positions_and_volume
+from atomistics.workflows import optimize_positions_and_volume
+from atomistics.workflows.quasiharmonic import QuasiHarmonicWorkflow
 
 try:
     from atomistics.calculators import evaluate_with_lammpslib, get_potential_by_name

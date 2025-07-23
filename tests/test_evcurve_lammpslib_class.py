@@ -1,13 +1,10 @@
 import os
 
 from ase.build import bulk
-import numpy as np
 import unittest
 
-from atomistics.workflows import (
-    EnergyVolumeCurveWorkflow,
-    optimize_positions_and_volume,
-)
+from atomistics.workflows import optimize_positions_and_volume
+from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
 
 try:
     from atomistics.calculators import evaluate_with_lammpslib, get_potential_by_name

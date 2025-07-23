@@ -8,11 +8,11 @@ from phonopy.file_IO import write_FORCE_CONSTANTS
 from atomistics.shared.output import OutputPhonons, OutputThermodynamic
 from atomistics.workflows.interface import Workflow
 from atomistics.workflows.phonons.helper import (
-    analyse_structures_helper,
-    generate_structures_helper,
+    analyse_results_for_harmonic_approximation,
     get_band_structure,
     get_hesse_matrix,
-    get_thermal_properties,
+    get_tasks_for_harmonic_approximation,
+    get_thermal_properties_for_harmonic_approximation,
     plot_band_structure,
     plot_dos,
 )
@@ -75,7 +75,7 @@ class PhonopyWorkflow(Workflow):
         Returns:
             dict: The generated structures.
         """
-        self.phonopy, structure_dict = generate_structures_helper(
+        self.phonopy, structure_dict = get_tasks_for_harmonic_approximation(
             structure=self.structure,
             primitive_matrix=self._primitive_matrix,
             displacement=self._displacement,
@@ -98,7 +98,7 @@ class PhonopyWorkflow(Workflow):
         Returns:
             dict: The analysed structures.
         """
-        self._phonopy_dict = analyse_structures_helper(
+        self._phonopy_dict = analyse_results_for_harmonic_approximation(
             phonopy=self.phonopy,
             output_dict=output_dict,
             dos_mesh=self._dos_mesh,
@@ -136,7 +136,7 @@ class PhonopyWorkflow(Workflow):
         Returns:
             dict: The thermal properties.
         """
-        return get_thermal_properties(
+        return get_thermal_properties_for_harmonic_approximation(
             phonopy=self.phonopy,
             t_min=t_min,
             t_max=t_max,

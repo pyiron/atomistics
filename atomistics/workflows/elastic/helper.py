@@ -14,7 +14,7 @@ from atomistics.workflows.elastic.symmetry import (
 )
 
 
-def generate_structures_helper(
+def get_tasks_for_elastic_matrix(
     structure: ase.atoms.Atoms,
     eps_range: float,
     num_of_point: int,
@@ -99,7 +99,7 @@ def generate_structures_helper(
     return sym_dict, structure_dict
 
 
-def analyse_structures_helper(
+def analyse_results_for_elastic_matrix(
     output_dict: dict,
     sym_dict: dict,
     fit_order: int = 2,
