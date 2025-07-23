@@ -91,9 +91,9 @@ def get_thermal_properties_for_quasi_harmonic_approximation(
     Returns:
         dict: Thermal properties as returned by Phonopy.
     """
-    volume_lst = np.array(get_volume_lst(structure_dict=task_dict["calc_energy"])) / np.prod(
-        repeat_vector
-    )
+    volume_lst = np.array(
+        get_volume_lst(structure_dict=task_dict["calc_energy"])
+    ) / np.prod(repeat_vector)
     eng_internal_dict = {
         key: value / np.prod(repeat_vector) for key, value in eng_internal_dict.items()
     }
@@ -428,7 +428,11 @@ def get_tasks_for_quasi_harmonic_approximation(
                 for key, structure_phono in structure_task_dict["calc_forces"].items()
             }
         )
-    return {"calc_energy": structure_energy_dict, "calc_forces": structure_forces_dict}, phonopy_dict, repeat_vector
+    return (
+        {"calc_energy": structure_energy_dict, "calc_forces": structure_forces_dict},
+        phonopy_dict,
+        repeat_vector,
+    )
 
 
 def analyse_results_for_quasi_harmonic_approximation(
