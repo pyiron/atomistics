@@ -32,7 +32,7 @@ class TestPhonons(unittest.TestCase):
             task_dict={"optimize_positions_and_volume": structure},
             potential_dataframe=df_pot_selected,
         )
-        phonopy_dict, repeat_vector, structure_energy_dict, structure_forces_dict = (
+        task_dict, phonopy_dict, repeat_vector = (
             get_tasks_for_quasi_harmonic_approximation(
                 structure=result_dict["structure_with_optimized_positions_and_volume"],
                 vol_range=0.05,
@@ -45,10 +45,7 @@ class TestPhonons(unittest.TestCase):
             )
         )
         result_dict = evaluate_with_lammpslib(
-            task_dict={
-                "calc_energy": structure_energy_dict,
-                "calc_forces": structure_forces_dict,
-            },
+            task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
         eng_internal_dict, phonopy_collect_dict = analyse_results_for_quasi_harmonic_approximation(
@@ -60,7 +57,7 @@ class TestPhonons(unittest.TestCase):
         tp_collect_dict = get_thermal_properties_for_quasi_harmonic_approximation(
             eng_internal_dict=eng_internal_dict,
             phonopy_dict=phonopy_dict,
-            structure_dict=structure_energy_dict,
+            task_dict=task_dict,
             repeat_vector=repeat_vector,
             fit_type="polynomial",
             fit_order=3,
@@ -98,7 +95,7 @@ class TestPhonons(unittest.TestCase):
         thermal_properties_dict = get_thermal_properties_for_quasi_harmonic_approximation(
             eng_internal_dict=eng_internal_dict,
             phonopy_dict=phonopy_dict,
-            structure_dict=structure_energy_dict,
+            task_dict=task_dict,
             repeat_vector=repeat_vector,
             fit_type="polynomial",
             fit_order=3,
@@ -113,7 +110,7 @@ class TestPhonons(unittest.TestCase):
         thermal_properties_dict = get_thermal_properties_for_quasi_harmonic_approximation(
             eng_internal_dict=eng_internal_dict,
             phonopy_dict=phonopy_dict,
-            structure_dict=structure_energy_dict,
+            task_dict=task_dict,
             repeat_vector=repeat_vector,
             fit_type="polynomial",
             fit_order=3,

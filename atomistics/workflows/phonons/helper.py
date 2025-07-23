@@ -305,7 +305,7 @@ def get_tasks_for_harmonic_approximation(
         )
         for ind, sc in enumerate(phonopy_obj.supercells_with_displacements)
     }
-    return phonopy_obj, structure_dict
+    return {"calc_forces": structure_dict}, phonopy_obj
 
 
 def analyse_results_for_harmonic_approximation(

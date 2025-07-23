@@ -233,12 +233,12 @@ def get_tasks_for_energy_volume_curve(
         _strain_axes(structure=structure, axes=axes, volume_strain=strain)
         for strain in strain_lst
     ]
-    return dict(zip(key_lst, value_lst))
+    return {"calc_energy": dict(zip(key_lst, value_lst))}
 
 
 def analyse_results_for_energy_volume_curve(
     output_dict: dict,
-    structure_dict: dict,
+    task_dict: dict,
     fit_type: str = "polynomial",
     fit_order: int = 3,
     output_keys: tuple = OutputEnergyVolumeCurve.keys(),
@@ -248,7 +248,7 @@ def analyse_results_for_energy_volume_curve(
 
     Args:
         output_dict (dict): The output dictionary containing energy values.
-        structure_dict (dict): The structure dictionary containing structure keys.
+        task_dict (dict): The structure dictionary containing structure keys.
         fit_type (str, optional): The type of fit to perform. Can be 'polynomial' or 'birch_murnaghan'.
             Defaults to 'polynomial'.
         fit_order (int, optional): The order of the polynomial fit. Only applicable if fit_type is 'polynomial'.
@@ -261,9 +261,12 @@ def analyse_results_for_energy_volume_curve(
     """
     return EnergyVolumeCurveProperties(
         fit_module=fit_ev_curve_internal(
-            volume_lst=get_volume_lst(structure_dict=structure_dict),
+            volume_lst=get_volume_lst(
+                structure_dict=task_dict["calc_energy"],
+            ),
             energy_lst=get_energy_lst(
-                output_dict=output_dict, structure_dict=structure_dict
+                output_dict=output_dict,
+                structure_dict=task_dict["calc_energy"],
             ),
             fit_type=fit_type,
             fit_order=fit_order,
