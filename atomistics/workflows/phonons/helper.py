@@ -586,3 +586,25 @@ def plot_band_structure(
     axis.set_ylabel("Frequency [THz]")
     axis.set_title("Bandstructure")
     return axis
+
+
+def get_dynamical_matrix(phonopy: Phonopy, npoints: int = 101) -> np.ndarray:
+    """
+    Get the dynamical matrix.
+
+    Args:
+        phonopy (Phonopy): The Phonopy object.
+        npoints (int, optional): The number of points. Defaults to 101.
+
+    Returns:
+        np.ndarray: The dynamical matrix.
+    """
+    phonopy.auto_band_structure(
+        npoints=npoints,
+        with_eigenvectors=False,
+        with_group_velocities=False,
+        plot=False,
+        write_yaml=False,
+        filename="band.yaml",
+    )
+    return np.real_if_close(phonopy.dynamical_matrix.dynamical_matrix)

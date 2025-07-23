@@ -41,6 +41,8 @@ __all__: list[str] = [
 phonopy_workflows: list[str] = [
     "PhonopyWorkflow",
     "QuasiHarmonicWorkflow",
+    "get_band_structure",
+    "get_dynamical_matrix",
     "get_hesse_matrix",
     "get_thermal_properties_for_harmonic_approximation",
     "get_tasks_for_harmonic_approximation",
@@ -54,6 +56,8 @@ phonopy_workflows: list[str] = [
 try:  # in case phonopy is not installed
     from atomistics.workflows.phonons.helper import (
         analyse_results_for_harmonic_approximation,
+        get_band_structure,
+        get_dynamical_matrix,
         get_hesse_matrix,
         get_tasks_for_harmonic_approximation,
         get_thermal_properties_for_harmonic_approximation,
