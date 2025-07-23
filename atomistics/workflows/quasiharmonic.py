@@ -93,7 +93,8 @@ def get_thermal_properties_for_quasi_harmonic_approximation(
         get_volume_lst(structure_dict=task_dict["calc_energy"])
     ) / np.prod(qh_dict["repeat_vector"])
     eng_internal_dict = {
-        key: value / np.prod(qh_dict["repeat_vector"]) for key, value in eng_internal_dict.items()
+        key: value / np.prod(qh_dict["repeat_vector"])
+        for key, value in eng_internal_dict.items()
     }
     if quantum_mechanical:
         tp_collect_dict = _get_thermal_properties_quantum_mechanical(
