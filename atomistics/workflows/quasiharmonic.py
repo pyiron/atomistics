@@ -562,12 +562,14 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
                 - eng_internal_dict (dict): Dictionary of internal energies for different strains.
                 - phonopy_collect_dict (dict): Dictionary of Phonopy analysis results for different strains.
         """
-        self._eng_internal_dict, phonopy_collect_dict = analyse_results_for_quasi_harmonic_approximation(
-            phonopy_dict=self._phonopy_dict,
-            output_dict=output_dict,
-            dos_mesh=self._dos_mesh,
-            number_of_snapshots=self._number_of_snapshots,
-            output_keys=output_keys,
+        self._eng_internal_dict, phonopy_collect_dict = (
+            analyse_results_for_quasi_harmonic_approximation(
+                phonopy_dict=self._phonopy_dict,
+                output_dict=output_dict,
+                dos_mesh=self._dos_mesh,
+                number_of_snapshots=self._number_of_snapshots,
+                output_keys=output_keys,
+            )
         )
         return self._eng_internal_dict, phonopy_collect_dict
 
