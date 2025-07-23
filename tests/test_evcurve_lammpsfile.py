@@ -6,6 +6,7 @@ from ase.build import bulk
 import unittest
 
 from atomistics.workflows import (
+    optimize_positions_and_volume,
     analyse_results_for_energy_volume_curve,
     get_tasks_for_energy_volume_curve,
     get_thermal_properties_for_energy_volume_curve,

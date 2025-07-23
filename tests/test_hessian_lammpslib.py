@@ -48,7 +48,6 @@ class TestLangevin(unittest.TestCase):
             interaction_range=10,
             factor=VaspToTHz,
             displacement=0.01,
-            dos_mesh=20,
             primitive_matrix=None,
             number_of_snapshots=None,
         )
