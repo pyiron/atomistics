@@ -6,7 +6,7 @@ import unittest
 
 from atomistics.workflows.elastic.workflow import (
     analyse_results_for_elastic_matrix,
-    generate_tasks_for_elastic_matrix,
+    get_tasks_for_elastic_matrix,
 )
 
 try:
@@ -31,7 +31,7 @@ class TestElastic(unittest.TestCase):
             task_dict={"optimize_positions_and_volume": structure},
             potential_dataframe=df_pot_selected,
         )
-        sym_dict, structure_dict = generate_tasks_for_elastic_matrix(
+        sym_dict, structure_dict = get_tasks_for_elastic_matrix(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             eps_range=0.005,
             num_of_point=5,

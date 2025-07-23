@@ -201,7 +201,7 @@ def get_strains(
         return np.array(strain_lst)
 
 
-def generate_structures_for_energy_volume_curve(
+def get_tasks_for_energy_volume_curve(
     structure: Atoms,
     vol_range: Optional[float] = None,
     num_points: Optional[int] = None,

@@ -15,7 +15,7 @@ from atomistics.workflows.phonons.helper import (
     analyse_results_for_harmonic_approximation as analyse_structures_phonopy_helper,
 )
 from atomistics.workflows.phonons.helper import (
-    generate_structures_for_harmonic_approximation as generate_structures_phonopy_helper,
+    get_tasks_for_harmonic_approximation as generate_structures_phonopy_helper,
 )
 from atomistics.workflows.phonons.helper import (
     get_supercell_matrix,
@@ -364,7 +364,7 @@ class QuasiHarmonicThermalProperties:
         return self._volumes_selected_lst
 
 
-def generate_structures_for_quasi_harmonic_approximation(
+def get_tasks_for_quasi_harmonic_approximation(
     structure: Atoms,
     vol_range: Optional[float] = None,
     num_points: Optional[int] = None,
@@ -529,7 +529,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             self._repeat_vector,
             structure_energy_dict,
             structure_forces_dict,
-        ) = generate_structures_for_quasi_harmonic_approximation(
+        ) = get_tasks_for_quasi_harmonic_approximation(
             structure=self.structure,
             vol_range=self.vol_range,
             num_points=self.num_points,

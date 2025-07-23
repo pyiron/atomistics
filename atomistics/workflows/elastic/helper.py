@@ -14,7 +14,7 @@ from atomistics.workflows.elastic.symmetry import (
 )
 
 
-def generate_tasks_for_elastic_matrix(
+def get_tasks_for_elastic_matrix(
     structure: ase.atoms.Atoms,
     eps_range: float,
     num_of_point: int,

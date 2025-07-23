@@ -4,7 +4,7 @@ from ase.atoms import Atoms
 from atomistics.shared.output import OutputElastic
 from atomistics.workflows.elastic.helper import (
     analyse_results_for_elastic_matrix,
-    generate_tasks_for_elastic_matrix,
+    get_tasks_for_elastic_matrix,
 )
 from atomistics.workflows.interface import Workflow
 
@@ -46,7 +46,7 @@ class ElasticMatrixWorkflow(Workflow):
         Returns:
             dict: The generated structures.
         """
-        self._data, self._structure_dict = generate_tasks_for_elastic_matrix(
+        self._data, self._structure_dict = get_tasks_for_elastic_matrix(
             structure=self.structure,
             eps_range=self.eps_range,
             num_of_point=self.num_of_point,

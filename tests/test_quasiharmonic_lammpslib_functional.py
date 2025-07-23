@@ -6,7 +6,7 @@ from phonopy.units import VaspToTHz
 import unittest
 
 from atomistics.workflows.quasiharmonic import (
-    generate_structures_for_quasi_harmonic_approximation,
+    get_tasks_for_quasi_harmonic_approximation,
     analyse_results_for_quasi_harmonic_approximation,
     get_thermal_properties,
 )
@@ -34,7 +34,7 @@ class TestPhonons(unittest.TestCase):
             potential_dataframe=df_pot_selected,
         )
         phonopy_dict, repeat_vector, structure_energy_dict, structure_forces_dict = (
-            generate_structures_for_quasi_harmonic_approximation(
+            get_tasks_for_quasi_harmonic_approximation(
                 structure=result_dict["structure_with_optimized_positions_and_volume"],
                 vol_range=0.05,
                 num_points=11,

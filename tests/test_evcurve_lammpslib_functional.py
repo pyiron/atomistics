@@ -6,7 +6,7 @@ import unittest
 from atomistics.workflows.evcurve.debye import get_thermal_properties
 from atomistics.workflows.evcurve.helper import (
     analyse_results_for_energy_volume_curve,
-    generate_structures_for_energy_volume_curve,
+    get_tasks_for_energy_volume_curve,
 )
 
 
@@ -32,7 +32,7 @@ class TestEvCurve(unittest.TestCase):
             task_dict={"optimize_positions_and_volume": structure},
             potential_dataframe=df_pot_selected,
         )
-        structure_dict = generate_structures_for_energy_volume_curve(
+        structure_dict = get_tasks_for_energy_volume_curve(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             vol_range=0.05,
             num_points=11,

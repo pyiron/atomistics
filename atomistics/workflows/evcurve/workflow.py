@@ -10,7 +10,7 @@ from atomistics.workflows.evcurve.debye import (
 )
 from atomistics.workflows.evcurve.helper import (
     analyse_results_for_energy_volume_curve,
-    generate_structures_for_energy_volume_curve,
+    get_tasks_for_energy_volume_curve,
 )
 from atomistics.workflows.interface import Workflow
 
@@ -66,7 +66,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
             dict: The generated structures.
         """
         self._structure_dict = OrderedDict(
-            generate_structures_for_energy_volume_curve(
+            get_tasks_for_energy_volume_curve(
                 structure=self.structure,
                 vol_range=self.vol_range,
                 num_points=self.num_points,

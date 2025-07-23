@@ -260,7 +260,7 @@ def restore_magmoms(
     return structure
 
 
-def generate_structures_for_harmonic_approximation(
+def get_tasks_for_harmonic_approximation(
     structure: Atoms,
     primitive_matrix: Optional[np.ndarray] = None,
     displacement: float = 0.01,
