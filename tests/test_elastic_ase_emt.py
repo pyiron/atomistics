@@ -17,13 +17,13 @@ class TestElastic(unittest.TestCase):
             ase_optimizer=LBFGS,
             ase_optimizer_kwargs={"fmax": 0.000001},
         )
-        sym_dict, structure_dict = get_tasks_for_elastic_matrix(
+        task_dict, sym_dict = get_tasks_for_elastic_matrix(
             structure=result_dict["structure_with_optimized_volume"],
             num_of_point=5,
             eps_range=0.005,
             sqrt_eta=True,
         )
-        result_dict = evaluate_with_ase(task_dict={"calc_energy": structure_dict}, ase_calculator=EMT())
+        result_dict = evaluate_with_ase(task_dict=task_dict, ase_calculator=EMT())
         sym_dict, elastic_dict = analyse_results_for_elastic_matrix(
             output_dict=result_dict,
             sym_dict=sym_dict,

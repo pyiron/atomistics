@@ -22,19 +22,19 @@ class TestEvCurve(unittest.TestCase):
             ase_optimizer=LBFGS,
             ase_optimizer_kwargs={"fmax": 0.000001},
         )
-        structure_dict = get_tasks_for_energy_volume_curve(
+        task_dict = get_tasks_for_energy_volume_curve(
             structure=result_dict["structure_with_optimized_volume"],
             num_points=11,
             vol_range=0.05,
             axes=("x", "y", "z"),
         )
         result_dict = evaluate_with_ase(
-            task_dict={"calc_energy": structure_dict},
+            task_dict=task_dict ,
             ase_calculator=EMT(),
         )
         fit_dict = analyse_results_for_energy_volume_curve(
             output_dict=result_dict,
-            structure_dict=structure_dict,
+            task_dict=task_dict,
             fit_type="polynomial",
             fit_order=3,
         )
