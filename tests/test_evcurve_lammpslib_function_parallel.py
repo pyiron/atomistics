@@ -4,7 +4,7 @@ from concurrent.futures import ProcessPoolExecutor
 from ase.build import bulk
 import unittest
 
-from atomistics.workflows.evcurve.debye import get_thermal_properties
+from atomistics.workflows.evcurve.debye import get_thermal_properties_for_energy_volume_curve
 from atomistics.workflows.evcurve.helper import (
     analyse_results_for_energy_volume_curve,
     get_tasks_for_energy_volume_curve,
@@ -56,7 +56,7 @@ class TestEvCurve(unittest.TestCase):
             fit_type="polynomial",
             fit_order=3,
         )
-        thermal_properties_dict = get_thermal_properties(
+        thermal_properties_dict = get_thermal_properties_for_energy_volume_curve(
             fit_dict=fit_dict,
             masses=structure.get_masses(),
             t_min=1.0,

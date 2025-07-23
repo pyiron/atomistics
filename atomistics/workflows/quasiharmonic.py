@@ -21,7 +21,7 @@ from atomistics.workflows.phonons.helper import (
     get_tasks_for_harmonic_approximation as generate_structures_phonopy_helper,
 )
 from atomistics.workflows.phonons.helper import (
-    get_thermal_properties as get_thermal_properties_phonopy,
+    get_thermal_properties_for_harmonic_approximation as get_thermal_properties_phonopy,
 )
 from atomistics.workflows.phonons.units import (
     EvTokJmol,
@@ -48,7 +48,7 @@ def get_free_energy_classical(
     return kb * temperature * np.log(frequency / (kb * temperature))
 
 
-def get_thermal_properties(
+def get_thermal_properties_for_quasi_harmonic_approximation(
     eng_internal_dict: dict,
     phonopy_dict: dict,
     structure_dict: dict,
@@ -610,7 +610,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             raise ValueError(
                 "Please first execute analyse_output() before calling get_thermal_properties()."
             )
-        return get_thermal_properties(
+        return get_thermal_properties_for_quasi_harmonic_approximation(
             eng_internal_dict=self._eng_internal_dict,
             phonopy_dict=self._phonopy_dict,
             structure_dict=self._structure_dict,

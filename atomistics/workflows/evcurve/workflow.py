@@ -6,7 +6,7 @@ from ase.atoms import Atoms
 from atomistics.shared.output import OutputEnergyVolumeCurve
 from atomistics.workflows.evcurve.debye import (
     OutputThermodynamic,
-    get_thermal_properties,
+    get_thermal_properties_for_energy_volume_curve,
 )
 from atomistics.workflows.evcurve.helper import (
     analyse_results_for_energy_volume_curve,
@@ -121,7 +121,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         Returns:
             dict: The thermal properties.
         """
-        return get_thermal_properties(
+        return get_thermal_properties_for_energy_volume_curve(
             fit_dict=self.fit_dict,
             masses=self.structure.get_masses(),
             t_min=t_min,

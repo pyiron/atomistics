@@ -354,7 +354,7 @@ def analyse_results_for_harmonic_approximation(
     )
 
 
-def get_thermal_properties(
+def get_thermal_properties_for_harmonic_approximation(
     phonopy: Phonopy,
     t_min: float = 1.0,
     t_max: float = 1500.0,

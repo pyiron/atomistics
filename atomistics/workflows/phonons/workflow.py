@@ -12,7 +12,7 @@ from atomistics.workflows.phonons.helper import (
     get_band_structure,
     get_hesse_matrix,
     get_tasks_for_harmonic_approximation,
-    get_thermal_properties,
+    get_thermal_properties_for_harmonic_approximation,
     plot_band_structure,
     plot_dos,
 )
@@ -136,7 +136,7 @@ class PhonopyWorkflow(Workflow):
         Returns:
             dict: The thermal properties.
         """
-        return get_thermal_properties(
+        return get_thermal_properties_for_harmonic_approximation(
             phonopy=self.phonopy,
             t_min=t_min,
             t_max=t_max,

@@ -8,7 +8,7 @@ import unittest
 from atomistics.workflows.quasiharmonic import (
     get_tasks_for_quasi_harmonic_approximation,
     analyse_results_for_quasi_harmonic_approximation,
-    get_thermal_properties,
+    get_thermal_properties_for_quasi_harmonic_approximation,
 )
 
 try:
@@ -58,7 +58,7 @@ class TestPhonons(unittest.TestCase):
             dos_mesh=20,
             number_of_snapshots=None,
         )
-        tp_collect_dict = get_thermal_properties(
+        tp_collect_dict = get_thermal_properties_for_quasi_harmonic_approximation(
             eng_internal_dict=eng_internal_dict,
             phonopy_dict=phonopy_dict,
             structure_dict=structure_energy_dict,
@@ -96,7 +96,7 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue(tp_collect_dict["volumes"][-1] > 68.5)
         self.assertTrue(tp_collect_dict["volumes"][0] < 66.8)
         self.assertTrue(tp_collect_dict["volumes"][0] > 66.7)
-        thermal_properties_dict = get_thermal_properties(
+        thermal_properties_dict = get_thermal_properties_for_quasi_harmonic_approximation(
             eng_internal_dict=eng_internal_dict,
             phonopy_dict=phonopy_dict,
             structure_dict=structure_energy_dict,
@@ -111,7 +111,7 @@ class TestPhonons(unittest.TestCase):
             thermal_properties_dict["temperatures"],
             thermal_properties_dict["volumes"],
         )
-        thermal_properties_dict = get_thermal_properties(
+        thermal_properties_dict = get_thermal_properties_for_quasi_harmonic_approximation(
             eng_internal_dict=eng_internal_dict,
             phonopy_dict=phonopy_dict,
             structure_dict=structure_energy_dict,

@@ -6,7 +6,7 @@ import unittest
 
 from atomistics.workflows.phonons.helper import (
     get_hesse_matrix,
-    get_thermal_properties,
+    get_thermal_properties_for_harmonic_approximation,
     get_tasks_for_harmonic_approximation,
     analyse_results_for_harmonic_approximation,
 )
@@ -63,7 +63,7 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue("group_velocities" in mesh_dict.keys())
         self.assertTrue("frequency_points" in dos_dict.keys())
         self.assertTrue("total_dos" in dos_dict.keys())
-        thermal_dict = get_thermal_properties(
+        thermal_dict = get_thermal_properties_for_harmonic_approximation(
             phonopy=phonopy_obj,
             t_min=1,
             t_max=1500,
@@ -100,7 +100,7 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue(thermal_dict["volumes"][-1] > 66.4)
         self.assertTrue(thermal_dict["volumes"][0] < 66.5)
         self.assertTrue(thermal_dict["volumes"][0] > 66.4)
-        thermal_dict = get_thermal_properties(
+        thermal_dict = get_thermal_properties_for_harmonic_approximation(
             phonopy=phonopy_obj,
             t_min=1,
             t_max=1500,
