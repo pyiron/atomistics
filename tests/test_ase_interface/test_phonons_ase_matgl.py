@@ -56,7 +56,7 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue("group_velocities" in mesh_dict.keys())
         self.assertTrue("frequency_points" in dos_dict.keys())
         self.assertTrue("total_dos" in dos_dict.keys())
-        dynmat_shape = get_dynamical_matrix().shape
+        dynmat_shape = get_dynamical_matrix(phonopy=phonopy_obj).shape
         self.assertEqual(dynmat_shape[0], 12)
         self.assertEqual(dynmat_shape[1], 12)
         hessmat_shape = get_hesse_matrix(force_constants=phonopy_obj.force_constants).shape
