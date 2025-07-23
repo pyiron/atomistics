@@ -50,9 +50,8 @@ def get_free_energy_classical(
 
 def get_thermal_properties_for_quasi_harmonic_approximation(
     eng_internal_dict: dict,
-    phonopy_dict: dict,
     task_dict: dict,
-    repeat_vector: np.ndarray,
+    qh_dict: dict,
     fit_type: str,
     fit_order: int,
     t_min: float = 1.0,
@@ -72,9 +71,8 @@ def get_thermal_properties_for_quasi_harmonic_approximation(
 
     Args:
         eng_internal_dict (dict): Dictionary of internal energies for different strains.
-        phonopy_dict (dict): Dictionary of Phonopy objects for different strains.
-        structure_dict (dict): Dictionary of structures for different strains.
-        repeat_vector (np.ndarray): Array of repeat vectors.
+        task_dict (dict): task dictionary with the structures
+        qh_dict (dict): quasi_harmonic dictionary containing the phonon_dict and the repeat_vector
         fit_type (str): Type of fitting for energy-volume curve.
         fit_order (int): Order of fitting for energy-volume curve.
         t_min (float, optional): Minimum sample temperature. Defaults to 1.0.
@@ -93,13 +91,13 @@ def get_thermal_properties_for_quasi_harmonic_approximation(
     """
     volume_lst = np.array(
         get_volume_lst(structure_dict=task_dict["calc_energy"])
-    ) / np.prod(repeat_vector)
+    ) / np.prod(qh_dict["repeat_vector"])
     eng_internal_dict = {
-        key: value / np.prod(repeat_vector) for key, value in eng_internal_dict.items()
+        key: value / np.prod(qh_dict["repeat_vector"]) for key, value in eng_internal_dict.items()
     }
     if quantum_mechanical:
         tp_collect_dict = _get_thermal_properties_quantum_mechanical(
-            phonopy_dict=phonopy_dict,
+            phonopy_dict=qh_dict["phonopy_dict"],
             t_min=t_min,
             t_max=t_max,
             t_step=t_step,
@@ -124,7 +122,7 @@ def get_thermal_properties_for_quasi_harmonic_approximation(
                 "band_indices!=None is incompatible to quantum_mechanical=False."
             )
         tp_collect_dict = _get_thermal_properties_classical(
-            phonopy_dict=phonopy_dict,
+            phonopy_dict=qh_dict["phonopy_dict"],
             t_min=t_min,
             t_max=t_max,
             t_step=t_step,
@@ -430,13 +428,12 @@ def get_tasks_for_quasi_harmonic_approximation(
         )
     return (
         {"calc_energy": structure_energy_dict, "calc_forces": structure_forces_dict},
-        phonopy_dict,
-        repeat_vector,
+        {"phonopy_dict": phonopy_dict, "repeat_vector": repeat_vector},
     )
 
 
 def analyse_results_for_quasi_harmonic_approximation(
-    phonopy_dict: dict,
+    qh_dict: dict,
     output_dict: dict,
     dos_mesh: int = 20,
     number_of_snapshots: int = None,
@@ -446,7 +443,7 @@ def analyse_results_for_quasi_harmonic_approximation(
     Analyze structures using Phonopy.
 
     Args:
-        phonopy_dict (dict): Dictionary of Phonopy objects for different strains.
+        qh_dict (dict): Dictionary of Phonopy objects for different strains.
         output_dict (dict): Dictionary of output data for different strains.
         dos_mesh (int, optional): Density of states mesh. Defaults to 20.
         number_of_snapshots (int, optional): Number of snapshots. Defaults to None.
@@ -466,7 +463,7 @@ def analyse_results_for_quasi_harmonic_approximation(
             number_of_snapshots=number_of_snapshots,
             output_keys=output_keys,
         )
-        for strain, phono in phonopy_dict.items()
+        for strain, phono in qh_dict["phonopy_dict"].items()
     }
     return eng_internal_dict, phonopy_collect_dict
 
@@ -517,9 +514,8 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         self._number_of_snapshots = number_of_snapshots
         self._factor = factor
         self._primitive_matrix = primitive_matrix
-        self._phonopy_dict = {}
         self._eng_internal_dict = None
-        self._repeat_vector = None
+        self._qh_dict = None
 
     def generate_structures(self) -> dict:
         """
@@ -528,11 +524,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         Returns:
             dict: A dictionary containing the calculated energies and forces for different strains.
         """
-        (
-            self._task_dict,
-            self._phonopy_dict,
-            self._repeat_vector,
-        ) = get_tasks_for_quasi_harmonic_approximation(
+        self._task_dict, self._qh_dict = get_tasks_for_quasi_harmonic_approximation(
             structure=self.structure,
             vol_range=self.vol_range,
             num_points=self.num_points,
@@ -563,7 +555,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         """
         self._eng_internal_dict, phonopy_collect_dict = (
             analyse_results_for_quasi_harmonic_approximation(
-                phonopy_dict=self._phonopy_dict,
+                qh_dict=self._qh_dict,
                 output_dict=output_dict,
                 dos_mesh=self._dos_mesh,
                 number_of_snapshots=self._number_of_snapshots,
@@ -611,9 +603,8 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             )
         return get_thermal_properties_for_quasi_harmonic_approximation(
             eng_internal_dict=self._eng_internal_dict,
-            phonopy_dict=self._phonopy_dict,
             task_dict=self._task_dict,
-            repeat_vector=self._repeat_vector,
+            qh_dict=self._qh_dict,
             fit_type=self.fit_type,
             fit_order=self.fit_order,
             t_min=t_min,
