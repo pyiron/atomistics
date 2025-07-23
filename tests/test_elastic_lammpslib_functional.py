@@ -42,7 +42,7 @@ class TestElastic(unittest.TestCase):
             task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
-        sym_dict, elastic_dict = analyse_results_for_elastic_matrix(
+        elastic_dict, sym_dict = analyse_results_for_elastic_matrix(
             output_dict=result_dict,
             sym_dict=sym_dict,
             fit_order=2,

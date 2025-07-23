@@ -24,7 +24,7 @@ class TestElastic(unittest.TestCase):
             sqrt_eta=True,
         )
         result_dict = evaluate_with_ase(task_dict=task_dict, ase_calculator=EMT())
-        sym_dict, elastic_dict = analyse_results_for_elastic_matrix(
+        elastic_dict, sym_dict = analyse_results_for_elastic_matrix(
             output_dict=result_dict,
             sym_dict=sym_dict,
             fit_order=2,

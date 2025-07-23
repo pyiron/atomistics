@@ -7,7 +7,10 @@ from ase.units import Ry
 import unittest
 
 from atomistics.calculators import evaluate_with_ase
-from atomistics.workflows import EnergyVolumeCurveWorkflow
+from atomistics.workflows import (
+    get_tasks_for_energy_volume_curve,
+    analyse_results_for_energy_volume_curve,
+)
 
 
 siesta_command = "siesta"
@@ -38,16 +41,13 @@ def validate_fitdict(fit_dict):
 )
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
-        workflow = EnergyVolumeCurveWorkflow(
-            structure=bulk("Al", a=4.15, cubic=True),
+        structure = bulk("Al", a=4.15, cubic=True)
+        task_dict = get_tasks_for_energy_volume_curve(
+            structure=structure,
             num_points=11,
-            fit_type="polynomial",
-            fit_order=3,
             vol_range=0.05,
             axes=("x", "y", "z"),
-            strains=None,
         )
-        task_dict = workflow.generate_structures()
         result_dict = evaluate_with_ase(
             task_dict=task_dict,
             ase_calculator=Siesta(
@@ -62,5 +62,10 @@ class TestEvCurve(unittest.TestCase):
                 pseudo_qualifier="",
             ),
         )
-        fit_dict = workflow.analyse_structures(output_dict=result_dict)
+        fit_dict = analyse_results_for_energy_volume_curve(
+            output_dict=result_dict,
+            task_dict=task_dict,
+            fit_type="polynomial",
+            fit_order=3,
+        )
         self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))

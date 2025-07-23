@@ -5,7 +5,11 @@ from ase.calculators.espresso import Espresso, EspressoProfile
 import unittest
 
 from atomistics.calculators import evaluate_with_ase
-from atomistics.workflows import EnergyVolumeCurveWorkflow
+from atomistics.workflows import (
+    get_thermal_properties_for_energy_volume_curve,
+    get_tasks_for_energy_volume_curve,
+    analyse_results_for_energy_volume_curve,
+)
 
 
 quantum_espresso_command = "pw.x"
@@ -36,16 +40,12 @@ def validate_fitdict(fit_dict):
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
         pseudopotentials = {"Al": "Al.pbe-n-kjpaw_psl.1.0.0.UPF"}
-        workflow = EnergyVolumeCurveWorkflow(
+        task_dict = get_tasks_for_energy_volume_curve(
             structure=bulk("Al", a=4.15, cubic=True),
             num_points=7,
-            fit_type="polynomial",
-            fit_order=3,
             vol_range=0.05,
             axes=("x", "y", "z"),
-            strains=None,
         )
-        task_dict = workflow.generate_structures()
         result_dict = evaluate_with_ase(
             task_dict=task_dict,
             ase_calculator=Espresso(
@@ -59,5 +59,10 @@ class TestEvCurve(unittest.TestCase):
                 ),
             ),
         )
-        fit_dict = workflow.analyse_structures(output_dict=result_dict)
+        fit_dict = analyse_results_for_energy_volume_curve(
+            output_dict=result_dict,
+            task_dict=task_dict,
+            fit_type="polynomial",
+            fit_order=3,
+        )
         self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))
