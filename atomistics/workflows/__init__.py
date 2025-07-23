@@ -4,7 +4,9 @@ from atomistics.workflows.elastic.workflow import (
     get_tasks_for_elastic_matrix,
 )
 from atomistics.workflows.elastic.workflow import ElasticMatrixWorkflow
-from atomistics.workflows.evcurve.debye import get_thermal_properties_for_energy_volume_curve
+from atomistics.workflows.evcurve.debye import (
+    get_thermal_properties_for_energy_volume_curve,
+)
 from atomistics.workflows.evcurve.helper import (
     analyse_results_for_energy_volume_curve,
     get_tasks_for_energy_volume_curve,
