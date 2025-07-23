@@ -4,7 +4,7 @@ from ase.build import bulk
 import numpy as np
 import unittest
 
-from atomistics.workflows.elastic.workflow import (
+from atomistics.workflows import (
     analyse_results_for_elastic_matrix,
     get_tasks_for_elastic_matrix,
 )

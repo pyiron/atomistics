@@ -1,11 +1,10 @@
 import os
 
 from ase.build import bulk
-import numpy as np
 from phonopy.units import VaspToTHz
 import unittest
 
-from atomistics.workflows.quasiharmonic import (
+from atomistics.workflows import (
     get_tasks_for_quasi_harmonic_approximation,
     analyse_results_for_quasi_harmonic_approximation,
     get_thermal_properties_for_quasi_harmonic_approximation,

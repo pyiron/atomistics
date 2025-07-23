@@ -4,10 +4,10 @@ from concurrent.futures import ProcessPoolExecutor
 from ase.build import bulk
 import unittest
 
-from atomistics.workflows.evcurve.debye import get_thermal_properties_for_energy_volume_curve
-from atomistics.workflows.evcurve.helper import (
+from atomistics.workflows import (
     analyse_results_for_energy_volume_curve,
     get_tasks_for_energy_volume_curve,
+    get_thermal_properties_for_energy_volume_curve,
 )
 from atomistics.shared.parallel import evaluate_with_parallel_executor
 

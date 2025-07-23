@@ -4,7 +4,7 @@ from ase.build import bulk
 from phonopy.units import VaspToTHz
 import unittest
 
-from atomistics.workflows.phonons.helper import (
+from atomistics.workflows import (
     get_hesse_matrix,
     get_thermal_properties_for_harmonic_approximation,
     get_tasks_for_harmonic_approximation,
