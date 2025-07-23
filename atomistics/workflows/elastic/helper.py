@@ -131,8 +131,11 @@ def analyse_results_for_elastic_matrix(
     sym_dict["strain_energy"] = strain_energy
     sym_dict["e0"] = ene0
     sym_dict["A2"] = A2
-    return sym_dict, ElasticProperties(elastic_matrix=elastic_matrix).to_dict(
-        output_keys=output_keys
+    return (
+        ElasticProperties(elastic_matrix=elastic_matrix).to_dict(
+            output_keys=output_keys
+        ),
+        sym_dict,
     )
 
 

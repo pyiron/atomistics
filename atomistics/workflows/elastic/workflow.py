@@ -71,7 +71,7 @@ class ElasticMatrixWorkflow(Workflow):
         Returns:
             dict: The calculated elastic matrix.
         """
-        self._data, elastic_dict = analyse_results_for_elastic_matrix(
+        elastic_dict, self._data = analyse_results_for_elastic_matrix(
             output_dict=output_dict,
             sym_dict=self._data,
             fit_order=self.fit_order,
