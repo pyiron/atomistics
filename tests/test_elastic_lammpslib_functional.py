@@ -5,8 +5,8 @@ import numpy as np
 import unittest
 
 from atomistics.workflows.elastic.workflow import (
-    analyse_structures_helper,
-    generate_structures_helper,
+    analyse_results_for_elastic_matrix,
+    generate_tasks_for_elastic_matrix,
 )
 
 try:
@@ -31,7 +31,7 @@ class TestElastic(unittest.TestCase):
             task_dict={"optimize_positions_and_volume": structure},
             potential_dataframe=df_pot_selected,
         )
-        sym_dict, structure_dict = generate_structures_helper(
+        sym_dict, structure_dict = generate_tasks_for_elastic_matrix(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             eps_range=0.005,
             num_of_point=5,
@@ -42,7 +42,7 @@ class TestElastic(unittest.TestCase):
             task_dict={"calc_energy": structure_dict},
             potential_dataframe=df_pot_selected,
         )
-        sym_dict, elastic_dict = analyse_structures_helper(
+        sym_dict, elastic_dict = analyse_results_for_elastic_matrix(
             output_dict=result_dict,
             sym_dict=sym_dict,
             fit_order=2,

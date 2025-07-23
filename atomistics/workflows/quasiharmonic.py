@@ -12,10 +12,10 @@ from atomistics.workflows.evcurve.helper import (
 )
 from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
 from atomistics.workflows.phonons.helper import (
-    analyse_structures_helper as analyse_structures_phonopy_helper,
+    analyse_results_for_harmonic_approximation as analyse_structures_phonopy_helper,
 )
 from atomistics.workflows.phonons.helper import (
-    generate_structures_helper as generate_structures_phonopy_helper,
+    generate_structures_for_harmonic_approximation as generate_structures_phonopy_helper,
 )
 from atomistics.workflows.phonons.helper import (
     get_supercell_matrix,
@@ -364,7 +364,7 @@ class QuasiHarmonicThermalProperties:
         return self._volumes_selected_lst
 
 
-def generate_structures_helper(
+def generate_structures_for_quasi_harmonic_approximation(
     structure: Atoms,
     vol_range: Optional[float] = None,
     num_points: Optional[int] = None,
@@ -431,7 +431,7 @@ def generate_structures_helper(
     return phonopy_dict, repeat_vector, structure_energy_dict, structure_forces_dict
 
 
-def analyse_structures_helper(
+def analyse_results_for_quasi_harmonic_approximation(
     phonopy_dict: dict,
     output_dict: dict,
     dos_mesh: int = 20,
@@ -529,7 +529,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             self._repeat_vector,
             structure_energy_dict,
             structure_forces_dict,
-        ) = generate_structures_helper(
+        ) = generate_structures_for_quasi_harmonic_approximation(
             structure=self.structure,
             vol_range=self.vol_range,
             num_points=self.num_points,
@@ -562,7 +562,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
                 - eng_internal_dict (dict): Dictionary of internal energies for different strains.
                 - phonopy_collect_dict (dict): Dictionary of Phonopy analysis results for different strains.
         """
-        self._eng_internal_dict, phonopy_collect_dict = analyse_structures_helper(
+        self._eng_internal_dict, phonopy_collect_dict = analyse_results_for_quasi_harmonic_approximation(
             phonopy_dict=self._phonopy_dict,
             output_dict=output_dict,
             dos_mesh=self._dos_mesh,

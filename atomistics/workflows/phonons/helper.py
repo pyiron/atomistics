@@ -260,7 +260,7 @@ def restore_magmoms(
     return structure
 
 
-def generate_structures_helper(
+def generate_structures_for_harmonic_approximation(
     structure: Atoms,
     primitive_matrix: Optional[np.ndarray] = None,
     displacement: float = 0.01,
@@ -308,7 +308,7 @@ def generate_structures_helper(
     return phonopy_obj, structure_dict
 
 
-def analyse_structures_helper(
+def analyse_results_for_harmonic_approximation(
     phonopy: Phonopy,
     output_dict: dict,
     dos_mesh: int = 20,

@@ -7,8 +7,8 @@ import unittest
 from atomistics.workflows.phonons.helper import (
     get_hesse_matrix,
     get_thermal_properties,
-    generate_structures_helper,
-    analyse_structures_helper,
+    generate_structures_for_harmonic_approximation,
+    analyse_results_for_harmonic_approximation,
 )
 
 try:
@@ -33,7 +33,7 @@ class TestPhonons(unittest.TestCase):
             task_dict={"optimize_positions_and_volume": structure},
             potential_dataframe=df_pot_selected,
         )
-        phonopy_obj, structure_dict = generate_structures_helper(
+        phonopy_obj, structure_dict = generate_structures_for_harmonic_approximation(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             primitive_matrix=None,
             number_of_snapshots=None,
@@ -45,7 +45,7 @@ class TestPhonons(unittest.TestCase):
             task_dict={"calc_forces": structure_dict},
             potential_dataframe=df_pot_selected,
         )
-        phonopy_dict = analyse_structures_helper(
+        phonopy_dict = analyse_results_for_harmonic_approximation(
             phonopy=phonopy_obj,
             output_dict=result_dict,
             dos_mesh=20,

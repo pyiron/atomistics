@@ -9,8 +9,8 @@ from atomistics.workflows.evcurve.debye import (
     get_thermal_properties,
 )
 from atomistics.workflows.evcurve.helper import (
-    analyse_structures_helper,
-    generate_structures_helper,
+    analyse_results_for_energy_volume_curve,
+    generate_structures_for_energy_volume_curve,
 )
 from atomistics.workflows.interface import Workflow
 
@@ -66,7 +66,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
             dict: The generated structures.
         """
         self._structure_dict = OrderedDict(
-            generate_structures_helper(
+            generate_structures_for_energy_volume_curve(
                 structure=self.structure,
                 vol_range=self.vol_range,
                 num_points=self.num_points,
@@ -89,7 +89,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         Returns:
             dict: The fit dictionary.
         """
-        self._fit_dict = analyse_structures_helper(
+        self._fit_dict = analyse_results_for_energy_volume_curve(
             output_dict=output_dict,
             structure_dict=self._structure_dict,
             fit_type=self.fit_type,
