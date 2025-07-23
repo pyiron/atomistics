@@ -5,7 +5,7 @@ from phonopy.units import VaspToTHz
 import unittest
 
 from atomistics.calculators import evaluate_with_ase
-from atomistics.workflows import optimize_volume, PhonopyWorkflow
+from atomistics.workflows import get_hesse_matrix, get_band_structure, get_dynamical_matrix, optimize_volume, get_tasks_for_harmonic_approximation, analyse_results_for_harmonic_approximation
 
 
 class TestPhonons(unittest.TestCase):
@@ -18,20 +18,21 @@ class TestPhonons(unittest.TestCase):
             ase_optimizer=LBFGS,
             ase_optimizer_kwargs={"fmax": 0.000001},
         )
-        workflow = PhonopyWorkflow(
+        task_dict, phonopy_obj = get_tasks_for_harmonic_approximation(
             structure=result_dict["structure_with_optimized_volume"],
             interaction_range=10,
             factor=VaspToTHz,
             displacement=0.01,
-            dos_mesh=20,
             primitive_matrix=None,
             number_of_snapshots=None,
         )
-        task_dict = workflow.generate_structures()
         result_dict = evaluate_with_ase(task_dict=task_dict, ase_calculator=EMT())
-        phonopy_dict = workflow.analyse_structures(output_dict=result_dict)
+        phonopy_dict = analyse_results_for_harmonic_approximation(
+            phonopy=phonopy_obj,
+            output_dict=result_dict,
+        )
         mesh_dict, dos_dict = phonopy_dict["mesh_dict"], phonopy_dict["total_dos_dict"]
-        self.assertEqual((324, 324), workflow.get_hesse_matrix().shape)
+        self.assertEqual((324, 324), get_hesse_matrix(force_constants=phonopy_obj.force_constants).shape)
         self.assertTrue("qpoints" in mesh_dict.keys())
         self.assertTrue("weights" in mesh_dict.keys())
         self.assertTrue("frequencies" in mesh_dict.keys())
@@ -39,13 +40,16 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue("group_velocities" in mesh_dict.keys())
         self.assertTrue("frequency_points" in dos_dict.keys())
         self.assertTrue("total_dos" in dos_dict.keys())
-        dynmat_shape = workflow.get_dynamical_matrix().shape
+        dynmat_shape = get_dynamical_matrix(phonopy=phonopy_obj, npoints=101).shape
         self.assertEqual(dynmat_shape[0], 12)
         self.assertEqual(dynmat_shape[1], 12)
-        hessmat_shape = workflow.get_hesse_matrix().shape
+        hessmat_shape = get_hesse_matrix(force_constants=phonopy_obj.force_constants).shape
         self.assertEqual(hessmat_shape[0], 324)
         self.assertEqual(hessmat_shape[1], 324)
-        band_dict = workflow.get_band_structure()
+        band_dict = get_band_structure(
+            phonopy=phonopy_obj,
+            npoints=101,
+        )
         self.assertEqual(len(band_dict['qpoints']), 6)
         for vec in band_dict['qpoints']:
             self.assertTrue(vec.shape[0] in [34, 39, 78, 101, 95])

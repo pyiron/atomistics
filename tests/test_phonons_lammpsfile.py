@@ -6,7 +6,15 @@ from ase.build import bulk
 from phonopy.units import VaspToTHz
 import unittest
 
-from atomistics.workflows import PhonopyWorkflow, optimize_positions_and_volume
+from atomistics.workflows import (
+    analyse_results_for_harmonic_approximation,
+    get_band_structure,
+    get_dynamical_matrix,
+    get_hesse_matrix,
+    get_tasks_for_harmonic_approximation,
+    get_thermal_properties_for_harmonic_approximation,
+    optimize_positions_and_volume,
+)
 
 try:
     from atomistics.calculators.lammps.potential import get_potential_by_name
@@ -51,25 +59,27 @@ class TestPhonons(unittest.TestCase):
             working_directory=self.working_directory,
             executable_function=evaluate_lammps,
         )
-        workflow = PhonopyWorkflow(
+        task_dict, phonopy_obj = get_tasks_for_harmonic_approximation(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             interaction_range=10,
             factor=VaspToTHz,
             displacement=0.01,
-            dos_mesh=20,
             primitive_matrix=None,
             number_of_snapshots=None,
         )
-        task_dict = workflow.generate_structures()
         result_dict = evaluate_with_lammpsfile(
             task_dict=task_dict,
             potential_dataframe=df_pot_selected,
             working_directory=self.working_directory,
             executable_function=evaluate_lammps,
         )
-        phonopy_dict = workflow.analyse_structures(output_dict=result_dict)
+        phonopy_dict = analyse_results_for_harmonic_approximation(
+            output_dict=result_dict,
+            phonopy=phonopy_obj,
+            dos_mesh=20,
+        )
         mesh_dict, dos_dict = phonopy_dict["mesh_dict"], phonopy_dict["total_dos_dict"]
-        self.assertEqual((324, 324), workflow.get_hesse_matrix().shape)
+        self.assertEqual((324, 324), get_hesse_matrix(force_constants=phonopy_obj.force_constants).shape)
         self.assertTrue("qpoints" in mesh_dict.keys())
         self.assertTrue("weights" in mesh_dict.keys())
         self.assertTrue("frequencies" in mesh_dict.keys())
@@ -77,7 +87,8 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue("group_velocities" in mesh_dict.keys())
         self.assertTrue("frequency_points" in dos_dict.keys())
         self.assertTrue("total_dos" in dos_dict.keys())
-        thermal_dict = workflow.get_thermal_properties(
+        thermal_dict = get_thermal_properties_for_harmonic_approximation(
+            phonopy=phonopy_obj,
             t_min=1,
             t_max=1500,
             t_step=50,
@@ -113,7 +124,8 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue(thermal_dict["volumes"][-1] > 66.4)
         self.assertTrue(thermal_dict["volumes"][0] < 66.5)
         self.assertTrue(thermal_dict["volumes"][0] > 66.4)
-        thermal_dict = workflow.get_thermal_properties(
+        thermal_dict = get_thermal_properties_for_harmonic_approximation(
+            phonopy=phonopy_obj,
             t_min=1,
             t_max=1500,
             t_step=50,
@@ -131,13 +143,13 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue(thermal_dict["free_energy"][0] > 0.1)
         self.assertTrue(thermal_dict["free_energy"][-1] < -2.6)
         self.assertTrue(thermal_dict["free_energy"][-1] > -2.7)
-        dynmat_shape = workflow.get_dynamical_matrix().shape
+        dynmat_shape = get_dynamical_matrix(phonopy=phonopy_obj, npoints=101).shape
         self.assertEqual(dynmat_shape[0], 12)
         self.assertEqual(dynmat_shape[1], 12)
-        hessmat_shape = workflow.get_hesse_matrix().shape
+        hessmat_shape = get_hesse_matrix(force_constants=phonopy_obj.force_constants).shape
         self.assertEqual(hessmat_shape[0], 324)
         self.assertEqual(hessmat_shape[1], 324)
-        band_dict = workflow.get_band_structure()
+        band_dict = get_band_structure(phonopy=phonopy_obj, npoints=101)
         self.assertEqual(len(band_dict['qpoints']), 6)
         for vec in band_dict['qpoints']:
             self.assertTrue(vec.shape[0] in [34, 39, 78, 101, 95])
