@@ -9,9 +9,9 @@ from atomistics.shared.output import OutputPhonons, OutputThermodynamic
 from atomistics.workflows.interface import Workflow
 from atomistics.workflows.phonons.helper import (
     analyse_results_for_harmonic_approximation,
-    get_tasks_for_harmonic_approximation,
     get_band_structure,
     get_hesse_matrix,
+    get_tasks_for_harmonic_approximation,
     get_thermal_properties,
     plot_band_structure,
     plot_dos,

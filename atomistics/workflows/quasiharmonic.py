@@ -15,10 +15,10 @@ from atomistics.workflows.phonons.helper import (
     analyse_results_for_harmonic_approximation as analyse_structures_phonopy_helper,
 )
 from atomistics.workflows.phonons.helper import (
-    get_tasks_for_harmonic_approximation as generate_structures_phonopy_helper,
+    get_supercell_matrix,
 )
 from atomistics.workflows.phonons.helper import (
-    get_supercell_matrix,
+    get_tasks_for_harmonic_approximation as generate_structures_phonopy_helper,
 )
 from atomistics.workflows.phonons.helper import (
     get_thermal_properties as get_thermal_properties_phonopy,
