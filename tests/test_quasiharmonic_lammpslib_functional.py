@@ -32,36 +32,30 @@ class TestPhonons(unittest.TestCase):
             task_dict={"optimize_positions_and_volume": structure},
             potential_dataframe=df_pot_selected,
         )
-        phonopy_dict, repeat_vector, structure_energy_dict, structure_forces_dict = (
-            get_tasks_for_quasi_harmonic_approximation(
-                structure=result_dict["structure_with_optimized_positions_and_volume"],
-                vol_range=0.05,
-                num_points=11,
-                strain_lst=None,
-                displacement=0.01,
-                number_of_snapshots=None,
-                interaction_range=10,
-                factor=VaspToTHz,
-            )
+        task_dict, qh_dict = get_tasks_for_quasi_harmonic_approximation(
+            structure=result_dict["structure_with_optimized_positions_and_volume"],
+            vol_range=0.05,
+            num_points=11,
+            strain_lst=None,
+            displacement=0.01,
+            number_of_snapshots=None,
+            interaction_range=10,
+            factor=VaspToTHz,
         )
         result_dict = evaluate_with_lammpslib(
-            task_dict={
-                "calc_energy": structure_energy_dict,
-                "calc_forces": structure_forces_dict,
-            },
+            task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
         eng_internal_dict, phonopy_collect_dict = analyse_results_for_quasi_harmonic_approximation(
-            phonopy_dict=phonopy_dict,
+            qh_dict=qh_dict,
             output_dict=result_dict,
             dos_mesh=20,
             number_of_snapshots=None,
         )
         tp_collect_dict = get_thermal_properties_for_quasi_harmonic_approximation(
             eng_internal_dict=eng_internal_dict,
-            phonopy_dict=phonopy_dict,
-            structure_dict=structure_energy_dict,
-            repeat_vector=repeat_vector,
+            task_dict=task_dict,
+            qh_dict=qh_dict,
             fit_type="polynomial",
             fit_order=3,
             t_min=1,
@@ -97,9 +91,8 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue(tp_collect_dict["volumes"][0] > 66.7)
         thermal_properties_dict = get_thermal_properties_for_quasi_harmonic_approximation(
             eng_internal_dict=eng_internal_dict,
-            phonopy_dict=phonopy_dict,
-            structure_dict=structure_energy_dict,
-            repeat_vector=repeat_vector,
+            task_dict=task_dict,
+            qh_dict=qh_dict,
             fit_type="polynomial",
             fit_order=3,
             temperatures=[100, 1000],
@@ -112,9 +105,8 @@ class TestPhonons(unittest.TestCase):
         )
         thermal_properties_dict = get_thermal_properties_for_quasi_harmonic_approximation(
             eng_internal_dict=eng_internal_dict,
-            phonopy_dict=phonopy_dict,
-            structure_dict=structure_energy_dict,
-            repeat_vector=repeat_vector,
+            task_dict=task_dict,
+            qh_dict=qh_dict,
             fit_type="polynomial",
             fit_order=3,
             temperatures=[100, 1000],

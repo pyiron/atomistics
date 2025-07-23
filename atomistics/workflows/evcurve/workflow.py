@@ -45,7 +45,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         self.fit_order = fit_order
         self.axes = axes
         self.strains = strains
-        self._structure_dict = OrderedDict()
+        self._task_dict = OrderedDict()
         self._fit_dict = {}
 
     @property
@@ -65,16 +65,14 @@ class EnergyVolumeCurveWorkflow(Workflow):
         Returns:
             dict: The generated structures.
         """
-        self._structure_dict = OrderedDict(
-            get_tasks_for_energy_volume_curve(
-                structure=self.structure,
-                vol_range=self.vol_range,
-                num_points=self.num_points,
-                strain_lst=self.strains,
-                axes=self.axes,
-            )
+        self._task_dict = get_tasks_for_energy_volume_curve(
+            structure=self.structure,
+            vol_range=self.vol_range,
+            num_points=self.num_points,
+            strain_lst=self.strains,
+            axes=self.axes,
         )
-        return {"calc_energy": self._structure_dict}
+        return self._task_dict
 
     def analyse_structures(
         self, output_dict: dict, output_keys: tuple = OutputEnergyVolumeCurve.keys()
@@ -91,7 +89,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         """
         self._fit_dict = analyse_results_for_energy_volume_curve(
             output_dict=output_dict,
-            structure_dict=self._structure_dict,
+            task_dict=self._task_dict,
             fit_type=self.fit_type,
             fit_order=self.fit_order,
             output_keys=output_keys,

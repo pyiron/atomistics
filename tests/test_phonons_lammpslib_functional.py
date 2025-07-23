@@ -33,7 +33,7 @@ class TestPhonons(unittest.TestCase):
             task_dict={"optimize_positions_and_volume": structure},
             potential_dataframe=df_pot_selected,
         )
-        phonopy_obj, structure_dict = get_tasks_for_harmonic_approximation(
+        task_dict, phonopy_obj = get_tasks_for_harmonic_approximation(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             primitive_matrix=None,
             number_of_snapshots=None,
@@ -42,7 +42,7 @@ class TestPhonons(unittest.TestCase):
             factor=VaspToTHz,
         )
         result_dict = evaluate_with_lammpslib(
-            task_dict={"calc_forces": structure_dict},
+            task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
         phonopy_dict = analyse_results_for_harmonic_approximation(

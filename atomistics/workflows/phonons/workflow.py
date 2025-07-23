@@ -75,7 +75,7 @@ class PhonopyWorkflow(Workflow):
         Returns:
             dict: The generated structures.
         """
-        self.phonopy, structure_dict = get_tasks_for_harmonic_approximation(
+        task_dict, self.phonopy = get_tasks_for_harmonic_approximation(
             structure=self.structure,
             primitive_matrix=self._primitive_matrix,
             displacement=self._displacement,
@@ -83,7 +83,7 @@ class PhonopyWorkflow(Workflow):
             interaction_range=self._interaction_range,
             factor=self._factor,
         )
-        return {"calc_forces": structure_dict}
+        return task_dict
 
     def analyse_structures(
         self, output_dict: dict, output_keys: tuple[str] = OutputPhonons.keys()

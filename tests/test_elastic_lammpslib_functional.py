@@ -31,7 +31,7 @@ class TestElastic(unittest.TestCase):
             task_dict={"optimize_positions_and_volume": structure},
             potential_dataframe=df_pot_selected,
         )
-        sym_dict, structure_dict = get_tasks_for_elastic_matrix(
+        task_dict, sym_dict = get_tasks_for_elastic_matrix(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             eps_range=0.005,
             num_of_point=5,
@@ -39,7 +39,7 @@ class TestElastic(unittest.TestCase):
             sqrt_eta=True,
         )
         result_dict = evaluate_with_lammpslib(
-            task_dict={"calc_energy": structure_dict},
+            task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
         sym_dict, elastic_dict = analyse_results_for_elastic_matrix(

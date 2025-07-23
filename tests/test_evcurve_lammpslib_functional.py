@@ -32,7 +32,7 @@ class TestEvCurve(unittest.TestCase):
             task_dict={"optimize_positions_and_volume": structure},
             potential_dataframe=df_pot_selected,
         )
-        structure_dict = get_tasks_for_energy_volume_curve(
+        task_dict = get_tasks_for_energy_volume_curve(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             vol_range=0.05,
             num_points=11,
@@ -40,12 +40,12 @@ class TestEvCurve(unittest.TestCase):
             axes=("x", "y", "z"),
         )
         result_dict = evaluate_with_lammpslib(
-            task_dict={"calc_energy": structure_dict},
+            task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
         fit_dict = analyse_results_for_energy_volume_curve(
             output_dict=result_dict,
-            structure_dict=structure_dict,
+            task_dict=task_dict,
             fit_type="polynomial",
             fit_order=3,
         )

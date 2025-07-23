@@ -20,7 +20,7 @@ def get_tasks_for_elastic_matrix(
     num_of_point: int,
     zero_strain_job_name: str = "s_e_0",
     sqrt_eta: bool = True,
-) -> tuple[dict[str, int], dict[str, ase.atoms.Atoms]]:
+) -> tuple[dict[str, dict[str, ase.atoms.Atoms]], dict[str, int]]:
     """
     Generate structures for elastic analysis.
 
@@ -32,7 +32,7 @@ def get_tasks_for_elastic_matrix(
         sqrt_eta (bool, optional): Whether to take the square root of the eta matrix. Defaults to True.
 
     Returns:
-        Tuple[Dict[str, int], Dict[str, ase.atoms.Atoms]]: A tuple containing the symmetry dictionary and the structure dictionary.
+        Dict[str, Dict[str, ase.atoms.Atoms]]], Tuple[Dict[str, int]: A tuple containing the symmetry dictionary and the structure dictionary.
     """
     SGN, v0, LC, Lag_strain_list, epss = symmetry_analysis(
         structure=structure,
@@ -96,7 +96,7 @@ def get_tasks_for_elastic_matrix(
 
             structure_dict[_subjob_name(i=lag_strain, eps=eps)] = nstruct
 
-    return sym_dict, structure_dict
+    return {"calc_energy": structure_dict}, sym_dict
 
 
 def analyse_results_for_elastic_matrix(
