@@ -267,7 +267,7 @@ def get_tasks_for_harmonic_approximation(
     number_of_snapshots: Optional[int] = None,
     interaction_range: float = 10.0,
     factor: float = VaspToTHz,
-) -> tuple[Phonopy, dict[int, Atoms]]:
+) -> tuple[dict[int, Atoms], Phonopy]:
     """
     Generate structures with displacements for phonon calculations.
 
@@ -280,7 +280,7 @@ def get_tasks_for_harmonic_approximation(
         factor (float, optional): The conversion factor. Defaults to VaspToTHz.
 
     Returns:
-        Tuple[Phonopy, Dict[int, Atoms]]: The Phonopy object and the dictionary of structures.
+        Tuple[Dict[int, Atoms], Phonopy]: The Phonopy object and the dictionary of structures.
     """
     unitcell = structuretoolkit.common.atoms_to_phonopy(structure)
     phonopy_obj = Phonopy(
