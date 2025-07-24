@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Type
-
 import numpy as np
 from ase import units
 from ase.atoms import Atoms
@@ -150,9 +148,9 @@ def evaluate_with_ase(
     structure: Atoms,
     tasks: list[TaskName],
     ase_calculator: ASECalculator,
-    ase_optimizer: Type[Optimizer] = None,
+    ase_optimizer: type[Optimizer] = None,
     ase_optimizer_kwargs: dict = None,
-    filter_class: Type[Filter] = UnitCellFilter,
+    filter_class: type[Filter] = UnitCellFilter,
 ) -> dict:
     """
     Evaluate tasks using ASE calculator.
@@ -274,7 +272,7 @@ def calc_molecular_dynamics_langevin_with_ase(
 def optimize_positions_with_ase(
     structure: Atoms,
     ase_calculator: ASECalculator,
-    ase_optimizer: Type[Optimizer],
+    ase_optimizer: type[Optimizer],
     ase_optimizer_kwargs: dict,
 ) -> Atoms:
     """
@@ -299,9 +297,9 @@ def optimize_positions_with_ase(
 def optimize_positions_and_volume_with_ase(
     structure: Atoms,
     ase_calculator: ASECalculator,
-    ase_optimizer: Type[Optimizer],
+    ase_optimizer: type[Optimizer],
     ase_optimizer_kwargs: dict,
-    filter_class: Type[Filter] = UnitCellFilter,
+    filter_class: type[Filter] = UnitCellFilter,
 ) -> Atoms:
     """
     Optimize the atomic positions and cell volume of the structure using ASE optimizer.
@@ -326,9 +324,9 @@ def optimize_positions_and_volume_with_ase(
 def optimize_volume_with_ase(
     structure: Atoms,
     ase_calculator: ASECalculator,
-    ase_optimizer: Type[Optimizer],
+    ase_optimizer: type[Optimizer],
     ase_optimizer_kwargs: dict,
-    filter_class: Type[Filter] = UnitCellFilter,
+    filter_class: type[Filter] = UnitCellFilter,
     hydrostatic_strain: bool = True,
 ) -> Atoms:
     """
