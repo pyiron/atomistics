@@ -465,8 +465,8 @@ def plot_dos(
     """
     import matplotlib.pyplot as plt
 
-    dos_energies = phonopy_dict["total_dos_dict"]["frequency_points"],
-    dos_total = phonopy_dict["total_dos_dict"]["total_dos"],
+    dos_energies = (phonopy_dict["total_dos_dict"]["frequency_points"],)
+    dos_total = (phonopy_dict["total_dos_dict"]["total_dos"],)
     if axis is None:
         _, axis = plt.subplots(1, 1)
     axis.plot(dos_energies, dos_total, *args, **kwargs)
