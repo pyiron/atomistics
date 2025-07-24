@@ -1,5 +1,3 @@
-from notebooks.free_energy_calculation import task_dict
-
 # atomistics
 [![Pipeline](https://github.com/pyiron/atomistics/actions/workflows/pipeline.yml/badge.svg)](https://github.com/pyiron/atomistics/actions/workflows/pipeline.yml)
 [![codecov](https://codecov.io/gh/pyiron/atomistics/graph/badge.svg?token=8LET56AS45)](https://codecov.io/gh/pyiron/atomistics)
