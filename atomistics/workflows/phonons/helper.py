@@ -418,7 +418,7 @@ def get_supercell_matrix(interaction_range: float, cell: np.ndarray) -> np.ndarr
     return np.eye(3) * supercell_range
 
 
-def get_hesse_matrix(force_constants: np.ndarray) -> np.ndarray:
+def get_hesse_matrix(phonopy: Phonopy) -> np.ndarray:
     """
     Calculate the Hesse matrix from the force constants.
 
@@ -433,10 +433,10 @@ def get_hesse_matrix(force_constants: np.ndarray) -> np.ndarray:
         / scipy.constants.physical_constants["Bohr radius"][0] ** 2
         * scipy.constants.angstrom**2
     )
-    force_shape = np.shape(force_constants)
+    force_shape = np.shape(phonopy.force_constants)
     force_reshape = force_shape[0] * force_shape[2]
     return (
-        np.transpose(force_constants, (0, 2, 1, 3)).reshape(
+        np.transpose(phonopy.force_constants, (0, 2, 1, 3)).reshape(
             (force_reshape, force_reshape)
         )
         / unit_conversion
@@ -444,8 +444,7 @@ def get_hesse_matrix(force_constants: np.ndarray) -> np.ndarray:
 
 
 def plot_dos(
-    dos_energies: np.ndarray,
-    dos_total: np.ndarray,
+    phonopy_dict: dict,
     *args,
     axis: Optional[Any] = None,
     **kwargs,
@@ -467,6 +466,8 @@ def plot_dos(
     """
     import matplotlib.pyplot as plt
 
+    dos_energies = phonopy_dict["total_dos_dict"]["frequency_points"],
+    dos_total = phonopy_dict["total_dos_dict"]["total_dos"],
     if axis is None:
         _, axis = plt.subplots(1, 1)
     axis.plot(dos_energies, dos_total, *args, **kwargs)
@@ -527,9 +528,7 @@ def get_band_structure(
 
 
 def plot_band_structure(
-    results: dict,
-    path_connections: list[str],
-    labels: str,
+    phonopy: Phonopy,
     axis: Optional[Any] = None,
     *args,
     label: Optional[str] = None,
@@ -556,6 +555,10 @@ def plot_band_structure(
     """
     import matplotlib.pyplot as plt
 
+    results = phonopy.get_band_structure_dict()
+    # HACK: strictly speaking this breaks phonopy API and could bite us
+    path_connections = phonopy._band_structure.path_connections
+    labels = phonopy._band_structure.labels
     if axis is None:
         _, axis = plt.subplots(1, 1)
 
