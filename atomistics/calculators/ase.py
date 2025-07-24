@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Type
+
 import numpy as np
 from ase import units
 from ase.atoms import Atoms
@@ -11,9 +13,8 @@ from ase.md.langevin import Langevin
 from ase.md.npt import NPT
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.optimize.optimize import Optimizer
-from typing import Type
 
-from atomistics.calculators.interface import get_quantities_from_tasks, TaskName
+from atomistics.calculators.interface import TaskName, get_quantities_from_tasks
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.shared.output import (
     OutputMolecularDynamics,
