@@ -423,7 +423,7 @@ def get_hesse_matrix(phonopy: Phonopy) -> np.ndarray:
     Calculate the Hesse matrix from the force constants.
 
     Args:
-        force_constants (np.ndarray): The force constants.
+        phonopy (Phonopy): The Phonopy object.
 
     Returns:
         np.ndarray: The Hesse matrix.
@@ -455,8 +455,7 @@ def plot_dos(
     If "label" is present in `kwargs` a legend is added to the plot automatically.
 
     Args:
-        dos_energies (np.ndarray): The array of DOS energies.
-        dos_total (np.ndarray): The array of total DOS.
+        phonopy_dict (dict): The calculated phonon properties.
         axis (optional): matplotlib axis to use, if None create a new one
         *args: passed to `axis.plot`
         **kwargs: passed to `axis.plot`
@@ -542,9 +541,7 @@ def plot_band_structure(
     If `label` is passed a legend is added automatically.
 
     Args:
-        results (dict): The results from :meth:`.get_band_structure`.
-        path_connections (list[str]): List of path connections.
-        labels (str): Labels for the bandpath.
+        phonopy (Phonopy): The Phonopy object.
         axis (matplotlib.axes._subplots.AxesSubplot, optional): Plot to this axis, if not given a new one is created.
         *args: Passed through to matplotlib.pyplot.plot when plotting the dispersion.
         label (str, optional): Label for dispersion line.
