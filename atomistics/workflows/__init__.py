@@ -50,6 +50,8 @@ phonopy_workflows: list[str] = [
     "get_tasks_for_quasi_harmonic_approximation",
     "analyse_results_for_quasi_harmonic_approximation",
     "get_thermal_properties_for_quasi_harmonic_approximation",
+    "plot_band_structure",
+    "plot_dos",
 ]
 
 
@@ -61,6 +63,8 @@ try:  # in case phonopy is not installed
         get_hesse_matrix,
         get_tasks_for_harmonic_approximation,
         get_thermal_properties_for_harmonic_approximation,
+        plot_band_structure,
+        plot_dos,
     )
     from atomistics.workflows.phonons.workflow import PhonopyWorkflow
     from atomistics.workflows.quasiharmonic import (
