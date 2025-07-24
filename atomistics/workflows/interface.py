@@ -8,16 +8,16 @@ class Workflow(ABC):
         Generate structures for the workflow.
 
         Returns:
-            A dictionary containing the generated structures.
+            dict: A dictionary containing the generated structures.
         """
         raise NotImplementedError
 
     @abstractmethod
-    def analyse_structures(self, output_dict: dict):
+    def analyse_structures(self, output_dict: dict) -> dict:
         """
         Analyse the generated structures.
 
         Args:
-            output_dict: A dictionary containing the generated structures.
+            output_dict (dict): A dictionary containing the generated structures.
         """
         raise NotImplementedError

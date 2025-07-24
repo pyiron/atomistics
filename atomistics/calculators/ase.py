@@ -11,8 +11,9 @@ from ase.md.langevin import Langevin
 from ase.md.npt import NPT
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.optimize.optimize import Optimizer
+from typing import Type
 
-from atomistics.calculators.interface import get_quantities_from_tasks
+from atomistics.calculators.interface import get_quantities_from_tasks, TaskName
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.shared.output import (
     OutputMolecularDynamics,
@@ -146,11 +147,11 @@ class ASEExecutor:
 @as_task_dict_evaluator
 def evaluate_with_ase(
     structure: Atoms,
-    tasks: list[str],
+    tasks: list[TaskName],
     ase_calculator: ASECalculator,
-    ase_optimizer: Optimizer = None,
+    ase_optimizer: Type[Optimizer] = None,
     ase_optimizer_kwargs: dict = None,
-    filter_class: Filter = UnitCellFilter,
+    filter_class: Type[Filter] = UnitCellFilter,
 ) -> dict:
     """
     Evaluate tasks using ASE calculator.
@@ -159,9 +160,9 @@ def evaluate_with_ase(
         structure (Atoms): The ASE structure object.
         tasks (list[TaskName]): List of tasks to evaluate.
         ase_calculator (ASECalculator): The ASE calculator object.
-        ase_optimizer (Optimizer, optional): The ASE optimizer object. Defaults to None.
+        ase_optimizer (Type[Optimizer], optional): The ASE optimizer object. Defaults to None.
         ase_optimizer_kwargs (dict, optional): Keyword arguments for the ASE optimizer. Defaults to {}.
-        filter_class (Filter): The ASE filter class to use for filtering during structure optimization.
+        filter_class (Type[Filter]): The ASE filter class to use for filtering during structure optimization.
 
     Returns:
         dict: Dictionary containing the results of the evaluated tasks.
@@ -240,18 +241,18 @@ def calc_molecular_dynamics_langevin_with_ase(
     """
     Perform molecular dynamics simulation using the Langevin algorithm with ASE.
 
-    Parameters:
-    - structure (Atoms): The atomic structure to simulate.
-    - ase_calculator (Calculator): The ASE calculator to use for energy and force calculations.
-    - run (int): The number of MD steps to perform.
-    - thermo (int): The interval at which to print thermodynamic properties.
-    - timestep (float): The time step size in fs.
-    - temperature (float): The desired temperature in Kelvin.
-    - friction (float): The friction coefficient for the Langevin thermostat.
-    - output_keys (List[str]): The keys of the properties to include in the output dictionary.
+    Args:
+        structure (Atoms): The atomic structure to simulate.
+        ase_calculator (ASECalculator): The ASE calculator to use for energy and force calculations.
+        run (int): The number of MD steps to perform.
+        thermo (int): The interval at which to print thermodynamic properties.
+        timestep (float): The time step size in fs.
+        temperature (float): The desired temperature in Kelvin.
+        friction (float): The friction coefficient for the Langevin thermostat.
+        output_keys (list[str]): The keys of the properties to include in the output dictionary.
 
     Returns:
-    - dict: A dictionary containing the calculated properties at each MD step.
+        dict: A dictionary containing the calculated properties at each MD step.
     """
     return _calc_molecular_dynamics_with_ase(
         dyn=Langevin(
@@ -272,7 +273,7 @@ def calc_molecular_dynamics_langevin_with_ase(
 def optimize_positions_with_ase(
     structure: Atoms,
     ase_calculator: ASECalculator,
-    ase_optimizer: Optimizer,
+    ase_optimizer: Type[Optimizer],
     ase_optimizer_kwargs: dict,
 ) -> Atoms:
     """
@@ -297,9 +298,9 @@ def optimize_positions_with_ase(
 def optimize_positions_and_volume_with_ase(
     structure: Atoms,
     ase_calculator: ASECalculator,
-    ase_optimizer: Optimizer,
+    ase_optimizer: Type[Optimizer],
     ase_optimizer_kwargs: dict,
-    filter_class: Filter = UnitCellFilter,
+    filter_class: Type[Filter] = UnitCellFilter,
 ) -> Atoms:
     """
     Optimize the atomic positions and cell volume of the structure using ASE optimizer.
@@ -324,9 +325,9 @@ def optimize_positions_and_volume_with_ase(
 def optimize_volume_with_ase(
     structure: Atoms,
     ase_calculator: ASECalculator,
-    ase_optimizer: Optimizer,
+    ase_optimizer: Type[Optimizer],
     ase_optimizer_kwargs: dict,
-    filter_class: Filter = UnitCellFilter,
+    filter_class: Type[Filter] = UnitCellFilter,
     hydrostatic_strain: bool = True,
 ) -> Atoms:
     """
@@ -387,7 +388,7 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
         ttime (float, optional): The total time for the simulation in fs. Defaults to 100 * units.fs.
         pfactor (float, optional): The pressure factor in GPa * fs^2. Defaults to 2e6 * units.GPa * (units.fs**2).
         externalstress (np.ndarray, optional): The external stress tensor in bar. Defaults to np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar.
-        output_keys (List[str], optional): The keys of the properties to include in the output dictionary. Defaults to OutputThermalExpansion.keys().
+        output_keys (list[str], optional): The keys of the properties to include in the output dictionary. Defaults to OutputThermalExpansion.keys().
 
     Returns:
         dict: A dictionary containing the calculated thermal expansion properties.
@@ -444,7 +445,7 @@ def calc_molecular_dynamics_npt_with_ase(
         pfactor (float, optional): The pressure factor in GPa * fs^2. Defaults to 2e6 * units.GPa * (units.fs**2).
         temperature (float, optional): The desired temperature in Kelvin. Defaults to 300.0.
         externalstress (np.ndarray, optional): The external stress tensor in bar. Defaults to np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar.
-        output_keys (List[str], optional): The keys of the properties to include in the output dictionary. Defaults to OutputMolecularDynamics.keys().
+        output_keys (list[str], optional): The keys of the properties to include in the output dictionary. Defaults to OutputMolecularDynamics.keys().
 
     Returns:
         dict: A dictionary containing the calculated properties at each MD step.
@@ -486,13 +487,13 @@ def _calc_molecular_dynamics_with_ase(
     Perform molecular dynamics simulation using ASE.
 
     Args:
-        dyn: The ASE dynamics object.
+        dyn (ase.md.MDLogger): The ASE dynamics object.
         structure (Atoms): The atomic structure to simulate.
         ase_calculator (ASECalculator): The ASE calculator to use for energy and force calculations.
         temperature (float): The desired temperature in Kelvin.
         run (int): The number of MD steps to perform.
         thermo (int): The interval at which to print thermodynamic properties.
-        output_keys (List[str]): The keys of the properties to include in the output dictionary.
+        output_keys (list[str]): The keys of the properties to include in the output dictionary.
 
     Returns:
         dict: A dictionary containing the calculated properties at each MD step.
