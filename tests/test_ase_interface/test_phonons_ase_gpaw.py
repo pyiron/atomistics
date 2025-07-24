@@ -37,7 +37,7 @@ class TestPhonons(unittest.TestCase):
             number_of_snapshots=None,
         )
         mesh_dict, dos_dict = phonopy_dict["mesh_dict"], phonopy_dict["total_dos_dict"]
-        self.assertEqual((324, 324), get_hesse_matrix(force_constants=phonopy_obj.force_constants).shape)
+        self.assertEqual((324, 324), get_hesse_matrix(phonopy=phonopy_obj).shape)
         self.assertTrue("qpoints" in mesh_dict.keys())
         self.assertTrue("weights" in mesh_dict.keys())
         self.assertTrue("frequencies" in mesh_dict.keys())
@@ -48,7 +48,7 @@ class TestPhonons(unittest.TestCase):
         dynmat_shape = get_dynamical_matrix(phonopy=phonopy_obj).shape
         self.assertEqual(dynmat_shape[0], 12)
         self.assertEqual(dynmat_shape[1], 12)
-        hessmat_shape = get_hesse_matrix(force_constants=phonopy_obj.force_constants).shape
+        hessmat_shape = get_hesse_matrix(phonopy=phonopy_obj).shape
         self.assertEqual(hessmat_shape[0], 324)
         self.assertEqual(hessmat_shape[1], 324)
         band_dict = get_band_structure(phonopy=phonopy_obj, npoints=101)

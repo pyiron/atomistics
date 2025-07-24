@@ -204,7 +204,7 @@ class PhonopyWorkflow(Workflow):
         Returns:
             np.ndarray: The Hesse matrix.
         """
-        return get_hesse_matrix(force_constants=self.phonopy.force_constants)
+        return get_hesse_matrix(phonopy=self.phonopy)
 
     def get_band_structure(
         self,
@@ -243,18 +243,8 @@ class PhonopyWorkflow(Workflow):
         Returns:
             [type]: [description]
         """
-        try:
-            results = self.phonopy.get_band_structure_dict()
-        except RuntimeError:
-            results = self.get_band_structure()
-
-        # HACK: strictly speaking this breaks phonopy API and could bite us
-        path_connections = self.phonopy._band_structure.path_connections
-        labels = self.phonopy._band_structure.labels
         return plot_band_structure(
-            results=results,
-            path_connections=path_connections,
-            labels=labels,
+            phonopy=self.phonopy,
             axis=axis,
             *args,
             label=label,
@@ -272,8 +262,7 @@ class PhonopyWorkflow(Workflow):
             [type]: [description]
         """
         return plot_dos(
-            dos_energies=self._phonopy_dict["total_dos_dict"]["frequency_points"],
-            dos_total=self._phonopy_dict["total_dos_dict"]["total_dos"],
+            phonopy_dict=self._phonopy_dict,
             *args,
             axis=axis,
             **kwargs,

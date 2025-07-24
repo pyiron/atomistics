@@ -72,7 +72,7 @@ class TestLangevin(unittest.TestCase):
             result_dict = evaluate_with_hessian(
                 task_dict=task_dict,
                 structure_equilibrium=structure,
-                force_constants=get_hesse_matrix(force_constants=phonopy_obj.force_constants),
+                force_constants=get_hesse_matrix(phonopy=phonopy_obj),
                 bulk_modulus=0,
                 shear_modulus=0,
             )
