@@ -12,7 +12,7 @@ from ase.md.npt import NPT
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.optimize.optimize import Optimizer
 
-from atomistics.calculators.interface import TaskName, get_quantities_from_tasks
+from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.shared.output import (
     OutputMolecularDynamics,
@@ -146,7 +146,7 @@ class ASEExecutor:
 @as_task_dict_evaluator
 def evaluate_with_ase(
     structure: Atoms,
-    tasks: list[TaskName],
+    tasks: list,
     ase_calculator: ASECalculator,
     ase_optimizer: type[Optimizer] = None,
     ase_optimizer_kwargs: dict = None,
@@ -157,7 +157,7 @@ def evaluate_with_ase(
 
     Args:
         structure (Atoms): The ASE structure object.
-        tasks (list[TaskName]): List of tasks to evaluate.
+        tasks (list): List of tasks to evaluate.
         ase_calculator (ASECalculator): The ASE calculator object.
         ase_optimizer (Type[Optimizer], optional): The ASE optimizer object. Defaults to None.
         ase_optimizer_kwargs (dict, optional): Keyword arguments for the ASE optimizer. Defaults to {}.
