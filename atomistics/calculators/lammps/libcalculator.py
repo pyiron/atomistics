@@ -154,11 +154,12 @@ def calc_molecular_dynamics_nvt_with_lammpslib(
     timestep: float = 0.001,
     seed: int = 4928459,
     dist: Optional[str] = "gaussian",
+    disable_initial_velocity: bool = False,
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ) -> dict:
-    if dist is not None:
+    if not disable_initial_velocity:
         init_str = (
             LAMMPS_THERMO_STYLE
             + "\n"
@@ -230,12 +231,13 @@ def calc_molecular_dynamics_npt_with_lammpslib(
     Pstop: float = 0.0,
     Pdamp: float = 1.0,
     seed: int = 4928459,
-    dist: Optional[str] = "gaussian",
+    dist: str = "gaussian",
+    disable_initial_velocity: bool = False,
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ) -> dict:
-    if dist is not None:
+    if not disable_initial_velocity:
         init_str = (
             LAMMPS_THERMO_STYLE
             + "\n"
@@ -311,12 +313,13 @@ def calc_molecular_dynamics_nph_with_lammpslib(
     Pstop: float = 0.0,
     Pdamp: float = 1.0,
     seed: int = 4928459,
-    dist: Optional[str] = "gaussian",
+    dist: str = "gaussian",
+    disable_initial_velocity: bool = False,
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ) -> dict:
-    if dist is not None:
+    if not disable_initial_velocity:
         init_str = (
             LAMMPS_THERMO_STYLE
             + "\n"
@@ -386,11 +389,12 @@ def calc_molecular_dynamics_langevin_with_lammpslib(
     Tdamp: float = 0.1,
     seed: int = 4928459,
     dist: str = "gaussian",
+    disable_initial_velocity: bool = False,
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ):
-    if dist is not None:
+    if not disable_initial_velocity:
         init_str = (
             LAMMPS_THERMO_STYLE
             + "\n"
