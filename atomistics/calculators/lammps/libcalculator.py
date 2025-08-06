@@ -160,15 +160,15 @@ def calc_molecular_dynamics_nvt_with_lammpslib(
 ) -> dict:
     if dist is not None:
         init_str = (
-                LAMMPS_THERMO_STYLE
-                + "\n"
-                + LAMMPS_TIMESTEP
-                + "\n"
-                + LAMMPS_THERMO
-                + "\n"
-                + LAMMPS_VELOCITY
-                + "\n"
-                + LAMMPS_ENSEMBLE_NVT
+            LAMMPS_THERMO_STYLE
+            + "\n"
+            + LAMMPS_TIMESTEP
+            + "\n"
+            + LAMMPS_THERMO
+            + "\n"
+            + LAMMPS_VELOCITY
+            + "\n"
+            + LAMMPS_ENSEMBLE_NVT
         )
         input_template = Template(init_str).render(
             thermo=thermo,
@@ -182,13 +182,13 @@ def calc_molecular_dynamics_nvt_with_lammpslib(
         )
     else:
         init_str = (
-                LAMMPS_THERMO_STYLE
-                + "\n"
-                + LAMMPS_TIMESTEP
-                + "\n"
-                + LAMMPS_THERMO
-                + "\n"
-                + LAMMPS_ENSEMBLE_NVT
+            LAMMPS_THERMO_STYLE
+            + "\n"
+            + LAMMPS_TIMESTEP
+            + "\n"
+            + LAMMPS_THERMO
+            + "\n"
+            + LAMMPS_ENSEMBLE_NVT
         )
         input_template = Template(init_str).render(
             thermo=thermo,
@@ -237,15 +237,15 @@ def calc_molecular_dynamics_npt_with_lammpslib(
 ) -> dict:
     if dist is not None:
         init_str = (
-                LAMMPS_THERMO_STYLE
-                + "\n"
-                + LAMMPS_TIMESTEP
-                + "\n"
-                + LAMMPS_THERMO
-                + "\n"
-                + LAMMPS_VELOCITY
-                + "\n"
-                + LAMMPS_ENSEMBLE_NPT
+            LAMMPS_THERMO_STYLE
+            + "\n"
+            + LAMMPS_TIMESTEP
+            + "\n"
+            + LAMMPS_THERMO
+            + "\n"
+            + LAMMPS_VELOCITY
+            + "\n"
+            + LAMMPS_ENSEMBLE_NPT
         )
         input_template = Template(init_str).render(
             thermo=thermo,
@@ -262,13 +262,13 @@ def calc_molecular_dynamics_npt_with_lammpslib(
         )
     else:
         init_str = (
-                LAMMPS_THERMO_STYLE
-                + "\n"
-                + LAMMPS_TIMESTEP
-                + "\n"
-                + LAMMPS_THERMO
-                + "\n"
-                + LAMMPS_ENSEMBLE_NPT
+            LAMMPS_THERMO_STYLE
+            + "\n"
+            + LAMMPS_TIMESTEP
+            + "\n"
+            + LAMMPS_THERMO
+            + "\n"
+            + LAMMPS_ENSEMBLE_NPT
         )
         input_template = Template(init_str).render(
             thermo=thermo,
@@ -318,15 +318,15 @@ def calc_molecular_dynamics_nph_with_lammpslib(
 ) -> dict:
     if dist is not None:
         init_str = (
-                LAMMPS_THERMO_STYLE
-                + "\n"
-                + LAMMPS_TIMESTEP
-                + "\n"
-                + LAMMPS_THERMO
-                + "\n"
-                + LAMMPS_VELOCITY
-                + "\n"
-                + LAMMPS_ENSEMBLE_NPH
+            LAMMPS_THERMO_STYLE
+            + "\n"
+            + LAMMPS_TIMESTEP
+            + "\n"
+            + LAMMPS_THERMO
+            + "\n"
+            + LAMMPS_VELOCITY
+            + "\n"
+            + LAMMPS_ENSEMBLE_NPH
         )
         input_template = Template(init_str).render(
             thermo=thermo,
@@ -340,13 +340,13 @@ def calc_molecular_dynamics_nph_with_lammpslib(
         )
     else:
         init_str = (
-                LAMMPS_THERMO_STYLE
-                + "\n"
-                + LAMMPS_TIMESTEP
-                + "\n"
-                + LAMMPS_THERMO
-                + "\n"
-                + LAMMPS_ENSEMBLE_NPH
+            LAMMPS_THERMO_STYLE
+            + "\n"
+            + LAMMPS_TIMESTEP
+            + "\n"
+            + LAMMPS_THERMO
+            + "\n"
+            + LAMMPS_ENSEMBLE_NPH
         )
         input_template = Template(init_str).render(
             thermo=thermo,
@@ -392,17 +392,17 @@ def calc_molecular_dynamics_langevin_with_lammpslib(
 ):
     if dist is not None:
         init_str = (
-                LAMMPS_THERMO_STYLE
-                + "\n"
-                + LAMMPS_TIMESTEP
-                + "\n"
-                + LAMMPS_THERMO
-                + "\n"
-                + LAMMPS_VELOCITY
-                + "\n"
-                + LAMMPS_NVE
-                + "\n"
-                + LAMMPS_LANGEVIN
+            LAMMPS_THERMO_STYLE
+            + "\n"
+            + LAMMPS_TIMESTEP
+            + "\n"
+            + LAMMPS_THERMO
+            + "\n"
+            + LAMMPS_VELOCITY
+            + "\n"
+            + LAMMPS_NVE
+            + "\n"
+            + LAMMPS_LANGEVIN
         )
         input_template = Template(init_str).render(
             thermo=thermo,
@@ -416,15 +416,15 @@ def calc_molecular_dynamics_langevin_with_lammpslib(
         )
     else:
         init_str = (
-                LAMMPS_THERMO_STYLE
-                + "\n"
-                + LAMMPS_TIMESTEP
-                + "\n"
-                + LAMMPS_THERMO
-                + "\n"
-                + LAMMPS_NVE
-                + "\n"
-                + LAMMPS_LANGEVIN
+            LAMMPS_THERMO_STYLE
+            + "\n"
+            + LAMMPS_TIMESTEP
+            + "\n"
+            + LAMMPS_THERMO
+            + "\n"
+            + LAMMPS_NVE
+            + "\n"
+            + LAMMPS_LANGEVIN
         )
         input_template = Template(init_str).render(
             thermo=thermo,
