@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import numpy as np
 import pandas
@@ -153,27 +153,24 @@ def calc_molecular_dynamics_nvt_with_lammpslib(
     thermo: int = 10,
     timestep: float = 0.001,
     seed: int = 4928459,
-    dist: str = "gaussian",
+    dist: Optional[str] = "gaussian",
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ) -> dict:
-    init_str = (
-        LAMMPS_THERMO_STYLE
-        + "\n"
-        + LAMMPS_TIMESTEP
-        + "\n"
-        + LAMMPS_THERMO
-        + "\n"
-        + LAMMPS_VELOCITY
-        + "\n"
-        + LAMMPS_ENSEMBLE_NVT
-    )
-    run_str = LAMMPS_RUN + "\n"
-    lmp_instance = lammps_run(
-        structure=structure,
-        potential_dataframe=potential_dataframe,
-        input_template=Template(init_str).render(
+    if dist is not None:
+        init_str = (
+                LAMMPS_THERMO_STYLE
+                + "\n"
+                + LAMMPS_TIMESTEP
+                + "\n"
+                + LAMMPS_THERMO
+                + "\n"
+                + LAMMPS_VELOCITY
+                + "\n"
+                + LAMMPS_ENSEMBLE_NVT
+        )
+        input_template = Template(init_str).render(
             thermo=thermo,
             Tstart=Tstart,
             temp=Tstart,
@@ -182,7 +179,30 @@ def calc_molecular_dynamics_nvt_with_lammpslib(
             timestep=timestep,
             seed=seed,
             dist=dist,
-        ),
+        )
+    else:
+        init_str = (
+                LAMMPS_THERMO_STYLE
+                + "\n"
+                + LAMMPS_TIMESTEP
+                + "\n"
+                + LAMMPS_THERMO
+                + "\n"
+                + LAMMPS_ENSEMBLE_NVT
+        )
+        input_template = Template(init_str).render(
+            thermo=thermo,
+            Tstart=Tstart,
+            temp=Tstart,
+            Tstop=Tstop,
+            Tdamp=Tdamp,
+            timestep=timestep,
+        )
+    run_str = LAMMPS_RUN + "\n"
+    lmp_instance = lammps_run(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=input_template,
         lmp=lmp,
         **kwargs,
     )
@@ -210,27 +230,24 @@ def calc_molecular_dynamics_npt_with_lammpslib(
     Pstop: float = 0.0,
     Pdamp: float = 1.0,
     seed: int = 4928459,
-    dist: str = "gaussian",
+    dist: Optional[str] = "gaussian",
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ) -> dict:
-    init_str = (
-        LAMMPS_THERMO_STYLE
-        + "\n"
-        + LAMMPS_TIMESTEP
-        + "\n"
-        + LAMMPS_THERMO
-        + "\n"
-        + LAMMPS_VELOCITY
-        + "\n"
-        + LAMMPS_ENSEMBLE_NPT
-    )
-    run_str = LAMMPS_RUN + "\n"
-    lmp_instance = lammps_run(
-        structure=structure,
-        potential_dataframe=potential_dataframe,
-        input_template=Template(init_str).render(
+    if dist is not None:
+        init_str = (
+                LAMMPS_THERMO_STYLE
+                + "\n"
+                + LAMMPS_TIMESTEP
+                + "\n"
+                + LAMMPS_THERMO
+                + "\n"
+                + LAMMPS_VELOCITY
+                + "\n"
+                + LAMMPS_ENSEMBLE_NPT
+        )
+        input_template = Template(init_str).render(
             thermo=thermo,
             Tstart=Tstart,
             temp=Tstart,
@@ -242,7 +259,33 @@ def calc_molecular_dynamics_npt_with_lammpslib(
             timestep=timestep,
             seed=seed,
             dist=dist,
-        ),
+        )
+    else:
+        init_str = (
+                LAMMPS_THERMO_STYLE
+                + "\n"
+                + LAMMPS_TIMESTEP
+                + "\n"
+                + LAMMPS_THERMO
+                + "\n"
+                + LAMMPS_ENSEMBLE_NPT
+        )
+        input_template = Template(init_str).render(
+            thermo=thermo,
+            Tstart=Tstart,
+            temp=Tstart,
+            Tstop=Tstop,
+            Tdamp=Tdamp,
+            Pstart=Pstart,
+            Pstop=Pstop,
+            Pdamp=Pdamp,
+            timestep=timestep,
+        )
+    run_str = LAMMPS_RUN + "\n"
+    lmp_instance = lammps_run(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=input_template,
         lmp=lmp,
         **kwargs,
     )
@@ -268,27 +311,24 @@ def calc_molecular_dynamics_nph_with_lammpslib(
     Pstop: float = 0.0,
     Pdamp: float = 1.0,
     seed: int = 4928459,
-    dist: str = "gaussian",
+    dist: Optional[str] = "gaussian",
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ) -> dict:
-    init_str = (
-        LAMMPS_THERMO_STYLE
-        + "\n"
-        + LAMMPS_TIMESTEP
-        + "\n"
-        + LAMMPS_THERMO
-        + "\n"
-        + LAMMPS_VELOCITY
-        + "\n"
-        + LAMMPS_ENSEMBLE_NPH
-    )
-    run_str = LAMMPS_RUN + "\n"
-    lmp_instance = lammps_run(
-        structure=structure,
-        potential_dataframe=potential_dataframe,
-        input_template=Template(init_str).render(
+    if dist is not None:
+        init_str = (
+                LAMMPS_THERMO_STYLE
+                + "\n"
+                + LAMMPS_TIMESTEP
+                + "\n"
+                + LAMMPS_THERMO
+                + "\n"
+                + LAMMPS_VELOCITY
+                + "\n"
+                + LAMMPS_ENSEMBLE_NPH
+        )
+        input_template = Template(init_str).render(
             thermo=thermo,
             temp=Tstart,
             Pstart=Pstart,
@@ -297,7 +337,30 @@ def calc_molecular_dynamics_nph_with_lammpslib(
             timestep=timestep,
             seed=seed,
             dist=dist,
-        ),
+        )
+    else:
+        init_str = (
+                LAMMPS_THERMO_STYLE
+                + "\n"
+                + LAMMPS_TIMESTEP
+                + "\n"
+                + LAMMPS_THERMO
+                + "\n"
+                + LAMMPS_ENSEMBLE_NPH
+        )
+        input_template = Template(init_str).render(
+            thermo=thermo,
+            temp=Tstart,
+            Pstart=Pstart,
+            Pstop=Pstop,
+            Pdamp=Pdamp,
+            timestep=timestep,
+        )
+    run_str = LAMMPS_RUN + "\n"
+    lmp_instance = lammps_run(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=input_template,
         lmp=lmp,
         **kwargs,
     )
@@ -327,24 +390,21 @@ def calc_molecular_dynamics_langevin_with_lammpslib(
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ):
-    init_str = (
-        LAMMPS_THERMO_STYLE
-        + "\n"
-        + LAMMPS_TIMESTEP
-        + "\n"
-        + LAMMPS_THERMO
-        + "\n"
-        + LAMMPS_VELOCITY
-        + "\n"
-        + LAMMPS_NVE
-        + "\n"
-        + LAMMPS_LANGEVIN
-    )
-    run_str = LAMMPS_RUN + "\n"
-    lmp_instance = lammps_run(
-        structure=structure,
-        potential_dataframe=potential_dataframe,
-        input_template=Template(init_str).render(
+    if dist is not None:
+        init_str = (
+                LAMMPS_THERMO_STYLE
+                + "\n"
+                + LAMMPS_TIMESTEP
+                + "\n"
+                + LAMMPS_THERMO
+                + "\n"
+                + LAMMPS_VELOCITY
+                + "\n"
+                + LAMMPS_NVE
+                + "\n"
+                + LAMMPS_LANGEVIN
+        )
+        input_template = Template(init_str).render(
             thermo=thermo,
             temp=Tstart,
             Tstart=Tstart,
@@ -353,7 +413,32 @@ def calc_molecular_dynamics_langevin_with_lammpslib(
             timestep=timestep,
             seed=seed,
             dist=dist,
-        ),
+        )
+    else:
+        init_str = (
+                LAMMPS_THERMO_STYLE
+                + "\n"
+                + LAMMPS_TIMESTEP
+                + "\n"
+                + LAMMPS_THERMO
+                + "\n"
+                + LAMMPS_NVE
+                + "\n"
+                + LAMMPS_LANGEVIN
+        )
+        input_template = Template(init_str).render(
+            thermo=thermo,
+            temp=Tstart,
+            Tstart=Tstart,
+            Tstop=Tstop,
+            Tdamp=Tdamp,
+            timestep=timestep,
+        )
+    run_str = LAMMPS_RUN + "\n"
+    lmp_instance = lammps_run(
+        structure=structure,
+        potential_dataframe=potential_dataframe,
+        input_template=input_template,
         lmp=lmp,
         **kwargs,
     )
