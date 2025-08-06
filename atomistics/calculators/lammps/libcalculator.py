@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas
@@ -153,7 +153,7 @@ def calc_molecular_dynamics_nvt_with_lammpslib(
     thermo: int = 10,
     timestep: float = 0.001,
     seed: int = 4928459,
-    dist: Optional[str] = "gaussian",
+    dist: str = "gaussian",
     disable_initial_velocity: bool = False,
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
