@@ -5,7 +5,6 @@ dependencies:
 - sphinx
 - sphinx_rtd_theme
 - myst-parser
-- numpy
 - ase =3.25.0
 - coverage
 - numpy =1.26.3
@@ -21,3 +20,5 @@ dependencies:
 - jupyter-book =1.0.0
 - pyiron_lammps =0.4.3
 - pyiron_vasp =0.2.7
+- hatchling =1.27.0
+- hatch-vcs =0.5.0
