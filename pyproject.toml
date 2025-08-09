@@ -140,3 +140,7 @@ style = "pep440-pre"
 versionfile_source = "atomistics/_version.py"
 parentdir_prefix = "atomistics"
 tag_prefix = "atomistics-"
+
+[tool.coverage.run]
+omit = ["atomistics/_version.py", "tests/*"]
+command_line = "-m unittest discover tests"
