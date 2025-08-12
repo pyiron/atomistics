@@ -1,6 +1,6 @@
 [build-system]
-requires = ["ase", "numpy", "scipy", "setuptools", "spglib", "versioneer[toml]==0.29"]
-build-backend = "setuptools.build_meta"
+requires = ["ase", "numpy", "scipy", "spglib", "hatchling==1.27.0", "hatch-vcs==0.5.0"]
+build-backend = "hatchling.build"
 
 [project]
 name = "atomistics"
@@ -40,19 +40,19 @@ Repository = "https://github.com/pyiron/atomistics"
 phonopy = [
     "phonopy==2.40.0",
     "seekpath==2.1.0",
-    "structuretoolkit==0.0.32",
+    "structuretoolkit==0.0.33",
 ]
 gpaw = [
     "gpaw==24.6.0",
 ]
 lammps = [
-    "pylammpsmpi==0.2.36",
+    "pylammpsmpi==0.2.39",
     "jinja2==3.1.6",
     "pandas==2.3.1",
     "pyiron_lammps==0.4.3",
 ]
 lammps_phonons = [
-    "pylammpsmpi==0.2.36",
+    "pylammpsmpi==0.2.39",
     "jinja2==3.1.6",
     "pandas==2.3.1",
     "dynaphopy==1.17.16",
@@ -77,11 +77,27 @@ vasp = [
     "pyiron_vasp==0.2.7"
 ]
 
-[tool.setuptools.packages.find]
-include = ["atomistics*"]
+[tool.hatch.build]
+include = [
+    "atomistics"
+]
 
-[tool.setuptools.dynamic]
-version = {attr = "atomistics.__version__"}
+[tool.hatch.build.hooks.vcs]
+version-file = "atomistics/_version.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "atomistics"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    "atomistics"
+]
+
+[tool.hatch.version]
+source = "vcs"
+path = "atomistics/_version.py"
 
 [tool.ruff]
 exclude = [".ci_support", "docs", "notebooks", "tests", "setup.py", "_version.py"]
@@ -134,9 +150,6 @@ ignore = [
     "SIM118",
 ]
 
-[tool.versioneer]
-VCS = "git"
-style = "pep440-pre"
-versionfile_source = "atomistics/_version.py"
-parentdir_prefix = "atomistics"
-tag_prefix = "atomistics-"
+[tool.coverage.run]
+omit = ["atomistics/_version.py", "tests/*"]
+command_line = "-m unittest discover tests"

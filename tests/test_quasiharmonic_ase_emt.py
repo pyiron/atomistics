@@ -5,7 +5,12 @@ from phonopy.units import VaspToTHz
 import unittest
 
 from atomistics.calculators import evaluate_with_ase
-from atomistics.workflows import QuasiHarmonicWorkflow, optimize_volume
+from atomistics.workflows import (
+    get_tasks_for_quasi_harmonic_approximation,
+    get_thermal_properties_for_quasi_harmonic_approximation,
+    analyse_results_for_quasi_harmonic_approximation,
+    optimize_volume,
+)
 
 
 class TestPhonons(unittest.TestCase):
@@ -18,26 +23,37 @@ class TestPhonons(unittest.TestCase):
             ase_optimizer=LBFGS,
             ase_optimizer_kwargs={"fmax": 0.000001},
         )
-        workflow = QuasiHarmonicWorkflow(
+        task_dict, qh_dict = get_tasks_for_quasi_harmonic_approximation(
             structure=result_dict["structure_with_optimized_volume"],
             num_points=11,
             vol_range=0.10,
             interaction_range=10,
             factor=VaspToTHz,
             displacement=0.01,
-            dos_mesh=20,
-            primitive_matrix=None,
             number_of_snapshots=None,
         )
-        task_dict = workflow.generate_structures()
         result_dict = evaluate_with_ase(task_dict=task_dict, ase_calculator=EMT())
-        eng_internal_dict, phonopy_collect_dict = workflow.analyse_structures(
-            output_dict=result_dict
+        eng_internal_dict, phonopy_collect_dict = analyse_results_for_quasi_harmonic_approximation(
+            output_dict=result_dict,
+            qh_dict=qh_dict,
         )
-        tp_collect_dict = workflow.get_thermal_properties(
-            t_min=1, t_max=1500, t_step=50, temperatures=None
+        tp_collect_dict = get_thermal_properties_for_quasi_harmonic_approximation(
+            eng_internal_dict=eng_internal_dict,
+            task_dict=task_dict,
+            qh_dict=qh_dict,
+            fit_type="polynomial",
+            fit_order=3,
+            t_min=1,
+            t_max=1500,
+            t_step=50,
+            temperatures=None,
         )
-        thermal_properties_dict = workflow.get_thermal_properties(
+        thermal_properties_dict = get_thermal_properties_for_quasi_harmonic_approximation(
+            eng_internal_dict=eng_internal_dict,
+            task_dict=task_dict,
+            qh_dict=qh_dict,
+            fit_type="polynomial",
+            fit_order=3,
             temperatures=[100, 1000],
             output_keys=["free_energy", "temperatures", "volumes"],
             quantum_mechanical=True,
@@ -46,7 +62,12 @@ class TestPhonons(unittest.TestCase):
             thermal_properties_dict["temperatures"],
             thermal_properties_dict["volumes"],
         )
-        thermal_properties_dict = workflow.get_thermal_properties(
+        thermal_properties_dict = get_thermal_properties_for_quasi_harmonic_approximation(
+            eng_internal_dict=eng_internal_dict,
+            task_dict=task_dict,
+            qh_dict=qh_dict,
+            fit_type="polynomial",
+            fit_order=3,
             temperatures=[100, 1000],
             output_keys=["free_energy", "temperatures", "volumes"],
             quantum_mechanical=False,

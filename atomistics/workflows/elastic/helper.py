@@ -14,13 +14,13 @@ from atomistics.workflows.elastic.symmetry import (
 )
 
 
-def generate_structures_helper(
+def get_tasks_for_elastic_matrix(
     structure: ase.atoms.Atoms,
     eps_range: float,
     num_of_point: int,
     zero_strain_job_name: str = "s_e_0",
     sqrt_eta: bool = True,
-) -> tuple[dict[str, int], dict[str, ase.atoms.Atoms]]:
+) -> tuple[dict[str, dict[str, ase.atoms.Atoms]], dict[str, int]]:
     """
     Generate structures for elastic analysis.
 
@@ -32,7 +32,7 @@ def generate_structures_helper(
         sqrt_eta (bool, optional): Whether to take the square root of the eta matrix. Defaults to True.
 
     Returns:
-        Tuple[Dict[str, int], Dict[str, ase.atoms.Atoms]]: A tuple containing the symmetry dictionary and the structure dictionary.
+        Dict[str, Dict[str, ase.atoms.Atoms]]], Tuple[Dict[str, int]: A tuple containing the symmetry dictionary and the structure dictionary.
     """
     SGN, v0, LC, Lag_strain_list, epss = symmetry_analysis(
         structure=structure,
@@ -96,10 +96,10 @@ def generate_structures_helper(
 
             structure_dict[_subjob_name(i=lag_strain, eps=eps)] = nstruct
 
-    return sym_dict, structure_dict
+    return {"calc_energy": structure_dict}, sym_dict
 
 
-def analyse_structures_helper(
+def analyse_results_for_elastic_matrix(
     output_dict: dict,
     sym_dict: dict,
     fit_order: int = 2,
@@ -131,8 +131,11 @@ def analyse_structures_helper(
     sym_dict["strain_energy"] = strain_energy
     sym_dict["e0"] = ene0
     sym_dict["A2"] = A2
-    return sym_dict, ElasticProperties(elastic_matrix=elastic_matrix).to_dict(
-        output_keys=output_keys
+    return (
+        ElasticProperties(elastic_matrix=elastic_matrix).to_dict(
+            output_keys=output_keys
+        ),
+        sym_dict,
     )
 
 

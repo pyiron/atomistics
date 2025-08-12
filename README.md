@@ -41,20 +41,14 @@ equilibrium bulk modulus and its derivative using the [GPAW](https://wiki.fysik.
 
 ```python
 from ase.build import bulk
-from atomistics.calculators import evaluate_with_ase
-from atomistics.workflows import EnergyVolumeCurveWorkflow
-from gpaw import GPAW, PW
+from atomistics.workflows import get_tasks_for_energy_volume_curve
 
-workflow = EnergyVolumeCurveWorkflow(
+task_dict = get_tasks_for_energy_volume_curve(
     structure=bulk("Al", a=4.05, cubic=True),
     num_points=11,
-    fit_type='polynomial',
-    fit_order=3,
     vol_range=0.05,
     axes=['x', 'y', 'z'],
-    strains=None,
 )
-task_dict = workflow.generate_structures()
 print(task_dict)
 ```
 ```
@@ -82,6 +76,9 @@ generated structures. Each structure is labeled by the ratio of compression or e
 `task_dict` is evaluate with the [GPAW](https://wiki.fysik.dtu.dk/gpaw/) simulation code using the
 `evaluate_with_ase()` function:
 ```python
+from atomistics.calculators import evaluate_with_ase
+from gpaw import GPAW, PW
+
 result_dict = evaluate_with_ase(
     task_dict=task_dict,
     ase_calculator=GPAW(
@@ -114,7 +111,14 @@ is able to match the calculation results to the corresponding structure. Finally
 function takes the `result_dict` as an input and fits the Equation of State with the fitting parameters defined in
 the first step:
 ```python
-fit_dict = workflow.analyse_structures(output_dict=result_dict)
+from atomistics.workflows import analyse_results_for_energy_volume_curve
+
+fit_dict = analyse_results_for_energy_volume_curve(
+    output_dict=result_dict, 
+    task_dict=task_dict,
+    fit_type='polynomial',
+    fit_order=3,
+)
 print(fit_dict)
 ```
 ```

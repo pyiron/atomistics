@@ -1,3 +1,3 @@
-from . import _version
+import atomistics._version
 
-__version__ = _version.get_versions()["version"]
+__version__ = atomistics._version.__version__

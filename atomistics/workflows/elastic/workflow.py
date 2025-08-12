@@ -3,8 +3,8 @@ from ase.atoms import Atoms
 
 from atomistics.shared.output import OutputElastic
 from atomistics.workflows.elastic.helper import (
-    analyse_structures_helper,
-    generate_structures_helper,
+    analyse_results_for_elastic_matrix,
+    get_tasks_for_elastic_matrix,
 )
 from atomistics.workflows.interface import Workflow
 
@@ -46,14 +46,16 @@ class ElasticMatrixWorkflow(Workflow):
         Returns:
             dict: The generated structures.
         """
-        self._data, self._structure_dict = generate_structures_helper(
+        task_dict, sym_dict = get_tasks_for_elastic_matrix(
             structure=self.structure,
             eps_range=self.eps_range,
             num_of_point=self.num_of_point,
             zero_strain_job_name=self.zero_strain_job_name,
             sqrt_eta=self.sqrt_eta,
         )
-        return {"calc_energy": self._structure_dict}
+        self._structure_dict = task_dict["calc_energy"]
+        self._data = sym_dict
+        return task_dict
 
     def analyse_structures(
         self, output_dict: dict, output_keys: tuple = OutputElastic.keys()
@@ -69,7 +71,7 @@ class ElasticMatrixWorkflow(Workflow):
         Returns:
             dict: The calculated elastic matrix.
         """
-        self._data, elastic_dict = analyse_structures_helper(
+        elastic_dict, self._data = analyse_results_for_elastic_matrix(
             output_dict=output_dict,
             sym_dict=self._data,
             fit_order=self.fit_order,
