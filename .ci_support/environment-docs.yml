@@ -8,7 +8,7 @@ dependencies:
 - numpy
 - ase =3.25.0
 - coverage
-- numpy =1.26.3
+- numpy =2.3.2
 - scipy =1.15.0
 - spglib =2.6.0
 - phonopy =2.40.0
