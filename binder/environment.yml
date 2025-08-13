@@ -1,19 +1,21 @@
 channels:
 - conda-forge
 dependencies:
-- ase =3.25.0
+- ase =3.26.0
 - numpy =1.26.4
 - scipy =1.15.2
 - spglib =2.6.0
 - phonopy =2.43.1
-- structuretoolkit =0.0.32
+- structuretoolkit =0.0.34
 - seekpath =2.1.0
 - gpaw =24.6.0
 - lammps =2024.06.27
 - pandas =2.3.1
-- pylammpsmpi =0.2.37
+- pylammpsmpi =0.2.39
 - jinja2 =3.1.6
 - dynaphopy =1.17.16
 - tqdm =4.67.1
-- pyiron_lammps =0.4.3
-- pyiron_vasp =0.2.7
+- pyiron_lammps =0.4.5
+- pyiron_vasp =0.2.9
+- hatchling =1.27.0
+- hatch-vcs =0.5.0
