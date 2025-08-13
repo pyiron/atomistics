@@ -24,7 +24,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "ase==3.25.0",
+    "ase==3.26.0",
     "numpy==1.26.4",
     "scipy==1.15.2",
     "spglib==2.6.0",
@@ -40,7 +40,7 @@ Repository = "https://github.com/pyiron/atomistics"
 phonopy = [
     "phonopy==2.40.0",
     "seekpath==2.1.0",
-    "structuretoolkit==0.0.33",
+    "structuretoolkit==0.0.34",
 ]
 gpaw = [
     "gpaw==24.6.0",
@@ -49,14 +49,14 @@ lammps = [
     "pylammpsmpi==0.2.39",
     "jinja2==3.1.6",
     "pandas==2.3.1",
-    "pyiron_lammps==0.4.4",
+    "pyiron_lammps==0.4.5",
 ]
 lammps_phonons = [
     "pylammpsmpi==0.2.39",
     "jinja2==3.1.6",
     "pandas==2.3.1",
     "dynaphopy==1.17.16",
-    "pyiron_lammps==0.4.4",
+    "pyiron_lammps==0.4.5",
 ]
 experimental = [
     "lxml==6.0.0",
@@ -65,7 +65,7 @@ experimental = [
     "requests==2.32.4",
 ]
 sphinxdft = [
-    "sphinx-parser==0.0.2"
+    "sphinx-parser==0.0.3"
 ]
 qe = [
     "pwtools==1.3.0"
@@ -74,7 +74,7 @@ tqdm = [
     "tqdm==4.67.1"
 ]
 vasp = [
-    "pyiron_vasp==0.2.8"
+    "pyiron_vasp==0.2.9"
 ]
 
 [tool.hatch.build]
