@@ -65,7 +65,7 @@ experimental = [
     "requests==2.32.4",
 ]
 sphinxdft = [
-    "sphinx-parser==0.0.2"
+    "sphinx-parser==0.0.3"
 ]
 qe = [
     "pwtools==1.3.0"
