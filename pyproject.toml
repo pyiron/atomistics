@@ -62,7 +62,7 @@ experimental = [
     "lxml==6.0.0",
     "mendeleev==0.19.0",
     "pandas==2.3.1",
-    "requests==2.32.4",
+    "requests==2.32.5",
 ]
 sphinxdft = [
     "sphinx-parser==0.0.3"
