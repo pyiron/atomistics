@@ -14,6 +14,51 @@ from atomistics.workflows.elastic.symmetry import (
 )
 
 
+def _get_eta_matrix(
+    Lag_strain_list: list[float],
+    epss: list[float],
+    sqrt_eta: bool = True,
+) -> dict[str, np.ndarray]:
+    eps_dict = {}
+    for lag_strain in Lag_strain_list:
+        Ls_list = Ls_Dic[lag_strain]
+        for eps in epss:
+            if eps == 0.0:
+                continue
+
+            Ls = np.zeros(6)
+            for ii in range(6):
+                Ls[ii] = Ls_list[ii]
+            Lv = eps * Ls
+
+            eta_matrix = np.zeros((3, 3))
+
+            eta_matrix[0, 0] = Lv[0]
+            eta_matrix[0, 1] = Lv[5] / 2.0
+            eta_matrix[0, 2] = Lv[4] / 2.0
+
+            eta_matrix[1, 0] = Lv[5] / 2.0
+            eta_matrix[1, 1] = Lv[1]
+            eta_matrix[1, 2] = Lv[3] / 2.0
+
+            eta_matrix[2, 0] = Lv[4] / 2.0
+            eta_matrix[2, 1] = Lv[3] / 2.0
+            eta_matrix[2, 2] = Lv[2]
+
+            norm = 1.0
+            eps_matrix = eta_matrix
+            if np.linalg.norm(eta_matrix) > 0.7:
+                raise Exception(f"Too large deformation {eps:g}")
+
+            if sqrt_eta:
+                while norm > 1.0e-10:
+                    x = eta_matrix - np.dot(eps_matrix, eps_matrix) / 2.0
+                    norm = np.linalg.norm(x - eps_matrix)
+                    eps_matrix = x
+            eps_dict[_subjob_name(i=lag_strain, eps=eps)] = eps_matrix
+    return eps_dict
+
+
 def get_tasks_for_elastic_matrix(
     structure: ase.atoms.Atoms,
     eps_range: float,
@@ -51,50 +96,16 @@ def get_tasks_for_elastic_matrix(
     if 0.0 in epss:
         structure_dict[zero_strain_job_name] = structure.copy()
 
-    for lag_strain in Lag_strain_list:
-        Ls_list = Ls_Dic[lag_strain]
-        for eps in epss:
-            if eps == 0.0:
-                continue
-
-            Ls = np.zeros(6)
-            for ii in range(6):
-                Ls[ii] = Ls_list[ii]
-            Lv = eps * Ls
-
-            eta_matrix = np.zeros((3, 3))
-
-            eta_matrix[0, 0] = Lv[0]
-            eta_matrix[0, 1] = Lv[5] / 2.0
-            eta_matrix[0, 2] = Lv[4] / 2.0
-
-            eta_matrix[1, 0] = Lv[5] / 2.0
-            eta_matrix[1, 1] = Lv[1]
-            eta_matrix[1, 2] = Lv[3] / 2.0
-
-            eta_matrix[2, 0] = Lv[4] / 2.0
-            eta_matrix[2, 1] = Lv[3] / 2.0
-            eta_matrix[2, 2] = Lv[2]
-
-            norm = 1.0
-            eps_matrix = eta_matrix
-            if np.linalg.norm(eta_matrix) > 0.7:
-                raise Exception(f"Too large deformation {eps:g}")
-
-            if sqrt_eta:
-                while norm > 1.0e-10:
-                    x = eta_matrix - np.dot(eps_matrix, eps_matrix) / 2.0
-                    norm = np.linalg.norm(x - eps_matrix)
-                    eps_matrix = x
-
-            # --- Calculating the M_new matrix ---------------------------------------------------------
-            i_matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
-            def_matrix = i_matrix + eps_matrix
-            scell = np.dot(structure.get_cell(), def_matrix)
-            nstruct = structure.copy()
-            nstruct.set_cell(scell, scale_atoms=True)
-
-            structure_dict[_subjob_name(i=lag_strain, eps=eps)] = nstruct
+    # --- Calculating the M_new matrix ---------------------------------------------------------
+    for key, eps_matrix in _get_eta_matrix(
+        Lag_strain_list=Lag_strain_list,
+        epss=epss,
+        sqrt_eta=sqrt_eta,
+    ).items():
+        scell = np.dot(structure.get_cell(), np.eye(3) + eps_matrix)
+        nstruct = structure.copy()
+        nstruct.set_cell(scell, scale_atoms=True)
+        structure_dict[key] = nstruct
 
     return {"calc_energy": structure_dict}, sym_dict
 
