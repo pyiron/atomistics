@@ -45,9 +45,7 @@ def _generate_input(
     )
     paw_group = sphinx.PAWHamiltonian(xc=1, spinPolarized=False, ekt=0.2)
     initial_guess_group = sphinx.initialGuess(
-        waves=sphinx.initialGuess.waves(
-            lcao=sphinx.initialGuess.waves.lcao()
-        ),
+        waves=sphinx.initialGuess.waves(lcao=sphinx.initialGuess.waves.lcao()),
         rho=sphinx.initialGuess.rho(atomicOrbitals=True),
     )
     return sphinx(
