@@ -439,7 +439,7 @@ jobs:
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
-        python-version: '3.9'
+        python-version: '3.10'
         miniforge-version: latest
         channels: conda-forge
         conda-remove-defaults: "true"
