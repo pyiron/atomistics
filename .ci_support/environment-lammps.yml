@@ -2,7 +2,7 @@ channels:
 - conda-forge
 dependencies:
 - lammps =2024.06.27=*openmpi*
-- openmpi =4.1.6
+- openmpi
 - pandas =2.3.2
 - pylammpsmpi =0.3.0
 - jinja2 =3.1.6
