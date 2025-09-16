@@ -33,24 +33,22 @@ def _generate_input(
     if kpoint_folding is None:
         kpoint_folding = [3, 3, 3]
     struct_group, spin_lst = get_structure_group(structure)
-    main_group = sphinx.main.create(
-        scfDiag=sphinx.main.scfDiag.create(maxSteps=maxSteps, blockCCG={}),
-        evalForces=sphinx.main.evalForces.create(file="relaxHist.sx"),
+    main_group = sphinx.main(
+        scfDiag=sphinx.main.scfDiag(maxSteps=maxSteps, blockCCG={}),
+        evalForces=sphinx.main.evalForces(file="relaxHist.sx"),
     )
     pawPot_group = get_paw_from_structure(structure)
-    basis_group = sphinx.basis.create(
+    basis_group = sphinx.basis(
         eCut=energy_cutoff_in_eV / HARTREE_TO_EV,
-        kPoint=sphinx.basis.kPoint.create(coords=kpoint_coords),
+        kPoint=sphinx.basis.kPoint(coords=kpoint_coords),
         folding=kpoint_folding,
     )
-    paw_group = sphinx.PAWHamiltonian.create(xc=1, spinPolarized=False, ekt=0.2)
-    initial_guess_group = sphinx.initialGuess.create(
-        waves=sphinx.initialGuess.waves.create(
-            lcao=sphinx.initialGuess.waves.lcao.create()
-        ),
-        rho=sphinx.initialGuess.rho.create(atomicOrbitals=True),
+    paw_group = sphinx.PAWHamiltonian(xc=1, spinPolarized=False, ekt=0.2)
+    initial_guess_group = sphinx.initialGuess(
+        waves=sphinx.initialGuess.waves(lcao=sphinx.initialGuess.waves.lcao()),
+        rho=sphinx.initialGuess.rho(atomicOrbitals=True),
     )
-    return sphinx.create(
+    return sphinx(
         pawPot=pawPot_group,
         structure=struct_group,
         main=main_group,

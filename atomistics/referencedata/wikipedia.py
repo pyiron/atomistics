@@ -1,4 +1,5 @@
 import pandas
+import requests
 
 
 def get_elastic_properties(chemical_symbol: str) -> dict:
@@ -28,9 +29,11 @@ def get_elastic_properties(chemical_symbol: str) -> dict:
         "bulk_modulus",
         "shear_modulus",
     ]
-    df_lst = pandas.read_html(
-        "https://en.wikipedia.org/wiki/Elastic_properties_of_the_elements_(data_page)"
+    response = requests.get(
+        "https://en.wikipedia.org/wiki/Elastic_properties_of_the_elements_(data_page)",
+        headers={"User-Agent": "atomistics package"},
     )
+    df_lst = pandas.read_html(response.text)
     property_dict = {}
     for i, p in enumerate(property_lst):
         df_tmp = df_lst[i]
