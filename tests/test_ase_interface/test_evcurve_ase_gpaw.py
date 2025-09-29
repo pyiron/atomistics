@@ -3,8 +3,11 @@ import numpy as np
 import unittest
 
 from atomistics.calculators import evaluate_with_ase
-from atomistics.workflows import EnergyVolumeCurveWorkflow
-
+from atomistics.workflows import (
+    get_thermal_properties_for_energy_volume_curve,
+    get_tasks_for_energy_volume_curve,
+    analyse_results_for_energy_volume_curve,
+)
 
 try:
     from gpaw import GPAW, PW
@@ -19,23 +22,28 @@ except ImportError:
 )
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
-        workflow = EnergyVolumeCurveWorkflow(
-            structure=bulk("Al", a=4.05, cubic=True),
+        structure = bulk("Al", a=4.05, cubic=True)
+        task_dict = get_tasks_for_energy_volume_curve(
+            structure=structure,
             num_points=11,
-            fit_type="polynomial",
-            fit_order=3,
             vol_range=0.05,
             axes=("x", "y", "z"),
-            strains=None,
         )
-        task_dict = workflow.generate_structures()
         result_dict = evaluate_with_ase(
             task_dict=task_dict,
             ase_calculator=GPAW(xc="PBE", mode=PW(300), kpts=(3, 3, 3)),
         )
-        fit_dict = workflow.analyse_structures(output_dict=result_dict)
-        thermal_properties_dict = workflow.get_thermal_properties(
-            temperatures=[100, 1000], output_keys=["temperatures", "volumes"]
+        fit_dict = analyse_results_for_energy_volume_curve(
+            output_dict=result_dict,
+            task_dict=task_dict,
+            fit_type="polynomial",
+            fit_order=3,
+        )
+        thermal_properties_dict = get_thermal_properties_for_energy_volume_curve(
+            fit_dict=fit_dict,
+            masses=structure.get_masses(),
+            temperatures=[100, 1000],
+            output_keys=["temperatures", "volumes"],
         )
         temperatures_ev, volumes_ev = (
             thermal_properties_dict["temperatures"],

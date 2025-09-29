@@ -52,21 +52,20 @@ jobs:
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-lammps.yml >> environment.yml
         tail --lines=+4 .ci_support/environment-qe.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
+        conda-remove-defaults: "true"
         environment-file: environment.yml
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
       run: |
-        pip install versioneer[toml]==0.29
         pip install . --no-deps --no-build-isolation
-        coverage run --omit="atomistics/_version.py,tests/*" -m unittest discover tests
+        coverage run
         coverage xml
       env:
         ASE_ESPRESSO_COMMAND: "pw.x -in PREFIX.pwi > PREFIX.pwo"
@@ -84,20 +83,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Conda config
-      run: echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
+        conda-remove-defaults: "true"
         environment-file: .ci_support/environment.yml
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
       run: |
-        pip install versioneer[toml]==0.29
         pip install . --no-deps --no-build-isolation
         python -m unittest discover tests
 
@@ -110,18 +107,17 @@ jobs:
         run: |
           cp .ci_support/environment.yml environment.yml
           tail --lines=+4 .ci_support/environment-notebooks.yml >> environment.yml
-          echo -e "channels:\n  - conda-forge\n" > .condarc
       - name: Setup Mambaforge
         uses: conda-incubator/setup-miniconda@v3
         with:
           python-version: "3.12"
           miniforge-version: latest
-          condarc-file: .condarc
+          channels: conda-forge
+          conda-remove-defaults: "true"
           environment-file: environment.yml
       - name: Test
         shell: bash -l {0}
         run: |
-          pip install versioneer[toml]==0.29
           pip install . --no-deps --no-build-isolation
           cd notebooks
           cp -r ../tests/static .
@@ -137,18 +133,18 @@ jobs:
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-lammps.yml >> environment.yml
         tail --lines=+4 .ci_support/environment-gpaw.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
+        conda-remove-defaults: "true"
         environment-file: environment.yml
     - name: Pip check
       shell: bash -l {0}
       run: |
-        pip install versioneer[toml]==0.29 tomlkit
+        pip install tomlkit
         python .ci_support/check.py
         cat pyproject.toml
         pip install . --no-deps --no-build-isolation
@@ -172,9 +168,6 @@ jobs:
         - operating-system: ubuntu-latest
           python-version: '3.11'
 
-        - operating-system: ubuntu-latest
-          python-version: '3.10'
-
     steps:
     - uses: actions/checkout@v4
     - name: Setup environment (windows)
@@ -182,26 +175,24 @@ jobs:
       shell: bash -l {0}
       run: |
         cp .ci_support/environment.yml environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup environment (unix)
       if: matrix.operating-system != 'windows-latest'
       shell: bash -l {0}
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-lammps.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: ${{ matrix.python-version }}
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
+        conda-remove-defaults: "true"
         environment-file: environment.yml
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
       run: |
-        pip install versioneer[toml]==0.29
         pip install . --no-deps --no-build-isolation
         python -m unittest discover tests
 
@@ -214,19 +205,18 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-abinit.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
+        conda-remove-defaults: "true"
         environment-file: environment.yml
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
       run: |
-        pip install versioneer[toml]==0.29
         pip install . --no-deps --no-build-isolation
         python -m unittest tests/test_ase_interface/test_evcurve_ase_abinit.py
       env:
@@ -243,19 +233,18 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-gpaw.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
+        conda-remove-defaults: "true"
         environment-file: environment.yml
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
       run: |
-        pip install versioneer[toml]==0.29
         pip install . --no-deps --no-build-isolation
         python -m unittest tests/test_ase_interface/test_evcurve_ase_gpaw.py
         python -m unittest tests/test_ase_interface/test_elastic_ase_gpaw.py
@@ -270,19 +259,18 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-sphinx.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
+        conda-remove-defaults: "true"
         environment-file: environment.yml
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
       run: |
-        pip install versioneer[toml]==0.29
         pip install . --no-deps --no-build-isolation
         python -m unittest tests/test_evcurve_sphinxdft.py
 
@@ -295,19 +283,18 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-mace.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
+        conda-remove-defaults: "true"
         environment-file: environment.yml
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 60
       run: |
-        pip install versioneer[toml]==0.29
         pip install . --no-deps --no-build-isolation
         python -m unittest tests/test_ase_interface/test_evcurve_ase_mace.py
         python -m unittest tests/test_ase_interface/test_phonons_ase_mace.py
@@ -323,19 +310,18 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-matgl.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.11'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
+        conda-remove-defaults: "true"
         environment-file: environment.yml
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 60
       run: |
-        pip install versioneer[toml]==0.29
         pip install . --no-deps --no-build-isolation
         python -m unittest tests/test_ase_interface/test_evcurve_ase_matgl.py
         python -m unittest tests/test_ase_interface/test_phonons_ase_matgl.py
@@ -351,19 +337,18 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-orb.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
+        conda-remove-defaults: "true"
         environment-file: environment.yml
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 60
       run: |
-        pip install versioneer[toml]==0.29
         pip install . --no-deps --no-build-isolation
         python -m unittest tests/test_ase_interface/test_evcurve_ase_orb.py
 
@@ -376,21 +361,21 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-grace.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
+        conda-remove-defaults: "true"
         environment-file: environment.yml
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 60
       run: |
-        pip install versioneer[toml]==0.29
         pip install . --no-deps --no-build-isolation
         python -m unittest tests/test_ase_interface/test_evcurve_ase_grace.py
+        python -m unittest tests/test_ase_interface/test_phonons_ase_grace.py
 
   unittest_qe:
     needs: [black]
@@ -401,19 +386,18 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-qe.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
+        conda-remove-defaults: "true"
         environment-file: environment.yml
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 60
       run: |
-        pip install versioneer[toml]==0.29
         pip install . --no-deps --no-build-isolation
         python -m unittest tests/test_ase_interface/test_evcurve_ase_qe.py
       env:
@@ -432,19 +416,18 @@ jobs:
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-siesta.yml >> environment.yml
-        echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
+        conda-remove-defaults: "true"
         environment-file: environment.yml
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
       run: |
-        pip install versioneer[toml]==0.29
         pip install . --no-deps --no-build-isolation
         python -m unittest tests/test_ase_interface/test_evcurve_ase_siesta.py
 
@@ -453,20 +436,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Conda config
-      run: echo -e "channels:\n  - conda-forge\n" > .condarc
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
-        python-version: '3.9'
+        python-version: '3.10'
         miniforge-version: latest
-        condarc-file: .condarc
+        channels: conda-forge
+        conda-remove-defaults: "true"
         environment-file: .ci_support/environment-old.yml
     - name: Test
       shell: bash -l {0}
       timeout-minutes: 30
       run: |
-        pip install versioneer[toml]==0.29
         pip install . --no-deps --no-build-isolation
         python -m unittest discover tests
 

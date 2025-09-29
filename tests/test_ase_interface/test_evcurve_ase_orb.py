@@ -6,7 +6,8 @@ import unittest
 from atomistics.calculators import evaluate_with_ase
 from atomistics.workflows import (
     optimize_positions_and_volume,
-    EnergyVolumeCurveWorkflow,
+    get_tasks_for_energy_volume_curve,
+    analyse_results_for_energy_volume_curve,
 )
 
 
@@ -41,21 +42,22 @@ class TestEvCurve(unittest.TestCase):
             ase_optimizer=LBFGS,
             ase_optimizer_kwargs={"fmax": 0.001},
         )
-        workflow = EnergyVolumeCurveWorkflow(
+        task_dict = get_tasks_for_energy_volume_curve(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             num_points=11,
-            fit_type="polynomial",
-            fit_order=3,
             vol_range=0.05,
             axes=("x", "y", "z"),
-            strains=None,
         )
-        task_dict = workflow.generate_structures()
         result_dict = evaluate_with_ase(
             task_dict=task_dict,
             ase_calculator=ase_calculator,
         )
-        fit_dict = workflow.analyse_structures(output_dict=result_dict)
+        fit_dict = analyse_results_for_energy_volume_curve(
+            output_dict=result_dict,
+            task_dict=task_dict,
+            fit_type="polynomial",
+            fit_order=3,
+        )
         self.assertTrue(
             np.isclose(fit_dict["volume_eq"], 66.6180623643703, atol=1e-04)
         )

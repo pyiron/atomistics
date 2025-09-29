@@ -367,7 +367,7 @@ def get_debye_model(
     return DebyeModel(fit_dict=fit_dict, masses=masses, num_steps=num_steps)
 
 
-def get_thermal_properties(
+def get_thermal_properties_for_energy_volume_curve(
     fit_dict: dict,
     masses: list[float],
     t_min: float = 1.0,

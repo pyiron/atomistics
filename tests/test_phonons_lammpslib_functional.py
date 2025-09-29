@@ -4,11 +4,11 @@ from ase.build import bulk
 from phonopy.units import VaspToTHz
 import unittest
 
-from atomistics.workflows.phonons.helper import (
+from atomistics.workflows import (
     get_hesse_matrix,
-    get_thermal_properties,
-    generate_structures_helper,
-    analyse_structures_helper,
+    get_thermal_properties_for_harmonic_approximation,
+    get_tasks_for_harmonic_approximation,
+    analyse_results_for_harmonic_approximation,
 )
 
 try:
@@ -33,7 +33,7 @@ class TestPhonons(unittest.TestCase):
             task_dict={"optimize_positions_and_volume": structure},
             potential_dataframe=df_pot_selected,
         )
-        phonopy_obj, structure_dict = generate_structures_helper(
+        task_dict, phonopy_obj = get_tasks_for_harmonic_approximation(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             primitive_matrix=None,
             number_of_snapshots=None,
@@ -42,10 +42,10 @@ class TestPhonons(unittest.TestCase):
             factor=VaspToTHz,
         )
         result_dict = evaluate_with_lammpslib(
-            task_dict={"calc_forces": structure_dict},
+            task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
-        phonopy_dict = analyse_structures_helper(
+        phonopy_dict = analyse_results_for_harmonic_approximation(
             phonopy=phonopy_obj,
             output_dict=result_dict,
             dos_mesh=20,
@@ -54,7 +54,7 @@ class TestPhonons(unittest.TestCase):
         mesh_dict, dos_dict = phonopy_dict["mesh_dict"], phonopy_dict["total_dos_dict"]
         self.assertEqual(
             (324, 324),
-            get_hesse_matrix(force_constants=phonopy_obj.force_constants).shape,
+            get_hesse_matrix(phonopy=phonopy_obj).shape,
         )
         self.assertTrue("qpoints" in mesh_dict.keys())
         self.assertTrue("weights" in mesh_dict.keys())
@@ -63,7 +63,7 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue("group_velocities" in mesh_dict.keys())
         self.assertTrue("frequency_points" in dos_dict.keys())
         self.assertTrue("total_dos" in dos_dict.keys())
-        thermal_dict = get_thermal_properties(
+        thermal_dict = get_thermal_properties_for_harmonic_approximation(
             phonopy=phonopy_obj,
             t_min=1,
             t_max=1500,
@@ -100,7 +100,7 @@ class TestPhonons(unittest.TestCase):
         self.assertTrue(thermal_dict["volumes"][-1] > 66.4)
         self.assertTrue(thermal_dict["volumes"][0] < 66.5)
         self.assertTrue(thermal_dict["volumes"][0] > 66.4)
-        thermal_dict = get_thermal_properties(
+        thermal_dict = get_thermal_properties_for_harmonic_approximation(
             phonopy=phonopy_obj,
             t_min=1,
             t_max=1500,

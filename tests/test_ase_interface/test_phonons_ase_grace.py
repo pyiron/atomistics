@@ -8,21 +8,20 @@ from atomistics.workflows import optimize_positions_and_volume, get_band_structu
 
 
 try:
-    import matgl
-    from matgl.ext.ase import M3GNetCalculator
+    from tensorpotential.calculator import grace_fm
 
-    skip_matgl_test = False
+    skip_grace_test = False
 except ImportError:
-    skip_matgl_test = True
+    skip_grace_test = True
 
 
 @unittest.skipIf(
-    skip_matgl_test, "matgl is not installed, so the matgl tests are skipped."
+    skip_grace_test, "grace is not installed, so the mace tests are skipped."
 )
 class TestPhonons(unittest.TestCase):
     def test_calc_phonons(self):
         structure = bulk("Al", cubic=True)
-        ase_calculator = M3GNetCalculator(matgl.load_model("M3GNet-MP-2021.2.8-PES"))
+        ase_calculator = grace_fm("GRACE-2L-OMAT")
         task_dict = optimize_positions_and_volume(structure=structure)
         result_dict = evaluate_with_ase(
             task_dict=task_dict,

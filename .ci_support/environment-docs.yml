@@ -5,19 +5,20 @@ dependencies:
 - sphinx
 - sphinx_rtd_theme
 - myst-parser
-- numpy
-- ase =3.25.0
+- ase =3.26.0
 - coverage
-- numpy =1.26.3
-- scipy =1.15.0
+- numpy =1.26.4
+- scipy =1.15.2
 - spglib =2.6.0
-- phonopy =2.40.0
-- structuretoolkit =0.0.32
+- phonopy =2.43.2
+- structuretoolkit =0.0.35
 - seekpath =2.1.0
 - lammps =2024.06.27
-- pandas =2.3.0
-- pylammpsmpi =0.2.35
+- pandas =2.3.2
+- pylammpsmpi =0.3.2
 - jinja2 =3.1.6
 - jupyter-book =1.0.0
-- pyiron_lammps =0.4.2
-- pyiron_vasp =0.2.6
+- pyiron_lammps =0.4.6
+- pyiron_vasp =0.2.12
+- hatchling =1.27.0
+- hatch-vcs =0.5.0
