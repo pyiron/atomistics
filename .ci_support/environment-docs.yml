@@ -11,11 +11,11 @@ dependencies:
 - scipy =1.15.2
 - spglib =2.6.0
 - phonopy =2.43.2
-- structuretoolkit =0.0.34
+- structuretoolkit =0.0.35
 - seekpath =2.1.0
 - lammps =2024.08.29
 - pandas =2.3.2
-- pylammpsmpi =0.3.1
+- pylammpsmpi =0.3.2
 - jinja2 =3.1.6
 - jupyter-book =1.0.0
 - pyiron_lammps =0.4.6
