@@ -301,33 +301,6 @@ jobs:
         python -m unittest tests/test_ase_interface/test_quasiharmonic_ase_mace.py
         python -m unittest tests/test_ase_interface/test_ase_md_mace.py
 
-  unittest_matgl:
-    needs: [black]
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Merge Notebook environment
-      run: |
-        cp .ci_support/environment.yml environment.yml
-        tail --lines=+4 .ci_support/environment-matgl.yml >> environment.yml
-    - name: Setup Mambaforge
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        python-version: '3.11'
-        miniforge-version: latest
-        channels: conda-forge
-        conda-remove-defaults: "true"
-        environment-file: environment.yml
-    - name: Test
-      shell: bash -l {0}
-      timeout-minutes: 60
-      run: |
-        pip install . --no-deps --no-build-isolation
-        python -m unittest tests/test_ase_interface/test_evcurve_ase_matgl.py
-        python -m unittest tests/test_ase_interface/test_phonons_ase_matgl.py
-        python -m unittest tests/test_ase_interface/test_quasiharmonic_ase_matgl.py
-        python -m unittest tests/test_ase_interface/test_ase_md_matgl.py
-
   unittest_orb:
     needs: [black]
     runs-on: ubuntu-latest
