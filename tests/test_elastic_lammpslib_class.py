@@ -4,7 +4,8 @@ from ase.build import bulk
 import numpy as np
 import unittest
 
-from atomistics.workflows import ElasticMatrixWorkflow, optimize_positions_and_volume
+from atomistics.workflows import optimize_positions_and_volume
+from atomistics.workflows.elastic.workflow import ElasticMatrixWorkflow
 
 try:
     from atomistics.calculators import evaluate_with_lammpslib, get_potential_by_name

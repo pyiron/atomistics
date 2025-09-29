@@ -4,7 +4,7 @@ from ase.build import bulk
 from phonopy.units import VaspToTHz
 import unittest
 
-from atomistics.workflows import PhonopyWorkflow
+from atomistics.workflows import get_tasks_for_harmonic_approximation, analyse_results_for_harmonic_approximation
 
 
 try:
@@ -29,28 +29,29 @@ class TestLammpsMD(unittest.TestCase):
             potential_name="1988--Tersoff-J--Si-c--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
-        workflow = PhonopyWorkflow(
+        task_dict, phonopy_obj = get_tasks_for_harmonic_approximation(
             structure=structure,
             interaction_range=10,
             factor=VaspToTHz,
             displacement=0.01,
-            dos_mesh=20,
             primitive_matrix=[[0.0, 0.5, 0.5], [0.5, 0.0, 0.5], [0.5, 0.5, 0.0]],
             number_of_snapshots=None,
         )
-        task_dict = workflow.generate_structures()
         result_dict = evaluate_with_lammpslib(
             task_dict=task_dict,
             potential_dataframe=potential_dataframe,
         )
-        workflow.analyse_structures(output_dict=result_dict)
+        _ = analyse_results_for_harmonic_approximation(
+            phonopy=phonopy_obj,
+            output_dict=result_dict,
+        )
         trajectory = calc_molecular_dynamics_phonons_with_lammpslib(
             structure_ase=structure,
             potential_dataframe=potential_dataframe,
-            force_constants=workflow.phonopy.force_constants,
-            phonopy_unitcell=workflow.phonopy.unitcell,
-            phonopy_primitive_matrix=workflow.phonopy.primitive_matrix,
-            phonopy_supercell_matrix=workflow.phonopy.supercell_matrix,
+            force_constants=phonopy_obj.force_constants,
+            phonopy_unitcell=phonopy_obj.unitcell,
+            phonopy_primitive_matrix=phonopy_obj.primitive_matrix,
+            phonopy_supercell_matrix=phonopy_obj.supercell_matrix,
             total_time=20,  # ps
             time_step=0.001,  # ps
             relaxation_time=5,  # ps

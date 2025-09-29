@@ -8,7 +8,9 @@ from atomistics.calculators import evaluate_with_hessian
 from atomistics.workflows import (
     optimize_positions_and_volume,
     LangevinWorkflow,
-    PhonopyWorkflow,
+    get_hesse_matrix,
+    get_tasks_for_harmonic_approximation,
+    analyse_results_for_harmonic_approximation,
 )
 
 
@@ -41,21 +43,22 @@ class TestLangevin(unittest.TestCase):
             task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
-        workflow_phonons = PhonopyWorkflow(
+        task_dict, phonopy_obj = get_tasks_for_harmonic_approximation(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             interaction_range=10,
             factor=VaspToTHz,
             displacement=0.01,
-            dos_mesh=20,
             primitive_matrix=None,
             number_of_snapshots=None,
         )
-        task_dict = workflow_phonons.generate_structures()
         result_dict = evaluate_with_lammpslib(
             task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
-        workflow_phonons.analyse_structures(output_dict=result_dict)
+        _ = analyse_results_for_harmonic_approximation(
+            phonopy=phonopy_obj,
+            output_dict=result_dict,
+        )
         workflow_md = LangevinWorkflow(
             structure=structure,
             temperature=1000.0,
@@ -69,7 +72,7 @@ class TestLangevin(unittest.TestCase):
             result_dict = evaluate_with_hessian(
                 task_dict=task_dict,
                 structure_equilibrium=structure,
-                force_constants=workflow_phonons.get_hesse_matrix(),
+                force_constants=get_hesse_matrix(phonopy=phonopy_obj),
                 bulk_modulus=0,
                 shear_modulus=0,
             )

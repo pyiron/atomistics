@@ -8,11 +8,11 @@ from phonopy.file_IO import write_FORCE_CONSTANTS
 from atomistics.shared.output import OutputPhonons, OutputThermodynamic
 from atomistics.workflows.interface import Workflow
 from atomistics.workflows.phonons.helper import (
-    analyse_structures_helper,
-    generate_structures_helper,
+    analyse_results_for_harmonic_approximation,
     get_band_structure,
     get_hesse_matrix,
-    get_thermal_properties,
+    get_tasks_for_harmonic_approximation,
+    get_thermal_properties_for_harmonic_approximation,
     plot_band_structure,
     plot_dos,
 )
@@ -75,7 +75,7 @@ class PhonopyWorkflow(Workflow):
         Returns:
             dict: The generated structures.
         """
-        self.phonopy, structure_dict = generate_structures_helper(
+        task_dict, self.phonopy = get_tasks_for_harmonic_approximation(
             structure=self.structure,
             primitive_matrix=self._primitive_matrix,
             displacement=self._displacement,
@@ -83,7 +83,7 @@ class PhonopyWorkflow(Workflow):
             interaction_range=self._interaction_range,
             factor=self._factor,
         )
-        return {"calc_forces": structure_dict}
+        return task_dict
 
     def analyse_structures(
         self, output_dict: dict, output_keys: tuple[str] = OutputPhonons.keys()
@@ -98,7 +98,7 @@ class PhonopyWorkflow(Workflow):
         Returns:
             dict: The analysed structures.
         """
-        self._phonopy_dict = analyse_structures_helper(
+        self._phonopy_dict = analyse_results_for_harmonic_approximation(
             phonopy=self.phonopy,
             output_dict=output_dict,
             dos_mesh=self._dos_mesh,
@@ -136,7 +136,7 @@ class PhonopyWorkflow(Workflow):
         Returns:
             dict: The thermal properties.
         """
-        return get_thermal_properties(
+        return get_thermal_properties_for_harmonic_approximation(
             phonopy=self.phonopy,
             t_min=t_min,
             t_max=t_max,
@@ -204,7 +204,7 @@ class PhonopyWorkflow(Workflow):
         Returns:
             np.ndarray: The Hesse matrix.
         """
-        return get_hesse_matrix(force_constants=self.phonopy.force_constants)
+        return get_hesse_matrix(phonopy=self.phonopy)
 
     def get_band_structure(
         self,
@@ -243,18 +243,8 @@ class PhonopyWorkflow(Workflow):
         Returns:
             [type]: [description]
         """
-        try:
-            results = self.phonopy.get_band_structure_dict()
-        except RuntimeError:
-            results = self.get_band_structure()
-
-        # HACK: strictly speaking this breaks phonopy API and could bite us
-        path_connections = self.phonopy._band_structure.path_connections
-        labels = self.phonopy._band_structure.labels
         return plot_band_structure(
-            results=results,
-            path_connections=path_connections,
-            labels=labels,
+            phonopy=self.phonopy,
             axis=axis,
             *args,
             label=label,
@@ -272,8 +262,7 @@ class PhonopyWorkflow(Workflow):
             [type]: [description]
         """
         return plot_dos(
-            dos_energies=self._phonopy_dict["total_dos_dict"]["frequency_points"],
-            dos_total=self._phonopy_dict["total_dos_dict"]["total_dos"],
+            phonopy_dict=self._phonopy_dict,
             *args,
             axis=axis,
             **kwargs,

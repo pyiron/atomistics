@@ -260,14 +260,14 @@ def restore_magmoms(
     return structure
 
 
-def generate_structures_helper(
+def get_tasks_for_harmonic_approximation(
     structure: Atoms,
     primitive_matrix: Optional[np.ndarray] = None,
     displacement: float = 0.01,
     number_of_snapshots: Optional[int] = None,
     interaction_range: float = 10.0,
     factor: float = VaspToTHz,
-) -> tuple[Phonopy, dict[int, Atoms]]:
+) -> tuple[dict[int, Atoms], Phonopy]:
     """
     Generate structures with displacements for phonon calculations.
 
@@ -280,7 +280,7 @@ def generate_structures_helper(
         factor (float, optional): The conversion factor. Defaults to VaspToTHz.
 
     Returns:
-        Tuple[Phonopy, Dict[int, Atoms]]: The Phonopy object and the dictionary of structures.
+        Tuple[Dict[int, Atoms], Phonopy]: The Phonopy object and the dictionary of structures.
     """
     unitcell = structuretoolkit.common.atoms_to_phonopy(structure)
     phonopy_obj = Phonopy(
@@ -305,10 +305,10 @@ def generate_structures_helper(
         )
         for ind, sc in enumerate(phonopy_obj.supercells_with_displacements)
     }
-    return phonopy_obj, structure_dict
+    return {"calc_forces": structure_dict}, phonopy_obj
 
 
-def analyse_structures_helper(
+def analyse_results_for_harmonic_approximation(
     phonopy: Phonopy,
     output_dict: dict,
     dos_mesh: int = 20,
@@ -354,7 +354,7 @@ def analyse_structures_helper(
     )
 
 
-def get_thermal_properties(
+def get_thermal_properties_for_harmonic_approximation(
     phonopy: Phonopy,
     t_min: float = 1.0,
     t_max: float = 1500.0,
@@ -418,12 +418,12 @@ def get_supercell_matrix(interaction_range: float, cell: np.ndarray) -> np.ndarr
     return np.eye(3) * supercell_range
 
 
-def get_hesse_matrix(force_constants: np.ndarray) -> np.ndarray:
+def get_hesse_matrix(phonopy: Phonopy) -> np.ndarray:
     """
     Calculate the Hesse matrix from the force constants.
 
     Args:
-        force_constants (np.ndarray): The force constants.
+        phonopy (Phonopy): The Phonopy object.
 
     Returns:
         np.ndarray: The Hesse matrix.
@@ -433,10 +433,10 @@ def get_hesse_matrix(force_constants: np.ndarray) -> np.ndarray:
         / scipy.constants.physical_constants["Bohr radius"][0] ** 2
         * scipy.constants.angstrom**2
     )
-    force_shape = np.shape(force_constants)
+    force_shape = np.shape(phonopy.force_constants)
     force_reshape = force_shape[0] * force_shape[2]
     return (
-        np.transpose(force_constants, (0, 2, 1, 3)).reshape(
+        np.transpose(phonopy.force_constants, (0, 2, 1, 3)).reshape(
             (force_reshape, force_reshape)
         )
         / unit_conversion
@@ -444,8 +444,7 @@ def get_hesse_matrix(force_constants: np.ndarray) -> np.ndarray:
 
 
 def plot_dos(
-    dos_energies: np.ndarray,
-    dos_total: np.ndarray,
+    phonopy_dict: dict,
     *args,
     axis: Optional[Any] = None,
     **kwargs,
@@ -456,8 +455,7 @@ def plot_dos(
     If "label" is present in `kwargs` a legend is added to the plot automatically.
 
     Args:
-        dos_energies (np.ndarray): The array of DOS energies.
-        dos_total (np.ndarray): The array of total DOS.
+        phonopy_dict (dict): The calculated phonon properties.
         axis (optional): matplotlib axis to use, if None create a new one
         *args: passed to `axis.plot`
         **kwargs: passed to `axis.plot`
@@ -467,6 +465,8 @@ def plot_dos(
     """
     import matplotlib.pyplot as plt
 
+    dos_energies = (phonopy_dict["total_dos_dict"]["frequency_points"],)
+    dos_total = (phonopy_dict["total_dos_dict"]["total_dos"],)
     if axis is None:
         _, axis = plt.subplots(1, 1)
     axis.plot(dos_energies, dos_total, *args, **kwargs)
@@ -527,9 +527,7 @@ def get_band_structure(
 
 
 def plot_band_structure(
-    results: dict,
-    path_connections: list[str],
-    labels: str,
+    phonopy: Phonopy,
     axis: Optional[Any] = None,
     *args,
     label: Optional[str] = None,
@@ -543,9 +541,7 @@ def plot_band_structure(
     If `label` is passed a legend is added automatically.
 
     Args:
-        results (dict): The results from :meth:`.get_band_structure`.
-        path_connections (list[str]): List of path connections.
-        labels (str): Labels for the bandpath.
+        phonopy (Phonopy): The Phonopy object.
         axis (matplotlib.axes._subplots.AxesSubplot, optional): Plot to this axis, if not given a new one is created.
         *args: Passed through to matplotlib.pyplot.plot when plotting the dispersion.
         label (str, optional): Label for dispersion line.
@@ -556,6 +552,10 @@ def plot_band_structure(
     """
     import matplotlib.pyplot as plt
 
+    results = phonopy.get_band_structure_dict()
+    # HACK: strictly speaking this breaks phonopy API and could bite us
+    path_connections = phonopy._band_structure.path_connections
+    labels = phonopy._band_structure.labels
     if axis is None:
         _, axis = plt.subplots(1, 1)
 
@@ -586,3 +586,25 @@ def plot_band_structure(
     axis.set_ylabel("Frequency [THz]")
     axis.set_title("Bandstructure")
     return axis
+
+
+def get_dynamical_matrix(phonopy: Phonopy, npoints: int = 101) -> np.ndarray:
+    """
+    Get the dynamical matrix.
+
+    Args:
+        phonopy (Phonopy): The Phonopy object.
+        npoints (int, optional): The number of points. Defaults to 101.
+
+    Returns:
+        np.ndarray: The dynamical matrix.
+    """
+    phonopy.auto_band_structure(
+        npoints=npoints,
+        with_eigenvectors=False,
+        with_group_velocities=False,
+        plot=False,
+        write_yaml=False,
+        filename="band.yaml",
+    )
+    return np.real_if_close(phonopy.dynamical_matrix.dynamical_matrix)

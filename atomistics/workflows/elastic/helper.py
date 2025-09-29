@@ -14,43 +14,12 @@ from atomistics.workflows.elastic.symmetry import (
 )
 
 
-def generate_structures_helper(
-    structure: ase.atoms.Atoms,
-    eps_range: float,
-    num_of_point: int,
-    zero_strain_job_name: str = "s_e_0",
+def _get_eta_matrix(
+    Lag_strain_list: list[float],
+    epss: list[float],
     sqrt_eta: bool = True,
-) -> tuple[dict[str, int], dict[str, ase.atoms.Atoms]]:
-    """
-    Generate structures for elastic analysis.
-
-    Args:
-        structure (ase.atoms.Atoms): The input structure.
-        eps_range (float): The range of strain.
-        num_of_point (int): The number of points in the strain range.
-        zero_strain_job_name (str, optional): The name of the zero strain job. Defaults to "s_e_0".
-        sqrt_eta (bool, optional): Whether to take the square root of the eta matrix. Defaults to True.
-
-    Returns:
-        Tuple[Dict[str, int], Dict[str, ase.atoms.Atoms]]: A tuple containing the symmetry dictionary and the structure dictionary.
-    """
-    SGN, v0, LC, Lag_strain_list, epss = symmetry_analysis(
-        structure=structure,
-        eps_range=eps_range,
-        num_of_point=num_of_point,
-    )
-    sym_dict = {
-        "SGN": SGN,
-        "v0": v0,
-        "LC": LC,
-        "Lag_strain_list": Lag_strain_list,
-        "epss": epss,
-    }
-
-    structure_dict = OrderedDict()
-    if 0.0 in epss:
-        structure_dict[zero_strain_job_name] = structure.copy()
-
+) -> dict[str, np.ndarray]:
+    eps_dict = {}
     for lag_strain in Lag_strain_list:
         Ls_list = Ls_Dic[lag_strain]
         for eps in epss:
@@ -86,20 +55,62 @@ def generate_structures_helper(
                     x = eta_matrix - np.dot(eps_matrix, eps_matrix) / 2.0
                     norm = np.linalg.norm(x - eps_matrix)
                     eps_matrix = x
-
-            # --- Calculating the M_new matrix ---------------------------------------------------------
-            i_matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
-            def_matrix = i_matrix + eps_matrix
-            scell = np.dot(structure.get_cell(), def_matrix)
-            nstruct = structure.copy()
-            nstruct.set_cell(scell, scale_atoms=True)
-
-            structure_dict[_subjob_name(i=lag_strain, eps=eps)] = nstruct
-
-    return sym_dict, structure_dict
+            eps_dict[_subjob_name(i=lag_strain, eps=eps)] = eps_matrix
+    return eps_dict
 
 
-def analyse_structures_helper(
+def get_tasks_for_elastic_matrix(
+    structure: ase.atoms.Atoms,
+    eps_range: float,
+    num_of_point: int,
+    zero_strain_job_name: str = "s_e_0",
+    sqrt_eta: bool = True,
+) -> tuple[dict[str, dict[str, ase.atoms.Atoms]], dict[str, int]]:
+    """
+    Generate structures for elastic analysis.
+
+    Args:
+        structure (ase.atoms.Atoms): The input structure.
+        eps_range (float): The range of strain.
+        num_of_point (int): The number of points in the strain range.
+        zero_strain_job_name (str, optional): The name of the zero strain job. Defaults to "s_e_0".
+        sqrt_eta (bool, optional): Whether to take the square root of the eta matrix. Defaults to True.
+
+    Returns:
+        Dict[str, Dict[str, ase.atoms.Atoms]]], Tuple[Dict[str, int]: A tuple containing the symmetry dictionary and the structure dictionary.
+    """
+    SGN, v0, LC, Lag_strain_list, epss = symmetry_analysis(
+        structure=structure,
+        eps_range=eps_range,
+        num_of_point=num_of_point,
+    )
+    sym_dict = {
+        "SGN": SGN,
+        "v0": v0,
+        "LC": LC,
+        "Lag_strain_list": Lag_strain_list,
+        "epss": epss,
+    }
+
+    structure_dict = OrderedDict()
+    if 0.0 in epss:
+        structure_dict[zero_strain_job_name] = structure.copy()
+
+    # --- Calculating the M_new matrix ---------------------------------------------------------
+    for key, eps_matrix in _get_eta_matrix(
+        Lag_strain_list=Lag_strain_list,
+        epss=epss,
+        sqrt_eta=sqrt_eta,
+    ).items():
+        scell = np.dot(structure.get_cell(), np.eye(3) + eps_matrix)
+        nstruct = structure.copy()
+        nstruct.set_cell(scell, scale_atoms=True)
+        structure_dict[key] = nstruct
+
+    return {"calc_energy": structure_dict}, sym_dict
+
+
+def analyse_results_for_elastic_matrix(
     output_dict: dict,
     sym_dict: dict,
     fit_order: int = 2,
@@ -131,8 +142,11 @@ def analyse_structures_helper(
     sym_dict["strain_energy"] = strain_energy
     sym_dict["e0"] = ene0
     sym_dict["A2"] = A2
-    return sym_dict, ElasticProperties(elastic_matrix=elastic_matrix).to_dict(
-        output_keys=output_keys
+    return (
+        ElasticProperties(elastic_matrix=elastic_matrix).to_dict(
+            output_keys=output_keys
+        ),
+        sym_dict,
     )
 
 

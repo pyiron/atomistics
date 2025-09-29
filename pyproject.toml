@@ -1,6 +1,6 @@
 [build-system]
-requires = ["ase", "numpy", "scipy", "setuptools", "spglib", "versioneer[toml]==0.29"]
-build-backend = "setuptools.build_meta"
+requires = ["ase", "numpy", "scipy", "spglib", "hatchling==1.27.0", "hatch-vcs==0.5.0"]
+build-backend = "hatchling.build"
 
 [project]
 name = "atomistics"
@@ -24,8 +24,8 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "ase==3.25.0",
-    "numpy==1.26.4",
+    "ase==3.26.0",
+    "numpy==2.3.3",
     "scipy==1.15.2",
     "spglib==2.6.0",
 ]
@@ -38,34 +38,34 @@ Repository = "https://github.com/pyiron/atomistics"
 
 [project.optional-dependencies]
 phonopy = [
-    "phonopy==2.40.0",
+    "phonopy==2.43.2",
     "seekpath==2.1.0",
-    "structuretoolkit==0.0.32",
+    "structuretoolkit==0.0.35",
 ]
 gpaw = [
-    "gpaw==24.6.0",
+    "gpaw==25.7.0",
 ]
 lammps = [
-    "pylammpsmpi==0.2.36",
+    "pylammpsmpi==0.3.3",
     "jinja2==3.1.6",
-    "pandas==2.3.1",
-    "pyiron_lammps==0.4.3",
+    "pandas==2.3.2",
+    "pyiron_lammps==0.4.7",
 ]
 lammps_phonons = [
-    "pylammpsmpi==0.2.36",
+    "pylammpsmpi==0.3.3",
     "jinja2==3.1.6",
-    "pandas==2.3.1",
+    "pandas==2.3.2",
     "dynaphopy==1.17.16",
-    "pyiron_lammps==0.4.3",
+    "pyiron_lammps==0.4.7",
 ]
 experimental = [
-    "lxml==6.0.0",
+    "lxml==6.0.2",
     "mendeleev==1.1.0",
-    "pandas==2.3.1",
-    "requests==2.32.4",
+    "pandas==2.3.2",
+    "requests==2.32.5",
 ]
 sphinxdft = [
-    "sphinx-parser==0.0.2"
+    "sphinx-parser==0.1.0"
 ]
 qe = [
     "pwtools==1.3.0"
@@ -74,14 +74,30 @@ tqdm = [
     "tqdm==4.67.1"
 ]
 vasp = [
-    "pyiron_vasp==0.2.7"
+    "pyiron_vasp==0.2.13"
 ]
 
-[tool.setuptools.packages.find]
-include = ["atomistics*"]
+[tool.hatch.build]
+include = [
+    "atomistics"
+]
 
-[tool.setuptools.dynamic]
-version = {attr = "atomistics.__version__"}
+[tool.hatch.build.hooks.vcs]
+version-file = "atomistics/_version.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "atomistics"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    "atomistics"
+]
+
+[tool.hatch.version]
+source = "vcs"
+path = "atomistics/_version.py"
 
 [tool.ruff]
 exclude = [".ci_support", "docs", "notebooks", "tests", "setup.py", "_version.py"]
@@ -134,9 +150,6 @@ ignore = [
     "SIM118",
 ]
 
-[tool.versioneer]
-VCS = "git"
-style = "pep440-pre"
-versionfile_source = "atomistics/_version.py"
-parentdir_prefix = "atomistics"
-tag_prefix = "atomistics-"
+[tool.coverage.run]
+omit = ["atomistics/_version.py", "tests/*"]
+command_line = "-m unittest discover tests"

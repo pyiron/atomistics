@@ -6,7 +6,12 @@ from ase.build import bulk
 import unittest
 
 from atomistics.calculators import evaluate_with_sphinx
-from atomistics.workflows import EnergyVolumeCurveWorkflow
+from atomistics.workflows import (
+    analyse_results_for_energy_volume_curve,
+    get_tasks_for_energy_volume_curve,
+    get_thermal_properties_for_energy_volume_curve,
+    optimize_volume,
+)
 
 sphinx_command = "sphinx"
 if shutil.which(sphinx_command) is not None:
@@ -43,16 +48,12 @@ def evaluate_sphinx(working_directory):
 )
 class TestEvCurve(unittest.TestCase):
     def test_calc_evcurve(self):
-        workflow = EnergyVolumeCurveWorkflow(
+        task_dict = get_tasks_for_energy_volume_curve(
             structure=bulk("Al", a=4.11, cubic=True),
             num_points=7,
-            fit_type="polynomial",
-            fit_order=3,
             vol_range=0.05,
             axes=("x", "y", "z"),
-            strains=None,
         )
-        task_dict = workflow.generate_structures()
         result_dict = evaluate_with_sphinx(
             task_dict=task_dict,
             working_directory=os.path.abspath("."),
@@ -62,5 +63,10 @@ class TestEvCurve(unittest.TestCase):
             kpoint_coords=[0.5, 0.5, 0.5],
             kpoint_folding=[3, 3, 3],
         )
-        fit_dict = workflow.analyse_structures(output_dict=result_dict)
+        fit_dict = analyse_results_for_energy_volume_curve(
+            output_dict=result_dict,
+            task_dict=task_dict,
+            fit_type="polynomial",
+            fit_order=3,
+        )
         self.assertTrue(all(validate_fitdict(fit_dict=fit_dict)))

@@ -4,10 +4,10 @@ from concurrent.futures import ProcessPoolExecutor
 from ase.build import bulk
 import unittest
 
-from atomistics.workflows.evcurve.debye import get_thermal_properties
-from atomistics.workflows.evcurve.helper import (
-    analyse_structures_helper,
-    generate_structures_helper,
+from atomistics.workflows import (
+    analyse_results_for_energy_volume_curve,
+    get_tasks_for_energy_volume_curve,
+    get_thermal_properties_for_energy_volume_curve,
 )
 from atomistics.shared.parallel import evaluate_with_parallel_executor
 
@@ -37,7 +37,7 @@ class TestEvCurve(unittest.TestCase):
                 executor=exe,
                 potential_dataframe=df_pot_selected,
             )
-            structure_dict = generate_structures_helper(
+            task_dict = get_tasks_for_energy_volume_curve(
                 structure=result_dict["structure_with_optimized_positions_and_volume"],
                 vol_range=0.05,
                 num_points=11,
@@ -46,17 +46,17 @@ class TestEvCurve(unittest.TestCase):
             )
             result_dict = evaluate_with_parallel_executor(
                 evaluate_function=evaluate_with_lammpslib,
-                task_dict={"calc_energy": structure_dict},
+                task_dict=task_dict,
                 executor=exe,
                 potential_dataframe=df_pot_selected,
             )
-        fit_dict = analyse_structures_helper(
+        fit_dict = analyse_results_for_energy_volume_curve(
             output_dict=result_dict,
-            structure_dict=structure_dict,
+            task_dict=task_dict,
             fit_type="polynomial",
             fit_order=3,
         )
-        thermal_properties_dict = get_thermal_properties(
+        thermal_properties_dict = get_thermal_properties_for_energy_volume_curve(
             fit_dict=fit_dict,
             masses=structure.get_masses(),
             t_min=1.0,

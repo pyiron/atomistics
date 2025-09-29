@@ -4,9 +4,9 @@ from ase.build import bulk
 import numpy as np
 import unittest
 
-from atomistics.workflows.elastic.workflow import (
-    analyse_structures_helper,
-    generate_structures_helper,
+from atomistics.workflows import (
+    analyse_results_for_elastic_matrix,
+    get_tasks_for_elastic_matrix,
 )
 
 try:
@@ -31,7 +31,7 @@ class TestElastic(unittest.TestCase):
             task_dict={"optimize_positions_and_volume": structure},
             potential_dataframe=df_pot_selected,
         )
-        sym_dict, structure_dict = generate_structures_helper(
+        task_dict, sym_dict = get_tasks_for_elastic_matrix(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             eps_range=0.005,
             num_of_point=5,
@@ -39,10 +39,10 @@ class TestElastic(unittest.TestCase):
             sqrt_eta=True,
         )
         result_dict = evaluate_with_lammpslib(
-            task_dict={"calc_energy": structure_dict},
+            task_dict=task_dict,
             potential_dataframe=df_pot_selected,
         )
-        sym_dict, elastic_dict = analyse_structures_helper(
+        elastic_dict, sym_dict = analyse_results_for_elastic_matrix(
             output_dict=result_dict,
             sym_dict=sym_dict,
             fit_order=2,

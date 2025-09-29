@@ -1,18 +1,20 @@
 channels:
 - conda-forge
 dependencies:
-- ase =3.25.0
+- ase =3.26.0
 - coverage
-- lxml =6.0.0
+- lxml =6.0.2
 - mendeleev =1.1.0
-- numpy =1.26.4
-- pandas =2.3.1
-- phonopy =2.40.0
-- requests =2.32.4
+- numpy =2.3.3
+- pandas =2.3.2
+- phonopy =2.43.2
+- requests =2.32.5
 - scipy =1.15.2
 - seekpath =2.1.0
 - spglib =2.6.0
-- structuretoolkit =0.0.32
-- sphinx_parser =0.0.2
+- structuretoolkit =0.0.35
+- sphinx_parser =0.1.0
 - tqdm =4.67.1
-- pyiron_vasp =0.2.7
+- pyiron_vasp =0.2.13
+- hatchling =1.27.0
+- hatch-vcs =0.5.0

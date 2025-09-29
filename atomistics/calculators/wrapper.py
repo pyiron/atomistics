@@ -53,7 +53,7 @@ def as_task_dict_evaluator(
     both the output labels and the structure labels.
 
     Args:
-        calculate [callable]: The function that interprets structures into physical
+        calculate (SimpleEvaluator): The function that interprets structures into physical
             properties.
 
     Returns:
