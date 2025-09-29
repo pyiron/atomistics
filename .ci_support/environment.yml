@@ -5,7 +5,7 @@ dependencies:
 - coverage
 - lxml =6.0.2
 - mendeleev =1.1.0
-- numpy =2.3.2
+- numpy =2.3.3
 - pandas =2.3.2
 - phonopy =2.43.2
 - requests =2.32.5
@@ -15,6 +15,6 @@ dependencies:
 - structuretoolkit =0.0.35
 - sphinx_parser =0.1.0
 - tqdm =4.67.1
-- pyiron_vasp =0.2.12
+- pyiron_vasp =0.2.13
 - hatchling =1.27.0
 - hatch-vcs =0.5.0
