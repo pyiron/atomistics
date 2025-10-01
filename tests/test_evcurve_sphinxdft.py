@@ -26,8 +26,8 @@ def validate_fitdict(fit_dict):
         fit_dict["bulkmodul_eq"] < 65,
         fit_dict["energy_eq"] > -227.72,
         fit_dict["energy_eq"] < -227.71,
-        fit_dict["volume_eq"] > 70.91,
-        fit_dict["volume_eq"] < 70.93,
+        fit_dict["volume_eq"] > 70.84,
+        fit_dict["volume_eq"] < 70.85,
     ]
     if not all(lst):
         print(fit_dict)
