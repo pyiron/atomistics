@@ -436,6 +436,7 @@ def calc_molecular_dynamics_langevin_with_lammpslib(
             Tstart=Tstart,
             Tstop=Tstop,
             Tdamp=Tdamp,
+            seed=seed,
             timestep=timestep,
         )
     run_str = LAMMPS_RUN + "\n"
