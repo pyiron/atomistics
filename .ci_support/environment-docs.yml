@@ -8,7 +8,7 @@ dependencies:
 - myst-parser
 - ase =3.26.0
 - coverage
-- numpy =2.3.3
+- numpy =2.3.4
 - scipy =1.16.2
 - spglib =2.6.0
 - phonopy =2.43.2
