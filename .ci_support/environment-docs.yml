@@ -12,7 +12,7 @@ dependencies:
 - scipy =1.16.2
 - spglib =2.6.0
 - phonopy =2.43.2
-- structuretoolkit =0.0.35
+- structuretoolkit =0.0.36
 - seekpath =2.1.0
 - lammps =2024.08.29
 - pandas =2.3.3
