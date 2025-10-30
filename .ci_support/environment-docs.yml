@@ -20,6 +20,6 @@ dependencies:
 - jinja2 =3.1.6
 - jupyter-book =1.0.0
 - pyiron_lammps =0.4.8
-- pyiron_vasp =0.2.14
+- pyiron_vasp =0.2.15
 - hatchling =1.27.0
 - hatch-vcs =0.5.0
