@@ -15,7 +15,7 @@ dependencies:
 - jinja2 =3.1.6
 - dynaphopy =1.18.0
 - tqdm =4.67.1
-- pyiron_lammps =0.4.8
+- pyiron_lammps =0.4.9
 - pyiron_vasp =0.2.15
 - hatchling =1.27.0
 - hatch-vcs =0.5.0
