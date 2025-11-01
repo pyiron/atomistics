@@ -287,7 +287,7 @@ def get_tasks_for_harmonic_approximation(
         unitcell=unitcell,
         supercell_matrix=get_supercell_matrix(
             interaction_range=interaction_range,
-            cell=unitcell.get_cell(),
+            cell=unitcell.cell,
         ),
         primitive_matrix=primitive_matrix,
         factor=factor,
@@ -301,7 +301,7 @@ def get_tasks_for_harmonic_approximation(
             structure_with_magmoms=structure,
             structure=structuretoolkit.common.phonopy_to_atoms(sc),
             interaction_range=interaction_range,
-            cell=unitcell.get_cell(),
+            cell=unitcell.cell,
         )
         for ind, sc in enumerate(phonopy_obj.supercells_with_displacements)
     }
