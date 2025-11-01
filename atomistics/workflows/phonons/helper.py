@@ -220,7 +220,7 @@ class PhonopyThermalProperties:
             np.ndarray: The volumes.
         """
         return np.array(
-            [self._phonopy.unitcell.get_volume()]
+            [self._phonopy.unitcell.volume]
             * len(self._thermal_properties["temperatures"])
         )
 

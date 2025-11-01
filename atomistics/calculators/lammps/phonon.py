@@ -114,7 +114,7 @@ def calc_molecular_dynamics_phonons_with_lammpslib(
         supercell = [2, 2, 2]
     dp_structure = Structure(
         cell=phonopy_unitcell.cell,
-        scaled_positions=phonopy_unitcell.get_scaled_positions(),
+        scaled_positions=phonopy_unitcell.scaled_positions,
         atomic_elements=phonopy_unitcell.symbols,
         primitive_matrix=phonopy_primitive_matrix,
         force_constants=ForceConstants(
