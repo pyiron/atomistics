@@ -26,8 +26,8 @@ classifiers = [
 ]
 dependencies = [
     "ase==3.26.0",
-    "numpy==2.3.3",
-    "scipy==1.16.2",
+    "numpy==2.3.4",
+    "scipy==1.16.3",
     "spglib==2.6.0",
 ]
 dynamic = ["version"]
@@ -50,14 +50,14 @@ lammps = [
     "pylammpsmpi==0.3.6",
     "jinja2==3.1.6",
     "pandas==2.3.3",
-    "pyiron_lammps==0.4.8",
+    "pyiron_lammps==0.4.9",
 ]
 lammps_phonons = [
     "pylammpsmpi==0.3.6",
     "jinja2==3.1.6",
     "pandas==2.3.3",
     "dynaphopy==1.18.0",
-    "pyiron_lammps==0.4.8",
+    "pyiron_lammps==0.4.9",
 ]
 experimental = [
     "lxml==6.0.2",
@@ -75,7 +75,7 @@ tqdm = [
     "tqdm==4.67.1"
 ]
 vasp = [
-    "pyiron_vasp==0.2.14"
+    "pyiron_vasp==0.2.15"
 ]
 
 [tool.hatch.build]

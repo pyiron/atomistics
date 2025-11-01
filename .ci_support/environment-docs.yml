@@ -8,8 +8,8 @@ dependencies:
 - myst-parser
 - ase =3.26.0
 - coverage
-- numpy =2.3.3
-- scipy =1.16.2
+- numpy =2.3.4
+- scipy =1.16.3
 - spglib =2.6.0
 - phonopy =2.43.6
 - structuretoolkit =0.0.36
@@ -19,7 +19,7 @@ dependencies:
 - pylammpsmpi =0.3.6
 - jinja2 =3.1.6
 - jupyter-book =1.0.0
-- pyiron_lammps =0.4.8
-- pyiron_vasp =0.2.14
+- pyiron_lammps =0.4.9
+- pyiron_vasp =0.2.15
 - hatchling =1.27.0
 - hatch-vcs =0.5.0
