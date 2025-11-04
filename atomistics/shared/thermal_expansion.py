@@ -4,7 +4,12 @@ from atomistics.shared.output import OutputThermalExpansion
 
 
 class ThermalExpansionProperties:
-    def __init__(self, cell_lst:np.ndarray, temperatures_lst: np.ndarray, volumes_lst: np.ndarray):
+    def __init__(
+        self,
+        cell_lst: np.ndarray,
+        temperatures_lst: np.ndarray,
+        volumes_lst: np.ndarray,
+    ):
         """
         Initialize the ThermalExpansionProperties class.
 
@@ -45,7 +50,10 @@ class ThermalExpansionProperties:
 
 
 def get_thermal_expansion_output(
-    temperatures_lst: np.ndarray, volumes_lst: np.ndarray, cell_lst: np.ndarray, output_keys: tuple[str]
+    temperatures_lst: np.ndarray,
+    volumes_lst: np.ndarray,
+    cell_lst: np.ndarray,
+    output_keys: tuple[str],
 ) -> dict:
     """
     Get the thermal expansion output.
