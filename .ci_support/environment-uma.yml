@@ -1,0 +1,4 @@
+channels:
+- conda-forge
+dependencies:
+- fairchem-core =2.11.0
