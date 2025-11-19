@@ -55,6 +55,7 @@ class OutputMolecularDynamics(Output):
 class OutputThermalExpansion(Output):
     temperatures: callable
     volumes: callable
+    cells: callable
 
 
 @dataclasses.dataclass
