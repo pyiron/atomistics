@@ -6,5 +6,6 @@ dependencies:
 - fairchem-core =2.11.0
 - numpy =2.2.6
 - scipy =1.16.3
+- spglib =2.6.0
 - hatchling =1.27.0
 - hatch-vcs =0.5.0
