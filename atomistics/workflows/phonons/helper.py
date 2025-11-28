@@ -224,6 +224,18 @@ class PhonopyThermalProperties:
             * len(self._thermal_properties["temperatures"])
         )
 
+    def cells(self) -> np.ndarray:
+        """
+        Get the cells.
+
+        Returns:
+            np.ndarray: The cells.
+        """
+        return np.array(
+            [self._phonopy.unitcell.cell]
+            * len(self._thermal_properties["temperatures"])
+        )
+
 
 def restore_magmoms(
     structure_with_magmoms: Atoms,
