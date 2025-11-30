@@ -5,8 +5,8 @@ import pandas
 from ase.atoms import Atoms
 from jinja2 import Template
 from pylammpsmpi import LammpsASELibrary
+from pyiron_lammps import validate_potential_dataframe
 
-from atomistics.calculators.lammps.potential import validate_potential_dataframe
 from atomistics.shared.output import OutputMolecularDynamics, OutputThermalExpansion
 from atomistics.shared.thermal_expansion import get_thermal_expansion_output
 from atomistics.shared.tqdm_iterator import get_tqdm_iterator

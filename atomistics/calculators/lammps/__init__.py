@@ -10,7 +10,7 @@ from atomistics.calculators.lammps.libcalculator import (
     optimize_positions_and_volume_with_lammpslib,
     optimize_positions_with_lammpslib,
 )
-from atomistics.calculators.lammps.potential import (
+from pyiron_lammps import (
     get_potential_by_name,
     get_potential_dataframe,
 )

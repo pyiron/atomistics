@@ -9,7 +9,7 @@ import unittest
 from atomistics.workflows import optimize_positions
 
 try:
-    from atomistics.calculators.lammps.potential import get_potential_by_name
+    from pyiron_lammps import get_potential_by_name
     from atomistics.calculators.lammps.filecalculator import evaluate_with_lammpsfile
 
     skip_lammps_test = False
