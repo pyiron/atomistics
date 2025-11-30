@@ -1,3 +1,8 @@
+from pyiron_lammps import (
+    get_potential_by_name,
+    get_potential_dataframe,
+)
+
 from atomistics.calculators.lammps.libcalculator import (
     calc_molecular_dynamics_langevin_with_lammpslib,
     calc_molecular_dynamics_nph_with_lammpslib,
@@ -9,10 +14,6 @@ from atomistics.calculators.lammps.libcalculator import (
     evaluate_with_lammpslib_library_interface,
     optimize_positions_and_volume_with_lammpslib,
     optimize_positions_with_lammpslib,
-)
-from atomistics.calculators.lammps.potential import (
-    get_potential_by_name,
-    get_potential_dataframe,
 )
 from atomistics.shared.import_warning import raise_warning
 

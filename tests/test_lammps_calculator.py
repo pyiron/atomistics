@@ -5,7 +5,7 @@ from ase.build import bulk
 
 try:
     import pandas
-    from atomistics.calculators.lammps.potential import (
+    from pyiron_lammps import (
         validate_potential_dataframe,
         get_potential_dataframe,
     )
