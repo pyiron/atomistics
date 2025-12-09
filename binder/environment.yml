@@ -5,7 +5,7 @@ dependencies:
 - numpy =2.3.5
 - scipy =1.16.3
 - spglib =2.6.0
-- phonopy =2.44.0
+- phonopy =2.45.1
 - structuretoolkit =0.0.38
 - seekpath =2.1.0
 - gpaw =25.7.0
