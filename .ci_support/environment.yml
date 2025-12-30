@@ -11,7 +11,7 @@ dependencies:
 - requests =2.32.5
 - scipy =1.16.3
 - seekpath =2.1.0
-- spglib =2.6.0
+- spglib =2.7.0
 - structuretoolkit =0.0.38
 - sphinx_parser =0.1.5
 - tqdm =4.67.1
