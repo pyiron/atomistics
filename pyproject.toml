@@ -50,14 +50,14 @@ lammps = [
     "pylammpsmpi==0.3.8",
     "jinja2==3.1.6",
     "pandas==2.3.3",
-    "pyiron_lammps==0.5.1",
+    "pyiron_lammps==0.5.2",
 ]
 lammps_phonons = [
     "pylammpsmpi==0.3.8",
     "jinja2==3.1.6",
     "pandas==2.3.3",
     "dynaphopy==1.18.0",
-    "pyiron_lammps==0.5.1",
+    "pyiron_lammps==0.5.2",
 ]
 experimental = [
     "lxml==6.0.2",
