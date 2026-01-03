@@ -1,7 +1,7 @@
 channels:
 - conda-forge
 dependencies:
-- ase =3.26.0
+- ase =3.27.0
 - numpy =2.3.5
 - scipy =1.16.3
 - spglib =2.7.0
