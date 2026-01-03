@@ -9,4 +9,4 @@ dependencies:
 - pylammpsmpi =0.3.8
 - jinja2 =3.1.6
 - dynaphopy =1.18.0
-- pyiron_lammps =0.5.1
+- pyiron_lammps =0.5.2
