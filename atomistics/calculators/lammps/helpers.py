@@ -120,7 +120,7 @@ def lammps_thermal_expansion_loop(
         **kwargs,
     )
 
-    volume_md_lst, temperature_md_lst = [], []
+    volume_md_lst, cell_md_lst, temperature_md_lst = [], [], []
     for temp in get_tqdm_iterator(temperature_lst):
         run_str_rendered = Template(run_str).render(
             run=run,
@@ -133,12 +133,14 @@ def lammps_thermal_expansion_loop(
         )
         for line in run_str_rendered.split("\n"):
             lmp_instance.interactive_lib_command(line)
+        cell_md_lst.append(lmp_instance.interactive_cells_getter())
         volume_md_lst.append(lmp_instance.interactive_volume_getter())
         temperature_md_lst.append(lmp_instance.interactive_temperatures_getter())
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return get_thermal_expansion_output(
-        temperatures_lst=temperature_md_lst,
-        volumes_lst=volume_md_lst,
+        cell_lst=np.array(cell_md_lst),
+        temperatures_lst=np.array(temperature_md_lst),
+        volumes_lst=np.array(volume_md_lst),
         output_keys=output_keys,
     )
 

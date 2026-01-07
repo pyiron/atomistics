@@ -396,7 +396,7 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
     temperature_lst = np.arange(
         temperature_start, temperature_stop + temperature_step, temperature_step
     ).tolist()
-    volume_md_lst, temperature_md_lst = [], []
+    volume_md_lst, temperature_md_lst, cell_md_lst = [], [], []
     for temperature in get_tqdm_iterator(temperature_lst):
         result_dict = calc_molecular_dynamics_npt_with_ase(
             structure=structure_current.copy(),
@@ -410,11 +410,13 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
             externalstress=externalstress,
         )
         structure_current.set_cell(cell=result_dict["cell"][-1], scale_atoms=True)
+        cell_md_lst.append(result_dict["cell"][-1])
         temperature_md_lst.append(result_dict["temperature"][-1])
         volume_md_lst.append(result_dict["volume"][-1])
     return get_thermal_expansion_output(
-        temperatures_lst=temperature_md_lst,
-        volumes_lst=volume_md_lst,
+        cell_lst=np.array(cell_md_lst),
+        temperatures_lst=np.array(temperature_md_lst),
+        volumes_lst=np.array(volume_md_lst),
         output_keys=output_keys,
     )
 
