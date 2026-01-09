@@ -3,9 +3,15 @@ import operator
 import random
 from ase.build import bulk
 from ase.data import reference_states, atomic_numbers
-from structuretoolkit.analyse import get_adaptive_cna_descriptors, get_diamond_structure_descriptors
+from structuretoolkit.analyse import (
+    get_adaptive_cna_descriptors,
+    get_diamond_structure_descriptors,
+)
 from atomistics.shared.output import OutputMolecularDynamics
-from atomistics.calculators.lammps import optimize_positions_and_volume_with_lammpslib, calc_molecular_dynamics_npt_with_lammpslib
+from atomistics.calculators.lammps import (
+    optimize_positions_and_volume_with_lammpslib,
+    calc_molecular_dynamics_npt_with_lammpslib,
+)
 
 
 def _check_diamond(structure):
@@ -56,7 +62,7 @@ def _analyse_structure(structure, mode="total", diamond=False):
         return get_diamond_structure_descriptors(
             structure=structure, mode=mode, ovito_compatibility=True
         )
-    
+
 
 def _analyse_minimized_structure(structure):
     """
@@ -119,8 +125,8 @@ def _next_calc(structure, potential, temperature, seed, run_time_steps=10000):
         output_keys=OutputMolecularDynamics.keys(),
     )
     structure_md = structure.copy()
-    structure_md.set_positions(output_md_dict['positions'][-1])
-    structure_md.set_cell(output_md_dict['cell'][-1])
+    structure_md.set_positions(output_md_dict["positions"][-1])
+    structure_md.set_cell(output_md_dict["cell"][-1])
     return structure_md
 
 
@@ -213,16 +219,26 @@ def _next_step_funct(
     return structure_left, structure_right, temperature_left, temperature_right
 
 
-def estimate_melting_temperature(element, potential, strain_run_time_steps=1000, temperature_left=0, temperature_right=1000, number_of_atoms=8000, seed=None):
+def estimate_melting_temperature(
+    element,
+    potential,
+    strain_run_time_steps=1000,
+    temperature_left=0,
+    temperature_right=1000,
+    number_of_atoms=8000,
+    seed=None,
+):
     if seed is None:
-        seed = random.randint(0,99999)
-    crystalstructure = reference_states[atomic_numbers[element]]['symmetry']
-    if crystalstructure == 'hcp':
+        seed = random.randint(0, 99999)
+    crystalstructure = reference_states[atomic_numbers[element]]["symmetry"]
+    if crystalstructure == "hcp":
         basis = bulk(name=element, orthorhombic=True)
     else:
         basis = bulk(name=element, cubic=True)
-    basis_lst = [basis.repeat([i, i, i]) for i in range(5,30)]
-    basis = basis_lst[np.argmin([np.abs(len(b)-number_of_atoms/2) for b in basis_lst])]
+    basis_lst = [basis.repeat([i, i, i]) for i in range(5, 30)]
+    basis = basis_lst[
+        np.argmin([np.abs(len(b) - number_of_atoms / 2) for b in basis_lst])
+    ]
 
     structure_opt = optimize_positions_and_volume_with_lammpslib(
         structure=basis,
