@@ -7,7 +7,7 @@ from pandas import DataFrame
 
 from structuretoolkit.analyse import (
     get_adaptive_cna_descriptors,
-    get_diamond_structure_descriptors
+    get_diamond_structure_descriptors,
 )
 
 from atomistics.calculators.lammps import (
@@ -15,17 +15,18 @@ from atomistics.calculators.lammps import (
     calc_molecular_dynamics_npt_with_lammpslib,
 )
 
+
 def _run_npt_molecular_dynamics(
-    structure: Atoms, 
+    structure: Atoms,
     potential_dataframe: DataFrame,
-    temperature: float, 
+    temperature: float,
     run: int = 10000,
     seed: int = 42,
     cores: int = 1,
-    log_file: Optional[str] = None
+    log_file: Optional[str] = None,
 ) -> Atoms:
     """
-    Run NPT molecular dynamics at a given temperature. Initialize velocities at the 
+    Run NPT molecular dynamics at a given temperature. Initialize velocities at the
     given temperature and couple stresses in all x, y, and z directions.
 
     Args:
@@ -52,34 +53,39 @@ def _run_npt_molecular_dynamics(
         velocity_rescale_factor=1.0,
         couple_xyz=True,
         cores=cores,
-        log_file=log_file
+        log_file=log_file,
     )
     structure_md = structure.copy()
-    structure_md.set_positions(output_md_dict['positions'][-1])
-    structure_md.set_cell(output_md_dict['cell'][-1])
+    structure_md.set_positions(output_md_dict["positions"][-1])
+    structure_md.set_cell(output_md_dict["cell"][-1])
     return structure_md
 
+
 def _get_repeated_structure(
-    input_structure : Atoms, 
-    target_number_of_atoms: int
+    input_structure: Atoms, target_number_of_atoms: int
 ) -> Atoms:
     """
     Get a repeated structure that is as close as possible to the target number of atoms.
-    
+
     Args:
         input_structure (Atoms): The input structure to be repeated.
         target_number_of_atoms (int): The target number of atoms for the simulation cell.
-    
+
     Returns:
         Atoms: The repeated structure.
     """
 
-    r_est = (target_number_of_atoms / len(input_structure)) ** (1/3)
-    candidates = np.array([max(1, int(np.floor(r_est))), int(np.round(r_est)), int(np.ceil(r_est))])
+    r_est = (target_number_of_atoms / len(input_structure)) ** (1 / 3)
+    candidates = np.array(
+        [max(1, int(np.floor(r_est))), int(np.round(r_est)), int(np.ceil(r_est))]
+    )
     basis_lst = [input_structure.repeat([i, i, i]) for i in candidates]
-    basis = basis_lst[np.argmin([np.abs(len(b)-target_number_of_atoms) for b in basis_lst])]
-    
+    basis = basis_lst[
+        np.argmin([np.abs(len(b) - target_number_of_atoms) for b in basis_lst])
+    ]
+
     return basis
+
 
 def _check_diamond(structure: Atoms) -> bool:
     """
@@ -104,10 +110,9 @@ def _check_diamond(structure: Atoms) -> bool:
         > dia_dict["IdentifyDiamond.counts.OTHER"]
     )
 
+
 def _analyse_structure(
-    structure: Atoms, 
-    mode: str ="total", 
-    diamond: bool =False
+    structure: Atoms, mode: str = "total", diamond: bool = False
 ) -> dict:
     """
     Analyse the structure using either adaptive CNA or diamond structure descriptors.
@@ -122,16 +127,13 @@ def _analyse_structure(
     """
     if not diamond:
         return get_adaptive_cna_descriptors(
-            structure=structure, 
-            mode=mode, 
-            ovito_compatibility=True
+            structure=structure, mode=mode, ovito_compatibility=True
         )
     else:
         return get_diamond_structure_descriptors(
-            structure=structure, 
-            mode=mode, 
-            ovito_compatibility=True
+            structure=structure, mode=mode, ovito_compatibility=True
         )
+
 
 def _analyse_minimized_structure(structure: Atoms) -> tuple:
     """
@@ -148,15 +150,13 @@ def _analyse_minimized_structure(structure: Atoms) -> tuple:
 
     diamond_flag = _check_diamond(structure=structure)
     final_structure_dict = _analyse_structure(
-        structure=structure, 
-        mode="total", 
-        diamond=diamond_flag
+        structure=structure, mode="total", diamond=diamond_flag
     )
     key_max = max(final_structure_dict.items(), key=operator.itemgetter(1))[0]
     number_of_atoms = len(structure)
     distribution_initial = final_structure_dict[key_max] / number_of_atoms
     distribution_initial_half = distribution_initial / 2
-    
+
     return (
         structure,
         key_max,
@@ -164,6 +164,7 @@ def _analyse_minimized_structure(structure: Atoms) -> tuple:
         distribution_initial_half,
         final_structure_dict,
     )
+
 
 def _run_next_bisection_iteration(
     potential_dataframe: DataFrame,
@@ -179,12 +180,11 @@ def _run_next_bisection_iteration(
     run: int = 1000,
     seed: int = 42,
     cores: int = 1,
-    log_file: Optional[str] = None
+    log_file: Optional[str] = None,
 ) -> tuple:
-    
     """
     Run the next iteration of the bisection algorithm. This function updates the left and right structures.
-    It checks the structure types at the left and right temperatures and decides how to update the 
+    It checks the structure types at the left and right temperatures and decides how to update the
     temperature bounds based on the distribution of the identified structure from adaptive CNA or diamond analysis.
 
     Args:
@@ -202,7 +202,7 @@ def _run_next_bisection_iteration(
         seed (int): The random seed for velocity initialization.
         cores (int): The number of CPU cores to use.
         log_file (Optional[str]): The log file path.
-    
+
     Returns:
         tuple: Updated structures and temperature bounds.
     """
@@ -222,7 +222,9 @@ def _run_next_bisection_iteration(
         structure_left_dict[key_max] / number_of_atoms > distribution_initial_half
         and structure_right_dict[key_max] / number_of_atoms > distribution_initial_half
     ):
-        print(f"Both structures have {key_max} above half distribution at temperatures {temperature_left} and {temperature_right}")
+        print(
+            f"Both structures have {key_max} above half distribution at temperatures {temperature_left} and {temperature_right}"
+        )
         print("Increasing temperatures...")
         print("-----------------------------------------------------")
         structure_left = structure_right.copy()
@@ -235,14 +237,16 @@ def _run_next_bisection_iteration(
             run=run,
             seed=seed,
             cores=cores,
-            log_file=log_file
+            log_file=log_file,
         )
     elif (
         structure_left_dict[key_max] / number_of_atoms
         > distribution_initial_half
         > structure_right_dict[key_max] / number_of_atoms
     ):
-        print(f"Left structure has {key_max} above half distribution at temperature {temperature_left}, right structure below at temperature {temperature_right}")
+        print(
+            f"Left structure has {key_max} above half distribution at temperature {temperature_left}, right structure below at temperature {temperature_right}"
+        )
         print("Decreasing temperatures...")
         print("-----------------------------------------------------")
         temperature_diff /= 2
@@ -254,13 +258,15 @@ def _run_next_bisection_iteration(
             run=run,
             seed=seed,
             cores=cores,
-            log_file=log_file
+            log_file=log_file,
         )
     elif (
         structure_left_dict[key_max] / number_of_atoms < distribution_initial_half
         and structure_right_dict[key_max] / number_of_atoms < distribution_initial_half
     ):
-        print(f"Both structures have {key_max} below half distribution at temperatures {temperature_left} and {temperature_right}")
+        print(
+            f"Both structures have {key_max} below half distribution at temperatures {temperature_left} and {temperature_right}"
+        )
         print("Decreasing temperatures...")
         print("-----------------------------------------------------")
         temperature_diff /= 2
@@ -274,12 +280,13 @@ def _run_next_bisection_iteration(
             run=run,
             seed=seed,
             cores=cores,
-            log_file=log_file
+            log_file=log_file,
         )
     else:
         raise ValueError("We should never reach this point!")
-    
+
     return structure_left, structure_right, temperature_left, temperature_right
+
 
 def _run_bisection_algorithm(
     optimized_structure: Atoms,
@@ -290,7 +297,7 @@ def _run_bisection_algorithm(
     run: int = 10000,
     seed: int = 42,
     cores: int = 1,
-    log_file: Optional[str] = None
+    log_file: Optional[str] = None,
 ) -> float:
     """
     Run the bisection algorithm to estimate the melting temperature.
@@ -305,28 +312,26 @@ def _run_bisection_algorithm(
         seed (int): The random seed for velocity initialization.
         cores (int): The number of CPU cores to use.
         log_file (Optional[str]): The log file path.
-    
+
     Returns:
         float: The estimated melting temperature.
     """
 
     temperature_step = temperature_right - temperature_left
-    
+
     (
-    structure_after_minimization,
-    key_max,
-    number_of_atoms,
-    distribution_initial_half,
-    _,
-    ) = _analyse_minimized_structure(
-        structure=optimized_structure
-    )
+        structure_after_minimization,
+        key_max,
+        number_of_atoms,
+        distribution_initial_half,
+        _,
+    ) = _analyse_minimized_structure(structure=optimized_structure)
 
     diamond_flag = _check_diamond(structure=optimized_structure)
 
     # FIXME: Here the t right is being checked for, but seems like t low is assumed to be 0, and hence not checked for
     structure_left = optimized_structure
-    
+
     print("Running at the highest temperature")
     structure_right = _run_npt_molecular_dynamics(
         structure=optimized_structure,
@@ -335,7 +340,7 @@ def _run_bisection_algorithm(
         run=run,
         seed=seed,
         cores=cores,
-        log_file=log_file
+        log_file=log_file,
     )
 
     while temperature_step > temperature_diff_tolerance:
@@ -345,42 +350,43 @@ def _run_bisection_algorithm(
             temperature_left,
             temperature_right,
         ) = _run_next_bisection_iteration(
-                potential_dataframe=potential_dataframe,
-                diamond_flag=diamond_flag,
-                number_of_atoms=number_of_atoms,
-                key_max=key_max,
-                structure_left=structure_left,
-                structure_right=structure_right,
-                temperature_left=temperature_left,
-                temperature_right=temperature_right,
-                distribution_initial_half=distribution_initial_half,
-                structure_after_minimization=structure_after_minimization,
-                run=run,
-                seed=seed,
-                cores=cores,
-                log_file=log_file
-            )
+            potential_dataframe=potential_dataframe,
+            diamond_flag=diamond_flag,
+            number_of_atoms=number_of_atoms,
+            key_max=key_max,
+            structure_left=structure_left,
+            structure_right=structure_right,
+            temperature_left=temperature_left,
+            temperature_right=temperature_right,
+            distribution_initial_half=distribution_initial_half,
+            structure_after_minimization=structure_after_minimization,
+            run=run,
+            seed=seed,
+            cores=cores,
+            log_file=log_file,
+        )
         temperature_step = temperature_right - temperature_left
-        
+
     print(f"Melting point estimated at T = {temperature_left} K")
     return temperature_left
 
+
 def estimate_melting_temperature_using_bisection_CNA(
-        structure: Atoms,
-        potential_dataframe: DataFrame,
-        target_number_of_atoms: int = 4000,
-        temperature_left: float = 0,
-        temperature_right: float = 1000,
-        temperature_diff_tolerance: float = 10,
-        run: int = 10000,
-        seed: Optional[int] = None,
-        cores: int = 1,
-        log_file: Optional[str] = None
+    structure: Atoms,
+    potential_dataframe: DataFrame,
+    target_number_of_atoms: int = 4000,
+    temperature_left: float = 0,
+    temperature_right: float = 1000,
+    temperature_diff_tolerance: float = 10,
+    run: int = 10000,
+    seed: Optional[int] = None,
+    cores: int = 1,
+    log_file: Optional[str] = None,
 ) -> float:
     """
-    Estimate the melting temperature of a given element using the bisection algorithm, 
+    Estimate the melting temperature of a given element using the bisection algorithm,
     and adaptive Common Neighbour Analysis (CNA).
-    
+
     Args:
         structure (Atoms): The input structure of the element.
         potential_dataframe (DataFrame): The dataframe containing the potential information.
@@ -400,22 +406,23 @@ def estimate_melting_temperature_using_bisection_CNA(
     if seed is None:
         seed = random.randint(0, 99999)
     repeated_structure = _get_repeated_structure(
-        input_structure=structure,
-        target_number_of_atoms=target_number_of_atoms
+        input_structure=structure, target_number_of_atoms=target_number_of_atoms
     )
 
-    position_and_volume_optimized_structure = optimize_positions_and_volume_with_lammpslib(
-        structure=repeated_structure,
-        potential_dataframe=potential_dataframe,
-        min_style="cg",
-        etol=0.0,
-        ftol=0.0001,
-        maxiter=100000,
-        maxeval=10000000,
-        thermo=10,
-        lmp=None,
-        cores=cores,
-        log_file=log_file
+    position_and_volume_optimized_structure = (
+        optimize_positions_and_volume_with_lammpslib(
+            structure=repeated_structure,
+            potential_dataframe=potential_dataframe,
+            min_style="cg",
+            etol=0.0,
+            ftol=0.0001,
+            maxiter=100000,
+            maxeval=10000000,
+            thermo=10,
+            lmp=None,
+            cores=cores,
+            log_file=log_file,
+        )
     )
 
     temperature_final = _run_bisection_algorithm(
@@ -427,7 +434,7 @@ def estimate_melting_temperature_using_bisection_CNA(
         run=run,
         seed=seed,
         cores=cores,
-        log_file=log_file
+        log_file=log_file,
     )
 
     return int(round(temperature_final))
