@@ -7,7 +7,7 @@ dependencies:
 - spglib =2.7.0
 - phonopy =2.47.1
 - structuretoolkit =0.0.39
-- seekpath =2.1.0
+- seekpath =2.2.0
 - gpaw =25.7.0
 - lammps =2024.08.29
 - pandas =2.3.3
