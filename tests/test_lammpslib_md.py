@@ -71,7 +71,7 @@ class TestLammpsMD(unittest.TestCase):
             seed=4928459,
             dist="gaussian",
             lmp=None,
-            disable_initial_velocity=True,
+            velocity_rescale_factor=None,
         )
         self.assertEqual(result_dict["positions"].shape, (10, 32, 3))
         self.assertEqual(result_dict["velocities"].shape, (10, 32, 3))
@@ -163,7 +163,7 @@ class TestLammpsMD(unittest.TestCase):
             seed=4928459,
             dist="gaussian",
             lmp=None,
-            disable_initial_velocity=True,
+            velocity_rescale_factor=None,
         )
         self.assertEqual(result_dict["positions"].shape, (10, 32, 3))
         self.assertEqual(result_dict["velocities"].shape, (10, 32, 3))
