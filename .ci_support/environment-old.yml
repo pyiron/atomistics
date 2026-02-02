@@ -19,7 +19,7 @@ dependencies:
 - spglib =2.0.2
 - structuretoolkit =0.0.10
 - tqdm =4.44.0
-- pyiron_lammps =0.3.2
+- lammpsparser =0.0.1
 - pyiron_vasp =0.2.4
 - sphinx_parser =0.1.0
 - hatchling =1.27.0
