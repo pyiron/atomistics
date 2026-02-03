@@ -72,7 +72,7 @@ qe = [
     "pwtools==1.3.0"
 ]
 tqdm = [
-    "tqdm==4.67.2"
+    "tqdm==4.67.3"
 ]
 vasp = [
     "pyiron_vasp==0.2.19"
