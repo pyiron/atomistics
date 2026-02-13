@@ -7,4 +7,4 @@ dependencies:
 - jinja2 =3.1.6
 - iprpy-data =2023.07.25
 - dynaphopy =1.18.0
-- pyiron_lammps =0.5.3
+- lammpsparser =0.0.1

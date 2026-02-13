@@ -5,7 +5,7 @@ from ase.build import bulk
 
 try:
     import pandas
-    from pyiron_lammps import (
+    from lammpsparser import (
         validate_potential_dataframe,
         get_potential_dataframe,
     )
