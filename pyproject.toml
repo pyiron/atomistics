@@ -75,7 +75,7 @@ tqdm = [
     "tqdm==4.67.3"
 ]
 vasp = [
-    "pyiron_vasp==0.2.19"
+    "vaspparser==0.0.1"
 ]
 
 [tool.hatch.build]
