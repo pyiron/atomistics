@@ -8,3 +8,4 @@ dependencies:
 - iprpy-data =2023.07.25
 - dynaphopy =1.18.0
 - lammpsparser =0.0.1
+- pyscal3 = 3.3.1
