@@ -16,7 +16,7 @@ dependencies:
 - seekpath =2.2.1
 - lammps =2024.08.29
 - pandas =2.3.3
-- pylammpsmpi =0.3.9
+- pylammpsmpi =0.3.10
 - jinja2 =3.1.6
 - jupyter-book =1.0.0
 - lammpsparser =0.0.1
