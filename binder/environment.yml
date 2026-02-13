@@ -3,10 +3,10 @@ channels:
 dependencies:
 - ase =3.27.0
 - numpy =2.3.5
-- scipy =1.16.3
+- scipy =1.17.0
 - spglib =2.7.0
 - phonopy =2.47.1
-- structuretoolkit =0.0.39
+- structuretoolkit =0.0.40
 - seekpath =2.2.1
 - gpaw =25.7.0
 - lammps =2024.08.29
