@@ -1,29 +1,33 @@
-import numpy as np
 import operator
 import random
+
+from ase import Atoms
 from ase.build import bulk
 from ase.data import reference_states, atomic_numbers
-from structuretoolkit.analyse import (
-    get_adaptive_cna_descriptors,
-    get_diamond_structure_descriptors,
-)
 from atomistics.shared.output import OutputMolecularDynamics
 from atomistics.calculators.lammps import (
     optimize_positions_and_volume_with_lammpslib,
     calc_molecular_dynamics_npt_with_lammpslib,
 )
+import numpy as np
+from structuretoolkit.analyse import (
+    get_adaptive_cna_descriptors,
+    get_diamond_structure_descriptors,
+)
 
 
-def _check_diamond(structure):
+def _check_diamond(structure: Atoms) -> bool:
     """
-    Utility function to check if the structure is fcc, bcc, hcp or diamond
+    Check if the structure is diamond or not by comparing the counts of 'OTHER' from
+    adaptive CNA and diamond structure descriptors.
 
     Args:
-        structure (pyiron_atomistics.structure.atoms.Atoms): Atomistic Structure object to check
+        structure (Atoms): The structure to check.
 
     Returns:
-        bool: true if diamond else false
+        bool: True if the structure is diamond, False otherwise.
     """
+
     cna_dict = get_adaptive_cna_descriptors(
         structure=structure, mode="total", ovito_compatibility=True
     )
@@ -36,23 +40,19 @@ def _check_diamond(structure):
     )
 
 
-def _analyse_structure(structure, mode="total", diamond=False):
+def _analyse_structure(
+    structure: Atoms, mode: str = "total", diamond: bool = False
+) -> dict:
     """
-    Use either common neighbor analysis or the diamond structure detector
+    Analyse the structure using either adaptive CNA or diamond structure descriptors.
 
     Args:
-        structure (pyiron_atomistics.structure.atoms.Atoms): The structure to analyze.
-        mode ("total"/"numeric"/"str"): Controls the style and level
-            of detail of the output.
-            - total : return number of atoms belonging to each structure
-            - numeric : return a per atom list of numbers- 0 for unknown,
-                1 fcc, 2 hcp, 3 bcc and 4 icosa
-            - str : return a per atom string of sructures
-        diamond (bool): Flag to either use the diamond structure detector or
-            the common neighbor analysis.
+        structure (Atoms): The structure to analyse.
+        mode (str): The mode for analysis, default is "total".
+        diamond (bool): Flag to choose between diamond structure descriptors or adaptive CNA.
 
     Returns:
-        (depends on `mode`)
+        dict: A dictionary of structure descriptors.
     """
     if not diamond:
         return get_adaptive_cna_descriptors(
@@ -64,13 +64,16 @@ def _analyse_structure(structure, mode="total", diamond=False):
         )
 
 
-def _analyse_minimized_structure(structure):
+def _analyse_minimized_structure(structure: Atoms) -> tuple:
     """
 
     Args:
-        ham (GenericJob):
+        structure (Atoms): The minimized structure.
 
     Returns:
+        tuple: A tuple containing the structure, key of the maximum structure type,
+               number of atoms, half of the initial distribution of the identified structure type,
+               and the final structure dictionary.
 
     """
     diamond_flag = _check_diamond(structure=structure)
@@ -81,6 +84,7 @@ def _analyse_minimized_structure(structure):
     number_of_atoms = len(structure)
     distribution_initial = final_structure_dict[key_max] / number_of_atoms
     distribution_initial_half = distribution_initial / 2
+
     return (
         structure,
         key_max,
