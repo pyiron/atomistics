@@ -10,6 +10,7 @@ from atomistics.calculators.lammps import (
     calc_molecular_dynamics_npt_with_lammpslib,
 )
 import numpy as np
+import pandas as pd
 from structuretoolkit.analyse import (
     get_adaptive_cna_descriptors,
     get_diamond_structure_descriptors,
@@ -39,7 +40,6 @@ def _check_diamond(structure: Atoms) -> bool:
         > dia_dict["IdentifyDiamond.counts.OTHER"]
     )
 
-
 def _analyse_structure(
     structure: Atoms, mode: str = "total", diamond: bool = False
 ) -> dict:
@@ -62,7 +62,6 @@ def _analyse_structure(
         return get_diamond_structure_descriptors(
             structure=structure, mode=mode, ovito_compatibility=True
         )
-
 
 def _analyse_minimized_structure(structure: Atoms) -> tuple:
     """
@@ -93,18 +92,25 @@ def _analyse_minimized_structure(structure: Atoms) -> tuple:
         final_structure_dict,
     )
 
-
-def _next_calc(structure, potential, temperature, seed, run_time_steps=10000):
+def _next_calc(
+    structure: Atoms, 
+    potential_dataframe: pd.DataFrame, 
+    temperature: float, 
+    seed: int, 
+    run_time_steps: int = 10000
+) -> Atoms:
     """
     Calculate NPT ensemble at a given temperature using the job defined in the project parameters:
     - job_type: Type of Simulation code to be used
     - project: Project object used to create the job
-    - potential: Interatomic Potential
+    - potential_dataframe: Interatomic Potential dataframe
     - queue (optional): HPC Job queue to be used
 
     Args:
         structure (pyiron_atomistics.structure.atoms.Atoms): Atomistic Structure object to be set to the job as input sturcture
+        potential_dataframe (pd.DataFrame): Interatomic Potential dataframe
         temperature (float): Temperature of the Molecular dynamics calculation
+        seed (int): Random seed for the simulation
         run_time_steps (int): Number of Molecular dynamics steps
 
     Returns:
@@ -112,7 +118,7 @@ def _next_calc(structure, potential, temperature, seed, run_time_steps=10000):
     """
     output_md_dict = calc_molecular_dynamics_npt_with_lammpslib(
         structure=structure,
-        potential_dataframe=potential,
+        potential_dataframe=potential_dataframe,
         Tstart=temperature,
         Tstop=temperature,
         Tdamp=0.1,
@@ -131,15 +137,15 @@ def _next_calc(structure, potential, temperature, seed, run_time_steps=10000):
     structure_md = structure.copy()
     structure_md.set_positions(output_md_dict["positions"][-1])
     structure_md.set_cell(output_md_dict["cell"][-1])
+    
     return structure_md
-
 
 def _next_step_funct(
     number_of_atoms,
     key_max,
     structure_left,
     structure_right,
-    potential,
+    potential_dataframe: pd.DataFrame,
     temperature_left,
     temperature_right,
     distribution_initial_half,
@@ -160,19 +166,22 @@ def _next_step_funct(
         distribution_initial_half:
         structure_after_minimization:
         run_time_steps:
+        seed:
 
     Returns:
 
     """
+    diamond_flag = crystalstructure.lower() == "diamond"
+
     structure_left_dict = _analyse_structure(
         structure=structure_left,
         mode="total",
-        diamond=crystalstructure.lower() == "diamond",
+        diamond=diamond_flag,
     )
     structure_right_dict = _analyse_structure(
         structure=structure_right,
         mode="total",
-        diamond=crystalstructure.lower() == "diamond",
+        diamond=diamond_flag,
     )
     temperature_diff = temperature_right - temperature_left
     if (
@@ -185,7 +194,7 @@ def _next_step_funct(
         structure_right = _next_calc(
             structure=structure_after_minimization,
             temperature=temperature_right,
-            potential=potential,
+            potential_dataframe=potential_dataframe,
             seed=seed,
             run_time_steps=run_time_steps,
         )
@@ -199,7 +208,7 @@ def _next_step_funct(
         structure_left = _next_calc(
             structure=structure_after_minimization,
             temperature=temperature_left,
-            potential=potential,
+            potential_dataframe=potential_dataframe,
             seed=seed,
             run_time_steps=run_time_steps,
         )
@@ -214,7 +223,7 @@ def _next_step_funct(
         structure_left = _next_calc(
             structure=structure_after_minimization,
             temperature=temperature_left,
-            potential=potential,
+            potential_dataframe=potential_dataframe,
             seed=seed,
             run_time_steps=run_time_steps,
         )
@@ -222,10 +231,9 @@ def _next_step_funct(
         raise ValueError("We should never reach this point!")
     return structure_left, structure_right, temperature_left, temperature_right
 
-
-def estimate_melting_temperature(
+def estimate_melting_temperature_using_bisection_CNA(
+    potential_dataframe: pd.DataFrame,
     element,
-    potential,
     strain_run_time_steps=1000,
     temperature_left=0,
     temperature_right=1000,
@@ -246,7 +254,7 @@ def estimate_melting_temperature(
 
     structure_opt = optimize_positions_and_volume_with_lammpslib(
         structure=basis,
-        potential_dataframe=potential,
+        potential_dataframe=potential_dataframe,
         min_style="cg",
         etol=0.0,
         ftol=0.0001,
@@ -269,7 +277,7 @@ def estimate_melting_temperature(
         structure=structure_after_minimization,
         temperature=temperature_right,
         seed=seed,
-        potential=potential,
+        potential_dataframe=potential_dataframe,
         run_time_steps=strain_run_time_steps,
     )
     temperature_step = temperature_right - temperature_left
@@ -285,7 +293,7 @@ def estimate_melting_temperature(
             key_max=key_max,
             structure_left=structure_left,
             structure_right=structure_right,
-            potential=potential,
+            potential_dataframe=potential_dataframe,
             temperature_left=temperature_left,
             temperature_right=temperature_right,
             distribution_initial_half=distribution_initial_half,
@@ -295,4 +303,5 @@ def estimate_melting_temperature(
             crystalstructure=crystalstructure,
         )
         temperature_step = temperature_right - temperature_left
+
     return int(round(temperature_left))
