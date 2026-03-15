@@ -17,6 +17,7 @@ from structuretoolkit.analyse import (
     get_diamond_structure_descriptors,
 )
 
+
 def _check_diamond(structure: Atoms) -> bool:
     """
     Check if the structure is diamond or not by comparing the counts of 'OTHER' from
@@ -40,6 +41,7 @@ def _check_diamond(structure: Atoms) -> bool:
         > dia_dict["IdentifyDiamond.counts.OTHER"]
     )
 
+
 def _analyse_structure(
     structure: Atoms, mode: str = "total", diamond: bool = False
 ) -> dict:
@@ -62,6 +64,7 @@ def _analyse_structure(
         return get_diamond_structure_descriptors(
             structure=structure, mode=mode, ovito_compatibility=True
         )
+
 
 def _analyse_minimized_structure(structure: Atoms, diamond_flag: bool) -> tuple:
     """
@@ -91,6 +94,7 @@ def _analyse_minimized_structure(structure: Atoms, diamond_flag: bool) -> tuple:
         final_structure_dict,
     )
 
+
 def _get_repeated_structure(structure: Atoms, target_number_of_atoms: int) -> Atoms:
     """
     Get a repeated structure that is as close as possible to the target number of atoms.
@@ -112,6 +116,7 @@ def _get_repeated_structure(structure: Atoms, target_number_of_atoms: int) -> At
     ]
 
     return basis
+
 
 def _run_npt_molecular_dynamics(
     structure: Atoms,
@@ -160,6 +165,7 @@ def _run_npt_molecular_dynamics(
     structure_md.set_cell(output_md_dict["cell"][-1])
 
     return structure_md
+
 
 def _run_next_bisection_iteration(
     number_of_atoms: int,
@@ -251,7 +257,7 @@ def _run_next_bisection_iteration(
         )
     else:
         raise ValueError("We should never reach this point!")
-    
+
     return structure_left, structure_right, temperature_left, temperature_right
 
 
