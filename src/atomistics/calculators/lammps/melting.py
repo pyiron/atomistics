@@ -1,5 +1,6 @@
 import operator
 import random
+import re
 
 from ase import Atoms
 from ase.build import bulk
@@ -10,6 +11,7 @@ from atomistics.calculators.lammps import (
     calc_molecular_dynamics_npt_with_lammpslib,
 )
 import numpy as np
+import pandas as pd
 from structuretoolkit.analyse import (
     get_adaptive_cna_descriptors,
     get_diamond_structure_descriptors,
@@ -64,7 +66,7 @@ def _analyse_structure(
         )
 
 
-def _analyse_minimized_structure(structure: Atoms) -> tuple:
+def _analyse_minimized_structure(structure: Atoms, diamond_flag: bool) -> tuple:
     """
 
     Args:
@@ -76,7 +78,6 @@ def _analyse_minimized_structure(structure: Atoms) -> tuple:
                and the final structure dictionary.
 
     """
-    diamond_flag = _check_diamond(structure=structure)
     final_structure_dict = _analyse_structure(
         structure=structure, mode="total", diamond=diamond_flag
     )
@@ -94,17 +95,48 @@ def _analyse_minimized_structure(structure: Atoms) -> tuple:
     )
 
 
-def _next_calc(structure, potential, temperature, seed, run_time_steps=10000):
+def _get_repeated_structure(structure: Atoms, target_number_of_atoms: int) -> Atoms:
+    """
+    Get a repeated structure that is as close as possible to the target number of atoms.
+
+    Args:
+        structure (Atoms): The input structure to be repeated.
+        target_number_of_atoms (int): The target number of atoms for the simulation cell.
+
+    Returns:
+        Atoms: The repeated structure.
+    """
+    r_est = (target_number_of_atoms / len(structure)) ** (1 / 3)
+    candidates = np.array(
+        [max(1, int(np.floor(r_est))), int(np.round(r_est)), int(np.ceil(r_est))]
+    )
+    basis_lst = [structure.repeat([i, i, i]) for i in candidates]
+    basis = basis_lst[
+        np.argmin([np.abs(len(b) - target_number_of_atoms) for b in basis_lst])
+    ]
+
+    return basis
+
+
+def _next_calc(
+    structure: Atoms,
+    potential_dataframe: pd.DataFrame,
+    temperature: float,
+    seed: int,
+    run_time_steps: int = 10000,
+) -> Atoms:
     """
     Calculate NPT ensemble at a given temperature using the job defined in the project parameters:
     - job_type: Type of Simulation code to be used
     - project: Project object used to create the job
-    - potential: Interatomic Potential
+    - potential_dataframe: Interatomic Potential dataframe
     - queue (optional): HPC Job queue to be used
 
     Args:
         structure (pyiron_atomistics.structure.atoms.Atoms): Atomistic Structure object to be set to the job as input sturcture
+        potential_dataframe (pd.DataFrame): Interatomic Potential dataframe
         temperature (float): Temperature of the Molecular dynamics calculation
+        seed (int): Random seed for the simulation
         run_time_steps (int): Number of Molecular dynamics steps
 
     Returns:
@@ -112,7 +144,7 @@ def _next_calc(structure, potential, temperature, seed, run_time_steps=10000):
     """
     output_md_dict = calc_molecular_dynamics_npt_with_lammpslib(
         structure=structure,
-        potential_dataframe=potential,
+        potential_dataframe=potential_dataframe,
         Tstart=temperature,
         Tstop=temperature,
         Tdamp=0.1,
@@ -131,6 +163,7 @@ def _next_calc(structure, potential, temperature, seed, run_time_steps=10000):
     structure_md = structure.copy()
     structure_md.set_positions(output_md_dict["positions"][-1])
     structure_md.set_cell(output_md_dict["cell"][-1])
+
     return structure_md
 
 
@@ -139,13 +172,13 @@ def _next_step_funct(
     key_max,
     structure_left,
     structure_right,
-    potential,
+    potential_dataframe: pd.DataFrame,
     temperature_left,
     temperature_right,
     distribution_initial_half,
     structure_after_minimization,
     run_time_steps,
-    crystalstructure,
+    diamond_flag,
     seed,
 ):
     """
@@ -160,6 +193,7 @@ def _next_step_funct(
         distribution_initial_half:
         structure_after_minimization:
         run_time_steps:
+        seed:
 
     Returns:
 
@@ -167,12 +201,12 @@ def _next_step_funct(
     structure_left_dict = _analyse_structure(
         structure=structure_left,
         mode="total",
-        diamond=crystalstructure.lower() == "diamond",
+        diamond=diamond_flag,
     )
     structure_right_dict = _analyse_structure(
         structure=structure_right,
         mode="total",
-        diamond=crystalstructure.lower() == "diamond",
+        diamond=diamond_flag,
     )
     temperature_diff = temperature_right - temperature_left
     if (
@@ -185,7 +219,7 @@ def _next_step_funct(
         structure_right = _next_calc(
             structure=structure_after_minimization,
             temperature=temperature_right,
-            potential=potential,
+            potential_dataframe=potential_dataframe,
             seed=seed,
             run_time_steps=run_time_steps,
         )
@@ -199,7 +233,7 @@ def _next_step_funct(
         structure_left = _next_calc(
             structure=structure_after_minimization,
             temperature=temperature_left,
-            potential=potential,
+            potential_dataframe=potential_dataframe,
             seed=seed,
             run_time_steps=run_time_steps,
         )
@@ -214,7 +248,7 @@ def _next_step_funct(
         structure_left = _next_calc(
             structure=structure_after_minimization,
             temperature=temperature_left,
-            potential=potential,
+            potential_dataframe=potential_dataframe,
             seed=seed,
             run_time_steps=run_time_steps,
         )
@@ -223,37 +257,37 @@ def _next_step_funct(
     return structure_left, structure_right, temperature_left, temperature_right
 
 
-def estimate_melting_temperature(
-    element,
-    potential,
+def estimate_melting_temperature_using_bisection_CNA(
+    structure: Atoms,
+    potential_dataframe: pd.DataFrame,
+    target_number_of_atoms: int,
     strain_run_time_steps=1000,
     temperature_left=0,
     temperature_right=1000,
     number_of_atoms=8000,
     seed=None,
 ):
+
     if seed is None:
         seed = random.randint(0, 99999)
-    crystalstructure = reference_states[atomic_numbers[element]]["symmetry"]
-    if crystalstructure == "hcp":
-        basis = bulk(name=element, orthorhombic=True)
-    else:
-        basis = bulk(name=element, cubic=True)
-    basis_lst = [basis.repeat([i, i, i]) for i in range(5, 30)]
-    basis = basis_lst[
-        np.argmin([np.abs(len(b) - number_of_atoms / 2) for b in basis_lst])
-    ]
 
-    structure_opt = optimize_positions_and_volume_with_lammpslib(
-        structure=basis,
-        potential_dataframe=potential,
-        min_style="cg",
-        etol=0.0,
-        ftol=0.0001,
-        maxiter=100000,
-        maxeval=10000000,
-        thermo=10,
-        lmp=None,
+    diamond_flag = _check_diamond(structure=structure)
+    repeated_structure = _get_repeated_structure(
+        structure=structure, target_number_of_atoms=target_number_of_atoms
+    )
+
+    position_and_volume_optimized_structure = (
+        optimize_positions_and_volume_with_lammpslib(
+            structure=repeated_structure,
+            potential_dataframe=potential_dataframe,
+            min_style="cg",
+            etol=0.0,
+            ftol=0.0001,
+            maxiter=100000,
+            maxeval=10000000,
+            thermo=10,
+            lmp=None,
+        )
     )
 
     (
@@ -262,14 +296,16 @@ def estimate_melting_temperature(
         number_of_atoms,
         distribution_initial_half,
         _,
-    ) = _analyse_minimized_structure(structure=structure_opt)
+    ) = _analyse_minimized_structure(
+        structure=position_and_volume_optimized_structure, diamond_flag=diamond_flag
+    )
 
     structure_left = structure_after_minimization
     structure_right = _next_calc(
         structure=structure_after_minimization,
         temperature=temperature_right,
         seed=seed,
-        potential=potential,
+        potential_dataframe=potential_dataframe,
         run_time_steps=strain_run_time_steps,
     )
     temperature_step = temperature_right - temperature_left
@@ -285,14 +321,15 @@ def estimate_melting_temperature(
             key_max=key_max,
             structure_left=structure_left,
             structure_right=structure_right,
-            potential=potential,
+            potential_dataframe=potential_dataframe,
             temperature_left=temperature_left,
             temperature_right=temperature_right,
             distribution_initial_half=distribution_initial_half,
             structure_after_minimization=structure_after_minimization,
             run_time_steps=strain_run_time_steps,
             seed=seed,
-            crystalstructure=crystalstructure,
+            diamond_flag=diamond_flag,
         )
         temperature_step = temperature_right - temperature_left
+
     return int(round(temperature_left))
