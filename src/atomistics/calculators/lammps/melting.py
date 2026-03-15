@@ -41,6 +41,7 @@ def _check_diamond(structure: Atoms) -> bool:
         > dia_dict["IdentifyDiamond.counts.OTHER"]
     )
 
+
 def _analyse_structure(
     structure: Atoms, mode: str = "total", diamond: bool = False
 ) -> dict:
@@ -64,10 +65,8 @@ def _analyse_structure(
             structure=structure, mode=mode, ovito_compatibility=True
         )
 
-def _analyse_minimized_structure(
-    structure: Atoms,
-    diamond_flag: bool
-) -> tuple:
+
+def _analyse_minimized_structure(structure: Atoms, diamond_flag: bool) -> tuple:
     """
 
     Args:
@@ -95,9 +94,8 @@ def _analyse_minimized_structure(
         final_structure_dict,
     )
 
-def _get_repeated_structure(
-    structure: Atoms, target_number_of_atoms: int
-) -> Atoms:
+
+def _get_repeated_structure(structure: Atoms, target_number_of_atoms: int) -> Atoms:
     """
     Get a repeated structure that is as close as possible to the target number of atoms.
 
@@ -119,12 +117,13 @@ def _get_repeated_structure(
 
     return basis
 
+
 def _next_calc(
-    structure: Atoms, 
-    potential_dataframe: pd.DataFrame, 
-    temperature: float, 
-    seed: int, 
-    run_time_steps: int = 10000
+    structure: Atoms,
+    potential_dataframe: pd.DataFrame,
+    temperature: float,
+    seed: int,
+    run_time_steps: int = 10000,
 ) -> Atoms:
     """
     Calculate NPT ensemble at a given temperature using the job defined in the project parameters:
@@ -164,8 +163,9 @@ def _next_calc(
     structure_md = structure.copy()
     structure_md.set_positions(output_md_dict["positions"][-1])
     structure_md.set_cell(output_md_dict["cell"][-1])
-    
+
     return structure_md
+
 
 def _next_step_funct(
     number_of_atoms,
@@ -256,6 +256,7 @@ def _next_step_funct(
         raise ValueError("We should never reach this point!")
     return structure_left, structure_right, temperature_left, temperature_right
 
+
 def estimate_melting_temperature_using_bisection_CNA(
     structure: Atoms,
     potential_dataframe: pd.DataFrame,
@@ -266,25 +267,27 @@ def estimate_melting_temperature_using_bisection_CNA(
     number_of_atoms=8000,
     seed=None,
 ):
-    
+
     if seed is None:
         seed = random.randint(0, 99999)
-    
+
     diamond_flag = _check_diamond(structure=structure)
     repeated_structure = _get_repeated_structure(
         structure=structure, target_number_of_atoms=target_number_of_atoms
     )
 
-    position_and_volume_optimized_structure = optimize_positions_and_volume_with_lammpslib(
-        structure=repeated_structure,
-        potential_dataframe=potential_dataframe,
-        min_style="cg",
-        etol=0.0,
-        ftol=0.0001,
-        maxiter=100000,
-        maxeval=10000000,
-        thermo=10,
-        lmp=None,
+    position_and_volume_optimized_structure = (
+        optimize_positions_and_volume_with_lammpslib(
+            structure=repeated_structure,
+            potential_dataframe=potential_dataframe,
+            min_style="cg",
+            etol=0.0,
+            ftol=0.0001,
+            maxiter=100000,
+            maxeval=10000000,
+            thermo=10,
+            lmp=None,
+        )
     )
 
     (
@@ -294,8 +297,7 @@ def estimate_melting_temperature_using_bisection_CNA(
         distribution_initial_half,
         _,
     ) = _analyse_minimized_structure(
-        structure=position_and_volume_optimized_structure,
-        diamond_flag=diamond_flag
+        structure=position_and_volume_optimized_structure, diamond_flag=diamond_flag
     )
 
     structure_left = structure_after_minimization
