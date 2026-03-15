@@ -1,5 +1,6 @@
 import operator
 import random
+import re
 
 from ase import Atoms
 from ase.build import bulk
@@ -63,7 +64,10 @@ def _analyse_structure(
             structure=structure, mode=mode, ovito_compatibility=True
         )
 
-def _analyse_minimized_structure(structure: Atoms) -> tuple:
+def _analyse_minimized_structure(
+    structure: Atoms,
+    diamond_flag: bool
+) -> tuple:
     """
 
     Args:
@@ -75,7 +79,6 @@ def _analyse_minimized_structure(structure: Atoms) -> tuple:
                and the final structure dictionary.
 
     """
-    diamond_flag = _check_diamond(structure=structure)
     final_structure_dict = _analyse_structure(
         structure=structure, mode="total", diamond=diamond_flag
     )
@@ -91,6 +94,30 @@ def _analyse_minimized_structure(structure: Atoms) -> tuple:
         distribution_initial_half,
         final_structure_dict,
     )
+
+def _get_repeated_structure(
+    structure: Atoms, target_number_of_atoms: int
+) -> Atoms:
+    """
+    Get a repeated structure that is as close as possible to the target number of atoms.
+
+    Args:
+        structure (Atoms): The input structure to be repeated.
+        target_number_of_atoms (int): The target number of atoms for the simulation cell.
+
+    Returns:
+        Atoms: The repeated structure.
+    """
+    r_est = (target_number_of_atoms / len(structure)) ** (1 / 3)
+    candidates = np.array(
+        [max(1, int(np.floor(r_est))), int(np.round(r_est)), int(np.ceil(r_est))]
+    )
+    basis_lst = [structure.repeat([i, i, i]) for i in candidates]
+    basis = basis_lst[
+        np.argmin([np.abs(len(b) - target_number_of_atoms) for b in basis_lst])
+    ]
+
+    return basis
 
 def _next_calc(
     structure: Atoms, 
@@ -151,7 +178,7 @@ def _next_step_funct(
     distribution_initial_half,
     structure_after_minimization,
     run_time_steps,
-    crystalstructure,
+    diamond_flag,
     seed,
 ):
     """
@@ -171,8 +198,6 @@ def _next_step_funct(
     Returns:
 
     """
-    diamond_flag = crystalstructure.lower() == "diamond"
-
     structure_left_dict = _analyse_structure(
         structure=structure_left,
         mode="total",
@@ -232,28 +257,26 @@ def _next_step_funct(
     return structure_left, structure_right, temperature_left, temperature_right
 
 def estimate_melting_temperature_using_bisection_CNA(
+    structure: Atoms,
     potential_dataframe: pd.DataFrame,
-    element,
+    target_number_of_atoms: int,
     strain_run_time_steps=1000,
     temperature_left=0,
     temperature_right=1000,
     number_of_atoms=8000,
     seed=None,
 ):
+    
     if seed is None:
         seed = random.randint(0, 99999)
-    crystalstructure = reference_states[atomic_numbers[element]]["symmetry"]
-    if crystalstructure == "hcp":
-        basis = bulk(name=element, orthorhombic=True)
-    else:
-        basis = bulk(name=element, cubic=True)
-    basis_lst = [basis.repeat([i, i, i]) for i in range(5, 30)]
-    basis = basis_lst[
-        np.argmin([np.abs(len(b) - number_of_atoms / 2) for b in basis_lst])
-    ]
+    
+    diamond_flag = _check_diamond(structure=structure)
+    repeated_structure = _get_repeated_structure(
+        structure=structure, target_number_of_atoms=target_number_of_atoms
+    )
 
-    structure_opt = optimize_positions_and_volume_with_lammpslib(
-        structure=basis,
+    position_and_volume_optimized_structure = optimize_positions_and_volume_with_lammpslib(
+        structure=repeated_structure,
         potential_dataframe=potential_dataframe,
         min_style="cg",
         etol=0.0,
@@ -270,7 +293,10 @@ def estimate_melting_temperature_using_bisection_CNA(
         number_of_atoms,
         distribution_initial_half,
         _,
-    ) = _analyse_minimized_structure(structure=structure_opt)
+    ) = _analyse_minimized_structure(
+        structure=position_and_volume_optimized_structure,
+        diamond_flag=diamond_flag
+    )
 
     structure_left = structure_after_minimization
     structure_right = _next_calc(
@@ -300,7 +326,7 @@ def estimate_melting_temperature_using_bisection_CNA(
             structure_after_minimization=structure_after_minimization,
             run_time_steps=strain_run_time_steps,
             seed=seed,
-            crystalstructure=crystalstructure,
+            diamond_flag=diamond_flag,
         )
         temperature_step = temperature_right - temperature_left
 
