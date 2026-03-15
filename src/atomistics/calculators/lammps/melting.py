@@ -118,7 +118,7 @@ def _get_repeated_structure(structure: Atoms, target_number_of_atoms: int) -> At
     return basis
 
 
-def _next_calc(
+def _run_npt_molecular_dynamics(
     structure: Atoms,
     potential_dataframe: pd.DataFrame,
     temperature: float,
@@ -167,36 +167,39 @@ def _next_calc(
     return structure_md
 
 
-def _next_step_funct(
-    number_of_atoms,
-    key_max,
-    structure_left,
-    structure_right,
+def _run_next_bisection_iteration(
+    number_of_atoms: int,
+    key_max: str,
+    structure_left: Atoms,
+    structure_right: Atoms,
     potential_dataframe: pd.DataFrame,
-    temperature_left,
-    temperature_right,
-    distribution_initial_half,
-    structure_after_minimization,
-    run_time_steps,
-    diamond_flag,
-    seed,
-):
+    temperature_left: float,
+    temperature_right: float,
+    distribution_initial_half: float,
+    structure_after_minimization: Atoms,
+    run_time_steps: int,
+    diamond_flag: bool,
+    seed: int,
+) -> tuple[Atoms, Atoms, float, float]:
     """
+    Run the next iteration of the bisection method for estimating the melting temperature.
 
     Args:
-        number_of_atoms:
-        key_max:
-        structure_left:
-        structure_right:
-        temperature_left:
-        temperature_right:
-        distribution_initial_half:
-        structure_after_minimization:
-        run_time_steps:
-        seed:
+        number_of_atoms: int
+        key_max: str
+        structure_left: Atoms
+        structure_right: Atoms
+        temperature_left: float
+        temperature_right: float
+        distribution_initial_half: float
+        structure_after_minimization: Atoms
+        run_time_steps: int
+        diamond_flag: bool
+        seed: int
 
     Returns:
-
+        tuple[Atoms, Atoms, float, float]: A tuple containing the updated left and right structures,
+                                            and the updated left and right temperatures.
     """
     structure_left_dict = _analyse_structure(
         structure=structure_left,
@@ -216,7 +219,7 @@ def _next_step_funct(
         structure_left = structure_right.copy()
         temperature_left = temperature_right
         temperature_right += temperature_diff
-        structure_right = _next_calc(
+        structure_right = _run_npt_molecular_dynamics(
             structure=structure_after_minimization,
             temperature=temperature_right,
             potential_dataframe=potential_dataframe,
@@ -230,7 +233,7 @@ def _next_step_funct(
     ):
         temperature_diff /= 2
         temperature_left += temperature_diff
-        structure_left = _next_calc(
+        structure_left = _run_npt_molecular_dynamics(
             structure=structure_after_minimization,
             temperature=temperature_left,
             potential_dataframe=potential_dataframe,
@@ -245,7 +248,7 @@ def _next_step_funct(
         temperature_right = temperature_left
         temperature_left -= temperature_diff
         structure_right = structure_left.copy()
-        structure_left = _next_calc(
+        structure_left = _run_npt_molecular_dynamics(
             structure=structure_after_minimization,
             temperature=temperature_left,
             potential_dataframe=potential_dataframe,
@@ -254,6 +257,7 @@ def _next_step_funct(
         )
     else:
         raise ValueError("We should never reach this point!")
+
     return structure_left, structure_right, temperature_left, temperature_right
 
 
@@ -261,11 +265,11 @@ def estimate_melting_temperature_using_bisection_CNA(
     structure: Atoms,
     potential_dataframe: pd.DataFrame,
     target_number_of_atoms: int,
-    strain_run_time_steps=1000,
-    temperature_left=0,
-    temperature_right=1000,
-    number_of_atoms=8000,
-    seed=None,
+    strain_run_time_steps: int = 1000,
+    temperature_left: float = 0,
+    temperature_right: float = 1000,
+    number_of_atoms: int = 8000,
+    seed: int = None,
 ):
 
     if seed is None:
@@ -301,7 +305,7 @@ def estimate_melting_temperature_using_bisection_CNA(
     )
 
     structure_left = structure_after_minimization
-    structure_right = _next_calc(
+    structure_right = _run_npt_molecular_dynamics(
         structure=structure_after_minimization,
         temperature=temperature_right,
         seed=seed,
@@ -316,7 +320,7 @@ def estimate_melting_temperature_using_bisection_CNA(
             structure_right,
             temperature_left,
             temperature_right,
-        ) = _next_step_funct(
+        ) = _run_next_bisection_iteration(
             number_of_atoms=number_of_atoms,
             key_max=key_max,
             structure_left=structure_left,
