@@ -41,7 +41,7 @@ def _check_diamond(structure: Atoms) -> bool:
 
 
 def _analyse_structure(
-    structure: Atoms, mode: str ="total", diamond: bool=False
+    structure: Atoms, mode: str = "total", diamond: bool = False
 ) -> dict:
     """
     Analyse the structure using either adaptive CNA or diamond structure descriptors.
@@ -63,6 +63,7 @@ def _analyse_structure(
             structure=structure, mode=mode, ovito_compatibility=True
         )
 
+
 def _analyse_minimized_structure(structure: Atoms) -> tuple:
     """
 
@@ -83,7 +84,7 @@ def _analyse_minimized_structure(structure: Atoms) -> tuple:
     number_of_atoms = len(structure)
     distribution_initial = final_structure_dict[key_max] / number_of_atoms
     distribution_initial_half = distribution_initial / 2
-    
+
     return (
         structure,
         key_max,
@@ -91,6 +92,7 @@ def _analyse_minimized_structure(structure: Atoms) -> tuple:
         distribution_initial_half,
         final_structure_dict,
     )
+
 
 def _next_calc(structure, potential, temperature, seed, run_time_steps=10000):
     """
