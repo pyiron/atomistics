@@ -1,6 +1,5 @@
 from ase.build import bulk
 from ase.optimize import LBFGS
-from phonopy.units import VaspToTHz
 import unittest
 
 from atomistics.calculators import evaluate_with_ase
@@ -41,7 +40,6 @@ class TestPhonons(unittest.TestCase):
             num_points=11,
             vol_range=0.10,
             interaction_range=10,
-            factor=VaspToTHz,
             displacement=0.01,
         )
         result_dict = evaluate_with_ase(
