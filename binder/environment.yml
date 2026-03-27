@@ -15,7 +15,7 @@ dependencies:
 - jinja2 =3.1.6
 - dynaphopy =1.18.0
 - tqdm =4.67.3
-- lammpsparser =0.0.1
+- lammpsparser =0.0.2
 - vaspparser =0.0.1
 - hatchling =1.29.0
 - hatch-vcs =0.5.0
