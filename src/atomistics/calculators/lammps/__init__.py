@@ -1,4 +1,4 @@
-from pyiron_lammps import (
+from lammpsparser import (
     get_potential_by_name,
     get_potential_dataframe,
 )

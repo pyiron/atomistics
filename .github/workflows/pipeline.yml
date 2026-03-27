@@ -13,7 +13,7 @@ jobs:
     - uses: psf/black@stable
       with:
         options: "--check --diff"
-        src: ./${{ github.event.repository.name }}
+        src: ./src/${{ github.event.repository.name }}
 
   black_fix:  # in most cases pre-commit is faster
     needs: [black]
@@ -29,7 +29,7 @@ jobs:
       uses: psf/black@stable
       with:
         options: ""
-        src: "./${{ github.event.repository.name }}"
+        src: "./src/${{ github.event.repository.name }}"
     - name: commit
       run: |
         git config --local user.email "pyiron@mpie.de"
@@ -148,6 +148,18 @@ jobs:
         python .ci_support/check.py
         cat pyproject.toml
         pip install . --no-deps --no-build-isolation
+        pip check
+
+  uv_check:
+    needs: [black]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: astral-sh/setup-uv@v7
+    - name: Install the project and pip check
+      shell: bash -l {0}
+      run: |
+        uv sync --all-extras --dev
         pip check
 
   unittest_matrix:
@@ -431,7 +443,7 @@ jobs:
         python -m unittest discover tests
 
   autobot:
-    needs: [unittest_old, unittest_siesta, unittest_qe, unittest_mace, unittest_gpaw, unittest_abinit, unittest_matrix, unittest_sphinxdft, unittest_grace, unittest_orb, pip_check, notebooks, minimal, coverage]
+    needs: [uv_check, unittest_old, unittest_siesta, unittest_qe, unittest_mace, unittest_gpaw, unittest_abinit, unittest_matrix, unittest_sphinxdft, unittest_grace, unittest_orb, pip_check, notebooks, minimal, coverage]
     permissions:
       contents: write
       pull-requests: write

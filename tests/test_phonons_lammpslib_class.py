@@ -1,7 +1,6 @@
 import os
 
 from ase.build import bulk
-from phonopy.units import VaspToTHz
 import unittest
 
 from atomistics.workflows import optimize_positions_and_volume
@@ -33,7 +32,6 @@ class TestPhonons(unittest.TestCase):
         workflow = PhonopyWorkflow(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             interaction_range=10,
-            factor=VaspToTHz,
             displacement=0.01,
             dos_mesh=20,
             primitive_matrix=None,
