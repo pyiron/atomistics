@@ -12,7 +12,7 @@ dependencies:
 - scipy =1.17.1
 - seekpath =2.2.1
 - spglib =2.7.0
-- structuretoolkit =0.0.41
+- structuretoolkit =0.0.42
 - sphinx_parser =0.1.7
 - tqdm =4.67.3
 - vaspparser =0.0.2
