@@ -55,14 +55,14 @@ lammps = [
 lammps_phonons = [
     "pylammpsmpi==0.3.12",
     "jinja2==3.1.6",
-    "pandas==3.0.0",
+    "pandas==3.0.2",
     "dynaphopy==1.18.0",
     "lammpsparser==0.0.3",
 ]
 experimental = [
     "lxml==6.0.2",
     "mendeleev==1.1.0",
-    "pandas==3.0.0",
+    "pandas==3.0.2",
     "requests==2.32.5",
 ]
 sphinxdft = [
