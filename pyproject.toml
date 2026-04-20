@@ -1,5 +1,5 @@
 [build-system]
-requires = ["ase", "numpy", "scipy", "spglib", "hatchling==1.28.0", "hatch-vcs==0.5.0"]
+requires = ["ase", "numpy", "scipy", "spglib", "hatchling==1.29.0", "hatch-vcs==0.5.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -25,9 +25,9 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-    "ase==3.27.0",
-    "numpy==2.3.5",
-    "scipy==1.16.3",
+    "ase==3.28.0",
+    "numpy==2.4.3",
+    "scipy==1.17.1",
     "spglib==2.7.0",
 ]
 dynamic = ["version"]
@@ -39,25 +39,25 @@ Repository = "https://github.com/pyiron/atomistics"
 
 [project.optional-dependencies]
 phonopy = [
-    "phonopy==2.47.1",
-    "seekpath==2.2.0",
-    "structuretoolkit==0.0.39",
+    "phonopy==3.2.0",
+    "seekpath==2.2.1",
+    "structuretoolkit==0.0.42",
 ]
 gpaw = [
     "gpaw==25.7.0",
 ]
 lammps = [
-    "pylammpsmpi==0.3.9",
+    "pylammpsmpi==0.3.12",
     "jinja2==3.1.6",
-    "pandas==3.0.0",
-    "pyiron_lammps==0.5.4",
+    "pandas==3.0.2",
+    "lammpsparser==0.0.2",
 ]
 lammps_phonons = [
-    "pylammpsmpi==0.3.9",
+    "pylammpsmpi==0.3.12",
     "jinja2==3.1.6",
     "pandas==3.0.0",
     "dynaphopy==1.18.0",
-    "pyiron_lammps==0.5.4",
+    "lammpsparser==0.0.2",
 ]
 experimental = [
     "lxml==6.0.2",
@@ -66,16 +66,16 @@ experimental = [
     "requests==2.32.5",
 ]
 sphinxdft = [
-    "sphinx-parser==0.1.6"
+    "sphinx-parser==0.1.7"
 ]
 qe = [
     "pwtools==1.3.0"
 ]
 tqdm = [
-    "tqdm==4.67.1"
+    "tqdm==4.67.3"
 ]
 vasp = [
-    "pyiron_vasp==0.2.19"
+    "vaspparser==0.0.2"
 ]
 
 [tool.hatch.build]

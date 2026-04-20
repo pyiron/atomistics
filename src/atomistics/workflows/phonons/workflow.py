@@ -16,7 +16,6 @@ from atomistics.workflows.phonons.helper import (
     plot_band_structure,
     plot_dos,
 )
-from atomistics.workflows.phonons.units import VaspToTHz
 
 
 class PhonopyWorkflow(Workflow):
@@ -40,7 +39,6 @@ class PhonopyWorkflow(Workflow):
         self,
         structure: Atoms,
         interaction_range: float = 10.0,
-        factor: float = VaspToTHz,
         displacement: float = 0.01,
         dos_mesh: int = 20,
         primitive_matrix: Optional[np.ndarray] = None,
@@ -52,7 +50,6 @@ class PhonopyWorkflow(Workflow):
         Args:
             structure (Atoms): The structure used in the reference job.
             interaction_range (float, optional): The interaction range. Defaults to 10.0.
-            factor (float, optional): The conversion factor. Defaults to VaspToTHz.
             displacement (float, optional): The displacement. Defaults to 0.01.
             dos_mesh (int, optional): The DOS mesh. Defaults to 20.
             primitive_matrix (np.ndarray, optional): The primitive matrix. Defaults to None.
@@ -64,7 +61,6 @@ class PhonopyWorkflow(Workflow):
         self._number_of_snapshots = number_of_snapshots
         self.structure = structure
         self._primitive_matrix = primitive_matrix
-        self._factor = factor
         self.phonopy = None
         self._phonopy_dict = {}
 
@@ -81,7 +77,6 @@ class PhonopyWorkflow(Workflow):
             displacement=self._displacement,
             number_of_snapshots=self._number_of_snapshots,
             interaction_range=self._interaction_range,
-            factor=self._factor,
         )
         return task_dict
 

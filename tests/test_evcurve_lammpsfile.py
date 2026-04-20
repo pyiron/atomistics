@@ -13,7 +13,7 @@ from atomistics.workflows import (
 )
 
 try:
-    from pyiron_lammps import get_potential_by_name
+    from lammpsparser import get_potential_by_name
     from atomistics.calculators.lammps.filecalculator import evaluate_with_lammpsfile
 
     skip_lammps_test = False
