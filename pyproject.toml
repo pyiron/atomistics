@@ -75,7 +75,7 @@ tqdm = [
     "tqdm==4.67.3"
 ]
 vasp = [
-    "vaspparser==0.0.2"
+    "vaspparser==0.0.3"
 ]
 
 [tool.hatch.build]
