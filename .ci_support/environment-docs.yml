@@ -15,7 +15,7 @@ dependencies:
 - structuretoolkit =0.0.42
 - seekpath =2.2.1
 - lammps =2024.08.29
-- pandas =2.3.3
+- pandas =3.0.2
 - pylammpsmpi =0.3.12
 - jinja2 =3.1.6
 - jupyter-book =1.0.0
