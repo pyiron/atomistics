@@ -133,7 +133,6 @@ class TestLangevinHelpers(unittest.TestCase):
             )
         drag = -0.5 * velocities / 100.0
         self.assertTrue(np.allclose(delta_v, drag))
-        self.assertTrue(np.allclose(np.mean(delta_v - drag, axis=0), 0.0))
 
     def test_get_initial_velocities_zero_centered(self):
         with patch(
@@ -162,7 +161,10 @@ class TestLangevinHelpers(unittest.TestCase):
             return_value=np.zeros((nat, 3)),
         ):
             workflow = LangevinWorkflow(
-                structure=structure, temperature=300.0, damping_timescale=100.0, time_step=1
+                structure=structure,
+                temperature=300.0,
+                damping_timescale=100.0,
+                time_step=1.0,
             )
 
         initial_tasks = workflow.generate_structures()
