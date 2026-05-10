@@ -18,6 +18,7 @@ from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 import atomistics.shared.tqdm_iterator as tqdm_iterator_module
 from atomistics.workflows.langevin import (
     EV_TO_U_ANGSQ_PER_FSSQ,
+    KB,
     LangevinWorkflow,
     convert_to_acceleration,
     get_first_half_step,
@@ -125,19 +126,30 @@ class TestLangevinHelpers(unittest.TestCase):
         velocities = np.array([[0.1, 0.2, 0.3], [0.0, -0.1, 0.2]])
         damping_timescale = 100.0
         time_step = 1.0
+        masses = np.array([[27.0], [27.0]])
+        random_values = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
         with patch(
             "atomistics.workflows.langevin.np.random.randn",
-            return_value=np.ones(velocities.shape),
+            return_value=random_values,
         ):
             delta_v = langevin_delta_v(
                 temperature=300.0,
                 time_step=time_step,
-                masses=np.array([[27.0], [27.0]]),
+                masses=masses,
                 velocities=velocities,
                 damping_timescale=damping_timescale,
             )
         drag = -0.5 * time_step * velocities / damping_timescale
-        self.assertTrue(np.allclose(delta_v, drag))
+        noise_scale = np.sqrt(
+            EV_TO_U_ANGSQ_PER_FSSQ
+            * KB
+            * 300.0
+            * time_step
+            / (masses * damping_timescale)
+        )
+        expected_noise = noise_scale * random_values
+        expected_noise -= np.mean(expected_noise, axis=0)
+        self.assertTrue(np.allclose(delta_v, drag + expected_noise))
 
     def test_get_initial_velocities_zero_centered(self):
         with patch(
@@ -185,7 +197,10 @@ class TestLangevinHelpers(unittest.TestCase):
             * workflow.time_step
             * workflow.time_step
         )
-        with patch("atomistics.workflows.langevin.langevin_delta_v", return_value=np.zeros((nat, 3))):
+        with patch(
+            "atomistics.workflows.langevin.langevin_delta_v",
+            return_value=np.zeros((nat, 3)),
+        ) as mocked_delta_v:
             stepped_tasks = workflow.generate_structures()
             eng_pot, eng_kin = workflow.analyse_structures(
                 output_dict={
@@ -193,6 +208,7 @@ class TestLangevinHelpers(unittest.TestCase):
                     "energy": {0: -1.5},
                 }
             )
+        self.assertEqual(mocked_delta_v.call_count, 2)
 
         self.assertEqual(eng_pot, -1.5)
         self.assertGreater(eng_kin, 0.0)
