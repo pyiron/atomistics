@@ -123,18 +123,20 @@ class TestLangevinHelpers(unittest.TestCase):
 
     def test_langevin_delta_v_with_damping(self):
         velocities = np.array([[0.1, 0.2, 0.3], [0.0, -0.1, 0.2]])
+        damping_timescale = 100.0
+        time_step = 1.0
         with patch(
             "atomistics.workflows.langevin.np.random.randn",
             return_value=np.ones(velocities.shape),
         ):
             delta_v = langevin_delta_v(
                 temperature=300.0,
-                time_step=1.0,
+                time_step=time_step,
                 masses=np.array([[27.0], [27.0]]),
                 velocities=velocities,
-                damping_timescale=100.0,
+                damping_timescale=damping_timescale,
             )
-        drag = -0.5 * velocities / 100.0
+        drag = -0.5 * time_step * velocities / damping_timescale
         self.assertTrue(np.allclose(delta_v, drag))
 
     def test_get_initial_velocities_zero_centered(self):
@@ -186,7 +188,10 @@ class TestLangevinHelpers(unittest.TestCase):
         with patch("atomistics.workflows.langevin.langevin_delta_v", return_value=np.zeros((nat, 3))):
             stepped_tasks = workflow.generate_structures()
             eng_pot, eng_kin = workflow.analyse_structures(
-                output_dict={"forces": {0: np.ones((nat, 3)) * 2.0}, "energy": {0: -1.5}}
+                output_dict={
+                    "forces": {0: np.ones((nat, 3)) * 2.0},
+                    "energy": {0: -1.5},
+                }
             )
 
         self.assertEqual(eng_pot, -1.5)
