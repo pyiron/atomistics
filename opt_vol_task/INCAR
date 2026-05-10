@@ -1,0 +1,9 @@
+ALGO = Fast
+GGA = PE
+PREC = Accurate
+IBRION = 2
+ISIF = 7
+LORBIT = 0
+NSW = 100
+LWAVE = .FALSE.
+LREAL = .FALSE.
