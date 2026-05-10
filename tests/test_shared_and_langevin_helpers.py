@@ -31,13 +31,13 @@ from atomistics.workflows.molecular_dynamics import (
 
 
 class TestSharedHelpers(unittest.TestCase):
-    def test_convert_task_dict_to_task_list(self):
+    def test_convert_task_dict_to_task_lst(self):
         self.assertEqual(
             _convert_task_dict_to_task_lst({"calc": {1: "a", 2: "b"}, "other": "c"}),
             [{"calc": {1: "a"}}, {"calc": {2: "b"}}, {"other": "c"}],
         )
 
-    def test_convert_task_list_to_task_dict(self):
+    def test_convert_task_lst_to_task_dict(self):
         self.assertEqual(
             _convert_task_lst_to_task_dict(
                 [{"calc": {1: "a"}}, {"calc": {2: "b"}}, {"other": "c"}]
@@ -98,7 +98,10 @@ class TestSharedHelpers(unittest.TestCase):
     def test_calc_molecular_dynamics_thermal_expansion(self):
         structure = bulk("Al", cubic=True)
         task_dict = calc_molecular_dynamics_thermal_expansion(structure=structure)
-        self.assertEqual(list(task_dict.keys()), ["calc_molecular_dynamics_thermal_expansion"])
+        self.assertEqual(len(task_dict), 1)
+        self.assertEqual(
+            list(task_dict.keys()), ["calc_molecular_dynamics_thermal_expansion"]
+        )
         self.assertIs(task_dict["calc_molecular_dynamics_thermal_expansion"], structure)
 
 
