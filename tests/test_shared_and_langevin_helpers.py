@@ -121,9 +121,12 @@ class TestLangevinHelpers(unittest.TestCase):
             0.0,
         )
 
-    def test_langevin_delta_v_with_damping_matches_drag_when_noise_is_uniform(self):
+    def test_langevin_delta_v_with_damping(self):
         velocities = np.array([[0.1, 0.2, 0.3], [0.0, -0.1, 0.2]])
-        with patch("atomistics.workflows.langevin.np.random.randn", return_value=np.ones((2, 3))):
+        with patch(
+            "atomistics.workflows.langevin.np.random.randn",
+            return_value=np.ones(velocities.shape),
+        ):
             delta_v = langevin_delta_v(
                 temperature=300.0,
                 time_step=1.0,
