@@ -17,6 +17,7 @@ from atomistics.shared.thermal_expansion import (
 from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 import atomistics.shared.tqdm_iterator as tqdm_iterator_module
 from atomistics.workflows.langevin import (
+    EV_TO_U_ANGSQ_PER_FSSQ,
     LangevinWorkflow,
     convert_to_acceleration,
     get_first_half_step,
@@ -105,7 +106,8 @@ class TestLangevinHelpers(unittest.TestCase):
         forces = np.array([[1.0, 2.0, 3.0]])
         masses = np.array([[2.0]])
         acceleration = convert_to_acceleration(forces=forces, masses=masses)
-        self.assertTrue(np.allclose(acceleration, forces * (acceleration[0, 0] / forces[0, 0])))
+        expected = forces * EV_TO_U_ANGSQ_PER_FSSQ / masses
+        self.assertTrue(np.allclose(acceleration, expected))
 
     def test_langevin_delta_v_without_damping(self):
         self.assertEqual(
@@ -130,6 +132,7 @@ class TestLangevinHelpers(unittest.TestCase):
                 damping_timescale=100.0,
             )
         drag = -0.5 * velocities / 100.0
+        self.assertTrue(np.allclose(delta_v, drag))
         self.assertTrue(np.allclose(np.mean(delta_v - drag, axis=0), 0.0))
 
     def test_get_initial_velocities_zero_centered(self):
