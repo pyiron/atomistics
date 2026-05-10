@@ -1,9 +1,9 @@
 from concurrent.futures import ThreadPoolExecutor
 from unittest.mock import patch
+import unittest
 
 from ase.build import bulk
 import numpy as np
-import unittest
 
 from atomistics.shared.parallel import (
     _convert_task_dict_to_task_lst,
@@ -107,8 +107,8 @@ class TestSharedHelpers(unittest.TestCase):
 
 class TestLangevinHelpers(unittest.TestCase):
     def test_convert_to_acceleration(self):
-        forces = np.array([[1.0, 2.0, 3.0]])
-        masses = np.array([[2.0]])
+        forces = np.array([[1.0, 2.0, 3.0], [2.0, 4.0, 6.0]])
+        masses = np.array([[2.0], [4.0]])
         acceleration = convert_to_acceleration(forces=forces, masses=masses)
         expected = forces * EV_TO_U_ANGSQ_PER_FSSQ / masses
         self.assertTrue(np.allclose(acceleration, expected))
