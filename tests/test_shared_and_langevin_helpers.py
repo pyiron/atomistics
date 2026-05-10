@@ -121,7 +121,7 @@ class TestLangevinHelpers(unittest.TestCase):
             0.0,
         )
 
-    def test_langevin_delta_v_with_damping_has_zero_mean_noise(self):
+    def test_langevin_delta_v_with_damping_matches_drag_when_noise_is_uniform(self):
         velocities = np.array([[0.1, 0.2, 0.3], [0.0, -0.1, 0.2]])
         with patch("atomistics.workflows.langevin.np.random.randn", return_value=np.ones((2, 3))):
             delta_v = langevin_delta_v(
@@ -172,6 +172,14 @@ class TestLangevinHelpers(unittest.TestCase):
         self.assertIs(initial_tasks["calc_energy"][0], structure)
 
         workflow.forces = np.ones((nat, 3))
+        expected_positions = structure.positions + (
+            0.5
+            * convert_to_acceleration(
+                forces=np.ones((nat, 3)), masses=workflow.masses
+            )
+            * workflow.time_step
+            * workflow.time_step
+        )
         with patch("atomistics.workflows.langevin.langevin_delta_v", return_value=np.zeros((nat, 3))):
             stepped_tasks = workflow.generate_structures()
             eng_pot, eng_kin = workflow.analyse_structures(
@@ -180,7 +188,9 @@ class TestLangevinHelpers(unittest.TestCase):
 
         self.assertEqual(eng_pot, -1.5)
         self.assertGreater(eng_kin, 0.0)
-        self.assertFalse(np.allclose(stepped_tasks["calc_forces"][0].positions, structure.positions))
+        self.assertTrue(
+            np.allclose(stepped_tasks["calc_forces"][0].positions, expected_positions)
+        )
 
 
 if __name__ == "__main__":
