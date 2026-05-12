@@ -239,10 +239,7 @@ def calc_molecular_dynamics_npt_with_lammpslib(
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ) -> dict:
-    if couple_xyz:
-        lammps_ensemble_npt_xyz = LAMMPS_ENSEMBLE_NPT + " couple xyz"
-    else:
-        lammps_ensemble_npt_xyz = LAMMPS_ENSEMBLE_NPT
+    lammps_ensemble_npt_xyz = _get_lammps_ensemble_npt_command(couple_xyz=couple_xyz)
     if not disable_initial_velocity:
         init_str = (
             LAMMPS_THERMO_STYLE
@@ -494,10 +491,7 @@ def calc_molecular_dynamics_thermal_expansion_with_lammpslib(
         + LAMMPS_VELOCITY
         + "\n"
     )
-    if couple_xyz:
-        lammps_ensemble_npt_xyz = LAMMPS_ENSEMBLE_NPT + " couple xyz"
-    else:
-        lammps_ensemble_npt_xyz = LAMMPS_ENSEMBLE_NPT
+    lammps_ensemble_npt_xyz = _get_lammps_ensemble_npt_command(couple_xyz=couple_xyz)
     run_str = lammps_ensemble_npt_xyz + "\n" + LAMMPS_RUN
     temperature_lst = np.arange(Tstart, Tstop + Tstep, Tstep).tolist()
     return lammps_thermal_expansion_loop(
@@ -614,3 +608,9 @@ def _get_vmax_command(vmax: Optional[float]) -> str:
             raise TypeError("vmax must be a float.")
     else:
         return LAMMPS_MINIMIZE_VOLUME
+
+
+def _get_lammps_ensemble_npt_command(couple_xyz: bool) -> str:
+    if couple_xyz:
+        return LAMMPS_ENSEMBLE_NPT + " couple xyz"
+    return LAMMPS_ENSEMBLE_NPT
