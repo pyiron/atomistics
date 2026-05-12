@@ -5,6 +5,7 @@ from ase.eos import birch
 from ase.eos import birchmurnaghan as birchmurnaghan_energy
 from ase.eos import murnaghan, pouriertarantola
 from ase.eos import vinet as vinet_energy
+from typing import Any, Optional
 
 eV_div_A3_to_GPa = (
     1e21 / scipy.constants.physical_constants["joule-electron volt relationship"][0]
@@ -12,7 +13,9 @@ eV_div_A3_to_GPa = (
 
 
 def fitfunction(
-    parameters: tuple[float], vol: np.ndarray, fittype: str = "vinet"
+    parameters: tuple[float, float, float, float],
+    vol: np.ndarray,
+    fittype: str = "vinet",
 ) -> np.ndarray:
     """
     Fit the energy volume curve
@@ -25,7 +28,7 @@ def fitfunction(
     Returns:
         (float/numpy.dnarray): single energy as float or a vector of energies as numpy array
     """
-    [E0, b0, bp, V0] = parameters
+    E0, b0, bp, V0 = parameters
     # Unit correction
     B0 = b0 / eV_div_A3_to_GPa
     BP = bp
@@ -64,12 +67,12 @@ def interpolate_energy(fit_dict: dict, volumes: np.ndarray) -> np.ndarray:
         "pouriertarantola",
         "vinet",
     ]:
-        parameters = [
+        parameters = (
             fit_dict["energy_eq"],
             fit_dict["bulkmodul_eq"],
             fit_dict["b_prime_eq"],
             fit_dict["volume_eq"],
-        ]
+        )
         return fitfunction(
             parameters=parameters, vol=volumes, fittype=fit_dict["fit_dict"]["fit_type"]
         )
@@ -78,7 +81,10 @@ def interpolate_energy(fit_dict: dict, volumes: np.ndarray) -> np.ndarray:
 
 
 def fit_leastsq(
-    p0: tuple[float], datax: np.ndarray, datay: np.ndarray, fittype: str = "vinet"
+    p0: tuple[float, float, float, float],
+    datax: np.ndarray,
+    datay: np.ndarray,
+    fittype: str = "vinet",
 ):
     """
     Least square fit
@@ -139,7 +145,7 @@ def fit_leastsq_eos(
     a, b, c = np.polyfit(vol_lst, eng_lst, 2)
     v0 = -b / (2 * a)
     pfit_leastsq, perr_leastsq = fit_leastsq(
-        [a * v0**2 + b * v0 + c, 2 * a * v0 * eV_div_A3_to_GPa, 4, v0],
+        (a * v0**2 + b * v0 + c, 2 * a * v0 * eV_div_A3_to_GPa, 4, v0),
         vol_lst,
         eng_lst,
         fittype,
@@ -196,7 +202,7 @@ def fit_equation_of_state(
 
 def fit_polynomial(
     volume_lst: np.ndarray, energy_lst: np.ndarray, fit_order: int
-) -> dict:
+) -> Optional[dict[str, Any]]:
     """
     Fit a polynomial to the given volume and energy data.
 
@@ -292,7 +298,7 @@ class EnergyVolumeFit:
         """
         self._volume_lst = volume_lst
         self._energy_lst = energy_lst
-        self._fit_dict = None
+        self._fit_dict: Optional[dict[str, Any]] = None
 
     @property
     def volume_lst(self) -> np.ndarray:
@@ -335,7 +341,7 @@ class EnergyVolumeFit:
         self._energy_lst = eng_lst
 
     @property
-    def fit_dict(self) -> dict:
+    def fit_dict(self) -> Optional[dict[str, Any]]:
         """
         Get the fit dictionary.
 
@@ -346,7 +352,7 @@ class EnergyVolumeFit:
 
     def _get_volume_and_energy_lst(
         self, volume_lst: np.ndarray = None, energy_lst: np.ndarray = None
-    ) -> tuple[np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray]:
         """
         Internal function to get the vector of volumes and the vector of energies
 
@@ -367,7 +373,9 @@ class EnergyVolumeFit:
             energy_lst = self._energy_lst
         return volume_lst, energy_lst
 
-    def fit(self, fit_type: str = "polynomial", fit_order: int = 3) -> dict:
+    def fit(
+        self, fit_type: str = "polynomial", fit_order: int = 3
+    ) -> Optional[dict[str, Any]]:
         """
         Fit the energy volume curves.
 
@@ -426,7 +434,7 @@ class EnergyVolumeFit:
         volume_lst: np.ndarray = None,
         energy_lst: np.ndarray = None,
         fit_order: int = 3,
-    ) -> dict:
+    ) -> Optional[dict[str, Any]]:
         """
         Fit a polynomial.
 
