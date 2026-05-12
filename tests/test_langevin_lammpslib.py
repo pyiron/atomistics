@@ -1,17 +1,16 @@
 import os
-
-from ase.build import bulk
-import numpy as np
 import unittest
+
+import numpy as np
+from ase.build import bulk
 
 from atomistics.workflows import LangevinWorkflow
 
-
 try:
     from atomistics.calculators import (
+        LammpsASELibrary,
         evaluate_with_lammpslib_library_interface,
         get_potential_by_name,
-        LammpsASELibrary,
     )
 
     skip_lammps_test = False

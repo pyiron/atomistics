@@ -1,12 +1,14 @@
+import unittest
+
+import numpy as np
 from ase import units
 from ase.build import bulk
 from ase.calculators.emt import EMT
+
 from atomistics.calculators import (
     calc_molecular_dynamics_langevin_with_ase,
     calc_molecular_dynamics_npt_with_ase,
 )
-import numpy as np
-import unittest
 
 
 def get_volume(cell):

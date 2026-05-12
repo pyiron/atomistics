@@ -1,16 +1,15 @@
 import inspect
 import os
-
-from ase.build import bulk
 import unittest
 
+from ase.build import bulk
 
 try:
     from atomistics.calculators import (
-        calc_molecular_dynamics_nvt_with_lammpslib,
-        calc_molecular_dynamics_npt_with_lammpslib,
-        calc_molecular_dynamics_nph_with_lammpslib,
         calc_molecular_dynamics_langevin_with_lammpslib,
+        calc_molecular_dynamics_nph_with_lammpslib,
+        calc_molecular_dynamics_npt_with_lammpslib,
+        calc_molecular_dynamics_nvt_with_lammpslib,
         get_potential_by_name,
     )
 

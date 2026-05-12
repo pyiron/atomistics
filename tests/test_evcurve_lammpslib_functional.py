@@ -1,14 +1,13 @@
 import os
+import unittest
 
 from ase.build import bulk
-import unittest
 
 from atomistics.workflows import (
     analyse_results_for_energy_volume_curve,
     get_tasks_for_energy_volume_curve,
     get_thermal_properties_for_energy_volume_curve,
 )
-
 
 try:
     from atomistics.calculators import evaluate_with_lammpslib, get_potential_by_name

@@ -1,7 +1,8 @@
+import unittest
+
 from ase.build import bulk
 from ase.calculators.emt import EMT
 from ase.optimize import LBFGS
-import unittest
 
 from atomistics.calculators import evaluate_with_ase
 from atomistics.workflows import (

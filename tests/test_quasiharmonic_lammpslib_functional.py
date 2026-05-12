@@ -1,11 +1,11 @@
 import os
-
-from ase.build import bulk
 import unittest
 
+from ase.build import bulk
+
 from atomistics.workflows import (
-    get_tasks_for_quasi_harmonic_approximation,
     analyse_results_for_quasi_harmonic_approximation,
+    get_tasks_for_quasi_harmonic_approximation,
     get_thermal_properties_for_quasi_harmonic_approximation,
 )
 

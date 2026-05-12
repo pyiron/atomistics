@@ -1,10 +1,10 @@
-from ase.build import bulk
-import numpy as np
-
 import unittest
 
-from atomistics.workflows.evcurve.fit import fit_equation_of_state
+import numpy as np
+from ase.build import bulk
+
 from atomistics.workflows.evcurve.debye import DebyeModel
+from atomistics.workflows.evcurve.fit import fit_equation_of_state
 from atomistics.workflows.evcurve.thermo import get_thermo_bulk_model
 
 

@@ -1,12 +1,13 @@
-from ase.build import bulk
-import numpy as np
 import unittest
+
+import numpy as np
+from ase.build import bulk
 
 from atomistics.calculators import evaluate_with_ase
 from atomistics.workflows import (
-    get_thermal_properties_for_energy_volume_curve,
-    get_tasks_for_energy_volume_curve,
     analyse_results_for_energy_volume_curve,
+    get_tasks_for_energy_volume_curve,
+    get_thermal_properties_for_energy_volume_curve,
 )
 
 try:

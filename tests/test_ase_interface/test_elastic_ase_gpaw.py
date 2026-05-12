@@ -1,9 +1,13 @@
-from ase.build import bulk
-import numpy as np
 import unittest
 
+import numpy as np
+from ase.build import bulk
+
 from atomistics.calculators import evaluate_with_ase
-from atomistics.workflows import get_tasks_for_elastic_matrix, analyse_results_for_elastic_matrix
+from atomistics.workflows import (
+    analyse_results_for_elastic_matrix,
+    get_tasks_for_elastic_matrix,
+)
 
 try:
     from gpaw import GPAW, PW

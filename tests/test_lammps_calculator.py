@@ -6,8 +6,8 @@ from ase.build import bulk
 try:
     import pandas
     from lammpsparser import (
-        validate_potential_dataframe,
         get_potential_dataframe,
+        validate_potential_dataframe,
     )
 
     skip_lammps_test = False

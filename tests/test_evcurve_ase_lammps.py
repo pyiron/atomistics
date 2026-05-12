@@ -1,7 +1,8 @@
+import unittest
+
 from ase.build import bulk
 from ase.calculators.lammpslib import LAMMPSlib
 from ase.optimize import LBFGS
-import unittest
 
 from atomistics.calculators import evaluate_with_ase
 from atomistics.workflows import (
@@ -10,7 +11,6 @@ from atomistics.workflows import (
     get_thermal_properties_for_energy_volume_curve,
     optimize_volume,
 )
-
 
 try:
     from lammps import lammps

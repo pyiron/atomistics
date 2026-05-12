@@ -1,14 +1,13 @@
 import os
+import unittest
 
+import numpy as np
 from ase import units
 from ase.build import bulk
 from ase.calculators.lammpslib import LAMMPSlib
-import numpy as np
-import unittest
 
-from atomistics.workflows import calc_molecular_dynamics_thermal_expansion
 from atomistics.calculators import calc_molecular_dynamics_thermal_expansion_with_ase
-
+from atomistics.workflows import calc_molecular_dynamics_thermal_expansion
 
 try:
     from atomistics.calculators import (

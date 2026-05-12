@@ -1,15 +1,16 @@
 import os
 import shutil
 import subprocess
-
-from ase.build import bulk
-import numpy as np
 import unittest
+
+import numpy as np
+from ase.build import bulk
 
 from atomistics.workflows import optimize_positions
 
 try:
     from lammpsparser import get_potential_by_name
+
     from atomistics.calculators.lammps.filecalculator import evaluate_with_lammpsfile
 
     skip_lammps_test = False

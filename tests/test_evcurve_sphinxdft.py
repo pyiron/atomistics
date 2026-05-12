@@ -1,9 +1,9 @@
 import os
 import shutil
 import subprocess
+import unittest
 
 from ase.build import bulk
-import unittest
 
 from atomistics.calculators import evaluate_with_sphinx
 from atomistics.workflows import (

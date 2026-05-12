@@ -7,12 +7,16 @@ from ase.build import bulk
 from atomistics.calculators import (
     evaluate_with_vasp,
     optimize_cell_with_vasp,
-    optimize_volume_with_vasp,
-    optimize_positions_with_vasp,
     optimize_positions_and_volume_with_vasp,
+    optimize_positions_with_vasp,
+    optimize_volume_with_vasp,
 )
-from atomistics.workflows import optimize_positions, optimize_positions_and_volume, optimize_volume, optimize_cell
-
+from atomistics.workflows import (
+    optimize_cell,
+    optimize_positions,
+    optimize_positions_and_volume,
+    optimize_volume,
+)
 
 os.environ["VASP_PP_PATH"] = os.path.abspath(os.path.join(__file__, "..", "static", "vasp"))
 

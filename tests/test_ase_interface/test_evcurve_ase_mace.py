@@ -1,16 +1,16 @@
+import unittest
+
+import numpy as np
 from ase.build import bulk
 from ase.optimize import LBFGS
-import numpy as np
-import unittest
 
 from atomistics.calculators import evaluate_with_ase
 from atomistics.workflows import (
-    optimize_positions_and_volume,
-    get_thermal_properties_for_energy_volume_curve,
-    get_tasks_for_energy_volume_curve,
     analyse_results_for_energy_volume_curve,
+    get_tasks_for_energy_volume_curve,
+    get_thermal_properties_for_energy_volume_curve,
+    optimize_positions_and_volume,
 )
-
 
 try:
     from mace.calculators import mace_mp

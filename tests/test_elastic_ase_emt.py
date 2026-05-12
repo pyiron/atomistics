@@ -1,10 +1,15 @@
+import unittest
+
 from ase.build import bulk
 from ase.calculators.emt import EMT
 from ase.optimize import LBFGS
-import unittest
 
 from atomistics.calculators import evaluate_with_ase
-from atomistics.workflows import analyse_results_for_elastic_matrix, get_tasks_for_elastic_matrix, optimize_volume
+from atomistics.workflows import (
+    analyse_results_for_elastic_matrix,
+    get_tasks_for_elastic_matrix,
+    optimize_volume,
+)
 
 
 class TestElastic(unittest.TestCase):

@@ -1,19 +1,20 @@
 import os
 import shutil
 import subprocess
-
-from ase.build import bulk
 import unittest
 
+from ase.build import bulk
+
 from atomistics.workflows import (
-    optimize_positions_and_volume,
     analyse_results_for_energy_volume_curve,
     get_tasks_for_energy_volume_curve,
     get_thermal_properties_for_energy_volume_curve,
+    optimize_positions_and_volume,
 )
 
 try:
     from lammpsparser import get_potential_by_name
+
     from atomistics.calculators.lammps.filecalculator import evaluate_with_lammpsfile
 
     skip_lammps_test = False

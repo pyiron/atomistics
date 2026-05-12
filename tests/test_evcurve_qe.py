@@ -1,7 +1,7 @@
 import os
+import unittest
 
 from ase.build import bulk
-import unittest
 
 from atomistics.workflows import (
     analyse_results_for_energy_volume_curve,

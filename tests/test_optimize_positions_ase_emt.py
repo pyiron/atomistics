@@ -1,12 +1,17 @@
+import unittest
+
 import numpy as np
 from ase.build import bulk
 from ase.calculators.emt import EMT
-from ase.optimize import BFGS
 from ase.filters import FrechetCellFilter, UnitCellFilter
-import unittest
+from ase.optimize import BFGS
 
 from atomistics.calculators import evaluate_with_ase
-from atomistics.workflows import optimize_positions, optimize_volume, optimize_positions_and_volume
+from atomistics.workflows import (
+    optimize_positions,
+    optimize_positions_and_volume,
+    optimize_volume,
+)
 
 
 class TestOptimizePositionsEMT(unittest.TestCase):

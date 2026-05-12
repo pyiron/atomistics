@@ -1,10 +1,17 @@
-from ase.build import bulk
-from ase.optimize import LBFGS
 import unittest
 
-from atomistics.calculators import evaluate_with_ase
-from atomistics.workflows import optimize_positions_and_volume, get_band_structure, get_dynamical_matrix, get_hesse_matrix, get_tasks_for_harmonic_approximation, analyse_results_for_harmonic_approximation
+from ase.build import bulk
+from ase.optimize import LBFGS
 
+from atomistics.calculators import evaluate_with_ase
+from atomistics.workflows import (
+    analyse_results_for_harmonic_approximation,
+    get_band_structure,
+    get_dynamical_matrix,
+    get_hesse_matrix,
+    get_tasks_for_harmonic_approximation,
+    optimize_positions_and_volume,
+)
 
 try:
     from tensorpotential.calculator import grace_fm

@@ -1,16 +1,15 @@
 import shutil
+import unittest
 
 from ase.build import bulk
 from ase.calculators.espresso import Espresso, EspressoProfile
-import unittest
 
 from atomistics.calculators import evaluate_with_ase
 from atomistics.workflows import (
-    get_thermal_properties_for_energy_volume_curve,
-    get_tasks_for_energy_volume_curve,
     analyse_results_for_energy_volume_curve,
+    get_tasks_for_energy_volume_curve,
+    get_thermal_properties_for_energy_volume_curve,
 )
-
 
 quantum_espresso_command = "pw.x"
 if shutil.which(quantum_espresso_command) is not None:

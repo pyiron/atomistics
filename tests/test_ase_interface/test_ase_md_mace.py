@@ -1,8 +1,9 @@
-from ase import units
-from ase.build import bulk
-from atomistics.calculators import calc_molecular_dynamics_langevin_with_ase
 import unittest
 
+from ase import units
+from ase.build import bulk
+
+from atomistics.calculators import calc_molecular_dynamics_langevin_with_ase
 
 try:
     from mace.calculators import mace_mp

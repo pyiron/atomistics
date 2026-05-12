@@ -1,16 +1,15 @@
 import os
+import unittest
 from concurrent.futures import ProcessPoolExecutor
 
 from ase.build import bulk
-import unittest
 
+from atomistics.shared.parallel import evaluate_with_parallel_executor
 from atomistics.workflows import (
     analyse_results_for_energy_volume_curve,
     get_tasks_for_energy_volume_curve,
     get_thermal_properties_for_energy_volume_curve,
 )
-from atomistics.shared.parallel import evaluate_with_parallel_executor
-
 
 try:
     from atomistics.calculators import evaluate_with_lammpslib, get_potential_by_name

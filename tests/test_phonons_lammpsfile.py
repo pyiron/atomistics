@@ -1,9 +1,9 @@
 import os
 import shutil
 import subprocess
+import unittest
 
 from ase.build import bulk
-import unittest
 
 from atomistics.workflows import (
     analyse_results_for_harmonic_approximation,
@@ -17,6 +17,7 @@ from atomistics.workflows import (
 
 try:
     from lammpsparser import get_potential_by_name
+
     from atomistics.calculators.lammps.filecalculator import evaluate_with_lammpsfile
 
     skip_lammps_test = False

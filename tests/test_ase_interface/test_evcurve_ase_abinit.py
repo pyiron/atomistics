@@ -1,18 +1,17 @@
 import os
 import shutil
+import unittest
 
 from ase.build import bulk
 from ase.calculators.abinit import Abinit, AbinitProfile
 from ase.units import Ry
-import unittest
 
 from atomistics.calculators import evaluate_with_ase
 from atomistics.workflows import (
-    get_thermal_properties_for_energy_volume_curve,
-    get_tasks_for_energy_volume_curve,
     analyse_results_for_energy_volume_curve,
+    get_tasks_for_energy_volume_curve,
+    get_thermal_properties_for_energy_volume_curve,
 )
-
 
 if shutil.which("abinit") is not None:
     skip_abinit_test = False

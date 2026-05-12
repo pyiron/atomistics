@@ -1,4 +1,5 @@
 from unittest import TestCase
+
 from atomistics.shared.import_warning import raise_warning
 
 

@@ -1,7 +1,7 @@
 import os
+import unittest
 
 from ase.build import bulk
-import unittest
 
 from atomistics.workflows import optimize_positions_and_volume
 from atomistics.workflows.quasiharmonic import QuasiHarmonicWorkflow

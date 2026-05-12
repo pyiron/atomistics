@@ -1,17 +1,16 @@
 import os
 import shutil
+import unittest
 
 from ase.build import bulk
 from ase.calculators.siesta import Siesta
 from ase.units import Ry
-import unittest
 
 from atomistics.calculators import evaluate_with_ase
 from atomistics.workflows import (
-    get_tasks_for_energy_volume_curve,
     analyse_results_for_energy_volume_curve,
+    get_tasks_for_energy_volume_curve,
 )
-
 
 siesta_command = "siesta"
 if shutil.which(siesta_command) is not None:

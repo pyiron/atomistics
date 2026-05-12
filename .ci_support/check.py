@@ -1,6 +1,5 @@
 import tomlkit
 
-
 if __name__ == "__main__":
     with open("pyproject.toml", "r") as f:
         data = tomlkit.load(f)

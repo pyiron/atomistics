@@ -1,13 +1,13 @@
 import os
-
-from ase.build import bulk
 import unittest
 
+from ase.build import bulk
+
 from atomistics.workflows import (
-    get_hesse_matrix,
-    get_thermal_properties_for_harmonic_approximation,
-    get_tasks_for_harmonic_approximation,
     analyse_results_for_harmonic_approximation,
+    get_hesse_matrix,
+    get_tasks_for_harmonic_approximation,
+    get_thermal_properties_for_harmonic_approximation,
 )
 
 try:

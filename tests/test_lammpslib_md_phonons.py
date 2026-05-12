@@ -1,10 +1,12 @@
 import os
-
-from ase.build import bulk
 import unittest
 
-from atomistics.workflows import get_tasks_for_harmonic_approximation, analyse_results_for_harmonic_approximation
+from ase.build import bulk
 
+from atomistics.workflows import (
+    analyse_results_for_harmonic_approximation,
+    get_tasks_for_harmonic_approximation,
+)
 
 try:
     from atomistics.calculators import (

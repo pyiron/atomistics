@@ -1,21 +1,22 @@
 import os
-import unittest
 import shutil
+import unittest
 
 import numpy as np
 from ase.build import bulk
 
 try:
     from sphinx_parser.toolkit import to_sphinx
+
     from atomistics.calculators.sphinxdft import (
+        BOHR_TO_ANGSTROM,
+        HARTREE_OVER_BOHR_TO_EV_OVER_ANGSTROM,
+        HARTREE_TO_EV,
         OutputParser,
         _generate_input,
         calc_static_with_sphinxdft,
-        optimize_positions_with_sphinxdft,
         evaluate_with_sphinx,
-        HARTREE_TO_EV,
-        HARTREE_OVER_BOHR_TO_EV_OVER_ANGSTROM,
-        BOHR_TO_ANGSTROM,
+        optimize_positions_with_sphinxdft,
     )
 
     skip_sphinx_test = False

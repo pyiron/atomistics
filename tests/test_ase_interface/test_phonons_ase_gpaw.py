@@ -1,8 +1,15 @@
-from ase.build import bulk
 import unittest
 
+from ase.build import bulk
+
 from atomistics.calculators import evaluate_with_ase
-from atomistics.workflows import get_band_structure, get_dynamical_matrix, get_hesse_matrix, get_tasks_for_harmonic_approximation, analyse_results_for_harmonic_approximation
+from atomistics.workflows import (
+    analyse_results_for_harmonic_approximation,
+    get_band_structure,
+    get_dynamical_matrix,
+    get_hesse_matrix,
+    get_tasks_for_harmonic_approximation,
+)
 
 try:
     from gpaw import GPAW, PW

@@ -1,20 +1,20 @@
 import os
+import unittest
 
 from ase.build import bulk
-import unittest
 
 from atomistics.calculators import evaluate_with_hessian
 from atomistics.workflows import (
-    optimize_positions_and_volume,
     LangevinWorkflow,
+    analyse_results_for_harmonic_approximation,
     get_hesse_matrix,
     get_tasks_for_harmonic_approximation,
-    analyse_results_for_harmonic_approximation,
+    optimize_positions_and_volume,
 )
-
 
 try:
     from pylammpsmpi import LammpsASELibrary
+
     from atomistics.calculators import (
         evaluate_with_lammpslib,
         evaluate_with_lammpslib_library_interface,

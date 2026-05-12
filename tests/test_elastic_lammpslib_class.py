@@ -1,8 +1,8 @@
 import os
-
-from ase.build import bulk
-import numpy as np
 import unittest
+
+import numpy as np
+from ase.build import bulk
 
 from atomistics.workflows import optimize_positions_and_volume
 from atomistics.workflows.elastic.workflow import ElasticMatrixWorkflow
