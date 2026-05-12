@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from typing import Any
 
 import numpy as np
 from ase.atoms import Atoms
@@ -24,7 +25,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         fit_order: int = 3,
         vol_range: float = 0.05,
         axes: tuple[str, str, str] = ("x", "y", "z"),
-        strains: list = None,
+        strains: list[float] | None = None,
     ):
         """
         Initialize the EnergyVolumeCurveWorkflow object.
@@ -49,7 +50,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         self._fit_dict = {}
 
     @property
-    def fit_dict(self) -> dict:
+    def fit_dict(self) -> dict[str, Any]:
         """
         Get the fit dictionary.
 
@@ -58,7 +59,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         """
         return self._fit_dict
 
-    def generate_structures(self) -> dict:
+    def generate_structures(self) -> dict[str, Any]:
         """
         Generate the structures for the energy-volume curve.
 
@@ -75,8 +76,10 @@ class EnergyVolumeCurveWorkflow(Workflow):
         return self._task_dict
 
     def analyse_structures(
-        self, output_dict: dict, output_keys: tuple = OutputEnergyVolumeCurve.keys()
-    ) -> dict:
+        self,
+        output_dict: dict[str, Any],
+        output_keys: tuple = OutputEnergyVolumeCurve.keys(),
+    ) -> dict[str, Any]:
         """
         Analyse the structures and fit the energy-volume curve.
 
@@ -101,10 +104,10 @@ class EnergyVolumeCurveWorkflow(Workflow):
         t_min: float = 1.0,
         t_max: float = 1500.0,
         t_step: float = 50.0,
-        temperatures: np.ndarray = None,
+        temperatures: np.ndarray | None = None,
         constant_volume: bool = False,
         output_keys: tuple[str] = OutputThermodynamic.keys(),
-    ) -> dict:
+    ) -> dict[str, Any]:
         """
         Get the thermal properties of the system.
 

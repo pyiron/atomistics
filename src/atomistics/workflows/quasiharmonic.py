@@ -14,22 +14,14 @@ from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
 from atomistics.workflows.phonons.helper import (
     analyse_results_for_harmonic_approximation as analyse_structures_phonopy_helper,
 )
-from atomistics.workflows.phonons.helper import (
-    get_supercell_matrix,
-)
+from atomistics.workflows.phonons.helper import get_supercell_matrix
 from atomistics.workflows.phonons.helper import (
     get_tasks_for_harmonic_approximation as generate_structures_phonopy_helper,
 )
 from atomistics.workflows.phonons.helper import (
     get_thermal_properties_for_harmonic_approximation as get_thermal_properties_phonopy,
 )
-from atomistics.workflows.phonons.units import (
-    EvTokJmol,
-    THzToEv,
-    VaspToTHz,
-    kb,
-    kJ_mol_to_eV,
-)
+from atomistics.workflows.phonons.units import EvTokJmol, THzToEv, kb, kJ_mol_to_eV
 
 
 def get_free_energy_classical(
@@ -371,7 +363,6 @@ def get_tasks_for_quasi_harmonic_approximation(
     displacement: float = 0.01,
     number_of_snapshots: int = None,
     interaction_range: float = 10.0,
-    factor: float = VaspToTHz,
 ) -> tuple[dict, np.ndarray, dict, dict]:
     """
     Generate structures for the QuasiHarmonicWorkflow.
@@ -384,7 +375,6 @@ def get_tasks_for_quasi_harmonic_approximation(
         displacement (float, optional): The displacement for finite difference calculation. Defaults to 0.01.
         number_of_snapshots (int, optional): The number of snapshots for each structure. Defaults to None.
         interaction_range (float, optional): The interaction range for supercell generation. Defaults to 10.0.
-        factor (float, optional): The conversion factor from Vasp to THz. Defaults to VaspToTHz.
 
     Returns:
         tuple[dict, np.ndarray, dict, dict]: A tuple containing the following:
@@ -418,7 +408,6 @@ def get_tasks_for_quasi_harmonic_approximation(
             displacement=displacement,
             number_of_snapshots=number_of_snapshots,
             interaction_range=interaction_range,
-            factor=factor,
         )
         phonopy_dict[strain_ind] = phonopy_obj
         structure_forces_dict.update(
@@ -478,7 +467,6 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         fit_type: str = "polynomial",
         fit_order: int = 3,
         interaction_range: float = 10.0,
-        factor: float = VaspToTHz,
         displacement: float = 0.01,
         dos_mesh: int = 20,
         primitive_matrix: np.ndarray = None,
@@ -494,7 +482,6 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             fit_type (str, optional): The type of fitting for the energy-volume curve. Defaults to "polynomial".
             fit_order (int, optional): The order of the fitting polynomial. Defaults to 3.
             interaction_range (float, optional): The interaction range for supercell generation. Defaults to 10.0.
-            factor (float, optional): The conversion factor from Vasp to THz. Defaults to VaspToTHz.
             displacement (float, optional): The displacement for finite difference calculation. Defaults to 0.01.
             dos_mesh (int, optional): The density of states mesh. Defaults to 20.
             primitive_matrix (np.ndarray, optional): The primitive matrix for supercell generation. Defaults to None.
@@ -513,7 +500,6 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         self._displacement = displacement
         self._dos_mesh = dos_mesh
         self._number_of_snapshots = number_of_snapshots
-        self._factor = factor
         self._primitive_matrix = primitive_matrix
         self._eng_internal_dict = None
         self._qh_dict = None
@@ -533,7 +519,6 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             displacement=self._displacement,
             number_of_snapshots=self._number_of_snapshots,
             interaction_range=self._interaction_range,
-            factor=self._factor,
         )
         return self._task_dict
 
