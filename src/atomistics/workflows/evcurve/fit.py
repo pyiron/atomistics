@@ -1,17 +1,10 @@
 import numpy as np
 import scipy.constants
 import scipy.optimize
-from ase.eos import (
-    birch,
-    murnaghan,
-    pouriertarantola,
-)
-from ase.eos import (
-    birchmurnaghan as birchmurnaghan_energy,
-)
-from ase.eos import (
-    vinet as vinet_energy,
-)
+from ase.eos import birch
+from ase.eos import birchmurnaghan as birchmurnaghan_energy
+from ase.eos import murnaghan, pouriertarantola
+from ase.eos import vinet as vinet_energy
 
 eV_div_A3_to_GPa = (
     1e21 / scipy.constants.physical_constants["joule-electron volt relationship"][0]

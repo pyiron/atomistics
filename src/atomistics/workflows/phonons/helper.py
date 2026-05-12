@@ -7,7 +7,7 @@ from ase.atoms import Atoms
 from phonopy import Phonopy
 
 from atomistics.shared.output import OutputPhonons, OutputThermodynamic
-from atomistics.workflows.phonons.units import VaspToTHz, kJ_mol_to_eV
+from atomistics.workflows.phonons.units import kJ_mol_to_eV
 
 
 class PhonopyProperties:
@@ -266,7 +266,6 @@ def get_tasks_for_harmonic_approximation(
     displacement: float = 0.01,
     number_of_snapshots: Optional[int] = None,
     interaction_range: float = 10.0,
-    factor: float = VaspToTHz,
 ) -> tuple[dict[int, Atoms], Phonopy]:
     """
     Generate structures with displacements for phonon calculations.
@@ -277,7 +276,6 @@ def get_tasks_for_harmonic_approximation(
         displacement (float, optional): The displacement distance. Defaults to 0.01.
         number_of_snapshots (int, optional): The number of snapshots. Defaults to None.
         interaction_range (float, optional): The interaction range. Defaults to 10.0.
-        factor (float, optional): The conversion factor. Defaults to VaspToTHz.
 
     Returns:
         Tuple[Dict[int, Atoms], Phonopy]: The Phonopy object and the dictionary of structures.
@@ -290,7 +288,6 @@ def get_tasks_for_harmonic_approximation(
             cell=unitcell.cell,
         ),
         primitive_matrix=primitive_matrix,
-        factor=factor,
     )
     phonopy_obj.generate_displacements(
         distance=displacement,

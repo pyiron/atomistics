@@ -1,4 +1,5 @@
 import os
+from io import StringIO
 from typing import Callable, Optional, Union
 
 import numpy as np
@@ -17,7 +18,7 @@ def _get_content_from_url(url: str) -> pandas.DataFrame:
     Returns:
         pandas.DataFrame: The content retrieved from the URL as a pandas DataFrame.
     """
-    content = pandas.read_html(requests.get(url).text)
+    content = pandas.read_html(StringIO(requests.get(url).text))
     if len(content[8]) > 1:
         return content[8]
     else:
