@@ -155,12 +155,12 @@ def calc_molecular_dynamics_nvt_with_lammpslib(
     timestep: float = 0.001,
     seed: int = 4928459,
     dist: str = "gaussian",
-    disable_initial_velocity: bool = False,
+    velocity_rescale_factor: Optional[float] = 2.0,
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ) -> dict:
-    if not disable_initial_velocity:
+    if velocity_rescale_factor is not None:
         init_str = (
             LAMMPS_THERMO_STYLE
             + "\n"
@@ -181,6 +181,7 @@ def calc_molecular_dynamics_nvt_with_lammpslib(
             timestep=timestep,
             seed=seed,
             dist=dist,
+            velocity_rescale_factor=velocity_rescale_factor,
         )
     else:
         init_str = (
@@ -233,14 +234,14 @@ def calc_molecular_dynamics_npt_with_lammpslib(
     Pdamp: float = 1.0,
     seed: int = 4928459,
     dist: str = "gaussian",
-    disable_initial_velocity: bool = False,
+    velocity_rescale_factor: Optional[float] = 2.0,
     couple_xyz: bool = False,
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ) -> dict:
     lammps_ensemble_npt_xyz = _get_lammps_ensemble_npt_command(couple_xyz=couple_xyz)
-    if not disable_initial_velocity:
+    if velocity_rescale_factor is not None:
         init_str = (
             LAMMPS_THERMO_STYLE
             + "\n"
@@ -264,6 +265,7 @@ def calc_molecular_dynamics_npt_with_lammpslib(
             timestep=timestep,
             seed=seed,
             dist=dist,
+            velocity_rescale_factor=velocity_rescale_factor,
         )
     else:
         init_str = (
@@ -317,12 +319,12 @@ def calc_molecular_dynamics_nph_with_lammpslib(
     Pdamp: float = 1.0,
     seed: int = 4928459,
     dist: str = "gaussian",
-    disable_initial_velocity: bool = False,
+    velocity_rescale_factor: Optional[float] = 2.0,
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ) -> dict:
-    if not disable_initial_velocity:
+    if velocity_rescale_factor is not None:
         init_str = (
             LAMMPS_THERMO_STYLE
             + "\n"
@@ -343,6 +345,7 @@ def calc_molecular_dynamics_nph_with_lammpslib(
             timestep=timestep,
             seed=seed,
             dist=dist,
+            velocity_rescale_factor=velocity_rescale_factor,
         )
     else:
         init_str = (
@@ -392,12 +395,12 @@ def calc_molecular_dynamics_langevin_with_lammpslib(
     Tdamp: float = 0.1,
     seed: int = 4928459,
     dist: str = "gaussian",
-    disable_initial_velocity: bool = False,
+    velocity_rescale_factor: Optional[float] = 2.0,
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ):
-    if not disable_initial_velocity:
+    if velocity_rescale_factor is not None:
         init_str = (
             LAMMPS_THERMO_STYLE
             + "\n"
@@ -420,6 +423,7 @@ def calc_molecular_dynamics_langevin_with_lammpslib(
             timestep=timestep,
             seed=seed,
             dist=dist,
+            velocity_rescale_factor=velocity_rescale_factor,
         )
     else:
         init_str = (
