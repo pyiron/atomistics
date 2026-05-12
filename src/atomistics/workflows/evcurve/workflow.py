@@ -5,13 +5,9 @@ from ase.atoms import Atoms
 
 from atomistics.shared.output import OutputEnergyVolumeCurve
 from atomistics.workflows.evcurve.debye import (
-    OutputThermodynamic,
-    get_thermal_properties_for_energy_volume_curve,
-)
+    OutputThermodynamic, get_thermal_properties_for_energy_volume_curve)
 from atomistics.workflows.evcurve.helper import (
-    analyse_results_for_energy_volume_curve,
-    get_tasks_for_energy_volume_curve,
-)
+    analyse_results_for_energy_volume_curve, get_tasks_for_energy_volume_curve)
 from atomistics.workflows.interface import Workflow
 
 

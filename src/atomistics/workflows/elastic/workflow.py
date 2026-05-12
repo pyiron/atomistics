@@ -3,9 +3,7 @@ from ase.atoms import Atoms
 
 from atomistics.shared.output import OutputElastic
 from atomistics.workflows.elastic.helper import (
-    analyse_results_for_elastic_matrix,
-    get_tasks_for_elastic_matrix,
-)
+    analyse_results_for_elastic_matrix, get_tasks_for_elastic_matrix)
 from atomistics.workflows.interface import Workflow
 
 
