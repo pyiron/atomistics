@@ -14,21 +14,14 @@ from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
 from atomistics.workflows.phonons.helper import (
     analyse_results_for_harmonic_approximation as analyse_structures_phonopy_helper,
 )
-from atomistics.workflows.phonons.helper import (
-    get_supercell_matrix,
-)
+from atomistics.workflows.phonons.helper import get_supercell_matrix
 from atomistics.workflows.phonons.helper import (
     get_tasks_for_harmonic_approximation as generate_structures_phonopy_helper,
 )
 from atomistics.workflows.phonons.helper import (
     get_thermal_properties_for_harmonic_approximation as get_thermal_properties_phonopy,
 )
-from atomistics.workflows.phonons.units import (
-    EvTokJmol,
-    THzToEv,
-    kb,
-    kJ_mol_to_eV,
-)
+from atomistics.workflows.phonons.units import EvTokJmol, THzToEv, kb, kJ_mol_to_eV
 
 
 def get_free_energy_classical(

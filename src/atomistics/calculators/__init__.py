@@ -97,9 +97,7 @@ else:
 
 
 try:
-    from atomistics.calculators.sphinxdft import (
-        evaluate_with_sphinx,
-    )
+    from atomistics.calculators.sphinxdft import evaluate_with_sphinx
 except ImportError as e:
     raise_warning(module_list=sphinx_functions, import_error=e)
 else:
