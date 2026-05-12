@@ -1,7 +1,6 @@
 import os
 
 from ase.build import bulk
-from phonopy.units import VaspToTHz
 import unittest
 
 from atomistics.workflows import get_tasks_for_harmonic_approximation, analyse_results_for_harmonic_approximation
@@ -32,7 +31,6 @@ class TestLammpsMD(unittest.TestCase):
         task_dict, phonopy_obj = get_tasks_for_harmonic_approximation(
             structure=structure,
             interaction_range=10,
-            factor=VaspToTHz,
             displacement=0.01,
             primitive_matrix=[[0.0, 0.5, 0.5], [0.5, 0.0, 0.5], [0.5, 0.5, 0.0]],
             number_of_snapshots=None,
