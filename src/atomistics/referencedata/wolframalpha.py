@@ -1,6 +1,6 @@
 import os
 from io import StringIO
-from typing import Callable, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 import numpy as np
 import pandas
@@ -206,7 +206,10 @@ def _extract_lst(
 
 
 def _collect(
-    url: str, column: str, select_function: callable, current_filter: callable
+    url: str,
+    column: str,
+    select_function: Callable[[Any], Any],
+    current_filter: Callable[[Any], bool],
 ) -> pandas.DataFrame:
     """
     Collect data from a given URL and extract specific properties.
@@ -362,11 +365,11 @@ def _wolframalpha_download() -> None:
     }
     result = pandas.concat(
         [
-            _collect(
-                url=v["url"],
-                column=k,
-                select_function=v["select_function"],
-                current_filter=v["current_filter"],
+                _collect(
+                    url=str(v["url"]),
+                    column=k,
+                    select_function=v["select_function"],
+                    current_filter=v["current_filter"],
             ).set_index("element")
             for k, v in data_dict.items()
         ],
