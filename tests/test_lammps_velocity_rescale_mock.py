@@ -4,14 +4,23 @@ import numpy as np
 import unittest
 from unittest.mock import MagicMock, patch
 from ase.build import bulk
-from atomistics.calculators.lammps.libcalculator import (
-    calc_molecular_dynamics_nvt_with_lammpslib,
-    calc_molecular_dynamics_npt_with_lammpslib,
-    calc_molecular_dynamics_nph_with_lammpslib,
-    calc_molecular_dynamics_langevin_with_lammpslib,
-    calc_molecular_dynamics_thermal_expansion_with_lammpslib,
-)
 
+try:
+    from atomistics.calculators.lammps.libcalculator import (
+        calc_molecular_dynamics_nvt_with_lammpslib,
+        calc_molecular_dynamics_npt_with_lammpslib,
+        calc_molecular_dynamics_nph_with_lammpslib,
+        calc_molecular_dynamics_langevin_with_lammpslib,
+        calc_molecular_dynamics_thermal_expansion_with_lammpslib,
+    )
+    skip_lammps_test = False
+except ImportError:
+    skip_lammps_test = True
+
+
+@unittest.skipIf(
+    skip_lammps_test, "LAMMPS is not installed, so the LAMMPS tests are skipped."
+)
 class TestLammpsVelocityRescaleMock(unittest.TestCase):
     def setUp(self):
         self.structure = bulk("Al", cubic=True)
