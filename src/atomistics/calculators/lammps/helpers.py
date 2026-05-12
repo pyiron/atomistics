@@ -4,7 +4,7 @@ import numpy as np
 import pandas
 from ase.atoms import Atoms
 from jinja2 import Template
-from pyiron_lammps import validate_potential_dataframe
+from lammpsparser import validate_potential_dataframe
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.shared.output import OutputMolecularDynamics, OutputThermalExpansion

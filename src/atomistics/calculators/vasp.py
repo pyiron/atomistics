@@ -3,7 +3,7 @@ from typing import Optional
 
 from ase.atoms import Atoms
 from ase.calculators.vasp.create_input import GenerateVaspInput
-from pyiron_vasp.vasp.output import parse_vasp_output
+from vaspparser.vasp.output import parse_vasp_output
 
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.wrapper import as_task_dict_evaluator
