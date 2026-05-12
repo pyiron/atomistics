@@ -49,11 +49,12 @@ def optimize_positions_and_volume_with_lammpslib(
     maxiter: int = 100000,
     maxeval: int = 10000000,
     thermo: int = 10,
+    vmax: Optional[float] = None,
     lmp=None,
     **kwargs,
 ) -> Atoms:
     template_str = (
-        LAMMPS_MINIMIZE_VOLUME
+        _get_vmax_command(vmax=vmax)
         + "\n"
         + LAMMPS_THERMO_STYLE
         + "\n"
@@ -599,3 +600,13 @@ def evaluate_with_lammpslib(
     )
     lmp.close()
     return results_dict
+
+
+def _get_vmax_command(vmax: Optional[float]) -> str:
+    if vmax is not None:
+        if isinstance(vmax, float):
+            return LAMMPS_MINIMIZE_VOLUME + " vmax {vmax}".format(vmax=vmax)
+        else:
+            raise TypeError("vmax must be a float.")
+    else:
+        return LAMMPS_MINIMIZE_VOLUME
