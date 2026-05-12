@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.constants
 import scipy.optimize
+from typing import Optional
 
 from atomistics.shared.output import OutputThermodynamic
 from atomistics.workflows.evcurve.fit import interpolate_energy
@@ -179,14 +180,14 @@ class DebyeModel:
 
         self._v_min = None
         self._v_max = None
-        self._num_steps = None
+        self._num_steps: Optional[int] = None
 
         self._volume = None
         self._init_volume()
 
         self.num_steps = num_steps
         self._fit_volume = None
-        self._debye_T = None
+        self._debye_T: Optional[tuple[np.ndarray, np.ndarray]] = None
 
     def _init_volume(self):
         """
@@ -211,6 +212,8 @@ class DebyeModel:
         Returns:
         - int: The number of steps.
         """
+        if self._num_steps is None:
+            raise ValueError("Number of steps is not set.")
         return self._num_steps
 
     @num_steps.setter
@@ -271,7 +274,7 @@ class DebyeModel:
         return interpolate_energy(fit_dict=self._fit_dict, volumes=volumes)
 
     @property
-    def debye_temperature(self) -> tuple[float]:
+    def debye_temperature(self) -> tuple[np.ndarray, np.ndarray]:
         """
         Get the Debye temperature.
 
@@ -296,12 +299,12 @@ class DebyeModel:
 
         vol = self.volume
 
-        mass = set(self._masses)
-        if len(mass) > 1:
+        unique_masses = set(self._masses)
+        if len(unique_masses) > 1:
             raise NotImplementedError(
                 "Debye temperature only for single species systems!"
             )
-        mass = list(mass)[0]
+        mass = next(iter(unique_masses))
 
         r0 = (3 * V0 * Ang3_to_Bohr3 / (4 * np.pi)) ** (1.0 / 3.0)
         debye_zero = empirical * convert * np.sqrt(r0 * B0 * GPaTokBar / mass)
@@ -316,7 +319,10 @@ class DebyeModel:
         return self._debye_T
 
     def energy_vib(
-        self, T: np.ndarray, debye_T: tuple[float] = None, low_T_limit: bool = True
+        self,
+        T: np.ndarray,
+        debye_T: Optional[np.ndarray | float] = None,
+        low_T_limit: bool = True,
     ):
         """
         Calculate the vibrational energy.

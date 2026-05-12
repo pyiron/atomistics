@@ -1,6 +1,7 @@
 import numpy as np
 from ase.atoms import Atoms
 from scipy.constants import physical_constants
+from typing import Any, Mapping
 
 from atomistics.workflows.interface import Workflow
 
@@ -14,7 +15,7 @@ def langevin_delta_v(
     time_step: float,
     masses: np.ndarray,
     velocities: np.ndarray,
-    damping_timescale: float = None,
+    damping_timescale: float | None = None,
 ) -> np.ndarray:
     """
     Velocity changes due to the Langevin thermostat.
@@ -41,7 +42,7 @@ def langevin_delta_v(
         noise -= np.mean(noise, axis=0)
         return drag + noise
     else:
-        return 0.0
+        return np.zeros_like(velocities)
 
 
 def convert_to_acceleration(forces: np.ndarray, masses: np.ndarray) -> np.ndarray:
@@ -185,7 +186,7 @@ class LangevinWorkflow(Workflow):
             structure = self.structure
         return {"calc_forces": {0: structure}, "calc_energy": {0: structure}}
 
-    def analyse_structures(self, output_dict: dict[str, dict[int, Atoms]]):
+    def analyse_structures(self, output_dict: Mapping[str, Any]):
         """
         Analyzes the structures generated in the Langevin dynamics simulation.
 

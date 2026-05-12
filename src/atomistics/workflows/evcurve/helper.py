@@ -26,7 +26,7 @@ def _strain_axes(
 
     """
     axes = np.array([a in axes for a in ("x", "y", "z")])
-    num_axes = sum(axes)
+    num_axes = int(np.sum(axes))
     if num_axes == 0:
         raise ValueError("At least one axis must be selected.")
     # Formula calculates the strain along each axis to achieve the overall volumetric strain.

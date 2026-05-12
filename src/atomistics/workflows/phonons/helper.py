@@ -111,6 +111,8 @@ class PhonopyProperties:
                 is_gamma_center=self._is_gamma_center,
             )
             self._mesh_dict = self._phonopy.get_mesh_dict()
+        if self._mesh_dict is None:
+            raise ValueError("Mesh dictionary is not available.")
         return self._mesh_dict
 
     def band_structure_dict(self) -> dict:
@@ -122,6 +124,8 @@ class PhonopyProperties:
         """
         if self._band_structure_dict is None:
             self._calc_band_structure()
+        if self._band_structure_dict is None:
+            raise ValueError("Band structure dictionary is not available.")
         return self._band_structure_dict
 
     def total_dos_dict(self) -> dict:
@@ -140,6 +144,8 @@ class PhonopyProperties:
                 use_tetrahedron_method=self._use_tetrahedron_method,
             )
             self._total_dos = self._phonopy.get_total_dos_dict()
+        if self._total_dos is None:
+            raise ValueError("Total DOS dictionary is not available.")
         return self._total_dos
 
     def dynamical_matrix(self) -> np.ndarray:
@@ -266,7 +272,7 @@ def get_tasks_for_harmonic_approximation(
     displacement: float = 0.01,
     number_of_snapshots: Optional[int] = None,
     interaction_range: float = 10.0,
-) -> tuple[dict[int, Atoms], Phonopy]:
+) -> tuple[dict[str, dict[int, Atoms]], Phonopy]:
     """
     Generate structures with displacements for phonon calculations.
 
@@ -309,8 +315,8 @@ def analyse_results_for_harmonic_approximation(
     phonopy: Phonopy,
     output_dict: dict,
     dos_mesh: int = 20,
-    number_of_snapshots: int = None,
-    output_keys: tuple[str] = OutputPhonons.keys(),
+    number_of_snapshots: Optional[int] = None,
+    output_keys: tuple[str, ...] = OutputPhonons.keys(),
 ) -> dict:
     """
     Analyze structures and calculate phonon properties.
@@ -357,11 +363,11 @@ def get_thermal_properties_for_harmonic_approximation(
     t_max: float = 1500.0,
     t_step: float = 50.0,
     temperatures: np.ndarray = None,
-    cutoff_frequency: float = None,
+    cutoff_frequency: Optional[float] = None,
     pretend_real: bool = False,
     band_indices: np.ndarray = None,
     is_projection: bool = False,
-    output_keys: tuple[str] = OutputThermodynamic.keys(),
+    output_keys: tuple[str, ...] = OutputThermodynamic.keys(),
 ) -> dict:
     """
     Returns thermal properties at constant volume in the given temperature range. Can only be called after job
@@ -562,7 +568,7 @@ def plot_band_structure(
     if "color" not in kwargs:
         kwargs["color"] = "black"
 
-    offset = 0
+    offset = 0.0
     tick_positions = [distances[0][0]]
     for di, fi, ci in zip(distances, frequencies, path_connections):
         axis.axvline(tick_positions[-1], color="black", linestyle="dotted", alpha=0.5)

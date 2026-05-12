@@ -30,8 +30,7 @@ class ThermoBulk:
             A copy of the ThermoBulk object.
         """
         cls = self.__class__
-        result = cls.__new__(cls)
-        result.__init__()
+        result = cls()
         result.__dict__["_volumes"] = copy(self._volumes)
         result.__dict__["_temperatures"] = copy(self._temperatures)
         result.__dict__["_energies"] = copy(self._energies)
@@ -75,17 +74,38 @@ class ThermoBulk:
         Returns:
             The coefficients of the polynomial fit.
         """
+        if self._volumes is None or self._energies is None:
+            raise ValueError("Volumes and energies must be set before fitting.")
         return np.polyfit(self._volumes, self._energies.T, deg=self._fit_order)
 
-    @property
-    def temperatures(self) -> np.ndarray:
+    def _get_temperatures(self) -> np.ndarray:
         """
         Get the temperatures.
 
         Returns:
             The temperatures.
         """
+        if self._temperatures is None:
+            raise ValueError("Temperatures are not set.")
         return self._temperatures
+
+    def _set_temperatures(self, temp_lst: np.ndarray) -> None:
+        """
+        Set the temperatures.
+
+        Args:
+            temp_lst: The temperatures.
+        """
+        if not hasattr(temp_lst, "__len__"):
+            raise ValueError("Requires list as input parameter")
+        len_temp = -1
+        if self._temperatures is not None:
+            len_temp = len(self._temperatures)
+        self._temperatures = np.array(temp_lst)
+        if len(temp_lst) != len_temp:
+            self._reset_energy()
+
+    temperatures = property(_get_temperatures, _set_temperatures)
 
     @property
     def _d_temp(self) -> float:
@@ -106,23 +126,6 @@ class ThermoBulk:
             The volume step size.
         """
         return self.volumes[1] - self.volumes[0]
-
-    @temperatures.setter
-    def temperatures(self, temp_lst: np.ndarray):
-        """
-        Set the temperatures.
-
-        Args:
-            temp_lst: The temperatures.
-        """
-        if not hasattr(temp_lst, "__len__"):
-            raise ValueError("Requires list as input parameter")
-        len_temp = -1
-        if self._temperatures is not None:
-            len_temp = len(self._temperatures)
-        self._temperatures = np.array(temp_lst)
-        if len(temp_lst) != len_temp:
-            self._reset_energy()
 
     @property
     def volumes(self) -> np.ndarray:
@@ -224,7 +227,10 @@ class ThermoBulk:
         )
 
     def set_volumes(
-        self, volume_min: float, volume_max: float = None, volume_steps: int = 10
+        self,
+        volume_min: float,
+        volume_max: Optional[float] = None,
+        volume_steps: int = 10,
     ):
         """
         Set the volumes.
@@ -289,7 +295,9 @@ class ThermoBulk:
         else:
             raise NotImplementedError()
 
-    def interpolate_volume(self, volumes: np.ndarray, fit_order: int = None):
+    def interpolate_volume(
+        self, volumes: np.ndarray, fit_order: Optional[int] = None
+    ) -> "ThermoBulk":
         """
         Interpolate the volumes.
 
@@ -416,7 +424,7 @@ class ThermoBulk:
             import matplotlib.pyplot as plt
         x, y = self.meshgrid()
         p_coeff = np.polyfit(self.volumes, self.pressure.T, deg=self._fit_order)
-        p_grid = np.array([np.polyval(p_coeff, v) for v in self._volumes]).T
+        p_grid = np.array([np.polyval(p_coeff, v) for v in self.volumes]).T
         plt.contourf(x, y, p_grid)
         plt.plot(self.get_minimum_energy_path(), self.temperatures)
         plt.xlabel("Volume [$\AA^3$]")

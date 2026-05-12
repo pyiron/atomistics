@@ -1,5 +1,5 @@
 import posixpath
-from typing import Optional
+from typing import Any, Optional
 
 import numpy as np
 from ase.atoms import Atoms
@@ -62,7 +62,7 @@ class PhonopyWorkflow(Workflow):
         self.structure = structure
         self._primitive_matrix = primitive_matrix
         self.phonopy = None
-        self._phonopy_dict = {}
+        self._phonopy_dict: dict[str, Any] = {}
 
     def generate_structures(self) -> dict:
         """
@@ -81,7 +81,7 @@ class PhonopyWorkflow(Workflow):
         return task_dict
 
     def analyse_structures(
-        self, output_dict: dict, output_keys: tuple[str] = OutputPhonons.keys()
+        self, output_dict: dict, output_keys: tuple[str, ...] = OutputPhonons.keys()
     ) -> dict:
         """
         Analyse structures.
@@ -112,7 +112,7 @@ class PhonopyWorkflow(Workflow):
         pretend_real: bool = False,
         band_indices: Optional[np.ndarray] = None,
         is_projection: bool = False,
-        output_keys: tuple[str] = OutputThermodynamic.keys(),
+        output_keys: tuple[str, ...] = OutputThermodynamic.keys(),
     ) -> dict:
         """
         Get thermal properties.
