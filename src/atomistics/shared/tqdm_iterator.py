@@ -10,6 +10,7 @@ except ImportError:
 
 T = TypeVar("T")
 
+
 def get_tqdm_iterator(lst: Iterable[T]) -> Iterator[T]:
     """
     Returns an iterator with tqdm progress bar if tqdm is available, otherwise returns the original list iterator.
