@@ -1,19 +1,22 @@
+from __future__ import annotations
+
 # best would be StrEnum from py3.11
 import sys
+from collections.abc import Callable, Collection, Sequence
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any, Protocol, Union
 
-if sys.version_info.minor < 11:
+if sys.version_info < (3, 11):
     # official impl' is not significantly different
-    class StrEnum(str, Enum):
-        def __str__(self):
+    class _StrEnum(str, Enum):
+        def __str__(self) -> str:
             return str(self.value)
 
 else:
-    from enum import StrEnum
+    from enum import StrEnum as _StrEnum
 
 
-class TaskEnum(StrEnum):
+class TaskEnum(_StrEnum):
     calc_energy = "calc_energy"
     calc_forces = "calc_forces"
     calc_stress = "calc_stress"
@@ -38,19 +41,24 @@ class TaskOutputEnum(Enum):
 
 
 if TYPE_CHECKING:
-    from ase import Atoms
+    from ase import Atoms  # type: ignore[import-not-found]
 
-    TaskName = Union[str, TaskEnum]
+    TaskName = Union[str, TaskEnum]  # noqa: UP007
     TaskSpec = tuple[Atoms, list[TaskName]]
     TaskDict = dict[str, TaskSpec]
 
-    TaskResults = dict[TaskName, Any]
-    ResultsDict = dict[str, TaskResults]
+    TaskResults = dict[str, Any]
+    ResultsDict = dict[str, Any]
 
-    SimpleEvaluator = callable[[Atoms, list[TaskName], ...], TaskResults]
+    class SimpleEvaluator(Protocol):
+        def __call__(
+            self, structure: Atoms, tasks: Sequence[TaskName], *args, **kwargs
+        ) -> TaskResults: ...
 
 
-def get_quantities_from_tasks(tasks: dict) -> list:
+def get_quantities_from_tasks(
+    tasks: Collection[Union[str, TaskEnum]],  # noqa: UP007
+) -> list[str]:
     """
     Get a list of quantities based on the given tasks.
 
@@ -61,7 +69,7 @@ def get_quantities_from_tasks(tasks: dict) -> list:
         list: A list of quantities.
 
     """
-    quantities = []
+    quantities: list[str] = []
     if "calc_energy" in tasks:
         quantities.append("energy")
     if "calc_forces" in tasks:

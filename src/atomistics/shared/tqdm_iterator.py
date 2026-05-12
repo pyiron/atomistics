@@ -1,14 +1,16 @@
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
+from typing import TypeVar
 
 try:
-    from tqdm import tqdm
+    from tqdm import tqdm  # type: ignore[import-untyped]
 
     tqdm_available = True
 except ImportError:
     tqdm_available = False
 
+T = TypeVar("T")
 
-def get_tqdm_iterator(lst: list) -> Iterator:
+def get_tqdm_iterator(lst: Iterable[T]) -> Iterator[T]:
     """
     Returns an iterator with tqdm progress bar if tqdm is available, otherwise returns the original list iterator.
 
@@ -19,6 +21,5 @@ def get_tqdm_iterator(lst: list) -> Iterator:
         Iterator: An iterator with tqdm progress bar if tqdm is available, otherwise the original list iterator.
     """
     if tqdm_available:
-        return tqdm(lst)
-    else:
-        return lst
+        return iter(tqdm(lst))
+    return iter(lst)

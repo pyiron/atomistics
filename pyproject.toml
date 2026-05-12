@@ -78,6 +78,11 @@ vasp = [
     "vaspparser==0.0.3"
 ]
 
+[dependency-groups]
+dev = [
+    "mypy==1.15.0",
+]
+
 [tool.hatch.build]
 include = [
     "src/atomistics"
@@ -154,3 +159,16 @@ ignore = [
 [tool.coverage.run]
 source = ["atomistics"]
 command_line = "-m unittest discover tests"
+
+[tool.mypy]
+python_version = "3.9"
+follow_imports = "skip"
+files = [
+    "src/atomistics/calculators/interface.py",
+    "src/atomistics/calculators/wrapper.py",
+    "src/atomistics/shared/output.py",
+    "src/atomistics/shared/tqdm_iterator.py",
+    "src/atomistics/workflows/interface.py",
+]
+show_error_codes = true
+pretty = true
