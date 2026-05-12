@@ -423,7 +423,9 @@ class ThermoBulk:
             import matplotlib.pyplot as plt
         x, y = self.meshgrid()
         p_coeff = np.polyfit(self.volumes, self.pressure.T, deg=self._fit_order)
-        p_grid = np.array([np.polyval(p_coeff, v) for v in self.volumes]).T
+        if self._volumes is None:
+            raise ValueError("Volumes are not set.")
+        p_grid = np.array([np.polyval(p_coeff, v) for v in self._volumes]).T
         plt.contourf(x, y, p_grid)
         plt.plot(self.get_minimum_energy_path(), self.temperatures)
         plt.xlabel("Volume [$\AA^3$]")
