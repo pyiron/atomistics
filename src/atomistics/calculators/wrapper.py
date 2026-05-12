@@ -5,7 +5,7 @@ that evaluate a task dictionary.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable
 
 from atomistics.calculators.interface import TaskEnum, TaskOutputEnum
 
@@ -20,7 +20,9 @@ if TYPE_CHECKING:
     )
 
 
-def _convert_task_dict(old_task_dict: dict[TaskName, dict[str, Atoms]]) -> TaskDict:
+def _convert_task_dict(
+    old_task_dict: dict[TaskName, dict[str, Atoms] | Atoms],
+) -> TaskDict:
     """
     Converts the existing task dictionaries of the format
     `{result_type_string: {structure_label_string: structure, ...}, ...}`
@@ -44,7 +46,7 @@ def _convert_task_dict(old_task_dict: dict[TaskName, dict[str, Atoms]]) -> TaskD
 
 def as_task_dict_evaluator(
     calculate: SimpleEvaluator,
-) -> callable[[dict[TaskName, dict[str, Atoms]], ...], ResultsDict]:
+) -> Callable[..., ResultsDict]:
     """
     Takes a callable that acts on a single structure and a (string) list of tasks to
     and maps it to a function that operates on a task-list dictionary of structures,
@@ -63,8 +65,8 @@ def as_task_dict_evaluator(
     def evaluate_with_calculator(
         task_dict: dict[TaskName, dict[str, Atoms]],
         # TODO: Make workflows pass task dicts: dict[str, TaskSpec] ~ TaskDict,
-        *calculate_args,
-        **calculate_kwargs,
+        *calculate_args: Any,
+        **calculate_kwargs: Any,
     ) -> ResultsDict:
         task_dict = _convert_task_dict(task_dict)
         results_dict = {}

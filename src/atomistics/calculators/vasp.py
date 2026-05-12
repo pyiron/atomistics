@@ -11,7 +11,7 @@ from atomistics.shared.output import OutputStatic
 
 
 class OutputParser:
-    def __init__(self, working_directory, structure):
+    def __init__(self, working_directory: str, structure: Atoms):
         self._output_dict = parse_vasp_output(
             working_directory=working_directory, structure=structure
         )
@@ -29,7 +29,7 @@ class OutputParser:
         return self._output_dict["generic"]["stresses"][-1]
 
 
-def write_input(working_directory, atoms, **kwargs):
+def write_input(working_directory: str, atoms: Atoms, **kwargs) -> None:
     vip = GenerateVaspInput()
     vip.set(**kwargs)
     vip.initialize(atoms=atoms)

@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Any
 from ase.atoms import Atoms
 
 from atomistics.shared.output import OutputElastic
@@ -39,7 +40,7 @@ class ElasticMatrixWorkflow(Workflow):
         self.epss = np.array([])
         self.zero_strain_job_name = "s_e_0"
 
-    def generate_structures(self) -> dict:
+    def generate_structures(self) -> dict[str, Any]:
         """
         Generate the structures for elastic matrix calculation.
 
@@ -58,8 +59,10 @@ class ElasticMatrixWorkflow(Workflow):
         return task_dict
 
     def analyse_structures(
-        self, output_dict: dict, output_keys: tuple = OutputElastic.keys()
-    ) -> dict:
+        self,
+        output_dict: dict[str, Any],
+        output_keys: tuple = OutputElastic.keys(),
+    ) -> dict[str, Any]:
         """
         Analyze the structures and calculate the elastic matrix.
 
