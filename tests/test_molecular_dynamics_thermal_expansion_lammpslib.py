@@ -1,14 +1,16 @@
 import os
+import inspect
+from unittest.mock import patch
 
 from ase import units
 from ase.build import bulk
 from ase.calculators.lammpslib import LAMMPSlib
 import numpy as np
+import pandas
 import unittest
 
 from atomistics.workflows import calc_molecular_dynamics_thermal_expansion
 from atomistics.calculators import calc_molecular_dynamics_thermal_expansion_with_ase
-
 
 try:
     from atomistics.calculators import (
@@ -16,6 +18,7 @@ try:
         evaluate_with_lammpslib,
         get_potential_by_name,
     )
+    from atomistics.calculators.lammps import libcalculator as lammps_libcalculator
 
     skip_lammps_test = False
 except ImportError:
@@ -98,3 +101,38 @@ class TestMolecularDynamicsThermalExpansion(unittest.TestCase):
         self.assertTrue(all(np.array(results_dict["temperatures"]) < 600))
         self.assertTrue(all(np.array(results_dict["temperatures"]) > 0))
         self.assertTrue(results_dict["volumes"][0] < results_dict["volumes"][-1])
+
+    def test_calc_thermal_expansion_signature(self):
+        self.assertFalse(
+            inspect.signature(calc_molecular_dynamics_thermal_expansion_with_lammpslib)
+            .parameters["couple_xyz"]
+            .default
+        )
+
+    def test_calc_thermal_expansion_couple_xyz_run_string(self):
+        with patch.object(
+            lammps_libcalculator,
+            "lammps_thermal_expansion_loop",
+            return_value={},
+        ) as thermal_expansion_mock:
+            calc_molecular_dynamics_thermal_expansion_with_lammpslib(
+                structure=bulk("Al", cubic=True),
+                potential_dataframe=pandas.DataFrame(),
+                couple_xyz=True,
+            )
+        self.assertIn("couple xyz", thermal_expansion_mock.call_args.kwargs["run_str"])
+
+    def test_calc_thermal_expansion_without_couple_xyz_run_string(self):
+        with patch.object(
+            lammps_libcalculator,
+            "lammps_thermal_expansion_loop",
+            return_value={},
+        ) as thermal_expansion_mock:
+            calc_molecular_dynamics_thermal_expansion_with_lammpslib(
+                structure=bulk("Al", cubic=True),
+                potential_dataframe=pandas.DataFrame(),
+                couple_xyz=False,
+            )
+        self.assertNotIn(
+            "couple xyz", thermal_expansion_mock.call_args.kwargs["run_str"]
+        )

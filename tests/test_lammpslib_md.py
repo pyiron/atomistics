@@ -1,9 +1,10 @@
 import inspect
 import os
+from unittest.mock import patch
 
 from ase.build import bulk
+import pandas
 import unittest
-
 
 try:
     from atomistics.calculators import (
@@ -13,6 +14,7 @@ try:
         calc_molecular_dynamics_langevin_with_lammpslib,
         get_potential_by_name,
     )
+    from atomistics.calculators.lammps import libcalculator as lammps_libcalculator
 
     skip_lammps_test = False
 except ImportError:
@@ -253,4 +255,47 @@ class TestLammpsMD(unittest.TestCase):
                 "velocities",
                 "volume",
             ),
+        )
+        self.assertFalse(
+            inspect.signature(calc_molecular_dynamics_npt_with_lammpslib)
+            .parameters["couple_xyz"]
+            .default
+        )
+
+    def test_lammps_md_npt_couple_xyz_command(self):
+        with (
+            patch.object(
+                lammps_libcalculator, "lammps_run", return_value=object()
+            ) as lammps_run_mock,
+            patch.object(
+                lammps_libcalculator, "lammps_calc_md", return_value={}
+            ) as lammps_calc_md_mock,
+            patch.object(lammps_libcalculator, "lammps_shutdown") as shutdown_mock,
+        ):
+            calc_molecular_dynamics_npt_with_lammpslib(
+                structure=bulk("Al", cubic=True),
+                potential_dataframe=pandas.DataFrame(),
+                disable_initial_velocity=True,
+                couple_xyz=True,
+            )
+        self.assertIn("couple xyz", lammps_run_mock.call_args.kwargs["input_template"])
+        lammps_calc_md_mock.assert_called_once()
+        shutdown_mock.assert_called_once()
+
+    def test_lammps_md_npt_without_couple_xyz_command(self):
+        with (
+            patch.object(
+                lammps_libcalculator, "lammps_run", return_value=object()
+            ) as lammps_run_mock,
+            patch.object(lammps_libcalculator, "lammps_calc_md", return_value={}),
+            patch.object(lammps_libcalculator, "lammps_shutdown"),
+        ):
+            calc_molecular_dynamics_npt_with_lammpslib(
+                structure=bulk("Al", cubic=True),
+                potential_dataframe=pandas.DataFrame(),
+                disable_initial_velocity=True,
+                couple_xyz=False,
+            )
+        self.assertNotIn(
+            "couple xyz", lammps_run_mock.call_args.kwargs["input_template"]
         )

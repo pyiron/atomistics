@@ -234,10 +234,15 @@ def calc_molecular_dynamics_npt_with_lammpslib(
     seed: int = 4928459,
     dist: str = "gaussian",
     disable_initial_velocity: bool = False,
+    couple_xyz: bool = False,
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ) -> dict:
+    if couple_xyz:
+        lammps_ensemble_npt_xyz = LAMMPS_ENSEMBLE_NPT + " couple xyz"
+    else:
+        lammps_ensemble_npt_xyz = LAMMPS_ENSEMBLE_NPT
     if not disable_initial_velocity:
         init_str = (
             LAMMPS_THERMO_STYLE
@@ -248,7 +253,7 @@ def calc_molecular_dynamics_npt_with_lammpslib(
             + "\n"
             + LAMMPS_VELOCITY
             + "\n"
-            + LAMMPS_ENSEMBLE_NPT
+            + lammps_ensemble_npt_xyz
         )
         input_template = Template(init_str).render(
             thermo=thermo,
@@ -271,7 +276,7 @@ def calc_molecular_dynamics_npt_with_lammpslib(
             + "\n"
             + LAMMPS_THERMO
             + "\n"
-            + LAMMPS_ENSEMBLE_NPT
+            + lammps_ensemble_npt_xyz
         )
         input_template = Template(init_str).render(
             thermo=thermo,
@@ -474,6 +479,7 @@ def calc_molecular_dynamics_thermal_expansion_with_lammpslib(
     Pdamp: float = 1.0,
     seed: int = 4928459,
     dist: str = "gaussian",
+    couple_xyz: bool = False,
     lmp=None,
     output_keys=OutputThermalExpansion.keys(),
     **kwargs,
@@ -488,7 +494,11 @@ def calc_molecular_dynamics_thermal_expansion_with_lammpslib(
         + LAMMPS_VELOCITY
         + "\n"
     )
-    run_str = LAMMPS_ENSEMBLE_NPT + "\n" + LAMMPS_RUN
+    if couple_xyz:
+        lammps_ensemble_npt_xyz = LAMMPS_ENSEMBLE_NPT + " couple xyz"
+    else:
+        lammps_ensemble_npt_xyz = LAMMPS_ENSEMBLE_NPT
+    run_str = lammps_ensemble_npt_xyz + "\n" + LAMMPS_RUN
     temperature_lst = np.arange(Tstart, Tstop + Tstep, Tstep).tolist()
     return lammps_thermal_expansion_loop(
         structure=structure,
