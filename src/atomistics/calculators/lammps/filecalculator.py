@@ -1,4 +1,5 @@
 import os
+from typing import Any, Callable
 
 import pandas
 from ase.atoms import Atoms
@@ -24,23 +25,23 @@ DUMP_COMMANDS = [
 
 
 class GenericOutput:
-    def __init__(self, output_dict):
+    def __init__(self, output_dict: dict[str, Any]):
         self._output_dict = output_dict
 
-    def get_forces(self):
+    def get_forces(self) -> list[list[float]]:
         return self._output_dict["generic"]["forces"][-1]
 
-    def get_energy_pot(self):
+    def get_energy_pot(self) -> float:
         return self._output_dict["generic"]["energy_pot"][-1]
 
-    def get_stress(self):
+    def get_stress(self) -> list[float]:
         return self._output_dict["generic"]["pressures"][-1]
 
-    def get_volume(self):
+    def get_volume(self) -> float:
         return self._output_dict["generic"]["volume"][-1]
 
 
-def _lammps_file_initialization(structure):
+def _lammps_file_initialization(structure: Atoms) -> list[str]:
     dimension = 3
     boundary = " ".join(["p" if coord else "f" for coord in structure.pbc])
     init_commands = [
@@ -54,8 +55,11 @@ def _lammps_file_initialization(structure):
 
 
 def _write_lammps_input_file(
-    working_directory, structure, potential_dataframe, input_template
-):
+    working_directory: str,
+    structure: Atoms,
+    potential_dataframe: pandas.DataFrame,
+    input_template: str,
+) -> None:
     _write_lammps_structure(
         structure=structure,
         potential_elements=potential_dataframe["Species"],
@@ -79,7 +83,7 @@ def optimize_positions_and_volume_with_lammpsfile(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
     working_directory: str,
-    executable_function: callable,
+    executable_function: Callable[[str], Any],
     min_style: str = "cg",
     etol: float = 0.0,
     ftol: float = 0.0001,
@@ -131,7 +135,7 @@ def optimize_positions_with_lammpsfile(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
     working_directory: str,
-    executable_function: callable,
+    executable_function: Callable[[str], Any],
     min_style: str = "cg",
     etol: float = 0.0,
     ftol: float = 0.0001,
@@ -174,9 +178,9 @@ def calc_static_with_lammpsfile(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
     working_directory: str,
-    executable_function: callable,
+    executable_function: Callable[[str], Any],
     output_keys=OutputStatic.keys(),
-) -> dict:
+) -> dict[str, Any]:
     template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
     input_template = Template(template_str).render(
         run=0,
@@ -212,15 +216,15 @@ def calc_static_with_lammpsfile(
 @as_task_dict_evaluator
 def evaluate_with_lammpsfile(
     structure: Atoms,
-    tasks: list,
+    tasks: list[str],
     potential_dataframe: pandas.DataFrame,
     working_directory: str,
-    executable_function: callable,
-    lmp_optimizer_kwargs: dict = None,
-) -> dict:
+    executable_function: Callable[[str], Any],
+    lmp_optimizer_kwargs: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     if lmp_optimizer_kwargs is None:
         lmp_optimizer_kwargs = {}
-    results = {}
+    results: dict[str, Any] = {}
     if "optimize_positions_and_volume" in tasks:
         results["structure_with_optimized_positions_and_volume"] = (
             optimize_positions_and_volume_with_lammpsfile(
