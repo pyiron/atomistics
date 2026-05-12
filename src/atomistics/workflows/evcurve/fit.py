@@ -202,7 +202,7 @@ def fit_equation_of_state(
 
 def fit_polynomial(
     volume_lst: np.ndarray, energy_lst: np.ndarray, fit_order: int
-) -> dict[str, Any]:
+) -> Optional[dict[str, Any]]:
     """
     Fit a polynomial to the given volume and energy data.
 
@@ -241,7 +241,7 @@ def fit_polynomial(
     e_eq_lst = p_fit(volume_eq_lst)
     arg = np.argsort(e_eq_lst)
     if len(e_eq_lst) == 0:
-        raise ValueError("No equilibrium volume found in the fitted range.")
+        return None
     e_eq = e_eq_lst[arg][0]
     volume_eq = volume_eq_lst[arg][0]
 
@@ -375,7 +375,9 @@ class EnergyVolumeFit:
             energy_lst = self._energy_lst
         return volume_lst, energy_lst
 
-    def fit(self, fit_type: str = "polynomial", fit_order: int = 3) -> dict[str, Any]:
+    def fit(
+        self, fit_type: str = "polynomial", fit_order: int = 3
+    ) -> Optional[dict[str, Any]]:
         """
         Fit the energy volume curves.
 
@@ -434,7 +436,7 @@ class EnergyVolumeFit:
         volume_lst: np.ndarray = None,
         energy_lst: np.ndarray = None,
         fit_order: int = 3,
-    ) -> dict[str, Any]:
+    ) -> Optional[dict[str, Any]]:
         """
         Fit a polynomial.
 

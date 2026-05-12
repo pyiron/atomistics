@@ -29,8 +29,7 @@ class ThermoBulk:
         Returns:
             A copy of the ThermoBulk object.
         """
-        cls = self.__class__
-        result = cls()
+        result = copy(self)
         result.__dict__["_volumes"] = copy(self._volumes)
         result.__dict__["_temperatures"] = copy(self._temperatures)
         result.__dict__["_energies"] = copy(self._energies)
