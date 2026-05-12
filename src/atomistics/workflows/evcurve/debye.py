@@ -341,7 +341,7 @@ class DebyeModel:
                 debye_T = self.debye_temperature[0]  # low
             else:
                 debye_T = self.debye_temperature[1]  # high
-        if hasattr(debye_T, "__len__"):
+        if isinstance(debye_T, np.ndarray):
             val = [
                 9.0 / 8.0 * kB * d_T
                 + T * kB * (3 * np.log(1 - np.exp(-d_T / T)) - debye_function(d_T / T))

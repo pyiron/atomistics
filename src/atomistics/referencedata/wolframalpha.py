@@ -1,6 +1,6 @@
 import os
 from io import StringIO
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Optional, Union, cast
 
 import numpy as np
 import pandas
@@ -368,9 +368,11 @@ def _wolframalpha_download() -> None:
                 _collect(
                     url=str(v["url"]),
                     column=k,
-                    select_function=v["select_function"],
-                    current_filter=v["current_filter"],
-            ).set_index("element")
+                    select_function=cast(Callable[[Any], Any], v["select_function"]),
+                    current_filter=cast(
+                        Callable[[Any], bool], v["current_filter"]
+                    ),
+                ).set_index("element")
             for k, v in data_dict.items()
         ],
         axis=1,

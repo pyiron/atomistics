@@ -64,6 +64,11 @@ class PhonopyWorkflow(Workflow):
         self.phonopy = None
         self._phonopy_dict: dict[str, Any] = {}
 
+    def _require_phonopy(self):
+        if self.phonopy is None:
+            raise ValueError("Phonopy object is not initialized. Run generate_structures first.")
+        return self.phonopy
+
     def generate_structures(self) -> dict:
         """
         Generate structures.
@@ -94,7 +99,7 @@ class PhonopyWorkflow(Workflow):
             dict: The analysed structures.
         """
         self._phonopy_dict = analyse_results_for_harmonic_approximation(
-            phonopy=self.phonopy,
+            phonopy=self._require_phonopy(),
             output_dict=output_dict,
             dos_mesh=self._dos_mesh,
             number_of_snapshots=self._number_of_snapshots,
@@ -132,7 +137,7 @@ class PhonopyWorkflow(Workflow):
             dict: The thermal properties.
         """
         return get_thermal_properties_for_harmonic_approximation(
-            phonopy=self.phonopy,
+            phonopy=self._require_phonopy(),
             t_min=t_min,
             t_max=t_max,
             t_step=t_step,
@@ -154,7 +159,8 @@ class PhonopyWorkflow(Workflow):
         Returns:
             np.ndarray: The dynamical matrix.
         """
-        self.phonopy.auto_band_structure(
+        phonopy = self._require_phonopy()
+        phonopy.auto_band_structure(
             npoints=npoints,
             with_eigenvectors=False,
             with_group_velocities=False,
@@ -162,7 +168,7 @@ class PhonopyWorkflow(Workflow):
             write_yaml=False,
             filename="band.yaml",
         )
-        return np.real_if_close(self.phonopy.dynamical_matrix.dynamical_matrix)
+        return np.real_if_close(phonopy.dynamical_matrix.dynamical_matrix)
 
     def dynamical_matrix_at_q(self, q: np.ndarray) -> np.ndarray:
         """
@@ -174,7 +180,7 @@ class PhonopyWorkflow(Workflow):
         Returns:
             np.ndarray: The dynamical matrix.
         """
-        return np.real_if_close(self.phonopy.get_dynamical_matrix_at_q(q))
+        return np.real_if_close(self._require_phonopy().get_dynamical_matrix_at_q(q))
 
     def write_phonopy_force_constants(
         self, file_name: str = "FORCE_CONSTANTS", cwd: Optional[str] = None
@@ -189,7 +195,7 @@ class PhonopyWorkflow(Workflow):
         if cwd is not None:
             file_name = posixpath.join(cwd, file_name)
         write_FORCE_CONSTANTS(
-            force_constants=self.phonopy.force_constants, filename=file_name
+            force_constants=self._require_phonopy().force_constants, filename=file_name
         )
 
     def get_hesse_matrix(self) -> np.ndarray:
@@ -199,7 +205,7 @@ class PhonopyWorkflow(Workflow):
         Returns:
             np.ndarray: The Hesse matrix.
         """
-        return get_hesse_matrix(phonopy=self.phonopy)
+        return get_hesse_matrix(phonopy=self._require_phonopy())
 
     def get_band_structure(
         self,
@@ -219,7 +225,7 @@ class PhonopyWorkflow(Workflow):
             [type]: [description]
         """
         return get_band_structure(
-            phonopy=self.phonopy,
+            phonopy=self._require_phonopy(),
             npoints=npoints,
             with_eigenvectors=with_eigenvectors,
             with_group_velocities=with_group_velocities,
@@ -239,11 +245,7 @@ class PhonopyWorkflow(Workflow):
             [type]: [description]
         """
         return plot_band_structure(
-            phonopy=self.phonopy,
-            axis=axis,
-            *args,
-            label=label,
-            **kwargs,
+            self._require_phonopy(), axis, *args, label=label, **kwargs
         )
 
     def plot_dos(self, *args, axis=None, **kwargs):
