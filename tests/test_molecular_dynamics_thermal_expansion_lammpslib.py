@@ -75,6 +75,34 @@ class TestMolecularDynamicsThermalExpansion(unittest.TestCase):
         self.assertTrue(all(np.array(results_dict["temperatures"]) > 0))
         self.assertTrue(results_dict["volumes"][0] < results_dict["volumes"][-1])
 
+    def test_calc_thermal_expansion_using_calc_couplexyz(self):
+        structure = bulk("Al", cubic=True)
+        df_pot_selected = get_potential_by_name(
+            potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
+            resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
+        )
+        results_dict = calc_molecular_dynamics_thermal_expansion_with_lammpslib(
+            structure=structure,
+            potential_dataframe=df_pot_selected,
+            Tstart=50,
+            Tstop=500,
+            Tstep=50,
+            Tdamp=0.1,
+            run=100,
+            thermo=100,
+            timestep=0.001,
+            Pstart=0.0,
+            Pstop=0.0,
+            Pdamp=1.0,
+            seed=4928459,
+            dist="gaussian",
+            lmp=None,
+            couple_xyz=True,
+        )
+        self.assertTrue(all(np.array(results_dict["temperatures"]) < 600))
+        self.assertTrue(all(np.array(results_dict["temperatures"]) > 0))
+        self.assertTrue(results_dict["volumes"][0] < results_dict["volumes"][-1])
+
     def test_calc_thermal_expansion_using_ase(self):
         structure = bulk("Al", cubic=True)
         cmds = ["pair_style morse/smooth/linear 9.0", "pair_coeff * * 0.5 1.8 2.95"]
