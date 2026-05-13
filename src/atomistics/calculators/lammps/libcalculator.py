@@ -234,6 +234,7 @@ def calc_molecular_dynamics_npt_with_lammpslib(
     Pdamp: float = 1.0,
     seed: int = 4928459,
     dist: str = "gaussian",
+    couple_xyz: bool = False,
     velocity_rescale_factor: Optional[float] = 2.0,
     couple_xyz: bool = False,
     lmp=None,
