@@ -1,7 +1,7 @@
 # best would be StrEnum from py3.11
 import sys
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Union
 
 if sys.version_info.minor < 11:
     # official impl' is not significantly different
@@ -47,18 +47,18 @@ if TYPE_CHECKING:
     TaskResults = dict[TaskName, Any]
     ResultsDict = dict[str, TaskResults]
 
-    SimpleEvaluator = callable[[Atoms, list[TaskName], ...], TaskResults]
+    SimpleEvaluator = Callable[..., TaskResults]
 
 
-def get_quantities_from_tasks(tasks: dict) -> list:
+def get_quantities_from_tasks(tasks: Iterable[str]) -> list[str]:
     """
     Get a list of quantities based on the given tasks.
 
     Args:
-        tasks (dict): A dictionary of tasks.
+        tasks (Iterable[str]): The requested tasks.
 
     Returns:
-        list: A list of quantities.
+        list[str]: A list of quantities.
 
     """
     quantities = []
