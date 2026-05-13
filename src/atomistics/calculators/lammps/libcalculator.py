@@ -236,7 +236,6 @@ def calc_molecular_dynamics_npt_with_lammpslib(
     dist: str = "gaussian",
     couple_xyz: bool = False,
     velocity_rescale_factor: Optional[float] = 2.0,
-    couple_xyz: bool = False,
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
