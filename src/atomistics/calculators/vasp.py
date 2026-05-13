@@ -3,7 +3,7 @@ from typing import Optional
 
 from ase.atoms import Atoms
 from ase.calculators.vasp.create_input import GenerateVaspInput
-from pyiron_vasp.vasp.output import parse_vasp_output
+from vaspparser.vasp.output import parse_vasp_output
 
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.wrapper import as_task_dict_evaluator
@@ -11,7 +11,7 @@ from atomistics.shared.output import OutputStatic
 
 
 class OutputParser:
-    def __init__(self, working_directory, structure):
+    def __init__(self, working_directory: str, structure: Atoms):
         self._output_dict = parse_vasp_output(
             working_directory=working_directory, structure=structure
         )
@@ -29,7 +29,7 @@ class OutputParser:
         return self._output_dict["generic"]["stresses"][-1]
 
 
-def write_input(working_directory, atoms, **kwargs):
+def write_input(working_directory: str, atoms: Atoms, **kwargs) -> None:
     vip = GenerateVaspInput()
     vip.set(**kwargs)
     vip.initialize(atoms=atoms)

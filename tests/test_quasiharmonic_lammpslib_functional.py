@@ -1,7 +1,6 @@
 import os
 
 from ase.build import bulk
-from phonopy.units import VaspToTHz
 import unittest
 
 from atomistics.workflows import (
@@ -40,7 +39,6 @@ class TestPhonons(unittest.TestCase):
             displacement=0.01,
             number_of_snapshots=None,
             interaction_range=10,
-            factor=VaspToTHz,
         )
         result_dict = evaluate_with_lammpslib(
             task_dict=task_dict,

@@ -1,7 +1,4 @@
-from pyiron_lammps import (
-    get_potential_by_name,
-    get_potential_dataframe,
-)
+from lammpsparser import get_potential_by_name, get_potential_dataframe
 
 from atomistics.calculators.lammps.libcalculator import (
     calc_molecular_dynamics_langevin_with_lammpslib,

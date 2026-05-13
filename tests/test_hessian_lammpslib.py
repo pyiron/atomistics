@@ -1,7 +1,6 @@
 import os
 
 from ase.build import bulk
-from phonopy.units import VaspToTHz
 import unittest
 
 from atomistics.calculators import evaluate_with_hessian
@@ -46,7 +45,6 @@ class TestLangevin(unittest.TestCase):
         task_dict, phonopy_obj = get_tasks_for_harmonic_approximation(
             structure=result_dict["structure_with_optimized_positions_and_volume"],
             interaction_range=10,
-            factor=VaspToTHz,
             displacement=0.01,
             primitive_matrix=None,
             number_of_snapshots=None,
