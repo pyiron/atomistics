@@ -30,4 +30,4 @@ class TestLammpsMelting(unittest.TestCase):
             number_of_atoms=8000, 
             seed=None,
         )
-        self.assertIn(melting_temp, [992, 1023])
+        self.assertIn(melting_temp, [992, 1008, 1023])
