@@ -10,10 +10,10 @@ try:
 except ImportError:
     skip_lammps_test = True
 
-
 @unittest.skipIf(
     skip_lammps_test, "LAMMPS is not installed, so the LAMMPS tests are skipped."
 )
+
 
 class TestLammpsMelting(unittest.TestCase):
     def test_estimate_melting_temperature(self):
@@ -32,6 +32,7 @@ class TestLammpsMelting(unittest.TestCase):
             optimization_maxiter=10000,
             seed=None,
         )
+
         self.assertIn(melting_temp, [977, 992, 1008, 1023, 1039, 1055])
 
     def test_generate_structure_with_fixed_number_of_atoms(self):
@@ -44,8 +45,8 @@ class TestLammpsMelting(unittest.TestCase):
             bulk("Mg", orthorhombic=True), 
             bulk("Si"), 
             bulk("Si", orthorhombic=True)
-            ]
-        
+        ]
+
         number_lst = [10, 100, 100]
         new_lst = []
         for s in structure_lst:
@@ -64,5 +65,6 @@ class TestLammpsMelting(unittest.TestCase):
             250, 250, 250,
             500, 500, 500
         ]
+
 
         self.assertEqual(result_lst, [len(s) for s in new_lst])
