@@ -91,34 +91,6 @@ def _analyse_minimized_structure(structure):
         final_structure_dict,
     )
 
-
-def _get_repeated_structure(structure: Atoms, target_number_of_atoms: int) -> Atoms:
-    """
-    Get a repeated structure that is as close as possible to the target number of atoms.
-
-    Args:
-        structure (Atoms): The input structure to be repeated.
-        target_number_of_atoms (int): The target number of atoms for the simulation cell.
-
-    Returns:
-        Atoms: The repeated structure.
-    """
-    r_est = (target_number_of_atoms / len(structure)) ** (1 / 3)
-    candidates = np.array(
-        [
-            max(1, int(np.floor(r_est))),
-            max(1, int(np.round(r_est))),
-            max(1, int(np.ceil(r_est))),
-        ]
-    )
-    basis_lst = [structure.repeat([i, i, i]) for i in candidates]
-    basis = basis_lst[
-        np.argmin([np.abs(len(b) - target_number_of_atoms) for b in basis_lst])
-    ]
-
-    return basis
-
-
 def _next_calc(structure, potential, temperature, seed, run_time_steps=10000):
     """
     Calculate NPT ensemble at a given temperature using the job defined in the project parameters:
@@ -248,21 +220,33 @@ def _next_step_funct(
     return structure_left, structure_right, temperature_left, temperature_right
 
 
+def _generate_structure_with_fixed_number_of_atoms(structure: Atoms, number_of_atoms: int) -> Atoms:
+    r_est = (number_of_atoms / len(structure)) ** (1 / 3)
+    candidates = np.array(
+        [max(1, int(np.floor(r_est))), max(1, int(np.round(r_est))), max(1, int(np.ceil(r_est)))]
+    )
+    basis_lst = [
+        structure.repeat([i, i, i]) if i > 5 else structure.repeat([5, 5, 5])
+        for i in candidates
+    ]
+    basis = basis_lst[np.argmin([np.abs(len(b) - number_of_atoms) for b in basis_lst])]
+    return basis
+
 def estimate_melting_temperature_using_bisection_CNA(
     structure: Atoms,
     potential_dataframe: pd.DataFrame,
-    target_number_of_atoms: int = 4000,
-    temperature_left: float = 0,
-    temperature_right: float = 1000,
-    run: int = 10000,
-    optimization_maxiter: int = 100000,
-    seed: int = None,
+    target_number_of_atoms=4000,
+    temperature_left=0,
+    temperature_right=1000,
+    run=1000,
+    optimization_maxiter=100000,
+    seed=None,
 ):
     if seed is None:
         seed = random.randint(0, 99999)
 
     diamond_flag = _check_diamond(structure=structure)
-    repeated_structure = _get_repeated_structure(
+    repeated_structure = _generate_structure_with_fixed_number_of_atoms(
         structure=structure, target_number_of_atoms=target_number_of_atoms
     )
 
@@ -319,4 +303,5 @@ def estimate_melting_temperature_using_bisection_CNA(
             diamond_flag=diamond_flag,
         )
         temperature_step = temperature_right - temperature_left
+
     return int(round(temperature_left))
