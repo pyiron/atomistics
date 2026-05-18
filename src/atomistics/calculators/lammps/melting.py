@@ -105,7 +105,11 @@ def _get_repeated_structure(structure: Atoms, target_number_of_atoms: int) -> At
     """
     r_est = (target_number_of_atoms / len(structure)) ** (1 / 3)
     candidates = np.array(
-        [max(1, int(np.floor(r_est))), max(1, int(np.round(r_est))), max(1, int(np.ceil(r_est)))]
+        [
+            max(1, int(np.floor(r_est))),
+            max(1, int(np.round(r_est))),
+            max(1, int(np.ceil(r_est))),
+        ]
     )
     basis_lst = [structure.repeat([i, i, i]) for i in candidates]
     basis = basis_lst[
