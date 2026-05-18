@@ -229,7 +229,7 @@ def _generate_structure_with_fixed_number_of_atoms(structure, number_of_atoms):
         for i in candidates
     ]
     basis = basis_lst[
-        np.argmin([np.abs(len(b) - number_of_atoms / 2) for b in basis_lst])
+        np.argmin([np.abs(len(b) - number_of_atoms) for b in basis_lst])
     ]
     return basis
 
