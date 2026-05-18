@@ -262,8 +262,7 @@ def estimate_melting_temperature_using_bisection_CNA(
         structure=structure, target_number_of_atoms=target_number_of_atoms
     )
 
-    position_and_volume_optimized_structure = (
-        optimize_positions_and_volume_with_lammpslib(
+    position_and_volume_optimized_structure = optimize_positions_and_volume_with_lammpslib(
             structure=repeated_structure,
             potential_dataframe=potential_dataframe,
             min_style="cg",
@@ -274,7 +273,6 @@ def estimate_melting_temperature_using_bisection_CNA(
             thermo=10,
             lmp=None,
         )
-    )
 
     (
         structure_after_minimization,
