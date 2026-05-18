@@ -219,6 +219,15 @@ def _next_step_funct(
     return structure_left, structure_right, temperature_left, temperature_right
 
 
+def _generate_structure_with_fixed_number_of_atoms(structure, number_of_atoms):
+    basis = structure.copy()
+    basis_lst = [basis.repeat([i, i, i]) for i in range(5, 30)]
+    basis = basis_lst[
+        np.argmin([np.abs(len(b) - number_of_atoms / 2) for b in basis_lst])
+    ]
+    return basis
+
+
 def estimate_melting_temperature(
     element,
     potential,
@@ -235,10 +244,9 @@ def estimate_melting_temperature(
         basis = bulk(name=element, orthorhombic=True)
     else:
         basis = bulk(name=element, cubic=True)
-    basis_lst = [basis.repeat([i, i, i]) for i in range(5, 30)]
-    basis = basis_lst[
-        np.argmin([np.abs(len(b) - number_of_atoms / 2) for b in basis_lst])
-    ]
+    basis = _generate_structure_with_fixed_number_of_atoms(
+        structure=basis, number_of_atoms=number_of_atoms
+    )
 
     structure_opt = optimize_positions_and_volume_with_lammpslib(
         structure=basis,
