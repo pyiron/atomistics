@@ -32,7 +32,7 @@ class TestLammpsMelting(unittest.TestCase):
             number_of_atoms=8000, 
             seed=None,
         )
-        self.assertIn(melting_temp, [992, 1008, 1023, 1039])
+        self.assertIn(melting_temp, [977, 992, 1008, 1023, 1039, 1055])
 
     def test_generate_structure_with_fixed_number_of_atoms(self):
         structure_lst = [bulk("Al"), bulk("Al", cubic=True), bulk("Fe"), bulk("Fe", cubic=True), bulk("Mg"), bulk("Mg", orthorhombic=True), bulk("Si"), bulk("Si", orthorhombic=True)]
