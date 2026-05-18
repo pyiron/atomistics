@@ -220,8 +220,11 @@ def _next_step_funct(
 
 
 def _generate_structure_with_fixed_number_of_atoms(structure, number_of_atoms):
-    basis = structure.copy()
-    basis_lst = [basis.repeat([i, i, i]) for i in range(5, 30)]
+    r_est = (number_of_atoms / len(structure)) ** (1 / 3)
+    candidates = np.array(
+        [max(1, int(np.floor(r_est))), int(np.round(r_est)), int(np.ceil(r_est))]
+    )
+    basis_lst = [structure.repeat([i, i, i]) if i > 5 else structure.repeat([5, 5, 5]) for i in candidates  ]
     basis = basis_lst[
         np.argmin([np.abs(len(b) - number_of_atoms / 2) for b in basis_lst])
     ]
