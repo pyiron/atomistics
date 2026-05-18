@@ -5,6 +5,7 @@ try:
     from atomistics.calculators import get_potential_by_name
     from atomistics.calculators.lammps.melting import estimate_melting_temperature_using_bisection_CNA, _generate_structure_with_fixed_number_of_atoms
     from ase.build import bulk
+    from ase.build import bulk
 
     skip_lammps_test = False
 except ImportError:
@@ -18,11 +19,15 @@ except ImportError:
 class TestLammpsMelting(unittest.TestCase):
     def test_estimate_melting_temperature(self):
         potential_dataframe = get_potential_by_name(
+        potential_dataframe = get_potential_by_name(
             potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
             resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
         )
+
         structure = bulk("Al", cubic=True)
         melting_temp = estimate_melting_temperature_using_bisection_CNA(
+            structure=structure,
+            potential_dataframe=potential_dataframe,
             structure=structure,
             potential_dataframe=potential_dataframe,
             target_number_of_atoms=4000,
