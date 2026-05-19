@@ -1,9 +1,7 @@
 import numpy as np
 import pandas as pd
-import pandas as pd
 import operator
 import random
-from ase import Atoms
 from ase import Atoms
 from ase.build import bulk
 from ase.data import reference_states, atomic_numbers
@@ -93,30 +91,6 @@ def _analyse_minimized_structure(structure):
         final_structure_dict,
     )
 
-
-def _get_repeated_structure(structure: Atoms, target_number_of_atoms: int) -> Atoms:
-    """
-    Get a repeated structure that is as close as possible to the target number of atoms.
-
-    Args:
-        structure (Atoms): The input structure to be repeated.
-        target_number_of_atoms (int): The target number of atoms for the simulation cell.
-
-    Returns:
-        Atoms: The repeated structure.
-    """
-    r_est = (target_number_of_atoms / len(structure)) ** (1 / 3)
-    candidates = np.array(
-        [max(1, int(np.floor(r_est))), max(1, int(np.round(r_est))), max(1, int(np.ceil(r_est)))]
-    )
-    basis_lst = [structure.repeat([i, i, i]) for i in candidates]
-    basis = basis_lst[
-        np.argmin([np.abs(len(b) - target_number_of_atoms) for b in basis_lst])
-    ]
-
-    return basis
-
-
 def _next_calc(structure, potential, temperature, seed, run_time_steps=10000):
     """
     Calculate NPT ensemble at a given temperature using the job defined in the project parameters:
@@ -156,7 +130,6 @@ def _next_calc(structure, potential, temperature, seed, run_time_steps=10000):
     structure_md.set_cell(output_md_dict["cell"][-1])
     return structure_md
 
-
 def _next_step_funct(
     number_of_atoms,
     key_max,
@@ -168,7 +141,6 @@ def _next_step_funct(
     distribution_initial_half,
     structure_after_minimization,
     run_time_steps,
-    diamond_flag,
     diamond_flag,
     seed,
 ):
@@ -192,12 +164,10 @@ def _next_step_funct(
         structure=structure_left,
         mode="total",
         diamond=diamond_flag,
-        diamond=diamond_flag,
     )
     structure_right_dict = _analyse_structure(
         structure=structure_right,
         mode="total",
-        diamond=diamond_flag,
         diamond=diamond_flag,
     )
     temperature_diff = temperature_right - temperature_left
@@ -300,7 +270,6 @@ def estimate_melting_temperature_using_bisection_CNA(
         number_of_atoms,
         distribution_initial_half,
         _,
-    ) = _analyse_minimized_structure(structure=position_and_volume_optimized_structure)
     ) = _analyse_minimized_structure(structure=position_and_volume_optimized_structure)
 
     structure_left = structure_after_minimization
