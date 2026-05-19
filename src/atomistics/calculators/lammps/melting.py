@@ -40,7 +40,7 @@ def _check_diamond(structure: Atoms):
     )
 
 
-def _analyse_structure(structure: Atoms, mode: str="total", diamond: bool=False):
+def _analyse_structure(structure: Atoms, mode: str = "total", diamond: bool = False):
     """
     Use either common neighbor analysis or the diamond structure detector
 
@@ -94,7 +94,13 @@ def _analyse_minimized_structure(structure: Atoms):
     )
 
 
-def _next_calc(structure: Atoms, potential: pd.DataFrame, temperature: float, seed: Optional[int], run_time_steps: int=10000):
+def _next_calc(
+    structure: Atoms,
+    potential: pd.DataFrame,
+    temperature: float,
+    seed: Optional[int],
+    run_time_steps: int = 10000,
+):
     """
     Calculate NPT ensemble at a given temperature using the job defined in the project parameters:
     - job_type: Type of Simulation code to be used
