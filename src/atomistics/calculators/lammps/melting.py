@@ -91,6 +91,7 @@ def _analyse_minimized_structure(structure):
         final_structure_dict,
     )
 
+
 def _next_calc(structure, potential, temperature, seed, run_time_steps=10000):
     """
     Calculate NPT ensemble at a given temperature using the job defined in the project parameters:
@@ -129,6 +130,7 @@ def _next_calc(structure, potential, temperature, seed, run_time_steps=10000):
     structure_md.set_positions(output_md_dict["positions"][-1])
     structure_md.set_cell(output_md_dict["cell"][-1])
     return structure_md
+
 
 def _next_step_funct(
     number_of_atoms,
@@ -218,18 +220,26 @@ def _next_step_funct(
         raise ValueError("We should never reach this point!")
     return structure_left, structure_right, temperature_left, temperature_right
 
-def _generate_structure_with_fixed_number_of_atoms(structure: Atoms, number_of_atoms: int) -> Atoms:
+
+def _generate_structure_with_fixed_number_of_atoms(
+    structure: Atoms, number_of_atoms: int
+) -> Atoms:
     r_est = (number_of_atoms / len(structure)) ** (1 / 3)
     candidates = np.array(
-        [max(1, int(np.floor(r_est))), max(1, int(np.round(r_est))), max(1, int(np.ceil(r_est)))]
+        [
+            max(1, int(np.floor(r_est))),
+            max(1, int(np.round(r_est))),
+            max(1, int(np.ceil(r_est))),
+        ]
     )
     basis_lst = [
         structure.repeat([i, i, i]) if i > 5 else structure.repeat([5, 5, 5])
         for i in candidates
     ]
-    
+
     basis = basis_lst[np.argmin([np.abs(len(b) - number_of_atoms) for b in basis_lst])]
     return basis
+
 
 def estimate_melting_temperature_using_bisection_CNA(
     structure: Atoms,
@@ -302,5 +312,5 @@ def estimate_melting_temperature_using_bisection_CNA(
             diamond_flag=diamond_flag,
         )
         temperature_step = temperature_right - temperature_left
-        
+
     return int(round(temperature_left))
