@@ -3,7 +3,7 @@ import unittest
 
 try:
     from atomistics.calculators import get_potential_by_name
-    from atomistics.calculators.lammps.melting import estimate_melting_temperature, _generate_structure_with_fixed_number_of_atoms
+    from atomistics.calculators.lammps.melting import estimate_melting_temperature_using_bisection_CNA, _generate_structure_with_fixed_number_of_atoms
     from ase.build import bulk
 
 
