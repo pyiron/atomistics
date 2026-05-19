@@ -223,7 +223,6 @@ def _generate_structure_with_fixed_number_of_atoms(structure: Atoms, number_of_a
     candidates = np.array(
         [max(1, int(np.floor(r_est))), max(1, int(np.round(r_est))), max(1, int(np.ceil(r_est)))]
     )
-
     basis_lst = [
         structure.repeat([i, i, i]) if i > 5 else structure.repeat([5, 5, 5])
         for i in candidates

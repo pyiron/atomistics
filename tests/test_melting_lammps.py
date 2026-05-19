@@ -3,11 +3,9 @@ import unittest
 
 try:
     from atomistics.calculators import get_potential_by_name
-    from atomistics.calculators.lammps.melting import (
-        estimate_melting_temperature_using_bisection_CNA, 
-        _generate_structure_with_fixed_number_of_atoms
-    )
+    from atomistics.calculators.lammps.melting import estimate_melting_temperature, _generate_structure_with_fixed_number_of_atoms
     from ase.build import bulk
+
 
     skip_lammps_test = False
 except ImportError:
@@ -35,29 +33,16 @@ class TestLammpsMelting(unittest.TestCase):
             optimization_maxiter=100000,
             seed=None,
         )
-
         self.assertIn(melting_temp, [977, 992, 1008, 1023, 1039, 1055])
 
     def test_generate_structure_with_fixed_number_of_atoms(self):
-        structure_lst = [
-            bulk("Al"), 
-            bulk("Al", cubic=True), 
-            bulk("Fe"), 
-            bulk("Fe", cubic=True), 
-            bulk("Mg"), 
-            bulk("Mg", orthorhombic=True), 
-            bulk("Si"), 
-            bulk("Si", orthorhombic=True)
-        ]
-
+        structure_lst = [bulk("Al"), bulk("Al", cubic=True), bulk("Fe"), bulk("Fe", cubic=True), bulk("Mg"), bulk("Mg", orthorhombic=True), bulk("Si"), bulk("Si", orthorhombic=True)]
         number_lst = [10, 100, 100]
         new_lst = []
         for s in structure_lst:
             for n in number_lst:
-                new_lst.append(
-                    _generate_structure_with_fixed_number_of_atoms(structure=s, number_of_atoms=n)
-                    )
-                
+                new_lst.append(_generate_structure_with_fixed_number_of_atoms
+(structure=s, number_of_atoms=n))
         result_lst = [
             125, 125, 125, 
             500, 500, 500, 
@@ -68,5 +53,4 @@ class TestLammpsMelting(unittest.TestCase):
             250, 250, 250,
             500, 500, 500
         ]
-
         self.assertEqual(result_lst, [len(s) for s in new_lst])
