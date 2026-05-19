@@ -279,8 +279,6 @@ def estimate_melting_temperature_using_bisection_CNA(
         seed=seed,
         potential=potential_dataframe,
         run_time_steps=run,
-        potential=potential_dataframe,
-        run_time_steps=run,
     )
     temperature_step = temperature_right - temperature_left
 
@@ -296,15 +294,12 @@ def estimate_melting_temperature_using_bisection_CNA(
             structure_left=structure_left,
             structure_right=structure_right,
             potential=potential_dataframe,
-            potential=potential_dataframe,
             temperature_left=temperature_left,
             temperature_right=temperature_right,
             distribution_initial_half=distribution_initial_half,
             structure_after_minimization=structure_after_minimization,
             run_time_steps=run,
-            run_time_steps=run,
             seed=seed,
-            diamond_flag=diamond_flag,
             diamond_flag=diamond_flag,
         )
         temperature_step = temperature_right - temperature_left

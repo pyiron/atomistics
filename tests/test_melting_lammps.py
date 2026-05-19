@@ -32,7 +32,7 @@ class TestLammpsMelting(unittest.TestCase):
             temperature_left=0,
             temperature_right=1000,
             run=1000,
-            optimization_maxiter=10000,
+            optimization_maxiter=100000,
             seed=None,
         )
 
