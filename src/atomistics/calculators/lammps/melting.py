@@ -249,7 +249,7 @@ def estimate_melting_temperature_using_bisection_CNA(
     temperature_right: float = 1000,
     run: int = 10000,
     optimization_maxiter: int = 100000,
-    seed: int = None,
+    seed: Optional[int] = None,
 ):
     if seed is None:
         seed = random.randint(0, 99999)
