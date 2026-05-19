@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import operator
 import random
+from typing import Optional
+
 from ase import Atoms
 from ase.build import bulk
 from ase.data import reference_states, atomic_numbers
@@ -16,7 +18,7 @@ from atomistics.calculators.lammps import (
 )
 
 
-def _check_diamond(structure):
+def _check_diamond(structure: Atoms):
     """
     Utility function to check if the structure is fcc, bcc, hcp or diamond
 
@@ -38,7 +40,7 @@ def _check_diamond(structure):
     )
 
 
-def _analyse_structure(structure, mode="total", diamond=False):
+def _analyse_structure(structure: Atoms, mode: str="total", diamond: bool=False):
     """
     Use either common neighbor analysis or the diamond structure detector
 
@@ -66,7 +68,7 @@ def _analyse_structure(structure, mode="total", diamond=False):
         )
 
 
-def _analyse_minimized_structure(structure):
+def _analyse_minimized_structure(structure: Atoms):
     """
 
     Args:
@@ -92,7 +94,7 @@ def _analyse_minimized_structure(structure):
     )
 
 
-def _next_calc(structure, potential, temperature, seed, run_time_steps=10000):
+def _next_calc(structure: Atoms, potential: pd.DataFrame, temperature: float, seed: Optional[int], run_time_steps: int=10000):
     """
     Calculate NPT ensemble at a given temperature using the job defined in the project parameters:
     - job_type: Type of Simulation code to be used
@@ -133,18 +135,18 @@ def _next_calc(structure, potential, temperature, seed, run_time_steps=10000):
 
 
 def _next_step_funct(
-    number_of_atoms,
-    key_max,
-    structure_left,
-    structure_right,
-    potential,
-    temperature_left,
-    temperature_right,
-    distribution_initial_half,
-    structure_after_minimization,
-    run_time_steps,
-    diamond_flag,
-    seed,
+    number_of_atoms: int,
+    key_max: str,
+    structure_left: Atoms,
+    structure_right: Atoms,
+    potential: pd.DataFrame,
+    temperature_left: float,
+    temperature_right: float,
+    distribution_initial_half: float,
+    structure_after_minimization: Atoms,
+    run_time_steps: int,
+    diamond_flag: bool,
+    seed: Optional[int],
 ):
     """
 
