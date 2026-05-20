@@ -53,14 +53,13 @@ def optimize_positions_and_volume_with_lammpslib(
     lmp=None,
     **kwargs,
 ) -> Atoms:
-    template_str = (
-        _get_vmax_command(vmax=vmax)
-        + "\n"
-        + LAMMPS_THERMO_STYLE
-        + "\n"
-        + LAMMPS_THERMO
-        + "\n"
-        + LAMMPS_MINIMIZE
+    template_str = "\n".join(
+        [
+            _get_vmax_command(vmax=vmax),
+            LAMMPS_THERMO_STYLE,
+            LAMMPS_THERMO,
+            LAMMPS_MINIMIZE,
+        ]
     )
     lmp_instance = lammps_run(
         structure=structure,
@@ -95,7 +94,7 @@ def optimize_positions_with_lammpslib(
     lmp=None,
     **kwargs,
 ) -> Atoms:
-    template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_MINIMIZE
+    template_str = "\n".join([LAMMPS_THERMO_STYLE, LAMMPS_THERMO, LAMMPS_MINIMIZE])
     lmp_instance = lammps_run(
         structure=structure,
         potential_dataframe=potential_dataframe,
@@ -123,7 +122,7 @@ def calc_static_with_lammpslib(
     output_keys=OutputStatic.keys(),
     **kwargs,
 ) -> dict:
-    template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
+    template_str = "\n".join([LAMMPS_THERMO_STYLE, LAMMPS_THERMO, LAMMPS_RUN])
     lmp_instance = lammps_run(
         structure=structure,
         potential_dataframe=potential_dataframe,
@@ -161,16 +160,14 @@ def calc_molecular_dynamics_nvt_with_lammpslib(
     **kwargs,
 ) -> dict:
     if velocity_rescale_factor is not None:
-        init_str = (
-            LAMMPS_THERMO_STYLE
-            + "\n"
-            + LAMMPS_TIMESTEP
-            + "\n"
-            + LAMMPS_THERMO
-            + "\n"
-            + LAMMPS_VELOCITY
-            + "\n"
-            + LAMMPS_ENSEMBLE_NVT
+        init_str = "\n".join(
+            [
+                LAMMPS_THERMO_STYLE,
+                LAMMPS_TIMESTEP,
+                LAMMPS_THERMO,
+                LAMMPS_VELOCITY,
+                LAMMPS_ENSEMBLE_NVT,
+            ]
         )
         input_template = Template(init_str).render(
             thermo=thermo,
@@ -184,14 +181,13 @@ def calc_molecular_dynamics_nvt_with_lammpslib(
             velocity_rescale_factor=velocity_rescale_factor,
         )
     else:
-        init_str = (
-            LAMMPS_THERMO_STYLE
-            + "\n"
-            + LAMMPS_TIMESTEP
-            + "\n"
-            + LAMMPS_THERMO
-            + "\n"
-            + LAMMPS_ENSEMBLE_NVT
+        init_str = "\n".join(
+            [
+                LAMMPS_THERMO_STYLE,
+                LAMMPS_TIMESTEP,
+                LAMMPS_THERMO,
+                LAMMPS_ENSEMBLE_NVT,
+            ]
         )
         input_template = Template(init_str).render(
             thermo=thermo,
@@ -245,16 +241,14 @@ def calc_molecular_dynamics_npt_with_lammpslib(
     else:
         LAMMPS_ENSEMBLE_NPT_XYZ = LAMMPS_ENSEMBLE_NPT
     if velocity_rescale_factor is not None:
-        init_str = (
-            LAMMPS_THERMO_STYLE
-            + "\n"
-            + LAMMPS_TIMESTEP
-            + "\n"
-            + LAMMPS_THERMO
-            + "\n"
-            + LAMMPS_VELOCITY
-            + "\n"
-            + LAMMPS_ENSEMBLE_NPT_XYZ
+        init_str = "\n".join(
+            [
+                LAMMPS_THERMO_STYLE,
+                LAMMPS_TIMESTEP,
+                LAMMPS_THERMO,
+                LAMMPS_VELOCITY,
+                LAMMPS_ENSEMBLE_NPT_XYZ,
+            ]
         )
         input_template = Template(init_str).render(
             thermo=thermo,
@@ -271,14 +265,13 @@ def calc_molecular_dynamics_npt_with_lammpslib(
             velocity_rescale_factor=velocity_rescale_factor,
         )
     else:
-        init_str = (
-            LAMMPS_THERMO_STYLE
-            + "\n"
-            + LAMMPS_TIMESTEP
-            + "\n"
-            + LAMMPS_THERMO
-            + "\n"
-            + LAMMPS_ENSEMBLE_NPT_XYZ
+        init_str = "\n".join(
+            [
+                LAMMPS_THERMO_STYLE,
+                LAMMPS_TIMESTEP,
+                LAMMPS_THERMO,
+                LAMMPS_ENSEMBLE_NPT_XYZ,
+            ]
         )
         input_template = Template(init_str).render(
             thermo=thermo,
@@ -328,16 +321,14 @@ def calc_molecular_dynamics_nph_with_lammpslib(
     **kwargs,
 ) -> dict:
     if velocity_rescale_factor is not None:
-        init_str = (
-            LAMMPS_THERMO_STYLE
-            + "\n"
-            + LAMMPS_TIMESTEP
-            + "\n"
-            + LAMMPS_THERMO
-            + "\n"
-            + LAMMPS_VELOCITY
-            + "\n"
-            + LAMMPS_ENSEMBLE_NPH
+        init_str = "\n".join(
+            [
+                LAMMPS_THERMO_STYLE,
+                LAMMPS_TIMESTEP,
+                LAMMPS_THERMO,
+                LAMMPS_VELOCITY,
+                LAMMPS_ENSEMBLE_NPH,
+            ]
         )
         input_template = Template(init_str).render(
             thermo=thermo,
@@ -351,14 +342,13 @@ def calc_molecular_dynamics_nph_with_lammpslib(
             velocity_rescale_factor=velocity_rescale_factor,
         )
     else:
-        init_str = (
-            LAMMPS_THERMO_STYLE
-            + "\n"
-            + LAMMPS_TIMESTEP
-            + "\n"
-            + LAMMPS_THERMO
-            + "\n"
-            + LAMMPS_ENSEMBLE_NPH
+        init_str = "\n".join(
+            [
+                LAMMPS_THERMO_STYLE,
+                LAMMPS_TIMESTEP,
+                LAMMPS_THERMO,
+                LAMMPS_ENSEMBLE_NPH,
+            ]
         )
         input_template = Template(init_str).render(
             thermo=thermo,
@@ -404,18 +394,15 @@ def calc_molecular_dynamics_langevin_with_lammpslib(
     **kwargs,
 ):
     if velocity_rescale_factor is not None:
-        init_str = (
-            LAMMPS_THERMO_STYLE
-            + "\n"
-            + LAMMPS_TIMESTEP
-            + "\n"
-            + LAMMPS_THERMO
-            + "\n"
-            + LAMMPS_VELOCITY
-            + "\n"
-            + LAMMPS_NVE
-            + "\n"
-            + LAMMPS_LANGEVIN
+        init_str = "\n".join(
+            [
+                LAMMPS_THERMO_STYLE,
+                LAMMPS_TIMESTEP,
+                LAMMPS_THERMO,
+                LAMMPS_VELOCITY,
+                LAMMPS_NVE,
+                LAMMPS_LANGEVIN,
+            ]
         )
         input_template = Template(init_str).render(
             thermo=thermo,
@@ -429,16 +416,14 @@ def calc_molecular_dynamics_langevin_with_lammpslib(
             velocity_rescale_factor=velocity_rescale_factor,
         )
     else:
-        init_str = (
-            LAMMPS_THERMO_STYLE
-            + "\n"
-            + LAMMPS_TIMESTEP
-            + "\n"
-            + LAMMPS_THERMO
-            + "\n"
-            + LAMMPS_NVE
-            + "\n"
-            + LAMMPS_LANGEVIN
+        init_str = "\n".join(
+            [
+                LAMMPS_THERMO_STYLE,
+                LAMMPS_TIMESTEP,
+                LAMMPS_THERMO,
+                LAMMPS_NVE,
+                LAMMPS_LANGEVIN,
+            ]
         )
         input_template = Template(init_str).render(
             thermo=thermo,
@@ -488,21 +473,20 @@ def calc_molecular_dynamics_thermal_expansion_with_lammpslib(
     output_keys=OutputThermalExpansion.keys(),
     **kwargs,
 ) -> dict:
-    init_str = (
-        LAMMPS_THERMO_STYLE
-        + "\n"
-        + LAMMPS_TIMESTEP
-        + "\n"
-        + LAMMPS_THERMO
-        + "\n"
-        + LAMMPS_VELOCITY
-        + "\n"
+    init_str = "\n".join(
+        [
+            LAMMPS_THERMO_STYLE,
+            LAMMPS_TIMESTEP,
+            LAMMPS_THERMO,
+            LAMMPS_VELOCITY,
+            "",
+        ]
     )
     if couple_xyz:
         LAMMPS_ENSEMBLE_NPT_XYZ = LAMMPS_ENSEMBLE_NPT + " couple xyz"
     else:
         LAMMPS_ENSEMBLE_NPT_XYZ = LAMMPS_ENSEMBLE_NPT
-    run_str = LAMMPS_ENSEMBLE_NPT_XYZ + "\n" + LAMMPS_RUN
+    run_str = "\n".join([LAMMPS_ENSEMBLE_NPT_XYZ, LAMMPS_RUN])
     temperature_lst = np.arange(Tstart, Tstop + Tstep, Tstep).tolist()
     return lammps_thermal_expansion_loop(
         structure=structure,

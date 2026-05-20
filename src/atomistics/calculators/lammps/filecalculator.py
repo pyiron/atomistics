@@ -91,14 +91,13 @@ def optimize_positions_and_volume_with_lammpsfile(
     maxeval: int = 10000000,
     thermo: int = 10,
 ) -> Atoms:
-    template_str = (
-        LAMMPS_MINIMIZE_VOLUME
-        + "\n"
-        + LAMMPS_THERMO_STYLE
-        + "\n"
-        + LAMMPS_THERMO
-        + "\n"
-        + LAMMPS_MINIMIZE
+    template_str = "\n".join(
+        [
+            LAMMPS_MINIMIZE_VOLUME,
+            LAMMPS_THERMO_STYLE,
+            LAMMPS_THERMO,
+            LAMMPS_MINIMIZE,
+        ]
     )
     input_template = Template(template_str).render(
         min_style=min_style,
@@ -143,7 +142,7 @@ def optimize_positions_with_lammpsfile(
     maxeval: int = 10000000,
     thermo: int = 10,
 ) -> Atoms:
-    template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_MINIMIZE
+    template_str = "\n".join([LAMMPS_THERMO_STYLE, LAMMPS_THERMO, LAMMPS_MINIMIZE])
     input_template = Template(template_str).render(
         min_style=min_style,
         etol=etol,
@@ -181,7 +180,7 @@ def calc_static_with_lammpsfile(
     executable_function: Callable[[str], Any],
     output_keys=OutputStatic.keys(),
 ) -> dict[str, Any]:
-    template_str = LAMMPS_THERMO_STYLE + "\n" + LAMMPS_THERMO + "\n" + LAMMPS_RUN
+    template_str = "\n".join([LAMMPS_THERMO_STYLE, LAMMPS_THERMO, LAMMPS_RUN])
     input_template = Template(template_str).render(
         run=0,
         thermo=100,
