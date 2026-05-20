@@ -91,12 +91,14 @@ def optimize_positions_and_volume_with_lammpsfile(
     maxeval: int = 10000000,
     thermo: int = 10,
 ) -> Atoms:
-    template_str = "\n".join([
-        LAMMPS_MINIMIZE_VOLUME,
-        LAMMPS_THERMO_STYLE,
-        LAMMPS_THERMO,
-        LAMMPS_MINIMIZE,
-    ])
+    template_str = "\n".join(
+        [
+            LAMMPS_MINIMIZE_VOLUME,
+            LAMMPS_THERMO_STYLE,
+            LAMMPS_THERMO,
+            LAMMPS_MINIMIZE,
+        ]
+    )
     input_template = Template(template_str).render(
         min_style=min_style,
         etol=etol,
