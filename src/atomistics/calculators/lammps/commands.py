@@ -14,9 +14,6 @@ min_style {{min_style}}
 minimize {{etol}} {{ftol}} {{maxiter}} {{maxeval}}"""
 
 
-LAMMPS_MINIMIZE_VOLUME = "fix ensemble all box/relax iso 0.0"
-
-
 LAMMPS_TIMESTEP = "timestep {{timestep}}"
 
 

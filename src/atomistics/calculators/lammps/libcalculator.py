@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Iterable
 
 import numpy as np
 import pandas
@@ -14,7 +14,6 @@ from atomistics.calculators.lammps.commands import (
     LAMMPS_ENSEMBLE_NVT,
     LAMMPS_LANGEVIN,
     LAMMPS_MINIMIZE,
-    LAMMPS_MINIMIZE_VOLUME,
     LAMMPS_NVE,
     LAMMPS_RUN,
     LAMMPS_THERMO,
@@ -49,13 +48,14 @@ def optimize_positions_and_volume_with_lammpslib(
     maxiter: int = 100000,
     maxeval: int = 10000000,
     thermo: int = 10,
+    pressure: float | Iterable[float | None] = 0.0,
     vmax: Optional[float] = None,
     lmp=None,
     **kwargs,
 ) -> Atoms:
     template_str = "\n".join(
         [
-            _get_vmax_command(vmax=vmax),
+            _get_vmax_command(pressure=pressure, vmax=vmax),
             LAMMPS_THERMO_STYLE,
             LAMMPS_THERMO,
             LAMMPS_MINIMIZE,
@@ -594,11 +594,31 @@ def evaluate_with_lammpslib(
     return results_dict
 
 
-def _get_vmax_command(vmax: Optional[float]) -> str:
+def _get_vmax_command(
+    pressure: float | Iterable[float | None], vmax: Optional[float]
+) -> str:
+    if not isinstance(pressure, Iterable):
+        box_relax = f"fix ensemble all box/relax iso {pressure}"
+    elif len(pressure) == 3:
+        pressure_str = " ".join(
+            "{tag} {value}".format(tag=tag, value=value)
+            for tag, value in zip(["x", "y", "z"], pressure)
+            if value is not None
+        )
+        box_relax = f"fix ensemble all box/relax {pressure_str}"
+    elif len(pressure) == 6:
+        pressure_str = " ".join(
+            "{tag} {value}".format(tag=tag, value=value)
+            for tag, value in zip(["x", "y", "z", "xy", "xz", "yz"], pressure)
+            if value is not None
+        )
+        box_relax = f"fix ensemble all box/relax {pressure_str}"
+    else:
+        raise ValueError("pressure must be a float or an iterable of length 3 or 6.")
     if vmax is not None:
         if isinstance(vmax, float):
-            return LAMMPS_MINIMIZE_VOLUME + " vmax {vmax}".format(vmax=vmax)
+            return box_relax + " vmax {vmax}".format(vmax=vmax)
         else:
             raise TypeError("vmax must be a float.")
     else:
-        return LAMMPS_MINIMIZE_VOLUME
+        return box_relax
