@@ -146,7 +146,9 @@ def lammps_thermal_expansion_loop(
     )
 
 
-def lammps_shutdown(lmp_instance: LammpsASELibrary, close_instance: bool = True) -> None:
+def lammps_shutdown(
+    lmp_instance: LammpsASELibrary, close_instance: bool = True
+) -> None:
     lmp_instance.interactive_lib_command("clear")
     if close_instance:
         lmp_instance.close()
