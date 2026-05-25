@@ -83,7 +83,7 @@ class TestSharedHelpers(unittest.TestCase):
     def test_get_tqdm_iterator_without_tqdm(self):
         lst = [1, 2, 3]
         with patch.object(tqdm_iterator_module, "tqdm_available", False):
-            self.assertIs(get_tqdm_iterator(lst), lst)
+            self.assertIs(get_tqdm_iterator(lst), iter(lst))
 
     def test_get_tqdm_iterator_with_tqdm(self):
         lst = [1, 2, 3]
@@ -93,7 +93,7 @@ class TestSharedHelpers(unittest.TestCase):
                 tqdm_iterator_module, "tqdm", side_effect=lambda x: iter(x), create=True
             ),
         ):
-            self.assertEqual(list(get_tqdm_iterator(lst)), lst)
+            self.assertEqual(list(get_tqdm_iterator(lst)), iter(lst))
 
     def test_calc_molecular_dynamics_thermal_expansion(self):
         structure = bulk("Al", cubic=True)
