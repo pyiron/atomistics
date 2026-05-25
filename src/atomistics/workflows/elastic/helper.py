@@ -7,8 +7,11 @@ import scipy.constants
 
 from atomistics.shared.output import OutputElastic
 from atomistics.workflows.elastic.elastic_moduli import ElasticProperties
-from atomistics.workflows.elastic.symmetry import (Ls_Dic, get_C_from_A2,
-                                                   symmetry_analysis)
+from atomistics.workflows.elastic.symmetry import (
+    Ls_Dic,
+    get_C_from_A2,
+    symmetry_analysis,
+)
 
 
 def _get_eta_matrix(

@@ -12,8 +12,7 @@ from ase import Atoms
 from atomistics.calculators.interface import TaskEnum, TaskName, TaskOutputEnum
 
 if TYPE_CHECKING:
-    from atomistics.calculators.interface import (ResultsDict, SimpleEvaluator,
-                                                  TaskDict)
+    from atomistics.calculators.interface import ResultsDict, SimpleEvaluator, TaskDict
 
 
 def _convert_task_dict(

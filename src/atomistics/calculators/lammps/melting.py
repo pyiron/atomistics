@@ -5,12 +5,15 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 from ase import Atoms
-from structuretoolkit.analyse import (get_adaptive_cna_descriptors,
-                                      get_diamond_structure_descriptors)
+from structuretoolkit.analyse import (
+    get_adaptive_cna_descriptors,
+    get_diamond_structure_descriptors,
+)
 
 from atomistics.calculators.lammps import (
     calc_molecular_dynamics_npt_with_lammpslib,
-    optimize_positions_and_volume_with_lammpslib)
+    optimize_positions_and_volume_with_lammpslib,
+)
 from atomistics.shared.output import OutputMolecularDynamics
 
 
