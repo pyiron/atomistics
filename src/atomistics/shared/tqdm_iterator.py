@@ -1,5 +1,5 @@
-from typing import Union
 from collections.abc import Iterator
+from typing import Union
 
 try:
     from tqdm import tqdm

@@ -11,14 +11,14 @@ def get_box_relax_command(
         pressure_lst = list(pressure)
         if len(pressure_lst) == 3:
             pressure_str = " ".join(
-                "{tag} {value}".format(tag=tag, value=value)
+                f"{tag} {value}"
                 for tag, value in zip(["x", "y", "z"], pressure_lst)
                 if value is not None
             )
             box_relax = f"fix ensemble all box/relax {pressure_str}"
         elif len(pressure_lst) == 6:
             pressure_str = " ".join(
-                "{tag} {value}".format(tag=tag, value=value)
+                f"{tag} {value}"
                 for tag, value in zip(["x", "y", "z", "xy", "xz", "yz"], pressure_lst)
                 if value is not None
             )
@@ -29,7 +29,7 @@ def get_box_relax_command(
             )
     if vmax is not None:
         if isinstance(vmax, float):
-            return box_relax + " vmax {vmax}".format(vmax=vmax)
+            return box_relax + f" vmax {vmax}"
         else:
             raise TypeError("vmax must be a float.")
     else:

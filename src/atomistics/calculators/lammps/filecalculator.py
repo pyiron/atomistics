@@ -1,5 +1,6 @@
 import os
-from typing import Any, Callable, Iterable, Optional
+from collections.abc import Iterable
+from typing import Any, Callable, Optional
 
 import pandas
 from ase.atoms import Atoms

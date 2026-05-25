@@ -1,19 +1,20 @@
-import numpy as np
-import pandas as pd
 import operator
 import random
 from typing import Optional
 
+import numpy as np
+import pandas as pd
 from ase import Atoms
 from structuretoolkit.analyse import (
     get_adaptive_cna_descriptors,
     get_diamond_structure_descriptors,
 )
-from atomistics.shared.output import OutputMolecularDynamics
+
 from atomistics.calculators.lammps import (
-    optimize_positions_and_volume_with_lammpslib,
     calc_molecular_dynamics_npt_with_lammpslib,
+    optimize_positions_and_volume_with_lammpslib,
 )
+from atomistics.shared.output import OutputMolecularDynamics
 
 
 def _check_diamond(structure: Atoms):
