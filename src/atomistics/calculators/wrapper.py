@@ -3,14 +3,14 @@ A wrapper for mapping between functions that evaluate a single structure to thos
 that evaluate a task dictionary.
 """
 
-from __future__ import annotations
-
+from __future__ import annotation
 from typing import TYPE_CHECKING, Any, Callable, cast
+
+from ase import Atoms
 
 from atomistics.calculators.interface import TaskEnum, TaskOutputEnum, TaskName
 
 if TYPE_CHECKING:
-    from ase import Atoms
 
     from atomistics.calculators.interface import (
         ResultsDict,
