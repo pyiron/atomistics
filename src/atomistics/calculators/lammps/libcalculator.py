@@ -27,6 +27,7 @@ from atomistics.calculators.lammps.helpers import (
     lammps_shutdown,
     lammps_thermal_expansion_loop,
 )
+from atomistics.calculators.lammps.shared import get_box_relax_command
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.shared.output import OutputMolecularDynamics, OutputStatic
 from atomistics.shared.thermal_expansion import OutputThermalExpansion
@@ -55,7 +56,7 @@ def optimize_positions_and_volume_with_lammpslib(
 ) -> Atoms:
     template_str = "\n".join(
         [
-            _get_box_relax_command(pressure=pressure, vmax=vmax),
+            get_box_relax_command(pressure=pressure, vmax=vmax),
             LAMMPS_THERMO_STYLE,
             LAMMPS_THERMO,
             LAMMPS_MINIMIZE,
@@ -592,33 +593,3 @@ def evaluate_with_lammpslib(
     )
     lmp.close()
     return results_dict
-
-
-def _get_box_relax_command(
-    pressure: float | Iterable[float | None], vmax: Optional[float]
-) -> str:
-    if not isinstance(pressure, Iterable):
-        box_relax = f"fix ensemble all box/relax iso {pressure}"
-    elif len(pressure) == 3:
-        pressure_str = " ".join(
-            "{tag} {value}".format(tag=tag, value=value)
-            for tag, value in zip(["x", "y", "z"], pressure)
-            if value is not None
-        )
-        box_relax = f"fix ensemble all box/relax {pressure_str}"
-    elif len(pressure) == 6:
-        pressure_str = " ".join(
-            "{tag} {value}".format(tag=tag, value=value)
-            for tag, value in zip(["x", "y", "z", "xy", "xz", "yz"], pressure)
-            if value is not None
-        )
-        box_relax = f"fix ensemble all box/relax {pressure_str}"
-    else:
-        raise ValueError("pressure must be a float or an iterable of length 3 or 6.")
-    if vmax is not None:
-        if isinstance(vmax, float):
-            return box_relax + " vmax {vmax}".format(vmax=vmax)
-        else:
-            raise TypeError("vmax must be a float.")
-    else:
-        return box_relax

@@ -1,5 +1,5 @@
 import os
-from typing import Any, Callable
+from typing import Any, Callable, Iterable, Optional
 
 import pandas
 from ase.atoms import Atoms
@@ -10,11 +10,11 @@ from lammpsparser import write_lammps_structure as _write_lammps_structure
 from atomistics.calculators.interface import get_quantities_from_tasks
 from atomistics.calculators.lammps.commands import (
     LAMMPS_MINIMIZE,
-    LAMMPS_MINIMIZE_VOLUME,
     LAMMPS_RUN,
     LAMMPS_THERMO,
     LAMMPS_THERMO_STYLE,
 )
+from atomistics.calculators.lammps.shared import get_box_relax_command
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.shared.output import OutputStatic
 
@@ -90,10 +90,12 @@ def optimize_positions_and_volume_with_lammpsfile(
     maxiter: int = 100000,
     maxeval: int = 10000000,
     thermo: int = 10,
+    pressure: float | Iterable[float | None] = 0.0,
+    vmax: Optional[float] = None,
 ) -> Atoms:
     template_str = "\n".join(
         [
-            LAMMPS_MINIMIZE_VOLUME,
+            get_box_relax_command(pressure=pressure, vmax=vmax),
             LAMMPS_THERMO_STYLE,
             LAMMPS_THERMO,
             LAMMPS_MINIMIZE,
