@@ -177,7 +177,7 @@ def _get_elastic_matrix(
     if "energy" in output_dict:
         output_dict = output_dict["energy"]
 
-    ene0: float | None = None
+    ene0: Optional[float] = None
     if 0.0 in epss:
         ene0 = output_dict[zero_strain_job_name]
     strain_energy: list[list[tuple[float, float]]] = []
