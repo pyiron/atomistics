@@ -1,4 +1,5 @@
 import os
+from collections.abc import Callable
 from typing import Optional
 
 import scipy.constants
@@ -25,8 +26,8 @@ def _generate_input(
     structure: Atoms,
     maxSteps: int = 100,
     energy_cutoff_in_eV: float = 500.0,
-    kpoint_coords: Optional[list[float, float, float]] = None,
-    kpoint_folding: Optional[list[int, int, int]] = None,
+    kpoint_coords: Optional[list[float]] = None,
+    kpoint_folding: Optional[list[int]] = None,
 ):
     if kpoint_coords is None:
         kpoint_coords = [0.5, 0.5, 0.5]
@@ -89,14 +90,14 @@ class OutputParser:
 def optimize_positions_with_sphinxdft(
     structure: Atoms,
     working_directory: str,
-    executable_function: callable,
+    executable_function: Callable[[str], object],
     max_electronic_steps: int = 100,
     energy_cutoff_in_eV: float = 500.0,
     mode: str = "linQN",
     dEnergy: float = 1.0e-6,
     max_ionic_steps: int = 50,
-    kpoint_coords: Optional[list[float, float, float]] = None,
-    kpoint_folding: Optional[list[int, int, int]] = None,
+    kpoint_coords: Optional[list[float]] = None,
+    kpoint_folding: Optional[list[int]] = None,
 ) -> Atoms:
     if kpoint_coords is None:
         kpoint_coords = [0.5, 0.5, 0.5]
@@ -131,11 +132,11 @@ def optimize_positions_with_sphinxdft(
 def calc_static_with_sphinxdft(
     structure: Atoms,
     working_directory: str,
-    executable_function: callable,
+    executable_function: Callable[[str], object],
     max_electronic_steps: int = 100,
     energy_cutoff_in_eV: float = 500.0,
-    kpoint_coords: Optional[list[float, float, float]] = None,
-    kpoint_folding: Optional[list[int, int, int]] = None,
+    kpoint_coords: Optional[list[float]] = None,
+    kpoint_folding: Optional[list[int]] = None,
     output_keys=OutputStatic.keys(),
 ) -> dict:
     if kpoint_coords is None:
@@ -167,11 +168,11 @@ def evaluate_with_sphinx(
     structure: Atoms,
     tasks: list,
     working_directory: str,
-    executable_function: callable,
+    executable_function: Callable[[str], object],
     max_electronic_steps: int = 100,
     energy_cutoff_in_eV: float = 500,
-    kpoint_coords: Optional[list[float, float, float]] = None,
-    kpoint_folding: Optional[list[int, int, int]] = None,
+    kpoint_coords: Optional[list[float]] = None,
+    kpoint_folding: Optional[list[int]] = None,
     sphinx_optimizer_kwargs: Optional[dict] = None,
 ) -> dict:
     if kpoint_coords is None:

@@ -1,4 +1,5 @@
 import os
+from collections.abc import Callable
 from typing import Optional
 
 from ase.atoms import Atoms
@@ -40,14 +41,14 @@ def write_input(working_directory: str, atoms: Atoms, **kwargs) -> None:
 def calc_static_with_vasp(
     structure: Atoms,
     working_directory: str,
-    executable_function: callable,
+    executable_function: Callable[[str], object],
     prec: str = "Accurate",
     algo: str = "Fast",
     lreal: bool = False,
     lwave: bool = False,
     lorbit: int = 0,
-    kpts: Optional[list[int, int, int]] = None,
-    output_keys: dict = OutputStatic.keys(),
+    kpts: Optional[list[int]] = None,
+    output_keys: list[str] | tuple[str, ...] = OutputStatic.keys(),
     **kwargs,
 ) -> dict:
     if kpts is None:
@@ -77,7 +78,7 @@ def calc_static_with_vasp(
 def optimize_positions_with_vasp(
     structure: Atoms,
     working_directory: str,
-    executable_function: callable,
+    executable_function: Callable[[str], object],
     prec: str = "Accurate",
     algo: str = "Fast",
     lreal: bool = False,
@@ -86,7 +87,7 @@ def optimize_positions_with_vasp(
     isif: int = 2,
     ibrion: int = 2,
     nsw: int = 100,
-    kpts: Optional[list[int, int, int]] = None,
+    kpts: Optional[list[int]] = None,
     **kwargs,
 ) -> Atoms:
     if kpts is None:
@@ -117,7 +118,7 @@ def optimize_positions_with_vasp(
 def optimize_positions_and_volume_with_vasp(
     structure: Atoms,
     working_directory: str,
-    executable_function: callable,
+    executable_function: Callable[[str], object],
     prec: str = "Accurate",
     algo: str = "Fast",
     lreal: bool = False,
@@ -126,7 +127,7 @@ def optimize_positions_and_volume_with_vasp(
     isif: int = 3,
     ibrion: int = 2,
     nsw: int = 100,
-    kpts: Optional[list[int, int, int]] = None,
+    kpts: Optional[list[int]] = None,
     **kwargs,
 ) -> Atoms:
     if kpts is None:
@@ -158,7 +159,7 @@ def optimize_positions_and_volume_with_vasp(
 def optimize_volume_with_vasp(
     structure: Atoms,
     working_directory: str,
-    executable_function: callable,
+    executable_function: Callable[[str], object],
     prec: str = "Accurate",
     algo: str = "Fast",
     lreal: bool = False,
@@ -167,7 +168,7 @@ def optimize_volume_with_vasp(
     isif: int = 7,
     ibrion: int = 2,
     nsw: int = 100,
-    kpts: Optional[list[int, int, int]] = None,
+    kpts: Optional[list[int]] = None,
     **kwargs,
 ) -> Atoms:
     if kpts is None:
@@ -198,7 +199,7 @@ def optimize_volume_with_vasp(
 def optimize_cell_with_vasp(
     structure: Atoms,
     working_directory: str,
-    executable_function: callable,
+    executable_function: Callable[[str], object],
     prec: str = "Accurate",
     algo: str = "Fast",
     lreal: bool = False,
@@ -207,7 +208,7 @@ def optimize_cell_with_vasp(
     isif: int = 5,
     ibrion: int = 2,
     nsw: int = 100,
-    kpts: Optional[list[int, int, int]] = None,
+    kpts: Optional[list[int]] = None,
     **kwargs,
 ) -> Atoms:
     if kpts is None:
@@ -240,13 +241,13 @@ def evaluate_with_vasp(
     structure: Atoms,
     tasks: list,
     working_directory: str,
-    executable_function: callable,
+    executable_function: Callable[[str], object],
     prec: str = "Accurate",
     algo: str = "Fast",
     lreal: bool = False,
     lwave: bool = False,
     lorbit: int = 0,
-    kpts: Optional[list[int, int, int]] = None,
+    kpts: Optional[list[int]] = None,
     **kwargs,
 ) -> dict:
     if kpts is None:

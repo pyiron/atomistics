@@ -3,7 +3,7 @@ import sys
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Union
 
-if sys.version_info.minor < 11:
+if sys.version_info < (3, 11):
     # official impl' is not significantly different
     class StrEnum(str, Enum):
         def __str__(self):

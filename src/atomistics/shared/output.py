@@ -1,4 +1,7 @@
 import dataclasses
+from collections.abc import Callable, Iterable
+
+OutputCallable = Callable[[], object]
 
 
 @dataclasses.dataclass
@@ -17,7 +20,7 @@ class Output:
         """
         return tuple(field.name for field in dataclasses.fields(cls))
 
-    def get(self, output_keys: tuple) -> dict:
+    def get(self, output_keys: Iterable[str]) -> dict:
         """
         Get the specified output data.
 
@@ -32,56 +35,56 @@ class Output:
 
 @dataclasses.dataclass
 class OutputStatic(Output):
-    forces: callable
-    energy: callable
-    stress: callable
-    volume: callable
+    forces: OutputCallable
+    energy: OutputCallable
+    stress: OutputCallable
+    volume: OutputCallable
 
 
 @dataclasses.dataclass
 class OutputMolecularDynamics(Output):
-    positions: callable
-    cell: callable
-    forces: callable
-    temperature: callable
-    energy_pot: callable
-    energy_tot: callable
-    pressure: callable
-    velocities: callable
-    volume: callable
+    positions: OutputCallable
+    cell: OutputCallable
+    forces: OutputCallable
+    temperature: OutputCallable
+    energy_pot: OutputCallable
+    energy_tot: OutputCallable
+    pressure: OutputCallable
+    velocities: OutputCallable
+    volume: OutputCallable
 
 
 @dataclasses.dataclass
 class OutputThermalExpansion(Output):
-    temperatures: callable
-    volumes: callable
+    temperatures: OutputCallable
+    volumes: OutputCallable
 
 
 @dataclasses.dataclass
 class OutputThermodynamic(OutputThermalExpansion):
-    free_energy: callable
-    entropy: callable
-    heat_capacity: callable
+    free_energy: OutputCallable
+    entropy: OutputCallable
+    heat_capacity: OutputCallable
 
 
 @dataclasses.dataclass
 class EquilibriumEnergy(Output):
-    energy_eq: callable
+    energy_eq: OutputCallable
 
 
 @dataclasses.dataclass
 class EquilibriumVolume(Output):
-    volume_eq: callable
+    volume_eq: OutputCallable
 
 
 @dataclasses.dataclass
 class EquilibriumBulkModul(Output):
-    bulkmodul_eq: callable
+    bulkmodul_eq: OutputCallable
 
 
 @dataclasses.dataclass
 class EquilibriumBulkModulDerivative(Output):
-    b_prime_eq: callable
+    b_prime_eq: OutputCallable
 
 
 @dataclasses.dataclass
@@ -91,35 +94,35 @@ class OutputEnergyVolumeCurve(
     EquilibriumBulkModul,
     EquilibriumBulkModulDerivative,
 ):
-    fit_dict: callable
-    energy: callable
-    volume: callable
+    fit_dict: OutputCallable
+    energy: OutputCallable
+    volume: OutputCallable
 
 
 @dataclasses.dataclass
 class OutputElastic(Output):
-    elastic_matrix: callable
-    elastic_matrix_inverse: callable
-    bulkmodul_voigt: callable
-    bulkmodul_reuss: callable
-    bulkmodul_hill: callable
-    shearmodul_voigt: callable
-    shearmodul_reuss: callable
-    shearmodul_hill: callable
-    youngsmodul_voigt: callable
-    youngsmodul_reuss: callable
-    youngsmodul_hill: callable
-    poissonsratio_voigt: callable
-    poissonsratio_reuss: callable
-    poissonsratio_hill: callable
-    AVR: callable
-    elastic_matrix_eigval: callable
+    elastic_matrix: OutputCallable
+    elastic_matrix_inverse: OutputCallable
+    bulkmodul_voigt: OutputCallable
+    bulkmodul_reuss: OutputCallable
+    bulkmodul_hill: OutputCallable
+    shearmodul_voigt: OutputCallable
+    shearmodul_reuss: OutputCallable
+    shearmodul_hill: OutputCallable
+    youngsmodul_voigt: OutputCallable
+    youngsmodul_reuss: OutputCallable
+    youngsmodul_hill: OutputCallable
+    poissonsratio_voigt: OutputCallable
+    poissonsratio_reuss: OutputCallable
+    poissonsratio_hill: OutputCallable
+    AVR: OutputCallable
+    elastic_matrix_eigval: OutputCallable
 
 
 @dataclasses.dataclass
 class OutputPhonons(Output):
-    mesh_dict: callable
-    band_structure_dict: callable
-    total_dos_dict: callable
-    dynamical_matrix: callable
-    force_constants: callable
+    mesh_dict: OutputCallable
+    band_structure_dict: OutputCallable
+    total_dos_dict: OutputCallable
+    dynamical_matrix: OutputCallable
+    force_constants: OutputCallable

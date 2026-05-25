@@ -5,8 +5,6 @@ import random
 from typing import Optional
 
 from ase import Atoms
-from ase.build import bulk
-from ase.data import reference_states, atomic_numbers
 from structuretoolkit.analyse import (
     get_adaptive_cna_descriptors,
     get_diamond_structure_descriptors,
@@ -98,7 +96,7 @@ def _next_calc(
     structure: Atoms,
     potential: pd.DataFrame,
     temperature: float,
-    seed: Optional[int],
+    seed: int,
     run_time_steps: int = 10000,
 ):
     """
@@ -152,7 +150,7 @@ def _next_step_funct(
     structure_after_minimization: Atoms,
     run_time_steps: int,
     diamond_flag: bool,
-    seed: Optional[int],
+    seed: int,
 ):
     """
 
@@ -261,6 +259,7 @@ def estimate_melting_temperature_using_bisection_CNA(
 ):
     if seed is None:
         seed = random.randint(0, 99999)
+    seed = int(seed)
 
     diamond_flag = _check_diamond(structure=structure)
     repeated_structure = _generate_structure_with_fixed_number_of_atoms(

@@ -19,6 +19,6 @@ def get_tqdm_iterator(lst: list) -> Iterator:
         Iterator: An iterator with tqdm progress bar if tqdm is available, otherwise the original list iterator.
     """
     if tqdm_available:
-        return tqdm(lst)
+        return iter(tqdm(lst))
     else:
-        return lst
+        return iter(lst)
