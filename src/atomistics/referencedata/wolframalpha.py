@@ -1,6 +1,6 @@
 import os
 from io import StringIO
-from typing import Callable, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 import numpy as np
 import pandas
@@ -206,7 +206,7 @@ def _extract_lst(
 
 
 def _collect(
-    url: str, column: str, select_function: callable, current_filter: callable
+    url: str, column: str, select_function: Callable, current_filter: Callable
 ) -> pandas.DataFrame:
     """
     Collect data from a given URL and extract specific properties.
@@ -278,7 +278,7 @@ def _wolframalpha_download() -> None:
 
     Note: This function requires internet connectivity to download the data.
     """
-    data_dict = {
+    data_dict: dict[str, dict[str, Any]] = {
         "thermalcondictivity": {
             "url": "https://periodictable.com/Properties/A/ThermalConductivity.an.html",
             "select_function": _select_function_split,

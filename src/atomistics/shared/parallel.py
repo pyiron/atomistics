@@ -1,4 +1,6 @@
 from concurrent.futures import Executor
+from collections.abc import Callable
+from typing import Any
 
 
 def _convert_task_dict_to_task_lst(task_dict: dict) -> list:
@@ -33,7 +35,7 @@ def _convert_task_lst_to_task_dict(task_lst: list) -> dict:
         dict: A dictionary representation of the tasks.
 
     """
-    task_dict = {}
+    task_dict: dict[Any, Any] = {}
     for task in task_lst:
         for task_name, task_data in task.items():
             if isinstance(task_data, dict):
@@ -46,7 +48,10 @@ def _convert_task_lst_to_task_dict(task_lst: list) -> dict:
 
 
 def evaluate_with_parallel_executor(
-    evaluate_function: callable, task_dict: dict, executor: Executor, **kwargs
+    evaluate_function: Callable[..., dict],
+    task_dict: dict,
+    executor: Executor,
+    **kwargs,
 ) -> dict:
     """
     Executes the given `evaluate_function` in parallel using the provided `executor` and returns the results as a dictionary.
@@ -61,7 +66,7 @@ def evaluate_with_parallel_executor(
         dict: A dictionary containing the results of the parallel execution.
 
     """
-    future_lst = [
+    future_lst: list[Any] = [
         executor.submit(evaluate_function, task_dict=task, **kwargs)
         for task in _convert_task_dict_to_task_lst(task_dict=task_dict)
     ]

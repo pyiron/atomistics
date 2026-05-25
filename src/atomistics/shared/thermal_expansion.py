@@ -1,3 +1,5 @@
+from collections.abc import Iterable
+
 import numpy as np
 
 from atomistics.shared.output import OutputThermalExpansion
@@ -35,7 +37,7 @@ class ThermalExpansionProperties:
 
 
 def get_thermal_expansion_output(
-    temperatures_lst: np.ndarray, volumes_lst: np.ndarray, output_keys: tuple[str]
+    temperatures_lst: np.ndarray, volumes_lst: np.ndarray, output_keys: Iterable[str]
 ) -> dict:
     """
     Get the thermal expansion output.
