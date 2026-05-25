@@ -4,16 +4,14 @@ from typing import Any, Callable, Iterable, Optional
 import pandas
 from ase.atoms import Atoms
 from jinja2 import Template
-from lammpsparser import parse_lammps_output_files as _parse_lammps_output_files
+from lammpsparser import \
+    parse_lammps_output_files as _parse_lammps_output_files
 from lammpsparser import write_lammps_structure as _write_lammps_structure
 
 from atomistics.calculators.interface import get_quantities_from_tasks
-from atomistics.calculators.lammps.commands import (
-    LAMMPS_MINIMIZE,
-    LAMMPS_RUN,
-    LAMMPS_THERMO,
-    LAMMPS_THERMO_STYLE,
-)
+from atomistics.calculators.lammps.commands import (LAMMPS_MINIMIZE,
+                                                    LAMMPS_RUN, LAMMPS_THERMO,
+                                                    LAMMPS_THERMO_STYLE)
 from atomistics.calculators.lammps.shared import get_box_relax_command
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.shared.output import OutputStatic

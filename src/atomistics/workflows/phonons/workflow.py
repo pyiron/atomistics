@@ -9,14 +9,10 @@ from phonopy.file_IO import write_FORCE_CONSTANTS
 from atomistics.shared.output import OutputPhonons, OutputThermodynamic
 from atomistics.workflows.interface import Workflow
 from atomistics.workflows.phonons.helper import (
-    analyse_results_for_harmonic_approximation,
-    get_band_structure,
-    get_hesse_matrix,
-    get_tasks_for_harmonic_approximation,
-    get_thermal_properties_for_harmonic_approximation,
-    plot_band_structure,
-    plot_dos,
-)
+    analyse_results_for_harmonic_approximation, get_band_structure,
+    get_hesse_matrix, get_tasks_for_harmonic_approximation,
+    get_thermal_properties_for_harmonic_approximation, plot_band_structure,
+    plot_dos)
 
 
 class PhonopyWorkflow(Workflow):

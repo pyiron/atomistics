@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from collections.abc import Iterable
 from typing import Optional
 
@@ -9,7 +10,8 @@ from jinja2 import Template
 from lammpsparser import validate_potential_dataframe
 from pylammpsmpi import LammpsASELibrary
 
-from atomistics.shared.output import OutputMolecularDynamics, OutputThermalExpansion
+from atomistics.shared.output import (OutputMolecularDynamics,
+                                      OutputThermalExpansion)
 from atomistics.shared.thermal_expansion import get_thermal_expansion_output
 from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 

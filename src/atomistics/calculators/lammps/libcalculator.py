@@ -8,25 +8,18 @@ from jinja2 import Template
 from pylammpsmpi import LammpsASELibrary
 
 from atomistics.calculators.interface import get_quantities_from_tasks
-from atomistics.calculators.lammps.commands import (
-    LAMMPS_ENSEMBLE_NPH,
-    LAMMPS_ENSEMBLE_NPT,
-    LAMMPS_ENSEMBLE_NVT,
-    LAMMPS_LANGEVIN,
-    LAMMPS_MINIMIZE,
-    LAMMPS_NVE,
-    LAMMPS_RUN,
-    LAMMPS_THERMO,
-    LAMMPS_THERMO_STYLE,
-    LAMMPS_TIMESTEP,
-    LAMMPS_VELOCITY,
-)
+from atomistics.calculators.lammps.commands import (LAMMPS_ENSEMBLE_NPH,
+                                                    LAMMPS_ENSEMBLE_NPT,
+                                                    LAMMPS_ENSEMBLE_NVT,
+                                                    LAMMPS_LANGEVIN,
+                                                    LAMMPS_MINIMIZE,
+                                                    LAMMPS_NVE, LAMMPS_RUN,
+                                                    LAMMPS_THERMO,
+                                                    LAMMPS_THERMO_STYLE,
+                                                    LAMMPS_TIMESTEP,
+                                                    LAMMPS_VELOCITY)
 from atomistics.calculators.lammps.helpers import (
-    lammps_calc_md,
-    lammps_run,
-    lammps_shutdown,
-    lammps_thermal_expansion_loop,
-)
+    lammps_calc_md, lammps_run, lammps_shutdown, lammps_thermal_expansion_loop)
 from atomistics.calculators.lammps.shared import get_box_relax_command
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.shared.output import OutputMolecularDynamics, OutputStatic

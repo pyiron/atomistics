@@ -5,24 +5,20 @@ import numpy as np
 from ase.atoms import Atoms
 
 from atomistics.shared.output import OutputThermodynamic
-from atomistics.workflows.evcurve.helper import (
-    _strain_axes,
-    fit_ev_curve,
-    get_strains,
-    get_volume_lst,
-)
+from atomistics.workflows.evcurve.helper import (_strain_axes, fit_ev_curve,
+                                                 get_strains, get_volume_lst)
 from atomistics.workflows.evcurve.workflow import EnergyVolumeCurveWorkflow
-from atomistics.workflows.phonons.helper import (
-    analyse_results_for_harmonic_approximation as analyse_structures_phonopy_helper,
-)
+from atomistics.workflows.phonons.helper import \
+    analyse_results_for_harmonic_approximation as \
+    analyse_structures_phonopy_helper
 from atomistics.workflows.phonons.helper import get_supercell_matrix
-from atomistics.workflows.phonons.helper import (
-    get_tasks_for_harmonic_approximation as generate_structures_phonopy_helper,
-)
-from atomistics.workflows.phonons.helper import (
-    get_thermal_properties_for_harmonic_approximation as get_thermal_properties_phonopy,
-)
-from atomistics.workflows.phonons.units import EvTokJmol, THzToEv, kb, kJ_mol_to_eV
+from atomistics.workflows.phonons.helper import \
+    get_tasks_for_harmonic_approximation as generate_structures_phonopy_helper
+from atomistics.workflows.phonons.helper import \
+    get_thermal_properties_for_harmonic_approximation as \
+    get_thermal_properties_phonopy
+from atomistics.workflows.phonons.units import (EvTokJmol, THzToEv, kb,
+                                                kJ_mol_to_eV)
 
 
 def get_free_energy_classical(

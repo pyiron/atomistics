@@ -4,18 +4,16 @@ that evaluate a task dictionary.
 """
 
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any, Callable, cast
 
 from ase import Atoms
 
-from atomistics.calculators.interface import TaskEnum, TaskOutputEnum, TaskName
+from atomistics.calculators.interface import TaskEnum, TaskName, TaskOutputEnum
 
 if TYPE_CHECKING:
-    from atomistics.calculators.interface import (
-        ResultsDict,
-        SimpleEvaluator,
-        TaskDict,
-    )
+    from atomistics.calculators.interface import (ResultsDict, SimpleEvaluator,
+                                                  TaskDict)
 
 
 def _convert_task_dict(
