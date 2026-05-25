@@ -5,6 +5,6 @@ repos:
       - id: ruff
         name: ruff lint
         args: ["--fix"]
-        files: ^atomistics/
+        files: ^src/atomistics/
       - id: ruff-format
         name: ruff format
