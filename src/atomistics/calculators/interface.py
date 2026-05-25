@@ -37,10 +37,12 @@ class TaskOutputEnum(Enum):
     volume_over_temperature = "calc_molecular_dynamics_thermal_expansion"
 
 
+TaskName = Union[str, TaskEnum]
+
+
 if TYPE_CHECKING:
     from ase import Atoms
 
-    TaskName = Union[str, TaskEnum]
     TaskSpec = tuple[Atoms, list[TaskName]]
     TaskDict = dict[str, TaskSpec]
 

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable, cast
 
-from atomistics.calculators.interface import TaskEnum, TaskOutputEnum
+from atomistics.calculators.interface import TaskEnum, TaskOutputEnum, TaskName
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -16,7 +16,6 @@ if TYPE_CHECKING:
         ResultsDict,
         SimpleEvaluator,
         TaskDict,
-        TaskName,
     )
 
 
