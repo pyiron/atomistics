@@ -2,8 +2,7 @@
 A wrapper for mapping between functions that evaluate a single structure to those
 that evaluate a task dictionary.
 """
-
-from __future__ import annotation
+from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Callable, cast
 
 from ase import Atoms
