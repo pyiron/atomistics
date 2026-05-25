@@ -11,7 +11,6 @@ from ase import Atoms
 from atomistics.calculators.interface import TaskEnum, TaskOutputEnum, TaskName
 
 if TYPE_CHECKING:
-
     from atomistics.calculators.interface import (
         ResultsDict,
         SimpleEvaluator,
