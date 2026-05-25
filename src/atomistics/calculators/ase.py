@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Optional
 
 import numpy as np
 from ase import units
@@ -73,7 +74,7 @@ class ASEExecutor:
             self.structure.get_potential_energy() + self.structure.get_kinetic_energy()
         )
 
-    def stress(self) -> np.ndarray:
+    def stress(self) -> Optional[np.ndarray]:
         """
         Get the stress tensor of the system.
 
@@ -85,7 +86,7 @@ class ASEExecutor:
         except PropertyNotImplementedError:
             return None
 
-    def pressure(self) -> np.ndarray:
+    def pressure(self) -> Optional[np.ndarray]:
         """
         Get the pressure of the system.
 
@@ -148,8 +149,8 @@ def evaluate_with_ase(
     structure: Atoms,
     tasks: list,
     ase_calculator: ASECalculator,
-    ase_optimizer: type[Optimizer] = None,
-    ase_optimizer_kwargs: dict = None,
+    ase_optimizer: Optional[type[Optimizer]] = None,
+    ase_optimizer_kwargs: Optional[dict] = None,
     filter_class: type[Filter] = UnitCellFilter,
 ) -> dict:
     """
@@ -208,7 +209,7 @@ def evaluate_with_ase(
 def calc_static_with_ase(
     structure: Atoms,
     ase_calculator: ASECalculator,
-    output_keys: list[str] = OutputStatic.keys(),
+    output_keys: tuple[str] = OutputStatic.keys(),
 ) -> dict:
     """
     Calculate static properties using ASE calculator.
@@ -235,7 +236,7 @@ def calc_molecular_dynamics_langevin_with_ase(
     timestep: float = 1.0,
     temperature: float = 100.0,
     friction: float = 0.002,
-    output_keys: list[str] = OutputMolecularDynamics.keys(),
+    output_keys: tuple[str] = OutputMolecularDynamics.keys(),
 ) -> dict:
     """
     Perform molecular dynamics simulation using the Langevin algorithm with ASE.
@@ -370,7 +371,7 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
     ttime: float = 100 * units.fs,
     pfactor: float = 2e6 * units.GPa * (units.fs**2),
     externalstress: np.ndarray = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
-    output_keys: list[str] = OutputThermalExpansion.keys(),
+    output_keys: tuple[str] = OutputThermalExpansion.keys(),
 ) -> dict:
     """
     Calculate thermal expansion using molecular dynamics simulation with ASE.
@@ -429,7 +430,7 @@ def calc_molecular_dynamics_npt_with_ase(
     pfactor: float = 2e6 * units.GPa * (units.fs**2),
     temperature: float = 300.0,
     externalstress: np.ndarray = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
-    output_keys: list[str] = OutputMolecularDynamics.keys(),
+    output_keys: tuple[str] = OutputMolecularDynamics.keys(),
 ) -> dict:
     """
     Perform NPT molecular dynamics simulation using ASE.
