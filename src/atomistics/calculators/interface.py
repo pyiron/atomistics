@@ -1,7 +1,8 @@
 # best would be StrEnum from py3.11
 import sys
+from collections.abc import Iterable
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Union
+from typing import TYPE_CHECKING, Any, Callable, Union
 
 if sys.version_info < (3, 11):
     # official impl' is not significantly different

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Iterable, Optional
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any, Optional
 
 import numpy as np
 import pandas
@@ -50,7 +51,7 @@ def optimize_positions_and_volume_with_lammpslib(
     maxeval: int = 10000000,
     thermo: int = 10,
     pressure: float | Iterable[float | None] = 0.0,
-    vmax: Optional[float] = None,
+    vmax: float | None = None,
     lmp=None,
     **kwargs,
 ) -> Atoms:
@@ -155,7 +156,7 @@ def calc_molecular_dynamics_nvt_with_lammpslib(
     timestep: float = 0.001,
     seed: int = 4928459,
     dist: str = "gaussian",
-    velocity_rescale_factor: Optional[float] = 2.0,
+    velocity_rescale_factor: float | None = 2.0,
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
@@ -232,7 +233,7 @@ def calc_molecular_dynamics_npt_with_lammpslib(
     seed: int = 4928459,
     dist: str = "gaussian",
     couple_xyz: bool = False,
-    velocity_rescale_factor: Optional[float] = 2.0,
+    velocity_rescale_factor: float | None = 2.0,
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
@@ -316,7 +317,7 @@ def calc_molecular_dynamics_nph_with_lammpslib(
     Pdamp: float = 1.0,
     seed: int = 4928459,
     dist: str = "gaussian",
-    velocity_rescale_factor: Optional[float] = 2.0,
+    velocity_rescale_factor: float | None = 2.0,
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
@@ -389,7 +390,7 @@ def calc_molecular_dynamics_langevin_with_lammpslib(
     Tdamp: float = 0.1,
     seed: int = 4928459,
     dist: str = "gaussian",
-    velocity_rescale_factor: Optional[float] = 2.0,
+    velocity_rescale_factor: float | None = 2.0,
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
@@ -470,7 +471,7 @@ def calc_molecular_dynamics_thermal_expansion_with_lammpslib(
     seed: int = 4928459,
     dist: str = "gaussian",
     couple_xyz: bool = False,
-    lmp: Optional[LammpsASELibrary] = None,
+    lmp: LammpsASELibrary | None = None,
     output_keys: Iterable[str] = OutputThermalExpansion.keys(),
     **kwargs,
 ) -> dict:
@@ -565,14 +566,14 @@ def evaluate_with_lammpslib_library_interface(
 def evaluate_with_lammpslib(
     task_dict: dict[str, dict[str, Atoms]],
     potential_dataframe: DataFrame,
-    working_directory: Optional[str] = None,
+    working_directory: str | None = None,
     cores: int = 1,
-    comm: Optional[object] = None,
-    logger: Optional[object] = None,
-    log_file: Optional[str] = None,
-    library: Optional[object] = None,
+    comm: object | None = None,
+    logger: object | None = None,
+    log_file: str | None = None,
+    library: object | None = None,
     disable_log_file: bool = True,
-    lmp_optimizer_kwargs: Optional[dict] = None,
+    lmp_optimizer_kwargs: dict | None = None,
 ) -> dict:
     if lmp_optimizer_kwargs is None:
         lmp_optimizer_kwargs = {}
