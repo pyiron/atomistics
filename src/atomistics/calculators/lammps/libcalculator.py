@@ -55,7 +55,7 @@ def optimize_positions_and_volume_with_lammpslib(
 ) -> Atoms:
     template_str = "\n".join(
         [
-            _get_vmax_command(pressure=pressure, vmax=vmax),
+            _get_box_relax_command(pressure=pressure, vmax=vmax),
             LAMMPS_THERMO_STYLE,
             LAMMPS_THERMO,
             LAMMPS_MINIMIZE,
@@ -594,7 +594,7 @@ def evaluate_with_lammpslib(
     return results_dict
 
 
-def _get_vmax_command(
+def _get_box_relax_command(
     pressure: float | Iterable[float | None], vmax: Optional[float]
 ) -> str:
     if not isinstance(pressure, Iterable):
