@@ -76,7 +76,7 @@ class ASEExecutor:
             self.structure.get_potential_energy() + self.structure.get_kinetic_energy()
         )
 
-    def stress(self) -> Optional[np.ndarray]:
+    def stress(self) -> np.ndarray | None:
         """
         Get the stress tensor of the system.
 
@@ -88,7 +88,7 @@ class ASEExecutor:
         except PropertyNotImplementedError:
             return None
 
-    def pressure(self) -> Optional[np.ndarray]:
+    def pressure(self) -> np.ndarray | None:
         """
         Get the pressure of the system.
 
@@ -151,8 +151,8 @@ def evaluate_with_ase(
     structure: Atoms,
     tasks: list,
     ase_calculator: ASECalculator,
-    ase_optimizer: Optional[type[Optimizer]] = None,
-    ase_optimizer_kwargs: Optional[dict] = None,
+    ase_optimizer: type[Optimizer] | None = None,
+    ase_optimizer_kwargs: dict | None = None,
     filter_class: Callable[..., Any] = UnitCellFilter,
 ) -> dict:
     """

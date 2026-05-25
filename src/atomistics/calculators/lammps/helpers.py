@@ -18,8 +18,8 @@ from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 def lammps_run(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
-    input_template: Optional[str] = None,
-    lmp: Optional[LammpsASELibrary] = None,
+    input_template: str | None = None,
+    lmp: LammpsASELibrary | None = None,
     **kwargs,
 ) -> LammpsASELibrary:
     potential_dataframe = validate_potential_dataframe(
