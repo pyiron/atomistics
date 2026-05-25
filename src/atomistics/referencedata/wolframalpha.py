@@ -36,9 +36,9 @@ def _select_function_density(v: str) -> float:
         float: The converted density value.
     """
     if "g/l" in v:
-        return float(v.split()[0]) * 0.001
+        return float(v.split(maxsplit=1)[0]) * 0.001
     else:
-        return float(v.split()[0])
+        return float(v.split(maxsplit=1)[0])
 
 
 def _select_function_split(v: Union[str, float]) -> float:
@@ -68,9 +68,9 @@ def _select_function_lattice(v: str) -> tuple[float, float, float]:
         tuple[float, float, float]: The lattice vector as a tuple of floats.
     """
     return (
-        float(v.split(", ")[0]),
+        float(v.split(", ", maxsplit=1)[0]),
         float(v.split(", ")[1]),
-        float(v.split(", ")[2].split()[0]),
+        float(v.split(", ")[2].split(maxsplit=1)[0]),
     )
 
 

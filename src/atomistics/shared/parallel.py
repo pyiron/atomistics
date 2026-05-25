@@ -1,5 +1,5 @@
-from concurrent.futures import Executor
 from collections.abc import Callable
+from concurrent.futures import Executor
 from typing import Any
 
 
