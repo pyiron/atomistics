@@ -321,7 +321,7 @@ class DebyeModel:
     def energy_vib(
         self,
         T: np.ndarray,
-        debye_T: Optional[Union[float,np.ndarray]] = None,
+        debye_T: Optional[Union[float, np.ndarray]] = None,
         low_T_limit: bool = True,
     ):
         """
@@ -342,11 +342,15 @@ class DebyeModel:
             else:
                 debye_T = self.debye_temperature[1]  # high
         if isinstance(debye_T, np.ndarray):
-            val: np.ndarray = np.array([
-                9.0 / 8.0 * kB * d_T
-                + T * kB * (3 * np.log(1 - np.exp(-d_T / T)) - debye_function(d_T / T))
-                for d_T in debye_T
-            ])
+            val: np.ndarray = np.array(
+                [
+                    9.0 / 8.0 * kB * d_T
+                    + T
+                    * kB
+                    * (3 * np.log(1 - np.exp(-d_T / T)) - debye_function(d_T / T))
+                    for d_T in debye_T
+                ]
+            )
         else:
             val = 9.0 / 8.0 * kB * debye_T + T * kB * (
                 3 * np.log(1 - np.exp(-debye_T / T)) - debye_function(debye_T / T)

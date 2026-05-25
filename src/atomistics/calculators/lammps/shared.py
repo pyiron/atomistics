@@ -24,7 +24,9 @@ def get_box_relax_command(
             )
             box_relax = f"fix ensemble all box/relax {pressure_str}"
         else:
-            raise ValueError("pressure must be a float or an iterable of length 3 or 6.")
+            raise ValueError(
+                "pressure must be a float or an iterable of length 3 or 6."
+            )
     if vmax is not None:
         if isinstance(vmax, float):
             return box_relax + " vmax {vmax}".format(vmax=vmax)

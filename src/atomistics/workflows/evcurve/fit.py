@@ -285,7 +285,11 @@ class EnergyVolumeFit:
             dictionary of fit parameters
     """
 
-    def __init__(self, volume_lst: Optional[np.ndarray] = None, energy_lst: Optional[np.ndarray] = None):
+    def __init__(
+        self,
+        volume_lst: Optional[np.ndarray] = None,
+        energy_lst: Optional[np.ndarray] = None,
+    ):
         """
         Initialize the EnergyVolumeFit object.
 
@@ -354,7 +358,9 @@ class EnergyVolumeFit:
         return self._fit_dict
 
     def _get_volume_and_energy_lst(
-        self, volume_lst: Optional[np.ndarray] = None, energy_lst: Optional[np.ndarray] = None
+        self,
+        volume_lst: Optional[np.ndarray] = None,
+        energy_lst: Optional[np.ndarray] = None,
     ) -> tuple[np.ndarray, np.ndarray]:
         """
         Internal function to get the vector of volumes and the vector of energies

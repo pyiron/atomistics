@@ -232,7 +232,10 @@ class ThermoBulk:
         )
 
     def set_volumes(
-        self, volume_min: float, volume_max: Optional[float] = None, volume_steps: int = 10
+        self,
+        volume_min: float,
+        volume_max: Optional[float] = None,
+        volume_steps: int = 10,
     ):
         """
         Set the volumes.
@@ -256,7 +259,9 @@ class ThermoBulk:
         x_grid, y_grid = np.meshgrid(self.volumes, self.temperatures)
         return x_grid, y_grid
 
-    def get_minimum_energy_path(self, pressure: Optional[np.ndarray] = None) -> np.ndarray:
+    def get_minimum_energy_path(
+        self, pressure: Optional[np.ndarray] = None
+    ) -> np.ndarray:
         """
         Get the minimum energy path.
 

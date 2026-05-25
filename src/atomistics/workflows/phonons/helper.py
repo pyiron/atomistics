@@ -112,7 +112,9 @@ class PhonopyProperties:
             )
             self._mesh_dict = self._phonopy.get_mesh_dict()
         if self._mesh_dict is None:
-            raise ValueError("Phonopy mesh calculation did not produce a mesh dictionary.")
+            raise ValueError(
+                "Phonopy mesh calculation did not produce a mesh dictionary."
+            )
         return self._mesh_dict
 
     def band_structure_dict(self) -> dict:
@@ -147,7 +149,9 @@ class PhonopyProperties:
             )
             self._total_dos = self._phonopy.get_total_dos_dict()
         if self._total_dos is None:
-            raise ValueError("Phonopy total DOS calculation did not produce a dictionary.")
+            raise ValueError(
+                "Phonopy total DOS calculation did not produce a dictionary."
+            )
         return self._total_dos
 
     def dynamical_matrix(self) -> np.ndarray:

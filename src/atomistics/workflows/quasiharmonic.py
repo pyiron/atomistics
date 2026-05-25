@@ -595,7 +595,9 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             Thermal: thermal properties as returned by Phonopy
         """
         if constant_volume:
-            raise ValueError("constant_volume is not supported for quasi-harmonic properties.")
+            raise ValueError(
+                "constant_volume is not supported for quasi-harmonic properties."
+            )
         if self._eng_internal_dict is None:
             raise ValueError(
                 "Please first execute analyse_output() before calling get_thermal_properties()."
