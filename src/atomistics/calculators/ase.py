@@ -170,14 +170,10 @@ def evaluate_with_ase(
     """
     if ase_optimizer_kwargs is None:
         ase_optimizer_kwargs = {}
-    if (
-        tasks
-        in ["optimize_positions", "optimize_positions_and_volume", "optimize_volume"]
-        and ase_optimizer is None
-    ):
-        raise ValueError("ase_optimizer must be provided for the selected tasks.")
     results = {}
     if "optimize_positions" in tasks:
+        if ase_optimizer is None:
+            raise ValueError("ase_optimizer must be provided for optimize_positions.")
         results["structure_with_optimized_positions"] = optimize_positions_with_ase(
             structure=structure,
             ase_calculator=ase_calculator,
@@ -185,6 +181,10 @@ def evaluate_with_ase(
             ase_optimizer_kwargs=ase_optimizer_kwargs,
         )
     elif "optimize_positions_and_volume" in tasks:
+        if ase_optimizer is None:
+            raise ValueError(
+                "ase_optimizer must be provided for optimize_positions_and_volume."
+            )
         results["structure_with_optimized_positions_and_volume"] = (
             optimize_positions_and_volume_with_ase(
                 structure=structure,
@@ -195,6 +195,8 @@ def evaluate_with_ase(
             )
         )
     elif "optimize_volume" in tasks:
+        if ase_optimizer is None:
+            raise ValueError("ase_optimizer must be provided for optimize_volume.")
         results["structure_with_optimized_volume"] = optimize_volume_with_ase(
             structure=structure,
             ase_calculator=ase_calculator,
