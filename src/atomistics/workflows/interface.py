@@ -14,7 +14,7 @@ class Workflow(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def analyse_structures(self, output_dict: dict[str, Any]) -> dict[str, Any]:
+    def analyse_structures(self, output_dict: dict[str, Any]) -> Any:
         """
         Analyse the generated structures.
 

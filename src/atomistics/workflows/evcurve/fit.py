@@ -1,3 +1,6 @@
+from collections.abc import Sequence
+from typing import Any, Optional
+
 import numpy as np
 import scipy.constants
 import scipy.optimize
@@ -12,7 +15,7 @@ eV_div_A3_to_GPa = (
 
 
 def fitfunction(
-    parameters: tuple[float], vol: np.ndarray, fittype: str = "vinet"
+    parameters: Sequence[float], vol: np.ndarray, fittype: str = "vinet"
 ) -> np.ndarray:
     """
     Fit the energy volume curve
@@ -25,7 +28,7 @@ def fitfunction(
     Returns:
         (float/numpy.dnarray): single energy as float or a vector of energies as numpy array
     """
-    [E0, b0, bp, V0] = parameters
+    E0, b0, bp, V0 = parameters
     # Unit correction
     B0 = b0 / eV_div_A3_to_GPa
     BP = bp
@@ -64,12 +67,12 @@ def interpolate_energy(fit_dict: dict, volumes: np.ndarray) -> np.ndarray:
         "pouriertarantola",
         "vinet",
     ]:
-        parameters = [
+        parameters = (
             fit_dict["energy_eq"],
             fit_dict["bulkmodul_eq"],
             fit_dict["b_prime_eq"],
             fit_dict["volume_eq"],
-        ]
+        )
         return fitfunction(
             parameters=parameters, vol=volumes, fittype=fit_dict["fit_dict"]["fit_type"]
         )
@@ -78,7 +81,7 @@ def interpolate_energy(fit_dict: dict, volumes: np.ndarray) -> np.ndarray:
 
 
 def fit_leastsq(
-    p0: tuple[float], datax: np.ndarray, datay: np.ndarray, fittype: str = "vinet"
+    p0: Sequence[float], datax: np.ndarray, datay: np.ndarray, fittype: str = "vinet"
 ):
     """
     Least square fit
@@ -139,7 +142,7 @@ def fit_leastsq_eos(
     a, b, c = np.polyfit(vol_lst, eng_lst, 2)
     v0 = -b / (2 * a)
     pfit_leastsq, perr_leastsq = fit_leastsq(
-        [a * v0**2 + b * v0 + c, 2 * a * v0 * eV_div_A3_to_GPa, 4, v0],
+        (a * v0**2 + b * v0 + c, 2 * a * v0 * eV_div_A3_to_GPa, 4, v0),
         vol_lst,
         eng_lst,
         fittype,
@@ -178,7 +181,7 @@ def fit_equation_of_state(
     Returns:
         dict: Dictionary containing the fit results
     """
-    fit_dict = {}
+    fit_dict: dict[str, Any] = {}
     pfit_leastsq, perr_leastsq = fit_leastsq_eos(
         volume_lst=volume_lst, energy_lst=energy_lst, fittype=fittype
     )
@@ -208,7 +211,7 @@ def fit_polynomial(
     Returns:
         dict: Dictionary containing the fit results
     """
-    fit_dict = {}
+    fit_dict: dict[str, Any] = {}
 
     # compute a polynomial fit
     z = np.polyfit(volume_lst, energy_lst, fit_order)
@@ -235,7 +238,7 @@ def fit_polynomial(
     e_eq_lst = p_fit(volume_eq_lst)
     arg = np.argsort(e_eq_lst)
     if len(e_eq_lst) == 0:
-        return None
+        raise ValueError("No equilibrium volume found for polynomial fit.")
     e_eq = e_eq_lst[arg][0]
     volume_eq = volume_eq_lst[arg][0]
 
@@ -282,7 +285,7 @@ class EnergyVolumeFit:
             dictionary of fit parameters
     """
 
-    def __init__(self, volume_lst: np.ndarray = None, energy_lst: np.ndarray = None):
+    def __init__(self, volume_lst: Optional[np.ndarray] = None, energy_lst: Optional[np.ndarray] = None):
         """
         Initialize the EnergyVolumeFit object.
 
@@ -292,7 +295,7 @@ class EnergyVolumeFit:
         """
         self._volume_lst = volume_lst
         self._energy_lst = energy_lst
-        self._fit_dict = None
+        self._fit_dict: Optional[dict[str, Any]] = None
 
     @property
     def volume_lst(self) -> np.ndarray:
@@ -302,6 +305,8 @@ class EnergyVolumeFit:
         Returns:
             np.ndarray: Vector of volumes.
         """
+        if self._volume_lst is None:
+            raise ValueError("Volume list not set.")
         return self._volume_lst
 
     @volume_lst.setter
@@ -322,6 +327,8 @@ class EnergyVolumeFit:
         Returns:
             np.ndarray: Vector of energies.
         """
+        if self._energy_lst is None:
+            raise ValueError("Energy list not set.")
         return self._energy_lst
 
     @energy_lst.setter
@@ -342,11 +349,13 @@ class EnergyVolumeFit:
         Returns:
             dict: Fit dictionary.
         """
+        if self._fit_dict is None:
+            raise ValueError("Fit dictionary not set.")
         return self._fit_dict
 
     def _get_volume_and_energy_lst(
-        self, volume_lst: np.ndarray = None, energy_lst: np.ndarray = None
-    ) -> tuple[np.ndarray]:
+        self, volume_lst: Optional[np.ndarray] = None, energy_lst: Optional[np.ndarray] = None
+    ) -> tuple[np.ndarray, np.ndarray]:
         """
         Internal function to get the vector of volumes and the vector of energies
 
@@ -399,8 +408,8 @@ class EnergyVolumeFit:
 
     def fit_eos_general(
         self,
-        volume_lst: np.ndarray = None,
-        energy_lst: np.ndarray = None,
+        volume_lst: Optional[np.ndarray] = None,
+        energy_lst: Optional[np.ndarray] = None,
         fittype: str = "birchmurnaghan",
     ) -> dict:
         """
@@ -423,8 +432,8 @@ class EnergyVolumeFit:
 
     def fit_polynomial(
         self,
-        volume_lst: np.ndarray = None,
-        energy_lst: np.ndarray = None,
+        volume_lst: Optional[np.ndarray] = None,
+        energy_lst: Optional[np.ndarray] = None,
         fit_order: int = 3,
     ) -> dict:
         """
@@ -456,7 +465,7 @@ class EnergyVolumeFit:
             np.ndarray: List of energies.
         """
         if not self._fit_dict:
-            return ValueError("parameter 'fit_dict' has to be defined!")
+            raise ValueError("parameter 'fit_dict' has to be defined!")
         return interpolate_energy(fit_dict=self.fit_dict, volumes=volume_lst)
 
     @staticmethod
@@ -558,7 +567,7 @@ class EnergyVolumeFit:
 
 
 def get_energy_volume_curve_fit(
-    volume_lst: np.ndarray = None, energy_lst: np.ndarray = None
+    volume_lst: Optional[np.ndarray] = None, energy_lst: Optional[np.ndarray] = None
 ) -> EnergyVolumeFit:
     """
     Create an instance of EnergyVolumeFit class with the given volume and energy lists.

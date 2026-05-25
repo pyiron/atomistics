@@ -29,9 +29,7 @@ class ThermoBulk:
         Returns:
             A copy of the ThermoBulk object.
         """
-        cls = self.__class__
-        result = cls.__new__(cls)
-        result.__init__()
+        result = ThermoBulk()
         result.__dict__["_volumes"] = copy(self._volumes)
         result.__dict__["_temperatures"] = copy(self._temperatures)
         result.__dict__["_energies"] = copy(self._energies)
@@ -75,7 +73,7 @@ class ThermoBulk:
         Returns:
             The coefficients of the polynomial fit.
         """
-        return np.polyfit(self._volumes, self._energies.T, deg=self._fit_order)
+        return np.polyfit(self.volumes, self.energies.T, deg=self._fit_order)
 
     @property
     def temperatures(self) -> np.ndarray:
@@ -85,7 +83,26 @@ class ThermoBulk:
         Returns:
             The temperatures.
         """
+        if self._temperatures is None:
+            raise ValueError("temperatures are not set.")
         return self._temperatures
+
+    @temperatures.setter
+    def temperatures(self, temp_lst: np.ndarray):
+        """
+        Set the temperatures.
+
+        Args:
+            temp_lst: The temperatures.
+        """
+        if not hasattr(temp_lst, "__len__"):
+            raise ValueError("Requires list as input parameter")
+        len_temp = -1
+        if self._temperatures is not None:
+            len_temp = len(self._temperatures)
+        self._temperatures = np.array(temp_lst)
+        if len(temp_lst) != len_temp:
+            self._reset_energy()
 
     @property
     def _d_temp(self) -> float:
@@ -107,23 +124,6 @@ class ThermoBulk:
         """
         return self.volumes[1] - self.volumes[0]
 
-    @temperatures.setter
-    def temperatures(self, temp_lst: np.ndarray):
-        """
-        Set the temperatures.
-
-        Args:
-            temp_lst: The temperatures.
-        """
-        if not hasattr(temp_lst, "__len__"):
-            raise ValueError("Requires list as input parameter")
-        len_temp = -1
-        if self._temperatures is not None:
-            len_temp = len(self._temperatures)
-        self._temperatures = np.array(temp_lst)
-        if len(temp_lst) != len_temp:
-            self._reset_energy()
-
     @property
     def volumes(self) -> np.ndarray:
         """
@@ -132,6 +132,8 @@ class ThermoBulk:
         Returns:
             The volumes.
         """
+        if self._volumes is None:
+            raise ValueError("volumes are not set.")
         return self._volumes
 
     @volumes.setter
@@ -161,6 +163,8 @@ class ThermoBulk:
         """
         if self._entropy is None:
             self._compute_thermo()
+        if self._entropy is None:
+            raise ValueError("entropy could not be computed.")
         return self._entropy
 
     @property
@@ -173,6 +177,8 @@ class ThermoBulk:
         """
         if self._pressure is None:
             self._compute_thermo()
+        if self._pressure is None:
+            raise ValueError("pressure could not be computed.")
         return self._pressure
 
     @property
@@ -183,6 +189,8 @@ class ThermoBulk:
         Returns:
             The energies.
         """
+        if self._energies is None:
+            raise ValueError("energies are not set.")
         return self._energies
 
     @energies.setter
@@ -209,7 +217,7 @@ class ThermoBulk:
         self,
         temperature_min: float = 0.0,
         temperature_max: float = 1500.0,
-        temperature_steps: float = 50.0,
+        temperature_steps: int = 50,
     ):
         """
         Set the temperatures.
@@ -224,7 +232,7 @@ class ThermoBulk:
         )
 
     def set_volumes(
-        self, volume_min: float, volume_max: float = None, volume_steps: int = 10
+        self, volume_min: float, volume_max: Optional[float] = None, volume_steps: int = 10
     ):
         """
         Set the volumes.
@@ -238,16 +246,17 @@ class ThermoBulk:
             volume_max = 1.1 * volume_min
         self.volumes = np.linspace(volume_min, volume_max, volume_steps)
 
-    def meshgrid(self) -> np.ndarray:
+    def meshgrid(self) -> tuple[np.ndarray, np.ndarray]:
         """
         Create a meshgrid of volumes and temperatures.
 
         Returns:
             The meshgrid of volumes and temperatures.
         """
-        return np.meshgrid(self.volumes, self.temperatures)
+        x_grid, y_grid = np.meshgrid(self.volumes, self.temperatures)
+        return x_grid, y_grid
 
-    def get_minimum_energy_path(self, pressure: np.ndarray = None) -> np.ndarray:
+    def get_minimum_energy_path(self, pressure: Optional[np.ndarray] = None) -> np.ndarray:
         """
         Get the minimum energy path.
 
@@ -272,7 +281,7 @@ class ThermoBulk:
         return np.array(v_min_lst)
 
     def get_free_energy(
-        self, vol: np.ndarray, pressure: np.ndarray = None
+        self, vol: np.ndarray, pressure: Optional[np.ndarray] = None
     ) -> np.ndarray:
         """
         Get the free energy.
@@ -289,7 +298,7 @@ class ThermoBulk:
         else:
             raise NotImplementedError()
 
-    def interpolate_volume(self, volumes: np.ndarray, fit_order: int = None):
+    def interpolate_volume(self, volumes: np.ndarray, fit_order: Optional[int] = None):
         """
         Interpolate the volumes.
 
@@ -322,7 +331,7 @@ class ThermoBulk:
         Returns:
             The free energy at the minimum energy path.
         """
-        coeff = np.polyfit(self._volumes, self.energies.T, deg=self._fit_order)
+        coeff = np.polyfit(self.volumes, self.energies.T, deg=self._fit_order)
         return np.polyval(coeff, self.get_minimum_energy_path())
 
     def get_entropy_p(self) -> np.ndarray:
@@ -332,7 +341,7 @@ class ThermoBulk:
         Returns:
             The entropy at the minimum energy path.
         """
-        s_coeff = np.polyfit(self._volumes, self.entropy.T, deg=self._fit_order)
+        s_coeff = np.polyfit(self.volumes, self.entropy.T, deg=self._fit_order)
         return np.polyval(s_coeff, self.get_minimum_energy_path())
 
     def get_entropy_v(self) -> np.ndarray:
@@ -416,10 +425,10 @@ class ThermoBulk:
             import matplotlib.pyplot as plt
         x, y = self.meshgrid()
         p_coeff = np.polyfit(self.volumes, self.pressure.T, deg=self._fit_order)
-        p_grid = np.array([np.polyval(p_coeff, v) for v in self._volumes]).T
+        p_grid = np.array([np.polyval(p_coeff, v) for v in self.volumes]).T
         plt.contourf(x, y, p_grid)
         plt.plot(self.get_minimum_energy_path(), self.temperatures)
-        plt.xlabel("Volume [$\AA^3$]")
+        plt.xlabel(r"Volume [$\AA^3$]")
         plt.ylabel("Temperature [K]")
 
     def contour_entropy(self) -> None:
@@ -435,7 +444,7 @@ class ThermoBulk:
         x, y = self.meshgrid()
         plt.contourf(x, y, s_grid)
         plt.plot(self.get_minimum_energy_path(), self.temperatures)
-        plt.xlabel("Volume [$\AA^3$]")
+        plt.xlabel(r"Volume [$\AA^3$]")
         plt.ylabel("Temperature [K]")
 
     def plot_contourf(self, ax=None, show_min_erg_path=False):
@@ -459,7 +468,7 @@ class ThermoBulk:
         ax.contourf(x, y, self.energies)
         if show_min_erg_path:
             plt.plot(self.get_minimum_energy_path(), self.temperatures, "w--")
-        plt.xlabel("Volume [$\AA^3$]")
+        plt.xlabel(r"Volume [$\AA^3$]")
         plt.ylabel("Temperature [K]")
         return ax
 
@@ -481,7 +490,7 @@ class ThermoBulk:
             import matplotlib.pyplot as plt
         if ax is None:
             fig, ax = plt.subplots(1, 1)
-            ax.xlabel("Volume [$\AA^3$]")
+            ax.xlabel(r"Volume [$\AA^3$]")
             ax.ylabel("Temperature [K]")
         ax.plot(self.get_minimum_energy_path(), self.temperatures, *args, **qwargs)
         return ax

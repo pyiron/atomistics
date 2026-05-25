@@ -1,4 +1,5 @@
-from typing import Optional
+from collections import OrderedDict
+from typing import Any, Optional
 
 import numpy as np
 from ase.atoms import Atoms
@@ -25,7 +26,7 @@ from atomistics.workflows.phonons.units import EvTokJmol, THzToEv, kb, kJ_mol_to
 
 
 def get_free_energy_classical(
-    frequency: np.ndarray, temperature: np.ndarray
+    frequency: np.ndarray, temperature: float | np.ndarray
 ) -> np.ndarray:
     """
     Calculate the classical free energy.
@@ -49,13 +50,13 @@ def get_thermal_properties_for_quasi_harmonic_approximation(
     t_min: float = 1.0,
     t_max: float = 1500.0,
     t_step: float = 50.0,
-    temperatures: np.ndarray = None,
-    cutoff_frequency: float = None,
+    temperatures: Optional[np.ndarray] = None,
+    cutoff_frequency: Optional[float] = None,
     pretend_real: bool = False,
-    band_indices: np.ndarray = None,
+    band_indices: Optional[np.ndarray] = None,
     is_projection: bool = False,
     quantum_mechanical: bool = True,
-    output_keys: tuple[str] = OutputThermodynamic.keys(),
+    output_keys: tuple[str, ...] = OutputThermodynamic.keys(),
 ) -> dict:
     """
     Returns thermal properties at constant volume in the given temperature range. Can only be called after job
@@ -124,10 +125,11 @@ def get_thermal_properties_for_quasi_harmonic_approximation(
         )
 
     temperatures = tp_collect_dict[1.0]["temperatures"]
-    strain_lst = eng_internal_dict.keys()
+    strain_lst = np.array(list(eng_internal_dict.keys()))
     eng_int_lst = np.array(list(eng_internal_dict.values()))
 
-    vol_lst, eng_lst = [], []
+    vol_lst: list[Any] = []
+    eng_lst: list[Any] = []
     for i, _temp in enumerate(temperatures):
         free_eng_lst = (
             np.array([tp_collect_dict[s]["free_energy"][i] for s in strain_lst])
@@ -145,13 +147,13 @@ def get_thermal_properties_for_quasi_harmonic_approximation(
     if (
         not quantum_mechanical
     ):  # heat capacity and entropy are not yet implemented for the classical approach.
-        output_keys = ["free_energy", "temperatures", "volumes"]
+        output_keys = ("free_energy", "temperatures", "volumes")
     qhp = QuasiHarmonicThermalProperties(
         temperatures=temperatures,
         thermal_properties_dict=tp_collect_dict,
         strain_lst=strain_lst,
         volumes_lst=volume_lst,
-        volumes_selected_lst=vol_lst,
+        volumes_selected_lst=np.array(vol_lst),
     )
     return OutputThermodynamic(
         **{k: getattr(qhp, k) for k in OutputThermodynamic.keys()}
@@ -163,12 +165,12 @@ def _get_thermal_properties_quantum_mechanical(
     t_min: float = 1.0,
     t_max: float = 1500.0,
     t_step: float = 50.0,
-    temperatures: np.ndarray = None,
-    cutoff_frequency: float = None,
+    temperatures: Optional[np.ndarray] = None,
+    cutoff_frequency: Optional[float] = None,
     pretend_real: bool = False,
-    band_indices: np.ndarray = None,
+    band_indices: Optional[np.ndarray] = None,
     is_projection: bool = False,
-    output_keys: tuple[str] = OutputThermodynamic.keys(),
+    output_keys: tuple[str, ...] = OutputThermodynamic.keys(),
 ) -> dict:
     """
     Returns thermal properties at constant volume in the given temperature range. Can only be called after job
@@ -211,8 +213,8 @@ def _get_thermal_properties_classical(
     t_min: float = 1.0,
     t_max: float = 1500.0,
     t_step: float = 50.0,
-    temperatures: np.ndarray = None,
-    cutoff_frequency: float = None,
+    temperatures: Optional[np.ndarray] = None,
+    cutoff_frequency: Optional[float] = None,
 ) -> dict:
     """
     Returns thermal properties at constant volume in the given temperature range. Can only be called after job
@@ -246,7 +248,7 @@ def _get_thermal_properties_classical(
                 t_property += (
                     np.sum(
                         get_free_energy_classical(
-                            frequency=freqs_ev[cond], temperature=t
+                            frequency=freqs_ev[cond], temperature=float(t)
                         )
                     )
                     * w
@@ -361,9 +363,9 @@ def get_tasks_for_quasi_harmonic_approximation(
     num_points: Optional[int] = None,
     strain_lst: Optional[list[float]] = None,
     displacement: float = 0.01,
-    number_of_snapshots: int = None,
+    number_of_snapshots: Optional[int] = None,
     interaction_range: float = 10.0,
-) -> tuple[dict, np.ndarray, dict, dict]:
+) -> tuple[dict[str, dict[Any, Atoms]], dict[str, Any]]:
     """
     Generate structures for the QuasiHarmonicWorkflow.
 
@@ -392,7 +394,9 @@ def get_tasks_for_quasi_harmonic_approximation(
         ),
         dtype=int,
     )
-    structure_energy_dict, structure_forces_dict, phonopy_dict = {}, {}, {}
+    structure_energy_dict: dict[Any, Atoms] = {}
+    structure_forces_dict: dict[Any, Atoms] = {}
+    phonopy_dict: dict[Any, Any] = {}
     for strain in get_strains(
         vol_range=vol_range,
         num_points=num_points,
@@ -423,11 +427,11 @@ def get_tasks_for_quasi_harmonic_approximation(
 
 
 def analyse_results_for_quasi_harmonic_approximation(
-    qh_dict: dict,
+    qh_dict: dict | None,
     output_dict: dict,
     dos_mesh: int = 20,
-    number_of_snapshots: int = None,
-    output_keys: tuple[str] = ("force_constants", "mesh_dict"),
+    number_of_snapshots: Optional[int] = None,
+    output_keys: tuple[str, ...] = ("force_constants", "mesh_dict"),
 ) -> tuple[dict, dict]:
     """
     Analyze structures using Phonopy.
@@ -444,6 +448,10 @@ def analyse_results_for_quasi_harmonic_approximation(
             - eng_internal_dict (dict): Dictionary of internal energies for different strains.
             - phonopy_collect_dict (dict): Dictionary of Phonopy analysis results for different strains.
     """
+    if qh_dict is None:
+        raise ValueError(
+            "Please call generate_structures() before analysing quasi-harmonic results."
+        )
     eng_internal_dict = output_dict["energy"]
     phonopy_collect_dict = {
         strain: analyse_structures_phonopy_helper(
@@ -469,8 +477,8 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         interaction_range: float = 10.0,
         displacement: float = 0.01,
         dos_mesh: int = 20,
-        primitive_matrix: np.ndarray = None,
-        number_of_snapshots: int = None,
+        primitive_matrix: Optional[np.ndarray] = None,
+        number_of_snapshots: Optional[int] = None,
     ):
         """
         Initialize the QuasiHarmonicWorkflow.
@@ -493,7 +501,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             fit_type=fit_type,
             fit_order=fit_order,
             vol_range=vol_range,
-            axes=["x", "y", "z"],
+            axes=("x", "y", "z"),
             strains=None,
         )
         self._interaction_range = interaction_range
@@ -501,8 +509,8 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         self._dos_mesh = dos_mesh
         self._number_of_snapshots = number_of_snapshots
         self._primitive_matrix = primitive_matrix
-        self._eng_internal_dict = None
-        self._qh_dict = None
+        self._eng_internal_dict: dict[Any, Any] | None = None
+        self._qh_dict: dict[str, Any] | None = None
 
     def generate_structures(self) -> dict:
         """
@@ -511,7 +519,7 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         Returns:
             dict: A dictionary containing the calculated energies and forces for different strains.
         """
-        self._task_dict, self._qh_dict = get_tasks_for_quasi_harmonic_approximation(
+        task_dict, self._qh_dict = get_tasks_for_quasi_harmonic_approximation(
             structure=self.structure,
             vol_range=self.vol_range,
             num_points=self.num_points,
@@ -520,12 +528,13 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
             number_of_snapshots=self._number_of_snapshots,
             interaction_range=self._interaction_range,
         )
+        self._task_dict = OrderedDict(task_dict)
         return self._task_dict
 
     def analyse_structures(
         self,
         output_dict: dict,
-        output_keys: tuple[str] = ("force_constants", "mesh_dict"),
+        output_keys: tuple[str, ...] = ("force_constants", "mesh_dict"),
     ) -> tuple[dict, dict]:
         """
         Analyze structures using Phonopy.
@@ -555,13 +564,15 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         t_min: float = 1.0,
         t_max: float = 1500.0,
         t_step: float = 50.0,
-        temperatures: np.ndarray = None,
-        cutoff_frequency: float = None,
+        temperatures: Optional[np.ndarray] = None,
+        constant_volume: bool = False,
+        output_keys: tuple[str, ...] = OutputThermodynamic.keys(),
+        *,
+        cutoff_frequency: Optional[float] = None,
         pretend_real: bool = False,
-        band_indices: np.ndarray = None,
+        band_indices: Optional[np.ndarray] = None,
         is_projection: bool = False,
         quantum_mechanical: bool = True,
-        output_keys: tuple[str] = OutputThermodynamic.keys(),
     ) -> dict:
         """
         Returns thermal properties at constant volume in the given temperature range. Can only be called after job
@@ -583,9 +594,15 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         Returns:
             Thermal: thermal properties as returned by Phonopy
         """
+        if constant_volume:
+            raise ValueError("constant_volume is not supported for quasi-harmonic properties.")
         if self._eng_internal_dict is None:
             raise ValueError(
                 "Please first execute analyse_output() before calling get_thermal_properties()."
+            )
+        if self._qh_dict is None:
+            raise ValueError(
+                "Please call generate_structures() before get_thermal_properties()."
             )
         return get_thermal_properties_for_quasi_harmonic_approximation(
             eng_internal_dict=self._eng_internal_dict,

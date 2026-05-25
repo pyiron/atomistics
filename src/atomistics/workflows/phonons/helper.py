@@ -14,7 +14,7 @@ class PhonopyProperties:
     def __init__(
         self,
         phonopy_instance: Phonopy,
-        dos_mesh: np.ndarray,
+        dos_mesh: int,
         shift: Optional[np.ndarray] = None,
         is_time_reversal: bool = True,
         is_mesh_symmetry: bool = True,
@@ -66,10 +66,10 @@ class PhonopyProperties:
         self._with_group_velocities = with_group_velocities
         self._is_gamma_center = is_gamma_center
         self._number_of_snapshots = number_of_snapshots
-        self._total_dos = None
-        self._band_structure_dict = None
-        self._mesh_dict = None
-        self._force_constants = None
+        self._total_dos: Optional[dict[str, Any]] = None
+        self._band_structure_dict: Optional[dict[str, Any]] = None
+        self._mesh_dict: Optional[dict[str, Any]] = None
+        self._force_constants: Optional[np.ndarray] = None
 
     def _calc_band_structure(self):
         """
@@ -111,6 +111,8 @@ class PhonopyProperties:
                 is_gamma_center=self._is_gamma_center,
             )
             self._mesh_dict = self._phonopy.get_mesh_dict()
+        if self._mesh_dict is None:
+            raise ValueError("Phonopy mesh calculation did not produce a mesh dictionary.")
         return self._mesh_dict
 
     def band_structure_dict(self) -> dict:
@@ -122,6 +124,10 @@ class PhonopyProperties:
         """
         if self._band_structure_dict is None:
             self._calc_band_structure()
+        if self._band_structure_dict is None:
+            raise ValueError(
+                "Phonopy band structure calculation did not produce a dictionary."
+            )
         return self._band_structure_dict
 
     def total_dos_dict(self) -> dict:
@@ -140,6 +146,8 @@ class PhonopyProperties:
                 use_tetrahedron_method=self._use_tetrahedron_method,
             )
             self._total_dos = self._phonopy.get_total_dos_dict()
+        if self._total_dos is None:
+            raise ValueError("Phonopy total DOS calculation did not produce a dictionary.")
         return self._total_dos
 
     def dynamical_matrix(self) -> np.ndarray:
@@ -151,7 +159,10 @@ class PhonopyProperties:
         """
         if self._band_structure_dict is None:
             self._calc_band_structure()
-        return self._phonopy.dynamical_matrix.dynamical_matrix
+        dynamical_matrix = self._phonopy.dynamical_matrix
+        if dynamical_matrix is None or dynamical_matrix.dynamical_matrix is None:
+            raise ValueError("Phonopy did not produce a dynamical matrix.")
+        return dynamical_matrix.dynamical_matrix
 
     def force_constants(self) -> np.ndarray:
         """
@@ -162,6 +173,8 @@ class PhonopyProperties:
         """
         if self._force_constants is None:
             self._calc_force_constants()
+        if self._force_constants is None:
+            raise ValueError("Phonopy did not produce force constants.")
         return self._force_constants
 
 
@@ -266,7 +279,7 @@ def get_tasks_for_harmonic_approximation(
     displacement: float = 0.01,
     number_of_snapshots: Optional[int] = None,
     interaction_range: float = 10.0,
-) -> tuple[dict[int, Atoms], Phonopy]:
+) -> tuple[dict[str, dict[int, Atoms]], Phonopy]:
     """
     Generate structures with displacements for phonon calculations.
 
@@ -293,6 +306,9 @@ def get_tasks_for_harmonic_approximation(
         distance=displacement,
         number_of_snapshots=number_of_snapshots,
     )
+    supercells = phonopy_obj.supercells_with_displacements
+    if supercells is None:
+        raise ValueError("Phonopy did not generate displaced supercells.")
     structure_dict = {
         ind: restore_magmoms(
             structure_with_magmoms=structure,
@@ -300,7 +316,7 @@ def get_tasks_for_harmonic_approximation(
             interaction_range=interaction_range,
             cell=unitcell.cell,
         )
-        for ind, sc in enumerate(phonopy_obj.supercells_with_displacements)
+        for ind, sc in enumerate(supercells)
     }
     return {"calc_forces": structure_dict}, phonopy_obj
 
@@ -309,8 +325,8 @@ def analyse_results_for_harmonic_approximation(
     phonopy: Phonopy,
     output_dict: dict,
     dos_mesh: int = 20,
-    number_of_snapshots: int = None,
-    output_keys: tuple[str] = OutputPhonons.keys(),
+    number_of_snapshots: Optional[int] = None,
+    output_keys: tuple[str, ...] = OutputPhonons.keys(),
 ) -> dict:
     """
     Analyze structures and calculate phonon properties.
@@ -356,12 +372,12 @@ def get_thermal_properties_for_harmonic_approximation(
     t_min: float = 1.0,
     t_max: float = 1500.0,
     t_step: float = 50.0,
-    temperatures: np.ndarray = None,
-    cutoff_frequency: float = None,
+    temperatures: Optional[np.ndarray] = None,
+    cutoff_frequency: Optional[float] = None,
     pretend_real: bool = False,
-    band_indices: np.ndarray = None,
+    band_indices: Optional[np.ndarray] = None,
     is_projection: bool = False,
-    output_keys: tuple[str] = OutputThermodynamic.keys(),
+    output_keys: tuple[str, ...] = OutputThermodynamic.keys(),
 ) -> dict:
     """
     Returns thermal properties at constant volume in the given temperature range. Can only be called after job
@@ -430,10 +446,13 @@ def get_hesse_matrix(phonopy: Phonopy) -> np.ndarray:
         / scipy.constants.physical_constants["Bohr radius"][0] ** 2
         * scipy.constants.angstrom**2
     )
-    force_shape = np.shape(phonopy.force_constants)
+    force_constants = phonopy.force_constants
+    if force_constants is None:
+        raise ValueError("Phonopy force constants are not available.")
+    force_shape = np.shape(force_constants)
     force_reshape = force_shape[0] * force_shape[2]
     return (
-        np.transpose(phonopy.force_constants, (0, 2, 1, 3)).reshape(
+        np.transpose(force_constants, (0, 2, 1, 3)).reshape(
             (force_reshape, force_reshape)
         )
         / unit_conversion
@@ -551,8 +570,11 @@ def plot_band_structure(
 
     results = phonopy.get_band_structure_dict()
     # HACK: strictly speaking this breaks phonopy API and could bite us
-    path_connections = phonopy._band_structure.path_connections
-    labels = phonopy._band_structure.labels
+    band_structure = phonopy._band_structure
+    if band_structure is None:
+        raise ValueError("Phonopy band structure is not available.")
+    path_connections = band_structure.path_connections
+    labels = band_structure.labels
     if axis is None:
         _, axis = plt.subplots(1, 1)
 
@@ -562,7 +584,7 @@ def plot_band_structure(
     if "color" not in kwargs:
         kwargs["color"] = "black"
 
-    offset = 0
+    offset = 0.0
     tick_positions = [distances[0][0]]
     for di, fi, ci in zip(distances, frequencies, path_connections):
         axis.axvline(tick_positions[-1], color="black", linestyle="dotted", alpha=0.5)
@@ -604,4 +626,7 @@ def get_dynamical_matrix(phonopy: Phonopy, npoints: int = 101) -> np.ndarray:
         write_yaml=False,
         filename="band.yaml",
     )
-    return np.real_if_close(phonopy.dynamical_matrix.dynamical_matrix)
+    dynamical_matrix = phonopy.dynamical_matrix
+    if dynamical_matrix is None or dynamical_matrix.dynamical_matrix is None:
+        raise ValueError("Phonopy did not produce a dynamical matrix.")
+    return np.real_if_close(dynamical_matrix.dynamical_matrix)

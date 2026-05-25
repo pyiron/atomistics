@@ -221,7 +221,7 @@ def evaluate_with_lammpsfile(
     potential_dataframe: pandas.DataFrame,
     working_directory: str,
     executable_function: Callable[[str], Any],
-    lmp_optimizer_kwargs: dict[str, Any] | None = None,
+    lmp_optimizer_kwargs: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
     if lmp_optimizer_kwargs is None:
         lmp_optimizer_kwargs = {}

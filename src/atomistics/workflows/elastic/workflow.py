@@ -1,5 +1,6 @@
-import numpy as np
 from typing import Any
+
+import numpy as np
 from ase.atoms import Atoms
 
 from atomistics.shared.output import OutputElastic
@@ -34,9 +35,9 @@ class ElasticMatrixWorkflow(Workflow):
         self.eps_range = eps_range
         self.sqrt_eta = sqrt_eta
         self.fit_order = fit_order
-        self._data = {}
-        self._structure_dict = {}
-        self.Lag_strain_list = []
+        self._data: dict[str, Any] = {}
+        self._structure_dict: dict[str, Atoms] = {}
+        self.Lag_strain_list: list[str] = []
         self.epss = np.array([])
         self.zero_strain_job_name = "s_e_0"
 

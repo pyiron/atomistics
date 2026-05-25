@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, Iterable
+from typing import TYPE_CHECKING, Any, Iterable, Optional
 
 import numpy as np
 import pandas
@@ -471,7 +471,7 @@ def calc_molecular_dynamics_thermal_expansion_with_lammpslib(
     dist: str = "gaussian",
     couple_xyz: bool = False,
     lmp: Optional[LammpsASELibrary] = None,
-    output_keys: list[str] = OutputThermalExpansion.keys(),
+    output_keys: Iterable[str] = OutputThermalExpansion.keys(),
     **kwargs,
 ) -> dict:
     init_str = "\n".join(
@@ -516,11 +516,11 @@ def evaluate_with_lammpslib_library_interface(
     tasks: list[TaskName],
     potential_dataframe: DataFrame,
     lmp: LammpsASELibrary,
-    lmp_optimizer_kwargs: dict = None,
+    lmp_optimizer_kwargs: dict | None = None,
 ) -> dict:
     if lmp_optimizer_kwargs is None:
         lmp_optimizer_kwargs = {}
-    results = {}
+    results: dict[str, Any] = {}
     if "optimize_positions_and_volume" in tasks:
         results["structure_with_optimized_positions_and_volume"] = (
             optimize_positions_and_volume_with_lammpslib(

@@ -224,7 +224,7 @@ def evaluate_with_hessian(
     Raises:
         ValueError: If the specified tasks are not supported.
     """
-    results = {}
+    results: dict[str, float | np.ndarray] = {}
     if "calc_energy" in tasks or "calc_forces" in tasks:
         force_constants = check_force_constants(
             structure=structure, force_constants=force_constants

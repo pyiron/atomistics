@@ -1,3 +1,5 @@
+from typing import Optional, Union
+
 import numpy as np
 import scipy.constants
 import scipy.optimize
@@ -15,7 +17,7 @@ class DebyeThermalProperties:
         t_min: float = 1.0,
         t_max: float = 1500.0,
         t_step: float = 50.0,
-        temperatures: np.ndarray = None,
+        temperatures: Optional[np.ndarray] = None,
         constant_volume: bool = False,
         num_steps: int = 50,
     ):
@@ -177,23 +179,23 @@ class DebyeModel:
         self._fit_dict = fit_dict
         self._masses = masses
 
-        self._v_min = None
-        self._v_max = None
-        self._num_steps = None
+        self._v_min: Optional[float] = None
+        self._v_max: Optional[float] = None
+        self._num_steps: Optional[int] = None
 
-        self._volume = None
+        self._volume: Optional[np.ndarray] = None
         self._init_volume()
 
         self.num_steps = num_steps
         self._fit_volume = None
-        self._debye_T = None
+        self._debye_T: Optional[tuple[np.ndarray, np.ndarray]] = None
 
     def _init_volume(self):
         """
         Initialize the minimum and maximum volume values.
         """
         vol = self._fit_dict["volume"]
-        self._v_min, self._v_max = np.min(vol), np.max(vol)
+        self._v_min, self._v_max = float(np.min(vol)), float(np.max(vol))
 
     def _set_volume(self):
         """
@@ -211,6 +213,8 @@ class DebyeModel:
         Returns:
         - int: The number of steps.
         """
+        if self._num_steps is None:
+            raise ValueError("Number of volume interpolation steps is not set.")
         return self._num_steps
 
     @num_steps.setter
@@ -235,6 +239,8 @@ class DebyeModel:
         if self._volume is None:
             self._init_volume()
             self._set_volume()
+        if self._volume is None:
+            raise ValueError("Volume interpolation grid is not set.")
         return self._volume
 
     @volume.setter
@@ -246,8 +252,8 @@ class DebyeModel:
         - volume_lst (np.ndarray): The array of volumes.
         """
         self._volume = volume_lst
-        self._v_min = np.min(volume_lst)
-        self._v_max = np.max(volume_lst)
+        self._v_min = float(np.min(volume_lst))
+        self._v_max = float(np.max(volume_lst))
         self._reset()
 
     def _reset(self):
@@ -256,7 +262,7 @@ class DebyeModel:
         """
         self._debye_T = None
 
-    def interpolate(self, volumes: np.ndarray = None) -> np.ndarray:
+    def interpolate(self, volumes: Optional[np.ndarray] = None) -> np.ndarray:
         """
         Interpolate the energy based on the fit dictionary and volumes.
 
@@ -271,7 +277,7 @@ class DebyeModel:
         return interpolate_energy(fit_dict=self._fit_dict, volumes=volumes)
 
     @property
-    def debye_temperature(self) -> tuple[float]:
+    def debye_temperature(self) -> tuple[np.ndarray, np.ndarray]:
         """
         Get the Debye temperature.
 
@@ -296,18 +302,15 @@ class DebyeModel:
 
         vol = self.volume
 
-        mass = set(self._masses)
-        if len(mass) > 1:
+        mass_set = set(self._masses)
+        if len(mass_set) > 1:
             raise NotImplementedError(
                 "Debye temperature only for single species systems!"
             )
-        mass = list(mass)[0]
+        mass = list(mass_set)[0]
 
         r0 = (3 * V0 * Ang3_to_Bohr3 / (4 * np.pi)) ** (1.0 / 3.0)
         debye_zero = empirical * convert * np.sqrt(r0 * B0 * GPaTokBar / mass)
-
-        if vol is None:
-            print("WARNING: vol: ", vol)
 
         debye_low = debye_zero * (V0 / vol) ** (-gamma_low + 0.5 * (1 + Bp))
         debye_high = debye_zero * (V0 / vol) ** (-gamma_high + 0.5 * (1 + Bp))
@@ -316,7 +319,10 @@ class DebyeModel:
         return self._debye_T
 
     def energy_vib(
-        self, T: np.ndarray, debye_T: tuple[float] = None, low_T_limit: bool = True
+        self,
+        T: np.ndarray,
+        debye_T: Optional[Union[float,np.ndarray]] = None,
+        low_T_limit: bool = True,
     ):
         """
         Calculate the vibrational energy.
@@ -335,13 +341,12 @@ class DebyeModel:
                 debye_T = self.debye_temperature[0]  # low
             else:
                 debye_T = self.debye_temperature[1]  # high
-        if hasattr(debye_T, "__len__"):
-            val = [
+        if isinstance(debye_T, np.ndarray):
+            val: np.ndarray = np.array([
                 9.0 / 8.0 * kB * d_T
                 + T * kB * (3 * np.log(1 - np.exp(-d_T / T)) - debye_function(d_T / T))
                 for d_T in debye_T
-            ]
-            val = np.array(val)
+            ])
         else:
             val = 9.0 / 8.0 * kB * debye_T + T * kB * (
                 3 * np.log(1 - np.exp(-debye_T / T)) - debye_function(debye_T / T)
@@ -373,7 +378,7 @@ def get_thermal_properties_for_energy_volume_curve(
     t_min: float = 1.0,
     t_max: float = 1500.0,
     t_step: float = 50.0,
-    temperatures: np.ndarray = None,
+    temperatures: Optional[np.ndarray] = None,
     constant_volume: bool = False,
     num_steps: int = 50,
     output_keys: tuple = OutputThermodynamic.keys(),

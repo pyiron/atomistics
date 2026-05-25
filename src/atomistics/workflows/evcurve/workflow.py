@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from typing import Any
+from typing import Optional
 
 import numpy as np
 from ase.atoms import Atoms
@@ -25,7 +26,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         fit_order: int = 3,
         vol_range: float = 0.05,
         axes: tuple[str, str, str] = ("x", "y", "z"),
-        strains: list[float] | None = None,
+        strains: Optional[list[float]] = None,
     ):
         """
         Initialize the EnergyVolumeCurveWorkflow object.
@@ -46,8 +47,8 @@ class EnergyVolumeCurveWorkflow(Workflow):
         self.fit_order = fit_order
         self.axes = axes
         self.strains = strains
-        self._task_dict = OrderedDict()
-        self._fit_dict = {}
+        self._task_dict: OrderedDict[str, Any] = OrderedDict()
+        self._fit_dict: dict[str, Any] = {}
 
     @property
     def fit_dict(self) -> dict[str, Any]:
@@ -66,12 +67,14 @@ class EnergyVolumeCurveWorkflow(Workflow):
         Returns:
             dict: The generated structures.
         """
-        self._task_dict = get_tasks_for_energy_volume_curve(
-            structure=self.structure,
-            vol_range=self.vol_range,
-            num_points=self.num_points,
-            strain_lst=self.strains,
-            axes=self.axes,
+        self._task_dict = OrderedDict(
+            get_tasks_for_energy_volume_curve(
+                structure=self.structure,
+                vol_range=self.vol_range,
+                num_points=self.num_points,
+                strain_lst=self.strains,
+                axes=self.axes,
+            )
         )
         return self._task_dict
 
@@ -79,7 +82,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         self,
         output_dict: dict[str, Any],
         output_keys: tuple = OutputEnergyVolumeCurve.keys(),
-    ) -> dict[str, Any]:
+    ) -> Any:
         """
         Analyse the structures and fit the energy-volume curve.
 
@@ -104,9 +107,9 @@ class EnergyVolumeCurveWorkflow(Workflow):
         t_min: float = 1.0,
         t_max: float = 1500.0,
         t_step: float = 50.0,
-        temperatures: np.ndarray | None = None,
+        temperatures: Optional[np.ndarray] = None,
         constant_volume: bool = False,
-        output_keys: tuple[str] = OutputThermodynamic.keys(),
+        output_keys: tuple[str, ...] = OutputThermodynamic.keys(),
     ) -> dict[str, Any]:
         """
         Get the thermal properties of the system.
@@ -124,7 +127,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         """
         return get_thermal_properties_for_energy_volume_curve(
             fit_dict=self.fit_dict,
-            masses=self.structure.get_masses(),
+            masses=self.structure.get_masses().tolist(),
             t_min=t_min,
             t_max=t_max,
             t_step=t_step,

@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import Optional
+from collections.abc import Callable, Iterable
+from typing import Any, Optional
 
 import numpy as np
 from ase import units
@@ -151,7 +152,7 @@ def evaluate_with_ase(
     ase_calculator: ASECalculator,
     ase_optimizer: Optional[type[Optimizer]] = None,
     ase_optimizer_kwargs: Optional[dict] = None,
-    filter_class: type[Filter] = UnitCellFilter,
+    filter_class: Callable[..., Any] = UnitCellFilter,
 ) -> dict:
     """
     Evaluate tasks using ASE calculator.
@@ -171,6 +172,8 @@ def evaluate_with_ase(
         ase_optimizer_kwargs = {}
     results = {}
     if "optimize_positions" in tasks:
+        if ase_optimizer is None:
+            raise ValueError("ase_optimizer must be provided for optimize_positions.")
         results["structure_with_optimized_positions"] = optimize_positions_with_ase(
             structure=structure,
             ase_calculator=ase_calculator,
@@ -178,6 +181,10 @@ def evaluate_with_ase(
             ase_optimizer_kwargs=ase_optimizer_kwargs,
         )
     elif "optimize_positions_and_volume" in tasks:
+        if ase_optimizer is None:
+            raise ValueError(
+                "ase_optimizer must be provided for optimize_positions_and_volume."
+            )
         results["structure_with_optimized_positions_and_volume"] = (
             optimize_positions_and_volume_with_ase(
                 structure=structure,
@@ -188,6 +195,8 @@ def evaluate_with_ase(
             )
         )
     elif "optimize_volume" in tasks:
+        if ase_optimizer is None:
+            raise ValueError("ase_optimizer must be provided for optimize_volume.")
         results["structure_with_optimized_volume"] = optimize_volume_with_ase(
             structure=structure,
             ase_calculator=ase_calculator,
@@ -209,7 +218,7 @@ def evaluate_with_ase(
 def calc_static_with_ase(
     structure: Atoms,
     ase_calculator: ASECalculator,
-    output_keys: tuple[str] = OutputStatic.keys(),
+    output_keys: Iterable[str] = OutputStatic.keys(),
 ) -> dict:
     """
     Calculate static properties using ASE calculator.
@@ -273,7 +282,7 @@ def calc_molecular_dynamics_langevin_with_ase(
 def optimize_positions_with_ase(
     structure: Atoms,
     ase_calculator: ASECalculator,
-    ase_optimizer: type[Optimizer],
+    ase_optimizer: Callable[[Any], Optimizer],
     ase_optimizer_kwargs: dict,
 ) -> Atoms:
     """
@@ -298,9 +307,9 @@ def optimize_positions_with_ase(
 def optimize_positions_and_volume_with_ase(
     structure: Atoms,
     ase_calculator: ASECalculator,
-    ase_optimizer: type[Optimizer],
+    ase_optimizer: Callable[[Any], Optimizer],
     ase_optimizer_kwargs: dict,
-    filter_class: type[Filter] = UnitCellFilter,
+    filter_class: Callable[..., Any] = UnitCellFilter,
 ) -> Atoms:
     """
     Optimize the atomic positions and cell volume of the structure using ASE optimizer.
@@ -325,9 +334,9 @@ def optimize_positions_and_volume_with_ase(
 def optimize_volume_with_ase(
     structure: Atoms,
     ase_calculator: ASECalculator,
-    ase_optimizer: type[Optimizer],
+    ase_optimizer: Callable[[Any], Optimizer],
     ase_optimizer_kwargs: dict,
-    filter_class: type[Filter] = UnitCellFilter,
+    filter_class: Callable[..., Any] = UnitCellFilter,
     hydrostatic_strain: bool = True,
 ) -> Atoms:
     """
@@ -371,7 +380,7 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
     ttime: float = 100 * units.fs,
     pfactor: float = 2e6 * units.GPa * (units.fs**2),
     externalstress: np.ndarray = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
-    output_keys: tuple[str] = OutputThermalExpansion.keys(),
+    output_keys: Iterable[str] = OutputThermalExpansion.keys(),
 ) -> dict:
     """
     Calculate thermal expansion using molecular dynamics simulation with ASE.
@@ -414,8 +423,8 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
         temperature_md_lst.append(result_dict["temperature"][-1])
         volume_md_lst.append(result_dict["volume"][-1])
     return get_thermal_expansion_output(
-        temperatures_lst=temperature_md_lst,
-        volumes_lst=volume_md_lst,
+        temperatures_lst=np.array(temperature_md_lst),
+        volumes_lst=np.array(volume_md_lst),
         output_keys=output_keys,
     )
 
@@ -430,7 +439,7 @@ def calc_molecular_dynamics_npt_with_ase(
     pfactor: float = 2e6 * units.GPa * (units.fs**2),
     temperature: float = 300.0,
     externalstress: np.ndarray = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
-    output_keys: tuple[str] = OutputMolecularDynamics.keys(),
+    output_keys: Iterable[str] = OutputMolecularDynamics.keys(),
 ) -> dict:
     """
     Perform NPT molecular dynamics simulation using ASE.
@@ -481,7 +490,7 @@ def _calc_molecular_dynamics_with_ase(
     temperature: float,
     run: int,
     thermo: int,
-    output_keys: list[str],
+    output_keys: Iterable[str],
 ) -> dict:
     """
     Perform molecular dynamics simulation using ASE.
@@ -500,7 +509,8 @@ def _calc_molecular_dynamics_with_ase(
     """
     structure.calc = ase_calculator
     MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
-    cache = {q: [] for q in output_keys}
+    output_key_lst = list(output_keys)
+    cache: dict[str, list[Any]] = {q: [] for q in output_key_lst}
     for _i in range(int(run / thermo)):
         dyn.run(thermo)
         ase_instance = ASEExecutor(
@@ -508,7 +518,7 @@ def _calc_molecular_dynamics_with_ase(
         )
         calc_dict = OutputMolecularDynamics(
             **{k: getattr(ase_instance, k) for k in OutputMolecularDynamics.keys()}
-        ).get(output_keys=output_keys)
+        ).get(output_keys=output_key_lst)
         for k, v in calc_dict.items():
             cache[k].append(v)
-    return {q: np.array(cache[q]) for q in output_keys}
+    return {q: np.array(cache[q]) for q in output_key_lst}

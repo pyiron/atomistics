@@ -1,4 +1,5 @@
 from __future__ import annotations
+from collections.abc import Iterable
 from typing import Optional
 
 import numpy as np
@@ -52,7 +53,7 @@ def lammps_calc_md_step(
     lmp_instance: LammpsASELibrary,
     run_str: str,
     run: int,
-    output_keys: list[str] = OutputMolecularDynamics.keys(),
+    output_keys: Iterable[str] = OutputMolecularDynamics.keys(),
 ) -> dict:
     run_str_rendered = Template(run_str).render(run=run)
     lmp_instance.interactive_lib_command(run_str_rendered)
@@ -74,7 +75,7 @@ def lammps_calc_md(
     run_str: str,
     run: int,
     thermo: int,
-    output_keys: list[str] = OutputMolecularDynamics.keys(),
+    output_keys: Iterable[str] = OutputMolecularDynamics.keys(),
 ):
     results_lst = [
         lammps_calc_md_step(
@@ -140,8 +141,8 @@ def lammps_thermal_expansion_loop(
         temperature_md_lst.append(lmp_instance.interactive_temperatures_getter())
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return get_thermal_expansion_output(
-        temperatures_lst=temperature_md_lst,
-        volumes_lst=volume_md_lst,
+        temperatures_lst=np.array(temperature_md_lst),
+        volumes_lst=np.array(volume_md_lst),
         output_keys=output_keys,
     )
 
