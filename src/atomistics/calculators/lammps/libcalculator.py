@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Iterable
 
 import numpy as np
 import pandas
@@ -14,7 +14,6 @@ from atomistics.calculators.lammps.commands import (
     LAMMPS_ENSEMBLE_NVT,
     LAMMPS_LANGEVIN,
     LAMMPS_MINIMIZE,
-    LAMMPS_MINIMIZE_VOLUME,
     LAMMPS_NVE,
     LAMMPS_RUN,
     LAMMPS_THERMO,
@@ -28,6 +27,7 @@ from atomistics.calculators.lammps.helpers import (
     lammps_shutdown,
     lammps_thermal_expansion_loop,
 )
+from atomistics.calculators.lammps.shared import get_box_relax_command
 from atomistics.calculators.wrapper import as_task_dict_evaluator
 from atomistics.shared.output import OutputMolecularDynamics, OutputStatic
 from atomistics.shared.thermal_expansion import OutputThermalExpansion
@@ -49,13 +49,14 @@ def optimize_positions_and_volume_with_lammpslib(
     maxiter: int = 100000,
     maxeval: int = 10000000,
     thermo: int = 10,
+    pressure: float | Iterable[float | None] = 0.0,
     vmax: Optional[float] = None,
     lmp=None,
     **kwargs,
 ) -> Atoms:
     template_str = "\n".join(
         [
-            _get_vmax_command(vmax=vmax),
+            get_box_relax_command(pressure=pressure, vmax=vmax),
             LAMMPS_THERMO_STYLE,
             LAMMPS_THERMO,
             LAMMPS_MINIMIZE,
@@ -592,13 +593,3 @@ def evaluate_with_lammpslib(
     )
     lmp.close()
     return results_dict
-
-
-def _get_vmax_command(vmax: Optional[float]) -> str:
-    if vmax is not None:
-        if isinstance(vmax, float):
-            return LAMMPS_MINIMIZE_VOLUME + " vmax {vmax}".format(vmax=vmax)
-        else:
-            raise TypeError("vmax must be a float.")
-    else:
-        return LAMMPS_MINIMIZE_VOLUME
