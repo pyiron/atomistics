@@ -114,15 +114,17 @@ class TestLangevinHelpers(unittest.TestCase):
         self.assertTrue(np.allclose(acceleration, expected))
 
     def test_langevin_delta_v_without_damping(self):
-        self.assertEqual(
-            langevin_delta_v(
-                temperature=300.0,
-                time_step=1.0,
-                masses=np.array([[27.0]]),
-                velocities=np.array([[0.0, 0.0, 0.0]]),
-                damping_timescale=None,
-            ),
-            0.0,
+        self.assertTrue(
+            np.allclose(
+                    langevin_delta_v(
+                    temperature=300.0,
+                    time_step=1.0,
+                    masses=np.array([[27.0]]),
+                    velocities=np.array([[0.0, 0.0, 0.0]]),
+                    damping_timescale=None,
+                ),
+                np.array([0.0]),
+            )
         )
 
     def test_langevin_delta_v_with_damping(self):
