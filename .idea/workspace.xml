@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="17ced938-e660-4bb5-aceb-5e8c43692995" name="Changes" comment="Thermal Expansion: Store changes in cell dimensions" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <excluded-from-favorite>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="main" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </excluded-from-favorite>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="conductivity" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2XcEugqTQplFkT647XRou969hl9" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python tests.Python tests for test_elastic_ase_emt.TestElastic.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_elastic_ase_emt.TestElastic.test_calc_elastic.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_elastic_helper.TestElasticHelper.test_get_C_from_A2.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_elastic_helper.TestElasticHelper.test_get_LAG_Strain_List.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_elastic_helper.TestElasticHelper.test_get_symmetry_family_from_SGN.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_elastic_lammpslib_functional.TestElastic.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_evcurve_ase_emt.TestEvCurve.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_evcurve_lammpslib_function_parallel.TestEvCurve.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_evcurve_lammpslib_functional.TestEvCurve.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_hessian_lammpslib.TestLangevin.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_lammps_calculator.TestPotential.test_get_potential_dataframe.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_phonons_lammpslib_functional.TestPhonons.test_calc_phonons.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_quasiharmonic_lammpslib_functional.TestPhonons.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_quasiharmonic_lammpslib_functional.TestPhonons.test_calc_phonons.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for tests.test_lammpslib_md.TestLammpsMD.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for tests.test_lammpslib_md.TestLammpsMD.test_lammps_md_langevin_all_no_velocity.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for tests.test_lammpslib_md.TestLammpsMD.test_lammps_md_nph_all_no_velocity.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for tests.test_lammpslib_md.TestLammpsMD.test_lammps_md_npt_all_no_velocity.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for tests.test_lammpslib_md.TestLammpsMD.test_lammps_md_nvt_all_no_velocity.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_ase_md_emt.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_elastic_lammps.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_evcurve_eos.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_evcurve_lammps.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_evcurve_lammps_functional.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_evcurve_lammpslib_class.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_evcurve_lammpslib_function_parallel.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_evcurve_lammpslib_functional.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_hessian_lammps.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_lammps_md.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_phonons_lammps.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_phonons_lammps_functional.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_quasiharmonic_ase_emt.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_quasiharmonic_lammps.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_quasiharmonic_lammps_functional.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_quasiharmonic_lammpslib_class.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_shared_output.py.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;thermal__expansion__store__cell&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/janssen/projects/atomistics&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/docs" />
+      <recent name="$PROJECT_DIR$/docs/pictures" />
+      <recent name="$PROJECT_DIR$/tests" />
+      <recent name="$PROJECT_DIR$/test_simulation_codes" />
+      <recent name="$PROJECT_DIR$/.github/workflows" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python tests.Python tests in /Users/janssen/projects/atomistics/tests/test_phonons_lammps.py">
+    <configuration name="Python tests in /Users/janssen/projects/atomistics/tests/test_phonons_lammps_functional.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="atomistics" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_phonons_lammps_functional.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests in /Users/janssen/projects/atomistics/tests/test_phonons_lammps.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="atomistics" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_phonons_lammps.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests in /Users/janssen/projects/atomistics/tests/test_quasiharmonic_lammps_functional.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="atomistics" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_quasiharmonic_lammps_functional.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests in /Users/janssen/projects/atomistics/tests/test_quasiharmonic_lammps.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="atomistics" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_quasiharmonic_lammps.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests in test_quasiharmonic_ase_emt.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="atomistics" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_quasiharmonic_ase_emt.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python tests.Python tests in test_quasiharmonic_ase_emt.py" />
+        <item itemvalue="Python tests.Python tests in /Users/janssen/projects/atomistics/tests/test_quasiharmonic_lammps_functional.py" />
+        <item itemvalue="Python tests.Python tests in /Users/janssen/projects/atomistics/tests/test_quasiharmonic_lammps.py" />
+        <item itemvalue="Python tests.Python tests in /Users/janssen/projects/atomistics/tests/test_phonons_lammps_functional.py" />
+        <item itemvalue="Python tests.Python tests in /Users/janssen/projects/atomistics/tests/test_phonons_lammps.py" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-4e2b1448bda8-9a97661f3031-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.27397.106" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="17ced938-e660-4bb5-aceb-5e8c43692995" name="Changes" comment="" />
+      <created>1698920192595</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1698920192595</updated>
+    </task>
+    <task id="LOCAL-00188" summary="introduce evcurve helper module">
+      <option name="closed" value="true" />
+      <created>1713919268925</created>
+      <option name="number" value="00188" />
+      <option name="presentableId" value="LOCAL-00188" />
+      <option name="project" value="LOCAL" />
+      <updated>1713919268925</updated>
+    </task>
+    <task id="LOCAL-00189" summary="fix quasi harmonic">
+      <option name="closed" value="true" />
+      <created>1713919554649</created>
+      <option name="number" value="00189" />
+      <option name="presentableId" value="LOCAL-00189" />
+      <option name="project" value="LOCAL" />
+      <updated>1713919554649</updated>
+    </task>
+    <task id="LOCAL-00190" summary="split tests">
+      <option name="closed" value="true" />
+      <created>1713920206715</created>
+      <option name="number" value="00190" />
+      <option name="presentableId" value="LOCAL-00190" />
+      <option name="project" value="LOCAL" />
+      <updated>1713920206715</updated>
+    </task>
+    <task id="LOCAL-00191" summary="Test use assertAlmostEqual()">
+      <option name="closed" value="true" />
+      <created>1713922690986</created>
+      <option name="number" value="00191" />
+      <option name="presentableId" value="LOCAL-00191" />
+      <option name="project" value="LOCAL" />
+      <updated>1713922690986</updated>
+    </task>
+    <task id="LOCAL-00192" summary="Test use assertAlmostEqual()">
+      <option name="closed" value="true" />
+      <created>1713922833306</created>
+      <option name="number" value="00192" />
+      <option name="presentableId" value="LOCAL-00192" />
+      <option name="project" value="LOCAL" />
+      <updated>1713922833306</updated>
+    </task>
+    <task id="LOCAL-00193" summary="fix equilibrium volume">
+      <option name="closed" value="true" />
+      <created>1713923006459</created>
+      <option name="number" value="00193" />
+      <option name="presentableId" value="LOCAL-00193" />
+      <option name="project" value="LOCAL" />
+      <updated>1713923006459</updated>
+    </task>
+    <task id="LOCAL-00194" summary="fix evcurve">
+      <option name="closed" value="true" />
+      <created>1713923127281</created>
+      <option name="number" value="00194" />
+      <option name="presentableId" value="LOCAL-00194" />
+      <option name="project" value="LOCAL" />
+      <updated>1713923127281</updated>
+    </task>
+    <task id="LOCAL-00195" summary="fix evcurve">
+      <option name="closed" value="true" />
+      <created>1713923358946</created>
+      <option name="number" value="00195" />
+      <option name="presentableId" value="LOCAL-00195" />
+      <option name="project" value="LOCAL" />
+      <updated>1713923358946</updated>
+    </task>
+    <task id="LOCAL-00196" summary="Fix defaults for the get_strains() function">
+      <option name="closed" value="true" />
+      <created>1713928198172</created>
+      <option name="number" value="00196" />
+      <option name="presentableId" value="LOCAL-00196" />
+      <option name="project" value="LOCAL" />
+      <updated>1713928198172</updated>
+    </task>
+    <task id="LOCAL-00197" summary="Add helper functions for phonopy">
+      <option name="closed" value="true" />
+      <created>1713988778256</created>
+      <option name="number" value="00197" />
+      <option name="presentableId" value="LOCAL-00197" />
+      <option name="project" value="LOCAL" />
+      <updated>1713988778256</updated>
+    </task>
+    <task id="LOCAL-00198" summary="Add helper functions for quasi harmonic calculation">
+      <option name="closed" value="true" />
+      <created>1713992442344</created>
+      <option name="number" value="00198" />
+      <option name="presentableId" value="LOCAL-00198" />
+      <option name="project" value="LOCAL" />
+      <updated>1713992442344</updated>
+    </task>
+    <task id="LOCAL-00199" summary="Cleanup input parameters">
+      <option name="closed" value="true" />
+      <created>1713992893289</created>
+      <option name="number" value="00199" />
+      <option name="presentableId" value="LOCAL-00199" />
+      <option name="project" value="LOCAL" />
+      <updated>1713992893289</updated>
+    </task>
+    <task id="LOCAL-00200" summary="black formatting">
+      <option name="closed" value="true" />
+      <created>1713992920101</created>
+      <option name="number" value="00200" />
+      <option name="presentableId" value="LOCAL-00200" />
+      <option name="project" value="LOCAL" />
+      <updated>1713992920101</updated>
+    </task>
+    <task id="LOCAL-00201" summary="Fix bug in thermal expansion">
+      <option name="closed" value="true" />
+      <created>1714043720933</created>
+      <option name="number" value="00201" />
+      <option name="presentableId" value="LOCAL-00201" />
+      <option name="project" value="LOCAL" />
+      <updated>1714043720933</updated>
+    </task>
+    <task id="LOCAL-00202" summary="fixes">
+      <option name="closed" value="true" />
+      <created>1714052887015</created>
+      <option name="number" value="00202" />
+      <option name="presentableId" value="LOCAL-00202" />
+      <option name="project" value="LOCAL" />
+      <updated>1714052887015</updated>
+    </task>
+    <task id="LOCAL-00203" summary="Use Jupyterbook rather than Sphinx">
+      <option name="closed" value="true" />
+      <created>1714581332425</created>
+      <option name="number" value="00203" />
+      <option name="presentableId" value="LOCAL-00203" />
+      <option name="project" value="LOCAL" />
+      <updated>1714581332425</updated>
+    </task>
+    <task id="LOCAL-00204" summary="Use jupyter notebooks rather than markdown">
+      <option name="closed" value="true" />
+      <created>1714582892806</created>
+      <option name="number" value="00204" />
+      <option name="presentableId" value="LOCAL-00204" />
+      <option name="project" value="LOCAL" />
+      <updated>1714582892806</updated>
+    </task>
+    <task id="LOCAL-00205" summary="Add autodoc">
+      <option name="closed" value="true" />
+      <created>1714842789460</created>
+      <option name="number" value="00205" />
+      <option name="presentableId" value="LOCAL-00205" />
+      <option name="project" value="LOCAL" />
+      <updated>1714842789460</updated>
+    </task>
+    <task id="LOCAL-00206" summary="Following Sam's suggestion - renamed get_experimental_elastic_property_wikipedia() to get_elastic_properties_from_wikipedia()">
+      <option name="closed" value="true" />
+      <created>1722321144591</created>
+      <option name="number" value="00206" />
+      <option name="presentableId" value="LOCAL-00206" />
+      <option name="project" value="LOCAL" />
+      <updated>1722321144591</updated>
+    </task>
+    <task id="LOCAL-00207" summary="Support both: &#10;&#10;from atomistics.referencedata import get_elastic_properties_from_wikipedia &#10;&#10;as well as&#10;&#10;from atomistics.referencedata.wikipedia import get_elastic_properties">
+      <option name="closed" value="true" />
+      <created>1722321603171</created>
+      <option name="number" value="00207" />
+      <option name="presentableId" value="LOCAL-00207" />
+      <option name="project" value="LOCAL" />
+      <updated>1722321603171</updated>
+    </task>
+    <task id="LOCAL-00208" summary="Fix wikipedia docstring">
+      <option name="closed" value="true" />
+      <created>1722322242789</created>
+      <option name="number" value="00208" />
+      <option name="presentableId" value="LOCAL-00208" />
+      <option name="project" value="LOCAL" />
+      <updated>1722322242789</updated>
+    </task>
+    <task id="LOCAL-00209" summary="More functional approach">
+      <option name="closed" value="true" />
+      <created>1753270567857</created>
+      <option name="number" value="00209" />
+      <option name="presentableId" value="LOCAL-00209" />
+      <option name="project" value="LOCAL" />
+      <updated>1753270567857</updated>
+    </task>
+    <task id="LOCAL-00210" summary="Rename to get_tasks()">
+      <option name="closed" value="true" />
+      <created>1753270773276</created>
+      <option name="number" value="00210" />
+      <option name="presentableId" value="LOCAL-00210" />
+      <option name="project" value="LOCAL" />
+      <updated>1753270773276</updated>
+    </task>
+    <task id="LOCAL-00211" summary="rename tests">
+      <option name="closed" value="true" />
+      <created>1753271372538</created>
+      <option name="number" value="00211" />
+      <option name="presentableId" value="LOCAL-00211" />
+      <option name="project" value="LOCAL" />
+      <updated>1753271372538</updated>
+    </task>
+    <task id="LOCAL-00212" summary="rename thermodynamics functions">
+      <option name="closed" value="true" />
+      <created>1753271780580</created>
+      <option name="number" value="00212" />
+      <option name="presentableId" value="LOCAL-00212" />
+      <option name="project" value="LOCAL" />
+      <updated>1753271780580</updated>
+    </task>
+    <task id="LOCAL-00213" summary="use functions in init">
+      <option name="closed" value="true" />
+      <created>1753272479895</created>
+      <option name="number" value="00213" />
+      <option name="presentableId" value="LOCAL-00213" />
+      <option name="project" value="LOCAL" />
+      <updated>1753272479895</updated>
+    </task>
+    <task id="LOCAL-00214" summary="Convert tests to use functional form">
+      <option name="closed" value="true" />
+      <created>1753273270296</created>
+      <option name="number" value="00214" />
+      <option name="presentableId" value="LOCAL-00214" />
+      <option name="project" value="LOCAL" />
+      <updated>1753273270296</updated>
+    </task>
+    <task id="LOCAL-00215" summary="reuse the same parameters">
+      <option name="closed" value="true" />
+      <created>1753274588562</created>
+      <option name="number" value="00215" />
+      <option name="presentableId" value="LOCAL-00215" />
+      <option name="project" value="LOCAL" />
+      <updated>1753274588562</updated>
+    </task>
+    <task id="LOCAL-00216" summary="same structure">
+      <option name="closed" value="true" />
+      <created>1753275911323</created>
+      <option name="number" value="00216" />
+      <option name="presentableId" value="LOCAL-00216" />
+      <option name="project" value="LOCAL" />
+      <updated>1753275911323</updated>
+    </task>
+    <task id="LOCAL-00217" summary="Transition tests to use functional approach">
+      <option name="closed" value="true" />
+      <created>1753286262945</created>
+      <option name="number" value="00217" />
+      <option name="presentableId" value="LOCAL-00217" />
+      <option name="project" value="LOCAL" />
+      <updated>1753286262945</updated>
+    </task>
+    <task id="LOCAL-00218" summary="Switch more tests">
+      <option name="closed" value="true" />
+      <created>1753287239925</created>
+      <option name="number" value="00218" />
+      <option name="presentableId" value="LOCAL-00218" />
+      <option name="project" value="LOCAL" />
+      <updated>1753287239925</updated>
+    </task>
+    <task id="LOCAL-00219" summary="more translations">
+      <option name="closed" value="true" />
+      <created>1753290427764</created>
+      <option name="number" value="00219" />
+      <option name="presentableId" value="LOCAL-00219" />
+      <option name="project" value="LOCAL" />
+      <updated>1753290427764</updated>
+    </task>
+    <task id="LOCAL-00220" summary="fix init">
+      <option name="closed" value="true" />
+      <created>1753346788100</created>
+      <option name="number" value="00220" />
+      <option name="presentableId" value="LOCAL-00220" />
+      <option name="project" value="LOCAL" />
+      <updated>1753346788100</updated>
+    </task>
+    <task id="LOCAL-00221" summary="Fix inconsistent phonopy API">
+      <option name="closed" value="true" />
+      <created>1753347822585</created>
+      <option name="number" value="00221" />
+      <option name="presentableId" value="LOCAL-00221" />
+      <option name="project" value="LOCAL" />
+      <updated>1753347822585</updated>
+    </task>
+    <task id="LOCAL-00222" summary="fix notebooks">
+      <option name="closed" value="true" />
+      <created>1753348653699</created>
+      <option name="number" value="00222" />
+      <option name="presentableId" value="LOCAL-00222" />
+      <option name="project" value="LOCAL" />
+      <updated>1753348653699</updated>
+    </task>
+    <task id="LOCAL-00223" summary="update docstrings">
+      <option name="closed" value="true" />
+      <created>1753348827377</created>
+      <option name="number" value="00223" />
+      <option name="presentableId" value="LOCAL-00223" />
+      <option name="project" value="LOCAL" />
+      <updated>1753348827377</updated>
+    </task>
+    <task id="LOCAL-00224" summary="fixes">
+      <option name="closed" value="true" />
+      <created>1753349313700</created>
+      <option name="number" value="00224" />
+      <option name="presentableId" value="LOCAL-00224" />
+      <option name="project" value="LOCAL" />
+      <updated>1753349313700</updated>
+    </task>
+    <task id="LOCAL-00225" summary="Taskname is not avaialble">
+      <option name="closed" value="true" />
+      <created>1753349615678</created>
+      <option name="number" value="00225" />
+      <option name="presentableId" value="LOCAL-00225" />
+      <option name="project" value="LOCAL" />
+      <updated>1753349615678</updated>
+    </task>
+    <task id="LOCAL-00226" summary="Update readme example to use functional notation">
+      <option name="closed" value="true" />
+      <created>1753349882855</created>
+      <option name="number" value="00226" />
+      <option name="presentableId" value="LOCAL-00226" />
+      <option name="project" value="LOCAL" />
+      <updated>1753349882855</updated>
+    </task>
+    <task id="LOCAL-00227" summary="fix notebook">
+      <option name="closed" value="true" />
+      <created>1753350281425</created>
+      <option name="number" value="00227" />
+      <option name="presentableId" value="LOCAL-00227" />
+      <option name="project" value="LOCAL" />
+      <updated>1753350281425</updated>
+    </task>
+    <task id="LOCAL-00228" summary="fix docstring">
+      <option name="closed" value="true" />
+      <created>1753350860719</created>
+      <option name="number" value="00228" />
+      <option name="presentableId" value="LOCAL-00228" />
+      <option name="project" value="LOCAL" />
+      <updated>1753350860719</updated>
+    </task>
+    <task id="LOCAL-00229" summary="fix plot band structure">
+      <option name="closed" value="true" />
+      <created>1753351556341</created>
+      <option name="number" value="00229" />
+      <option name="presentableId" value="LOCAL-00229" />
+      <option name="project" value="LOCAL" />
+      <updated>1753351556341</updated>
+    </task>
+    <task id="LOCAL-00230" summary="calculate phonons with grace as part of the tests">
+      <option name="closed" value="true" />
+      <created>1754469780784</created>
+      <option name="number" value="00230" />
+      <option name="presentableId" value="LOCAL-00230" />
+      <option name="project" value="LOCAL" />
+      <updated>1754469780785</updated>
+    </task>
+    <task id="LOCAL-00231" summary="add CI">
+      <option name="closed" value="true" />
+      <created>1754469874219</created>
+      <option name="number" value="00231" />
+      <option name="presentableId" value="LOCAL-00231" />
+      <option name="project" value="LOCAL" />
+      <updated>1754469874219</updated>
+    </task>
+    <task id="LOCAL-00232" summary="LAMMPS: Maintain velocity">
+      <option name="closed" value="true" />
+      <created>1754482268661</created>
+      <option name="number" value="00232" />
+      <option name="presentableId" value="LOCAL-00232" />
+      <option name="project" value="LOCAL" />
+      <updated>1754482268661</updated>
+    </task>
+    <task id="LOCAL-00233" summary="Introduce disable_initial_velocity: bool = False parameter">
+      <option name="closed" value="true" />
+      <created>1754483011093</created>
+      <option name="number" value="00233" />
+      <option name="presentableId" value="LOCAL-00233" />
+      <option name="project" value="LOCAL" />
+      <updated>1754483011093</updated>
+    </task>
+    <task id="LOCAL-00234" summary="remove optional">
+      <option name="closed" value="true" />
+      <created>1754483052571</created>
+      <option name="number" value="00234" />
+      <option name="presentableId" value="LOCAL-00234" />
+      <option name="project" value="LOCAL" />
+      <updated>1754483052571</updated>
+    </task>
+    <task id="LOCAL-00235" summary="some more tests">
+      <option name="closed" value="true" />
+      <created>1754484518075</created>
+      <option name="number" value="00235" />
+      <option name="presentableId" value="LOCAL-00235" />
+      <option name="project" value="LOCAL" />
+      <updated>1754484518075</updated>
+    </task>
+    <task id="LOCAL-00236" summary="Thermal Expansion: Store changes in cell dimensions">
+      <option name="closed" value="true" />
+      <created>1762247905009</created>
+      <option name="number" value="00236" />
+      <option name="presentableId" value="LOCAL-00236" />
+      <option name="project" value="LOCAL" />
+      <updated>1762247905009</updated>
+    </task>
+    <option name="localTasksCounter" value="237" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="rename thermodynamics functions" />
+    <MESSAGE value="use functions in init" />
+    <MESSAGE value="Convert tests to use functional form" />
+    <MESSAGE value="reuse the same parameters" />
+    <MESSAGE value="same structure" />
+    <MESSAGE value="Transition tests to use functional approach" />
+    <MESSAGE value="Switch more tests" />
+    <MESSAGE value="more translations" />
+    <MESSAGE value="fix init" />
+    <MESSAGE value="Fix inconsistent phonopy API" />
+    <MESSAGE value="fix notebooks" />
+    <MESSAGE value="update docstrings" />
+    <MESSAGE value="fixes" />
+    <MESSAGE value="Taskname is not avaialble" />
+    <MESSAGE value="Update readme example to use functional notation" />
+    <MESSAGE value="fix notebook" />
+    <MESSAGE value="fix docstring" />
+    <MESSAGE value="fix plot band structure" />
+    <MESSAGE value="calculate phonons with grace as part of the tests" />
+    <MESSAGE value="add CI" />
+    <MESSAGE value="LAMMPS: Maintain velocity" />
+    <MESSAGE value="Introduce disable_initial_velocity: bool = False parameter" />
+    <MESSAGE value="remove optional" />
+    <MESSAGE value="some more tests" />
+    <MESSAGE value="Thermal Expansion: Store changes in cell dimensions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Thermal Expansion: Store changes in cell dimensions" />
+  </component>
+</project>

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Optional
 
 import numpy as np
 import pandas
@@ -15,10 +16,10 @@ from atomistics.shared.tqdm_iterator import get_tqdm_iterator
 def lammps_run(
     structure: Atoms,
     potential_dataframe: pandas.DataFrame,
-    input_template=None,
-    lmp=None,
+    input_template: Optional[str] = None,
+    lmp: Optional[LammpsASELibrary] = None,
     **kwargs,
-):
+) -> LammpsASELibrary:
     potential_dataframe = validate_potential_dataframe(
         potential_dataframe=potential_dataframe
     )
@@ -48,11 +49,11 @@ def lammps_run(
 
 
 def lammps_calc_md_step(
-    lmp_instance,
+    lmp_instance: LammpsASELibrary,
     run_str: str,
     run: int,
-    output_keys=OutputMolecularDynamics.keys(),
-):
+    output_keys: list[str] = OutputMolecularDynamics.keys(),
+) -> dict:
     run_str_rendered = Template(run_str).render(run=run)
     lmp_instance.interactive_lib_command(run_str_rendered)
     return OutputMolecularDynamics(
@@ -69,11 +70,11 @@ def lammps_calc_md_step(
 
 
 def lammps_calc_md(
-    lmp_instance,
+    lmp_instance: LammpsASELibrary,
     run_str: str,
     run: int,
     thermo: int,
-    output_keys=OutputMolecularDynamics.keys(),
+    output_keys: list[str] = OutputMolecularDynamics.keys(),
 ):
     results_lst = [
         lammps_calc_md_step(
@@ -106,7 +107,7 @@ def lammps_thermal_expansion_loop(
     lmp=None,
     output_keys=OutputThermalExpansion.keys(),
     **kwargs,
-):
+) -> dict:
     lmp_instance = lammps_run(
         structure=structure,
         potential_dataframe=potential_dataframe,
@@ -145,7 +146,7 @@ def lammps_thermal_expansion_loop(
     )
 
 
-def lammps_shutdown(lmp_instance, close_instance: bool = True):
+def lammps_shutdown(lmp_instance: LammpsASELibrary, close_instance: bool = True) -> None:
     lmp_instance.interactive_lib_command("clear")
     if close_instance:
         lmp_instance.close()
