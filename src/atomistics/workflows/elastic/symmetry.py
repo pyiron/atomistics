@@ -18,7 +18,7 @@ def ase_to_spglib(structure: Atoms) -> tuple:
     )
 
 
-def find_symmetry_group_number(struct: tuple) -> int:
+def find_symmetry_group_number(struct: Atoms) -> int:
     """
     Find the symmetry group number (SGN) of a given structure.
 
@@ -29,6 +29,8 @@ def find_symmetry_group_number(struct: tuple) -> int:
     int: The symmetry group number (SGN) of the structure.
     """
     dataset = spglib.get_symmetry_dataset(cell=ase_to_spglib(struct))
+    if dataset is None:
+        raise ValueError("Unable to determine symmetry dataset.")
     SGN = dataset["number"]
     return SGN
 

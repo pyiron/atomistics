@@ -4,19 +4,17 @@ that evaluate a task dictionary.
 """
 
 from __future__ import annotations
+from typing import TYPE_CHECKING, Any, Callable, cast
 
-from typing import TYPE_CHECKING, Any, Callable
+from ase import Atoms
 
-from atomistics.calculators.interface import TaskEnum, TaskOutputEnum
+from atomistics.calculators.interface import TaskEnum, TaskOutputEnum, TaskName
 
 if TYPE_CHECKING:
-    from ase import Atoms
-
     from atomistics.calculators.interface import (
         ResultsDict,
         SimpleEvaluator,
         TaskDict,
-        TaskName,
     )
 
 
@@ -32,7 +30,7 @@ def _convert_task_dict(
     Can be removed if/when the rest of the codebase passing in these task
     dictionaries gets updated to the new format.
     """
-    task_dict = {}
+    task_dict: TaskDict = {}
     for method_name, subdict in old_task_dict.items():
         if not isinstance(subdict, dict):
             subdict = {"label_hidden": subdict}
@@ -68,9 +66,11 @@ def as_task_dict_evaluator(
         *calculate_args: Any,
         **calculate_kwargs: Any,
     ) -> ResultsDict:
-        task_dict = _convert_task_dict(task_dict)
-        results_dict = {}
-        for label, (structure, task_lst) in task_dict.items():
+        converted_task_dict = _convert_task_dict(
+            cast(dict[TaskName, dict[str, Atoms] | Atoms], task_dict)
+        )
+        results_dict: ResultsDict = {}
+        for label, (structure, task_lst) in converted_task_dict.items():
             tasks = [TaskEnum(t) for t in task_lst]
             output = calculate(structure, tasks, *calculate_args, **calculate_kwargs)
             for task_name in tasks:

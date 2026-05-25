@@ -1,5 +1,7 @@
 import os
 import subprocess
+from collections.abc import Iterable
+from typing import Optional
 
 import numpy as np
 from ase.atoms import Atoms
@@ -81,7 +83,7 @@ def call_qe_via_ase_command(calculation_name: str, working_directory: str) -> No
     )
 
 
-def set_pseudo_potentials(pseudopotentials: dict, structure: Atoms) -> dict:
+def set_pseudo_potentials(pseudopotentials: dict | None, structure: Atoms) -> dict:
     """
     Set the pseudopotentials for the given structure.
 
@@ -183,7 +185,7 @@ def set_pseudo_potentials(pseudopotentials: dict, structure: Atoms) -> dict:
             "Zr": "Zr_pbe_v1.uspp.F.UPF",
         }
         return {
-            pseudopotentials_base[el]
+            el: pseudopotentials_base[el]
             for el in list(set(structure.get_chemical_symbols()))
         }
 
@@ -205,8 +207,8 @@ def optimize_positions_and_volume_with_qe(
     structure: Atoms,
     calculation_name: str = "espresso",
     working_directory: str = ".",
-    kpts: tuple[int] = (3, 3, 3),
-    pseudopotentials: dict = None,
+    kpts: tuple[int, int, int] = (3, 3, 3),
+    pseudopotentials: dict | None = None,
     tstress: bool = True,
     tprnfor: bool = True,
     **kwargs,
@@ -258,13 +260,13 @@ def calc_static_with_qe(
     structure: Atoms,
     calculation_name: str = "espresso",
     working_directory: str = ".",
-    kpts: tuple[int] = (3, 3, 3),
-    pseudopotentials: dict = None,
+    kpts: tuple[int, int, int] = (3, 3, 3),
+    pseudopotentials: dict | None = None,
     tstress: bool = True,
     tprnfor: bool = True,
-    output_keys: tuple[str] = OutputStatic.keys(),
+    output_keys: Iterable[str] = OutputStatic.keys(),
     **kwargs,
-) -> OutputStatic:
+) -> dict:
     """
     Calculate static properties of a structure using Quantum Espresso.
 
@@ -317,8 +319,8 @@ def evaluate_with_qe(
     tasks: dict,
     calculation_name: str = "espresso",
     working_directory: str = ".",
-    kpts: tuple[int] = (3, 3, 3),
-    pseudopotentials: dict = None,
+    kpts: tuple[int, int, int] = (3, 3, 3),
+    pseudopotentials: dict | None = None,
     tstress: bool = True,
     tprnfor: bool = True,
     **kwargs,

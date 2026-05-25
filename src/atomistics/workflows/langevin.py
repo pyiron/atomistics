@@ -1,3 +1,5 @@
+from typing import Any, Optional
+
 import numpy as np
 from ase.atoms import Atoms
 from scipy.constants import physical_constants
@@ -14,7 +16,7 @@ def langevin_delta_v(
     time_step: float,
     masses: np.ndarray,
     velocities: np.ndarray,
-    damping_timescale: float = None,
+    damping_timescale: Optional[float] = None,
 ) -> np.ndarray:
     """
     Velocity changes due to the Langevin thermostat.
@@ -41,7 +43,7 @@ def langevin_delta_v(
         noise -= np.mean(noise, axis=0)
         return drag + noise
     else:
-        return 0.0
+        return np.zeros_like(velocities)
 
 
 def convert_to_acceleration(forces: np.ndarray, masses: np.ndarray) -> np.ndarray:
@@ -150,7 +152,7 @@ class LangevinWorkflow(Workflow):
             overheat_fraction=self.overheat_fraction,
         )
         self.gamma = self.masses / self.damping_timescale
-        self.forces = None
+        self.forces: Optional[np.ndarray] = None
 
     def generate_structures(self) -> dict[str, dict[int, Atoms]]:
         """
@@ -185,7 +187,7 @@ class LangevinWorkflow(Workflow):
             structure = self.structure
         return {"calc_forces": {0: structure}, "calc_energy": {0: structure}}
 
-    def analyse_structures(self, output_dict: dict[str, dict[int, Atoms]]):
+    def analyse_structures(self, output_dict: dict[str, dict[int, Any]]):
         """
         Analyzes the structures generated in the Langevin dynamics simulation.
 
@@ -195,10 +197,11 @@ class LangevinWorkflow(Workflow):
         Returns:
             tuple: A tuple containing the potential energy and kinetic energy.
         """
-        self.forces, eng_pot = output_dict["forces"][0], output_dict["energy"][0]
+        forces, eng_pot = output_dict["forces"][0], output_dict["energy"][0]
+        self.forces = forces
 
         # second half step
-        acceleration = convert_to_acceleration(forces=self.forces, masses=self.masses)
+        acceleration = convert_to_acceleration(forces=forces, masses=self.masses)
         vel_step = self.velocities + 0.5 * acceleration * self.time_step
 
         # damping

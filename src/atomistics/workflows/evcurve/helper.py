@@ -25,13 +25,13 @@ def _strain_axes(
         ValueError: If the number of axes is zero.
 
     """
-    axes = np.array([a in axes for a in ("x", "y", "z")])
-    num_axes = sum(axes)
+    active_axes = np.array([a in axes for a in ("x", "y", "z")])
+    num_axes = sum(active_axes)
     if num_axes == 0:
         raise ValueError("At least one axis must be selected.")
     # Formula calculates the strain along each axis to achieve the overall volumetric strain.
     # Beware that: (1+e)**x - 1 != e**x
-    strains = axes * ((1 + volume_strain) ** (1.0 / num_axes) - 1)
+    strains = active_axes * ((1 + volume_strain) ** (1.0 / num_axes) - 1)
     return apply_strain(structure=structure, epsilon=strains, return_box=True)
 
 
@@ -88,9 +88,10 @@ def apply_strain(
     structure_copy.set_cell(cell, scale_atoms=True)
     if return_box:
         return structure_copy
+    return structure_copy
 
 
-def get_energy_lst(output_dict: dict, structure_dict: dict) -> list[float]:
+def get_energy_lst(output_dict: dict, structure_dict: dict) -> np.ndarray:
     """
     Get a list of energy values from the output dictionary for each structure in the structure dictionary.
 
@@ -102,10 +103,10 @@ def get_energy_lst(output_dict: dict, structure_dict: dict) -> list[float]:
         List[float]: A list of energy values.
 
     """
-    return [output_dict["energy"][k] for k in structure_dict]
+    return np.array([output_dict["energy"][k] for k in structure_dict])
 
 
-def get_volume_lst(structure_dict: dict) -> list[float]:
+def get_volume_lst(structure_dict: dict) -> np.ndarray:
     """
     Get a list of volume values from the structure dictionary.
 
@@ -116,7 +117,7 @@ def get_volume_lst(structure_dict: dict) -> list[float]:
         List[float]: A list of volume values.
 
     """
-    return [structure.get_volume() for structure in structure_dict.values()]
+    return np.array([structure.get_volume() for structure in structure_dict.values()])
 
 
 def fit_ev_curve_internal(
@@ -225,13 +226,13 @@ def get_tasks_for_energy_volume_curve(
         ValueError: If neither strain_lst nor vol_range and num_points are defined.
 
     """
-    strain_lst = get_strains(
+    strain_arr = get_strains(
         vol_range=vol_range, num_points=num_points, strain_lst=strain_lst
     )
-    key_lst = [1 + np.round(strain, 7) for strain in strain_lst]
+    key_lst = [1 + np.round(strain, 7) for strain in strain_arr]
     value_lst = [
         _strain_axes(structure=structure, axes=axes, volume_strain=strain)
-        for strain in strain_lst
+        for strain in strain_arr
     ]
     return {"calc_energy": dict(zip(key_lst, value_lst))}
 
