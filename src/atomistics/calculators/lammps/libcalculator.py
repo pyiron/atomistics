@@ -393,7 +393,7 @@ def calc_molecular_dynamics_langevin_with_lammpslib(
     lmp=None,
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
-):
+) -> dict:
     if velocity_rescale_factor is not None:
         init_str = "\n".join(
             [
@@ -470,8 +470,8 @@ def calc_molecular_dynamics_thermal_expansion_with_lammpslib(
     seed: int = 4928459,
     dist: str = "gaussian",
     couple_xyz: bool = False,
-    lmp=None,
-    output_keys=OutputThermalExpansion.keys(),
+    lmp: Optional[LammpsASELibrary] = None,
+    output_keys: list[str] = OutputThermalExpansion.keys(),
     **kwargs,
 ) -> dict:
     init_str = "\n".join(
@@ -565,14 +565,14 @@ def evaluate_with_lammpslib_library_interface(
 def evaluate_with_lammpslib(
     task_dict: dict[str, dict[str, Atoms]],
     potential_dataframe: DataFrame,
-    working_directory=None,
+    working_directory: Optional[str] = None,
     cores: int = 1,
-    comm=None,
-    logger=None,
-    log_file=None,
-    library=None,
+    comm: Optional[object] = None,
+    logger: Optional[object] = None,
+    log_file: Optional[str] = None,
+    library: Optional[object] = None,
     disable_log_file: bool = True,
-    lmp_optimizer_kwargs=None,
+    lmp_optimizer_kwargs: Optional[dict] = None,
 ) -> dict:
     if lmp_optimizer_kwargs is None:
         lmp_optimizer_kwargs = {}
