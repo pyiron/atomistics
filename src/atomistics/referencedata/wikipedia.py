@@ -1,7 +1,7 @@
 from io import StringIO
 
 import pandas
-import requests  # type: ignore[import-untyped]
+import requests
 
 
 def get_elastic_properties(chemical_symbol: str) -> dict:

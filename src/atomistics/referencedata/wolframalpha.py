@@ -4,7 +4,7 @@ from typing import Any, Callable, Optional, Union
 
 import numpy as np
 import pandas
-import requests  # type: ignore[import-untyped]
+import requests
 from mendeleev.fetch import fetch_table
 
 
