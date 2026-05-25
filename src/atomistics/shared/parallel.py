@@ -48,7 +48,10 @@ def _convert_task_lst_to_task_dict(task_lst: list) -> dict:
 
 
 def evaluate_with_parallel_executor(
-    evaluate_function: Callable[..., dict], task_dict: dict, executor: Executor, **kwargs
+    evaluate_function: Callable[..., dict],
+    task_dict: dict,
+    executor: Executor,
+    **kwargs,
 ) -> dict:
     """
     Executes the given `evaluate_function` in parallel using the provided `executor` and returns the results as a dictionary.
