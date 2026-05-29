@@ -9,6 +9,7 @@ class Workflow(ABC):
     a task dictionary of structures to evaluate, and ``analyse_structures``
     consumes the calculator output to return the final workflow result.
     """
+
     @abstractmethod
     def generate_structures(self) -> dict[str, Any]:
         """
