@@ -19,6 +19,26 @@ def _get_eta_matrix(
     epss: np.ndarray,
     sqrt_eta: bool = True,
 ) -> dict[str, np.ndarray]:
+    """
+    Compute the Lagrangian strain matrices for all strain–amplitude combinations.
+
+    For each Lagrangian strain pattern and each non-zero strain amplitude, builds the
+    symmetric 3×3 eta matrix from the Voigt strain vector and optionally applies the
+    square-root mapping so that the resulting deformation gradient is symmetric.
+
+    Args:
+        Lag_strain_list (list[str]): List of Lagrangian strain pattern keys (looked up in ``Ls_Dic``).
+        epss (np.ndarray): Array of strain amplitudes (zero values are skipped).
+        sqrt_eta (bool): Whether to iteratively solve for the symmetric square root of the
+            strain matrix. Required for accurate large-strain calculations. Defaults to ``True``.
+
+    Returns:
+        dict[str, np.ndarray]: Mapping from subjob name to the 3×3 deformation matrix for
+            each (strain pattern, amplitude) pair.
+
+    Raises:
+        Exception: If the norm of the strain matrix exceeds 0.7 (deformation too large).
+    """
     eps_dict = {}
     for lag_strain in Lag_strain_list:
         Ls_list = Ls_Dic[lag_strain]

@@ -15,6 +15,8 @@ else:
 
 
 class TaskEnum(StrEnum):
+    """Enumeration of supported calculator tasks."""
+
     calc_energy = "calc_energy"
     calc_forces = "calc_forces"
     calc_stress = "calc_stress"
@@ -28,6 +30,8 @@ class TaskEnum(StrEnum):
 
 
 class TaskOutputEnum(Enum):
+    """Maps task names to their corresponding output key names."""
+
     energy = "calc_energy"
     forces = "calc_forces"
     stress = "calc_stress"

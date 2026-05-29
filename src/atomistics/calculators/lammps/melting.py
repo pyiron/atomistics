@@ -69,12 +69,22 @@ def _analyse_structure(structure: Atoms, mode: str = "total", diamond: bool = Fa
 
 def _analyse_minimized_structure(structure: Atoms):
     """
+    Determine the dominant structural motif of a minimised structure.
+
+    Runs the appropriate structure analysis (CNA or diamond detector) and returns
+    the dominant phase key, total atom count, and a threshold fraction used to
+    distinguish solid from liquid during bisection.
 
     Args:
-        ham (GenericJob):
+        structure (Atoms): The energy-minimised structure to analyse.
 
     Returns:
-
+        tuple: A 5-tuple containing:
+            - structure (Atoms): The input structure (passed through).
+            - key_max (str): The OVITO key of the dominant structural motif.
+            - number_of_atoms (int): Total number of atoms.
+            - distribution_initial_half (float): Half the initial fraction of atoms in the dominant phase.
+            - final_structure_dict (dict): Full analysis result dictionary.
     """
     diamond_flag = _check_diamond(structure=structure)
     final_structure_dict = _analyse_structure(
@@ -154,20 +164,37 @@ def _next_step_funct(
     seed: int,
 ):
     """
+    Perform one bisection step in the melting temperature search.
+
+    Analyses the structural order of the left and right bracket structures and
+    adjusts the temperature bracket accordingly:
+
+    - Both solid → shift the bracket upward.
+    - Left solid, right liquid → bisect downward.
+    - Both liquid → shift the bracket downward.
 
     Args:
-        number_of_atoms:
-        key_max:
-        structure_left:
-        structure_right:
-        temperature_left:
-        temperature_right:
-        distribution_initial_half:
-        structure_after_minimization:
-        run_time_steps:
+        number_of_atoms (int): Total number of atoms in the simulation cell.
+        key_max (str): OVITO key of the dominant structural motif in the solid phase.
+        structure_left (Atoms): Structure equilibrated at ``temperature_left``.
+        structure_right (Atoms): Structure equilibrated at ``temperature_right``.
+        potential (pd.DataFrame): Interatomic potential DataFrame.
+        temperature_left (float): Lower bound of the current temperature bracket in K.
+        temperature_right (float): Upper bound of the current temperature bracket in K.
+        distribution_initial_half (float): Half of the initial solid-phase atom fraction
+            (threshold for solid/liquid classification).
+        structure_after_minimization (Atoms): The energy-minimised reference structure used
+            to seed new MD runs.
+        run_time_steps (int): Number of NPT MD timesteps per bracket point.
+        diamond_flag (bool): Whether to use the diamond structure detector instead of CNA.
+        seed (int): Random seed for MD velocity initialisation.
 
     Returns:
+        tuple[Atoms, Atoms, float, float]: Updated
+            ``(structure_left, structure_right, temperature_left, temperature_right)``.
 
+    Raises:
+        ValueError: If none of the three expected cases is satisfied (should never happen).
     """
     structure_left_dict = _analyse_structure(
         structure=structure_left,
@@ -231,6 +258,20 @@ def _next_step_funct(
 def _generate_structure_with_fixed_number_of_atoms(
     structure: Atoms, number_of_atoms: int
 ) -> Atoms:
+    """
+    Repeat a unit cell to reach approximately ``number_of_atoms`` atoms.
+
+    Estimates the cubic repetition factor from the ratio of target to current atom count,
+    tries floor/round/ceil candidates, and returns the repeat that minimises the
+    difference from ``number_of_atoms``. The minimum repetition is 5×5×5.
+
+    Args:
+        structure (Atoms): The primitive or conventional unit cell to tile.
+        number_of_atoms (int): Approximate target number of atoms.
+
+    Returns:
+        Atoms: The supercell with the atom count closest to ``number_of_atoms``.
+    """
     r_est = (number_of_atoms / len(structure)) ** (1 / 3)
     candidates = np.array(
         [
@@ -257,7 +298,37 @@ def estimate_melting_temperature_using_bisection_CNA(
     run: int = 10000,
     optimization_maxiter: int = 100000,
     seed: Optional[int] = None,
-):
+) -> int:
+    """
+    Estimate the melting temperature using bisection and common neighbour analysis (CNA).
+
+    The algorithm:
+
+    1. Tiles the unit cell to approximately ``target_number_of_atoms`` atoms.
+    2. Energy-minimises the supercell.
+    3. Identifies the dominant structural motif and sets a solid/liquid threshold.
+    4. Iteratively bisects the temperature bracket (via NPT MD + CNA) until the
+       bracket width falls below 10 K.
+
+    Args:
+        structure (Atoms): The input unit cell.
+        potential_dataframe (pd.DataFrame): Interatomic potential DataFrame with
+            ``"Species"`` and ``"Config"`` columns.
+        target_number_of_atoms (int): Approximate number of atoms for the supercell.
+            Defaults to ``4000``.
+        temperature_left (float): Lower bound of the initial temperature bracket in K.
+            Defaults to ``0``.
+        temperature_right (float): Upper bound of the initial temperature bracket in K.
+            Defaults to ``1000``.
+        run (int): Number of NPT MD timesteps per bracket evaluation. Defaults to ``10000``.
+        optimization_maxiter (int): Maximum iterations for the initial energy minimisation.
+            Defaults to ``100000``.
+        seed (int | None): Random seed for MD velocity initialisation. A random seed is
+            chosen if ``None``.
+
+    Returns:
+        int: Estimated melting temperature in K (rounded to the nearest integer).
+    """
     if seed is None:
         seed = random.randint(0, 99999)
     seed = int(seed)

@@ -55,6 +55,26 @@ def optimize_positions_and_volume_with_lammpslib(
     lmp=None,
     **kwargs,
 ) -> Atoms:
+    """
+    Relax atomic positions and cell using the LAMMPS library interface.
+
+    Args:
+        structure (Atoms): The input structure.
+        potential_dataframe (DataFrame): DataFrame with ``"Species"`` and ``"Config"`` columns.
+        min_style (str): LAMMPS minimisation style. Defaults to ``"cg"``.
+        etol (float): Energy tolerance for minimisation. Defaults to ``0.0``.
+        ftol (float): Force tolerance in eV/Å. Defaults to ``0.0001``.
+        maxiter (int): Maximum number of minimisation iterations. Defaults to ``100000``.
+        maxeval (int): Maximum number of force evaluations. Defaults to ``10000000``.
+        thermo (int): Thermo output frequency. Defaults to ``10``.
+        pressure (float | Iterable[float | None]): Target pressure for ``box/relax`` in bar.
+        vmax (float | None): Maximum fractional volume change per step for ``box/relax``.
+        lmp: Existing LAMMPS library instance to reuse. A new instance is created if ``None``.
+        **kwargs: Additional keyword arguments forwarded to ``lammps_run``.
+
+    Returns:
+        Atoms: A copy of the input structure with relaxed positions and cell.
+    """
     template_str = "\n".join(
         [
             get_box_relax_command(pressure=pressure, vmax=vmax),
@@ -96,6 +116,24 @@ def optimize_positions_with_lammpslib(
     lmp=None,
     **kwargs,
 ) -> Atoms:
+    """
+    Relax atomic positions using the LAMMPS library interface (cell fixed).
+
+    Args:
+        structure (Atoms): The input structure.
+        potential_dataframe (DataFrame): DataFrame with ``"Species"`` and ``"Config"`` columns.
+        min_style (str): LAMMPS minimisation style. Defaults to ``"cg"``.
+        etol (float): Energy tolerance for minimisation. Defaults to ``0.0``.
+        ftol (float): Force tolerance in eV/Å. Defaults to ``0.0001``.
+        maxiter (int): Maximum number of minimisation iterations. Defaults to ``100000``.
+        maxeval (int): Maximum number of force evaluations. Defaults to ``10000000``.
+        thermo (int): Thermo output frequency. Defaults to ``10``.
+        lmp: Existing LAMMPS library instance to reuse. A new instance is created if ``None``.
+        **kwargs: Additional keyword arguments forwarded to ``lammps_run``.
+
+    Returns:
+        Atoms: A copy of the input structure with relaxed atomic positions.
+    """
     template_str = "\n".join([LAMMPS_THERMO_STYLE, LAMMPS_THERMO, LAMMPS_MINIMIZE])
     lmp_instance = lammps_run(
         structure=structure,
@@ -124,6 +162,19 @@ def calc_static_with_lammpslib(
     output_keys=OutputStatic.keys(),
     **kwargs,
 ) -> dict:
+    """
+    Run a static calculation using the LAMMPS library interface.
+
+    Args:
+        structure (Atoms): The input structure.
+        potential_dataframe (pandas.DataFrame): DataFrame with ``"Species"`` and ``"Config"`` columns.
+        lmp: Existing LAMMPS library instance to reuse. A new instance is created if ``None``.
+        output_keys: Which output quantities to return. Defaults to all ``OutputStatic`` keys.
+        **kwargs: Additional keyword arguments forwarded to ``lammps_run``.
+
+    Returns:
+        dict: Requested output quantities keyed by name.
+    """
     template_str = "\n".join([LAMMPS_THERMO_STYLE, LAMMPS_THERMO, LAMMPS_RUN])
     lmp_instance = lammps_run(
         structure=structure,
@@ -161,6 +212,29 @@ def calc_molecular_dynamics_nvt_with_lammpslib(
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ) -> dict:
+    """
+    Run NVT (canonical ensemble) molecular dynamics using the LAMMPS library interface.
+
+    Args:
+        structure (Atoms): The input structure.
+        potential_dataframe (pandas.DataFrame): DataFrame with ``"Species"`` and ``"Config"`` columns.
+        Tstart (float): Starting temperature in K. Defaults to ``100.0``.
+        Tstop (float): Target temperature in K at the end of the run. Defaults to ``100.0``.
+        Tdamp (float): Nosé-Hoover thermostat damping parameter in ps. Defaults to ``0.1``.
+        run (int): Total number of MD timesteps. Defaults to ``100``.
+        thermo (int): Number of timesteps between output snapshots. Defaults to ``10``.
+        timestep (float): MD timestep in ps. Defaults to ``0.001``.
+        seed (int): Random seed for velocity initialisation. Defaults to ``4928459``.
+        dist (str): Velocity distribution type (``"gaussian"`` or ``"uniform"``). Defaults to ``"gaussian"``.
+        velocity_rescale_factor (float | None): Scaling factor for initial velocity rescaling.
+            No rescaling is applied when ``None``. Defaults to ``2.0``.
+        lmp: Existing LAMMPS library instance to reuse. A new instance is created if ``None``.
+        output_keys: Which output quantities to return. Defaults to all ``OutputMolecularDynamics`` keys.
+        **kwargs: Additional keyword arguments forwarded to ``lammps_run``.
+
+    Returns:
+        dict: Output quantities as numpy arrays with one entry per snapshot, keyed by quantity name.
+    """
     if velocity_rescale_factor is not None:
         init_str = "\n".join(
             [
@@ -238,6 +312,34 @@ def calc_molecular_dynamics_npt_with_lammpslib(
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ) -> dict:
+    """
+    Run NPT (isothermal-isobaric ensemble) molecular dynamics using the LAMMPS library interface.
+
+    Args:
+        structure (Atoms): The input structure.
+        potential_dataframe (pandas.DataFrame): DataFrame with ``"Species"`` and ``"Config"`` columns.
+        Tstart (float): Starting temperature in K. Defaults to ``100.0``.
+        Tstop (float): Target temperature in K at the end of the run. Defaults to ``100.0``.
+        Tdamp (float): Thermostat damping parameter in ps. Defaults to ``0.1``.
+        run (int): Total number of MD timesteps. Defaults to ``100``.
+        thermo (int): Number of timesteps between output snapshots. Defaults to ``100``.
+        timestep (float): MD timestep in ps. Defaults to ``0.001``.
+        Pstart (float): Starting pressure in bar. Defaults to ``0.0``.
+        Pstop (float): Target pressure in bar at the end of the run. Defaults to ``0.0``.
+        Pdamp (float): Barostat damping parameter in ps. Defaults to ``1.0``.
+        seed (int): Random seed for velocity initialisation. Defaults to ``4928459``.
+        dist (str): Velocity distribution type. Defaults to ``"gaussian"``.
+        couple_xyz (bool): Whether to couple all three box dimensions (isotropic pressure).
+            Defaults to ``False``.
+        velocity_rescale_factor (float | None): Scaling factor for initial velocity rescaling.
+            No rescaling is applied when ``None``. Defaults to ``2.0``.
+        lmp: Existing LAMMPS library instance to reuse. A new instance is created if ``None``.
+        output_keys: Which output quantities to return. Defaults to all ``OutputMolecularDynamics`` keys.
+        **kwargs: Additional keyword arguments forwarded to ``lammps_run``.
+
+    Returns:
+        dict: Output quantities as numpy arrays with one entry per snapshot, keyed by quantity name.
+    """
     if couple_xyz:
         LAMMPS_ENSEMBLE_NPT_XYZ = LAMMPS_ENSEMBLE_NPT + " couple xyz"
     else:
@@ -322,6 +424,30 @@ def calc_molecular_dynamics_nph_with_lammpslib(
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ) -> dict:
+    """
+    Run NPH (isoenthalpic-isobaric ensemble) molecular dynamics using the LAMMPS library interface.
+
+    Args:
+        structure (Atoms): The input structure.
+        potential_dataframe (pandas.DataFrame): DataFrame with ``"Species"`` and ``"Config"`` columns.
+        run (int): Total number of MD timesteps. Defaults to ``100``.
+        thermo (int): Number of timesteps between output snapshots. Defaults to ``100``.
+        timestep (float): MD timestep in ps. Defaults to ``0.001``.
+        Tstart (float): Initial temperature in K used for velocity initialisation. Defaults to ``100.0``.
+        Pstart (float): Starting pressure in bar. Defaults to ``0.0``.
+        Pstop (float): Target pressure in bar at the end of the run. Defaults to ``0.0``.
+        Pdamp (float): Barostat damping parameter in ps. Defaults to ``1.0``.
+        seed (int): Random seed for velocity initialisation. Defaults to ``4928459``.
+        dist (str): Velocity distribution type. Defaults to ``"gaussian"``.
+        velocity_rescale_factor (float | None): Scaling factor for initial velocity rescaling.
+            No rescaling is applied when ``None``. Defaults to ``2.0``.
+        lmp: Existing LAMMPS library instance to reuse. A new instance is created if ``None``.
+        output_keys: Which output quantities to return. Defaults to all ``OutputMolecularDynamics`` keys.
+        **kwargs: Additional keyword arguments forwarded to ``lammps_run``.
+
+    Returns:
+        dict: Output quantities as numpy arrays with one entry per snapshot, keyed by quantity name.
+    """
     if velocity_rescale_factor is not None:
         init_str = "\n".join(
             [
@@ -395,6 +521,29 @@ def calc_molecular_dynamics_langevin_with_lammpslib(
     output_keys=OutputMolecularDynamics.keys(),
     **kwargs,
 ) -> dict:
+    """
+    Run Langevin (NVE + Langevin thermostat) molecular dynamics using the LAMMPS library interface.
+
+    Args:
+        structure (Atoms): The input structure.
+        potential_dataframe (pandas.DataFrame): DataFrame with ``"Species"`` and ``"Config"`` columns.
+        run (int): Total number of MD timesteps. Defaults to ``100``.
+        thermo (int): Number of timesteps between output snapshots. Defaults to ``100``.
+        timestep (float): MD timestep in ps. Defaults to ``0.001``.
+        Tstart (float): Starting temperature for the Langevin thermostat in K. Defaults to ``100.0``.
+        Tstop (float): Target temperature for the Langevin thermostat in K. Defaults to ``100``.
+        Tdamp (float): Langevin thermostat damping parameter in ps. Defaults to ``0.1``.
+        seed (int): Random seed for velocity initialisation and Langevin noise. Defaults to ``4928459``.
+        dist (str): Velocity distribution type. Defaults to ``"gaussian"``.
+        velocity_rescale_factor (float | None): Scaling factor for initial velocity rescaling.
+            No rescaling is applied when ``None``. Defaults to ``2.0``.
+        lmp: Existing LAMMPS library instance to reuse. A new instance is created if ``None``.
+        output_keys: Which output quantities to return. Defaults to all ``OutputMolecularDynamics`` keys.
+        **kwargs: Additional keyword arguments forwarded to ``lammps_run``.
+
+    Returns:
+        dict: Output quantities as numpy arrays with one entry per snapshot, keyed by quantity name.
+    """
     if velocity_rescale_factor is not None:
         init_str = "\n".join(
             [
@@ -475,6 +624,36 @@ def calc_molecular_dynamics_thermal_expansion_with_lammpslib(
     output_keys: Iterable[str] = OutputThermalExpansion.keys(),
     **kwargs,
 ) -> dict:
+    """
+    Compute thermal expansion via NPT MD across a temperature range using the LAMMPS library interface.
+
+    Runs ``lammps_thermal_expansion_loop`` over temperatures from ``Tstart`` to ``Tstop``
+    in steps of ``Tstep``.
+
+    Args:
+        structure (Atoms): The input structure.
+        potential_dataframe (pandas.DataFrame): DataFrame with ``"Species"`` and ``"Config"`` columns.
+        Tstart (float): Starting temperature in K. Defaults to ``15.0``.
+        Tstop (float): Ending temperature in K (inclusive). Defaults to ``1500.0``.
+        Tstep (int): Temperature increment in K. Defaults to ``5``.
+        Tdamp (float): Thermostat damping parameter in ps. Defaults to ``0.1``.
+        run (int): Number of MD timesteps per temperature point. Defaults to ``100``.
+        thermo (int): Thermo output frequency in timesteps. Defaults to ``100``.
+        timestep (float): MD timestep in ps. Defaults to ``0.001``.
+        Pstart (float): Starting pressure in bar. Defaults to ``0.0``.
+        Pstop (float): Ending pressure in bar. Defaults to ``0.0``.
+        Pdamp (float): Barostat damping parameter in ps. Defaults to ``1.0``.
+        seed (int): Random seed for velocity initialisation. Defaults to ``4928459``.
+        dist (str): Velocity distribution type. Defaults to ``"gaussian"``.
+        couple_xyz (bool): Whether to couple all three box dimensions (isotropic pressure).
+            Defaults to ``False``.
+        lmp (LammpsASELibrary | None): Existing LAMMPS library instance to reuse.
+        output_keys (Iterable[str]): Which output quantities to return.
+        **kwargs: Additional keyword arguments forwarded to ``lammps_thermal_expansion_loop``.
+
+    Returns:
+        dict: Thermal expansion output (temperatures and volumes) keyed by quantity name.
+    """
     init_str = "\n".join(
         [
             LAMMPS_THERMO_STYLE,
@@ -519,6 +698,26 @@ def evaluate_with_lammpslib_library_interface(
     lmp: LammpsASELibrary,
     lmp_optimizer_kwargs: dict | None = None,
 ) -> dict:
+    """
+    Evaluate a single structure for a list of tasks using an existing LAMMPS library instance.
+
+    Decorated with ``as_task_dict_evaluator`` to handle task dict conversion. Used internally
+    by ``evaluate_with_lammpslib`` which manages the LAMMPS instance lifecycle.
+
+    Args:
+        structure (Atoms): The input structure.
+        tasks (list[TaskName]): List of task names to evaluate.
+        potential_dataframe (DataFrame): DataFrame with ``"Species"`` and ``"Config"`` columns.
+        lmp (LammpsASELibrary): An active LAMMPS library instance.
+        lmp_optimizer_kwargs (dict | None): Extra keyword arguments forwarded to the
+            underlying calculation functions.
+
+    Returns:
+        dict: Results keyed by output quantity name.
+
+    Raises:
+        ValueError: If none of the requested tasks are implemented by this calculator.
+    """
     if lmp_optimizer_kwargs is None:
         lmp_optimizer_kwargs = {}
     results: dict[str, Any] = {}
@@ -575,6 +774,28 @@ def evaluate_with_lammpslib(
     disable_log_file: bool = True,
     lmp_optimizer_kwargs: dict | None = None,
 ) -> dict:
+    """
+    Evaluate a task dictionary using the LAMMPS library interface, managing the instance lifecycle.
+
+    Creates a ``LammpsASELibrary`` instance, delegates to
+    ``evaluate_with_lammpslib_library_interface``, then closes the instance.
+
+    Args:
+        task_dict (dict[str, dict[str, Atoms]]): Task dictionary mapping task names to structure dicts.
+        potential_dataframe (DataFrame): DataFrame with ``"Species"`` and ``"Config"`` columns.
+        working_directory (str | None): Working directory for LAMMPS. Defaults to ``None``.
+        cores (int): Number of MPI cores to use. Defaults to ``1``.
+        comm: MPI communicator object. Defaults to ``None``.
+        logger: Logger object. Defaults to ``None``.
+        log_file (str | None): Path to the LAMMPS log file. Defaults to ``None``.
+        library: Pre-loaded LAMMPS shared library object. Defaults to ``None``.
+        disable_log_file (bool): Whether to suppress the LAMMPS log file. Defaults to ``True``.
+        lmp_optimizer_kwargs (dict | None): Extra keyword arguments forwarded to the
+            underlying calculation functions.
+
+    Returns:
+        dict: Results keyed by output quantity name.
+    """
     if lmp_optimizer_kwargs is None:
         lmp_optimizer_kwargs = {}
     lmp = LammpsASELibrary(
