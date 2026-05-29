@@ -26,23 +26,47 @@ DUMP_COMMANDS = [
 
 
 class GenericOutput:
+    """Accessor for parsed LAMMPS file-calculator output.
+
+    Args:
+        output_dict (dict[str, Any]): Parsed output dictionary returned by
+            ``lammpsparser.parse_lammps_output_files``.
+    """
+
     def __init__(self, output_dict: dict[str, Any]):
         self._output_dict = output_dict
 
     def get_forces(self) -> list[list[float]]:
+        """Return atomic forces from the last recorded frame in eV/Å."""
         return self._output_dict["generic"]["forces"][-1]
 
     def get_energy_pot(self) -> float:
+        """Return the potential energy from the last recorded frame in eV."""
         return self._output_dict["generic"]["energy_pot"][-1]
 
     def get_stress(self) -> list[float]:
+        """Return the pressure tensor from the last recorded frame in GPa."""
         return self._output_dict["generic"]["pressures"][-1]
 
     def get_volume(self) -> float:
+        """Return the cell volume from the last recorded frame in Å³."""
         return self._output_dict["generic"]["volume"][-1]
 
 
 def _lammps_file_initialization(structure: Atoms) -> list[str]:
+    """
+    Generate the header LAMMPS input commands for a metal-units simulation.
+
+    Sets up units, dimension, periodic boundary flags (derived from ``structure.pbc``),
+    atom style, and reads in the structure data file.
+
+    Args:
+        structure (Atoms): The ASE structure whose PBC flags determine the boundary conditions.
+
+    Returns:
+        list[str]: LAMMPS input command strings (each ending with ``\\n``) to be written
+            at the top of an input file.
+    """
     dimension = 3
     boundary = " ".join(["p" if coord else "f" for coord in structure.pbc])
     init_commands = [
@@ -61,6 +85,19 @@ def _write_lammps_input_file(
     potential_dataframe: pandas.DataFrame,
     input_template: str,
 ) -> None:
+    """
+    Write the LAMMPS structure data file and input script to ``working_directory``.
+
+    The structure is written as ``lammps.data`` and the input script as ``lmp.in``.
+    The script is assembled from the initialisation commands, the potential ``Config``
+    lines, the dump commands, and the rendered ``input_template``.
+
+    Args:
+        working_directory (str): Directory in which to write the LAMMPS input files.
+        structure (Atoms): The ASE structure to write.
+        potential_dataframe (pandas.DataFrame): DataFrame with ``"Species"`` and ``"Config"`` columns.
+        input_template (str): Pre-rendered LAMMPS commands appended after the potential section.
+    """
     _write_lammps_structure(
         structure=structure,
         potential_elements=potential_dataframe["Species"],
@@ -94,6 +131,29 @@ def optimize_positions_and_volume_with_lammpsfile(
     pressure: float | Iterable[float | None] = 0.0,
     vmax: Optional[float] = None,
 ) -> Atoms:
+    """
+    Relax atomic positions and cell with LAMMPS using file-based I/O.
+
+    Writes LAMMPS input files, executes the calculator, parses the output, and
+    returns a structure with the relaxed positions and cell.
+
+    Args:
+        structure (Atoms): The input structure.
+        potential_dataframe (pandas.DataFrame): DataFrame with ``"Species"`` and ``"Config"`` columns.
+        working_directory (str): Directory for LAMMPS input/output files.
+        executable_function (Callable[[str], Any]): Callable that runs LAMMPS in the given directory.
+        min_style (str): LAMMPS minimisation style (e.g. ``"cg"``). Defaults to ``"cg"``.
+        etol (float): Energy tolerance for minimisation. Defaults to ``0.0``.
+        ftol (float): Force tolerance for minimisation in eV/Å. Defaults to ``0.0001``.
+        maxiter (int): Maximum number of minimisation iterations. Defaults to ``100000``.
+        maxeval (int): Maximum number of force evaluations. Defaults to ``10000000``.
+        thermo (int): Thermo output frequency. Defaults to ``10``.
+        pressure (float | Iterable[float | None]): Target pressure for ``box/relax`` in bar.
+        vmax (float | None): Maximum fractional volume change per step for ``box/relax``.
+
+    Returns:
+        Atoms: A copy of the input structure with relaxed positions and cell.
+    """
     template_str = "\n".join(
         [
             get_box_relax_command(pressure=pressure, vmax=vmax),
@@ -145,6 +205,24 @@ def optimize_positions_with_lammpsfile(
     maxeval: int = 10000000,
     thermo: int = 10,
 ) -> Atoms:
+    """
+    Relax atomic positions with LAMMPS using file-based I/O (cell fixed).
+
+    Args:
+        structure (Atoms): The input structure.
+        potential_dataframe (pandas.DataFrame): DataFrame with ``"Species"`` and ``"Config"`` columns.
+        working_directory (str): Directory for LAMMPS input/output files.
+        executable_function (Callable[[str], Any]): Callable that runs LAMMPS in the given directory.
+        min_style (str): LAMMPS minimisation style. Defaults to ``"cg"``.
+        etol (float): Energy tolerance for minimisation. Defaults to ``0.0``.
+        ftol (float): Force tolerance for minimisation in eV/Å. Defaults to ``0.0001``.
+        maxiter (int): Maximum number of minimisation iterations. Defaults to ``100000``.
+        maxeval (int): Maximum number of force evaluations. Defaults to ``10000000``.
+        thermo (int): Thermo output frequency. Defaults to ``10``.
+
+    Returns:
+        Atoms: A copy of the input structure with relaxed atomic positions.
+    """
     template_str = "\n".join([LAMMPS_THERMO_STYLE, LAMMPS_THERMO, LAMMPS_MINIMIZE])
     input_template = Template(template_str).render(
         min_style=min_style,
@@ -183,6 +261,19 @@ def calc_static_with_lammpsfile(
     executable_function: Callable[[str], Any],
     output_keys=OutputStatic.keys(),
 ) -> dict[str, Any]:
+    """
+    Run a static LAMMPS calculation using file-based I/O and return the requested output.
+
+    Args:
+        structure (Atoms): The input structure.
+        potential_dataframe (pandas.DataFrame): DataFrame with ``"Species"`` and ``"Config"`` columns.
+        working_directory (str): Directory for LAMMPS input/output files.
+        executable_function (Callable[[str], Any]): Callable that runs LAMMPS in the given directory.
+        output_keys: Which output quantities to return. Defaults to all ``OutputStatic`` keys.
+
+    Returns:
+        dict[str, Any]: Requested output quantities keyed by name.
+    """
     template_str = "\n".join([LAMMPS_THERMO_STYLE, LAMMPS_THERMO, LAMMPS_RUN])
     input_template = Template(template_str).render(
         run=0,
@@ -224,6 +315,27 @@ def evaluate_with_lammpsfile(
     executable_function: Callable[[str], Any],
     lmp_optimizer_kwargs: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
+    """
+    Evaluate a task dictionary using LAMMPS file-based I/O and return results for all tasks.
+
+    Dispatches to the appropriate file-calculator function based on the requested tasks.
+    Decorated with ``as_task_dict_evaluator``.
+
+    Args:
+        structure (Atoms): The input structure.
+        tasks (list[str]): List of task name strings.
+        potential_dataframe (pandas.DataFrame): DataFrame with ``"Species"`` and ``"Config"`` columns.
+        working_directory (str): Directory for LAMMPS input/output files.
+        executable_function (Callable[[str], Any]): Callable that runs LAMMPS in the given directory.
+        lmp_optimizer_kwargs (dict[str, Any] | None): Extra keyword arguments forwarded to the
+            underlying optimisation or static functions.
+
+    Returns:
+        dict[str, Any]: Results keyed by output quantity name.
+
+    Raises:
+        ValueError: If none of the requested tasks are implemented by this calculator.
+    """
     if lmp_optimizer_kwargs is None:
         lmp_optimizer_kwargs = {}
     results: dict[str, Any] = {}

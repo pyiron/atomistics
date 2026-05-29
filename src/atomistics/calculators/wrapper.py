@@ -63,6 +63,22 @@ def as_task_dict_evaluator(
         *calculate_args: Any,
         **calculate_kwargs: Any,
     ) -> ResultsDict:
+        """
+        Evaluate all structures in ``task_dict`` and aggregate results.
+
+        Converts the legacy task-dict format to the new per-structure format,
+        calls the wrapped ``calculate`` function for each structure, and maps
+        the per-structure outputs back to the nested results dictionary.
+
+        Args:
+            task_dict (dict[TaskName, dict[str, Atoms]]): Mapping from task names to
+                structure label → structure dicts.
+            *calculate_args: Positional arguments forwarded to ``calculate``.
+            **calculate_kwargs: Keyword arguments forwarded to ``calculate``.
+
+        Returns:
+            ResultsDict: Nested mapping ``{output_label: {structure_label: result}}``.
+        """
         converted_task_dict = _convert_task_dict(
             cast(dict[TaskName, dict[str, Atoms] | Atoms], task_dict)
         )
