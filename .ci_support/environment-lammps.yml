@@ -3,9 +3,9 @@ channels:
 dependencies:
 - lammps =2024.08.29=*openmpi*
 - pandas =2.3.3
-- pylammpsmpi =0.3.12
+- pylammpsmpi =0.3.13
 - jinja2 =3.1.6
 - iprpy-data =2023.07.25
 - dynaphopy =1.18.0
-- lammpsparser =0.0.4
+- lammpsparser =0.0.5
 - pyscal3 = 3.3.2
