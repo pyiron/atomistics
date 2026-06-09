@@ -10,17 +10,16 @@ from atomistics.workflows import (
     get_tasks_for_energy_volume_curve,
 )
 
-sphinx_command = "sphinx"
-if shutil.which(sphinx_command) is not None:
-    skip_sphinx_test = False
-else:
-    skip_sphinx_test = True
-
-
 try:
     from atomistics.calculators import evaluate_with_sphinx
     skip_sphinx_test = False
 except ImportError:
+    skip_sphinx_test = True
+
+sphinx_command = "sphinx"
+if shutil.which(sphinx_command) is not None:
+    skip_sphinx_test = False
+else:
     skip_sphinx_test = True
 
 
