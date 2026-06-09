@@ -1,18 +1,21 @@
 import os
 import shutil
-from unittest import TestCase
+import unittest
 
 from ase.build import bulk
 
-from atomistics.calculators import (
-    evaluate_with_vasp,
-    optimize_cell_with_vasp,
-    optimize_volume_with_vasp,
-    optimize_positions_with_vasp,
-    optimize_positions_and_volume_with_vasp,
-)
-from atomistics.workflows import optimize_positions, optimize_positions_and_volume, optimize_volume, optimize_cell
-
+try:
+    from atomistics.calculators import (
+        evaluate_with_vasp,
+        optimize_cell_with_vasp,
+        optimize_volume_with_vasp,
+        optimize_positions_with_vasp,
+        optimize_positions_and_volume_with_vasp,
+    )
+    from atomistics.workflows import optimize_positions, optimize_positions_and_volume, optimize_volume, optimize_cell
+    skip_vasp_test = False
+except ImportError:
+    skip_vasp_test = True
 
 os.environ["VASP_PP_PATH"] = os.path.abspath(os.path.join(__file__, "..", "static", "vasp"))
 
@@ -21,7 +24,10 @@ def copy_file_funct(working_directory):
     shutil.copy(outcar_file, working_directory)
 
 
-class TestVaspParser(TestCase):
+@unittest.skipIf(
+    skip_vasp_test, "VASP is not installed, so the VASP tests are skipped."
+)
+class TestVaspParser(unittest.TestCase):
     def setUp(self):
         self._structure = bulk("Al", a=4.05, cubic=True)
 

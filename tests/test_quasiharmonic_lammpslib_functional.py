@@ -3,14 +3,13 @@ import os
 from ase.build import bulk
 import unittest
 
-from atomistics.workflows import (
-    get_tasks_for_quasi_harmonic_approximation,
-    analyse_results_for_quasi_harmonic_approximation,
-    get_thermal_properties_for_quasi_harmonic_approximation,
-)
-
 try:
     from atomistics.calculators import evaluate_with_lammpslib, get_potential_by_name
+    from atomistics.workflows import (
+        get_tasks_for_quasi_harmonic_approximation,
+        analyse_results_for_quasi_harmonic_approximation,
+        get_thermal_properties_for_quasi_harmonic_approximation,
+    )
 
     skip_lammps_test = False
 except ImportError:
