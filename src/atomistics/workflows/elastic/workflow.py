@@ -1,3 +1,5 @@
+from typing import Any
+
 import numpy as np
 from ase.atoms import Atoms
 
@@ -33,13 +35,13 @@ class ElasticMatrixWorkflow(Workflow):
         self.eps_range = eps_range
         self.sqrt_eta = sqrt_eta
         self.fit_order = fit_order
-        self._data = {}
-        self._structure_dict = {}
-        self.Lag_strain_list = []
+        self._data: dict[str, Any] = {}
+        self._structure_dict: dict[str, Atoms] = {}
+        self.Lag_strain_list: list[str] = []
         self.epss = np.array([])
         self.zero_strain_job_name = "s_e_0"
 
-    def generate_structures(self) -> dict:
+    def generate_structures(self) -> dict[str, Any]:
         """
         Generate the structures for elastic matrix calculation.
 
@@ -58,8 +60,10 @@ class ElasticMatrixWorkflow(Workflow):
         return task_dict
 
     def analyse_structures(
-        self, output_dict: dict, output_keys: tuple = OutputElastic.keys()
-    ) -> dict:
+        self,
+        output_dict: dict[str, Any],
+        output_keys: tuple = OutputElastic.keys(),
+    ) -> dict[str, Any]:
         """
         Analyze the structures and calculate the elastic matrix.
 

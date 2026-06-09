@@ -1,0 +1,395 @@
+import operator
+import random
+from typing import Optional
+
+import numpy as np
+import pandas as pd
+from ase import Atoms
+from structuretoolkit.analyse import (
+    get_adaptive_cna_descriptors,
+    get_diamond_structure_descriptors,
+)
+
+from atomistics.calculators.lammps import (
+    calc_molecular_dynamics_npt_with_lammpslib,
+    optimize_positions_and_volume_with_lammpslib,
+)
+from atomistics.shared.output import OutputMolecularDynamics
+
+
+def _check_diamond(structure: Atoms):
+    """
+    Utility function to check if the structure is fcc, bcc, hcp or diamond
+
+    Args:
+        structure (pyiron_atomistics.structure.atoms.Atoms): Atomistic Structure object to check
+
+    Returns:
+        bool: true if diamond else false
+    """
+    cna_dict = get_adaptive_cna_descriptors(
+        structure=structure, mode="total", ovito_compatibility=True
+    )
+    dia_dict = get_diamond_structure_descriptors(
+        structure=structure, mode="total", ovito_compatibility=True
+    )
+    return (
+        cna_dict["CommonNeighborAnalysis.counts.OTHER"]
+        > dia_dict["IdentifyDiamond.counts.OTHER"]
+    )
+
+
+def _analyse_structure(structure: Atoms, mode: str = "total", diamond: bool = False):
+    """
+    Use either common neighbor analysis or the diamond structure detector
+
+    Args:
+        structure (pyiron_atomistics.structure.atoms.Atoms): The structure to analyze.
+        mode ("total"/"numeric"/"str"): Controls the style and level
+            of detail of the output.
+            - total : return number of atoms belonging to each structure
+            - numeric : return a per atom list of numbers- 0 for unknown,
+                1 fcc, 2 hcp, 3 bcc and 4 icosa
+            - str : return a per atom string of sructures
+        diamond (bool): Flag to either use the diamond structure detector or
+            the common neighbor analysis.
+
+    Returns:
+        (depends on `mode`)
+    """
+    if not diamond:
+        return get_adaptive_cna_descriptors(
+            structure=structure, mode=mode, ovito_compatibility=True
+        )
+    else:
+        return get_diamond_structure_descriptors(
+            structure=structure, mode=mode, ovito_compatibility=True
+        )
+
+
+def _analyse_minimized_structure(structure: Atoms):
+    """
+    Determine the dominant structural motif of a minimised structure.
+
+    Runs the appropriate structure analysis (CNA or diamond detector) and returns
+    the dominant phase key, total atom count, and a threshold fraction used to
+    distinguish solid from liquid during bisection.
+
+    Args:
+        structure (Atoms): The energy-minimised structure to analyse.
+
+    Returns:
+        tuple: A 5-tuple containing:
+            - structure (Atoms): The input structure (passed through).
+            - key_max (str): The OVITO key of the dominant structural motif.
+            - number_of_atoms (int): Total number of atoms.
+            - distribution_initial_half (float): Half the initial fraction of atoms in the dominant phase.
+            - final_structure_dict (dict): Full analysis result dictionary.
+    """
+    diamond_flag = _check_diamond(structure=structure)
+    final_structure_dict = _analyse_structure(
+        structure=structure, mode="total", diamond=diamond_flag
+    )
+    key_max = max(final_structure_dict.items(), key=operator.itemgetter(1))[0]
+    number_of_atoms = len(structure)
+    distribution_initial = final_structure_dict[key_max] / number_of_atoms
+    distribution_initial_half = distribution_initial / 2
+    return (
+        structure,
+        key_max,
+        number_of_atoms,
+        distribution_initial_half,
+        final_structure_dict,
+    )
+
+
+def _next_calc(
+    structure: Atoms,
+    potential: pd.DataFrame,
+    temperature: float,
+    seed: int,
+    run_time_steps: int = 10000,
+):
+    """
+    Calculate NPT ensemble at a given temperature using the job defined in the project parameters:
+    - job_type: Type of Simulation code to be used
+    - project: Project object used to create the job
+    - potential: Interatomic Potential
+    - queue (optional): HPC Job queue to be used
+
+    Args:
+        structure (pyiron_atomistics.structure.atoms.Atoms): Atomistic Structure object to be set to the job as input sturcture
+        temperature (float): Temperature of the Molecular dynamics calculation
+        run_time_steps (int): Number of Molecular dynamics steps
+
+    Returns:
+        Final Atomistic Structure object
+    """
+    output_md_dict = calc_molecular_dynamics_npt_with_lammpslib(
+        structure=structure,
+        potential_dataframe=potential,
+        Tstart=temperature,
+        Tstop=temperature,
+        Tdamp=0.1,
+        run=run_time_steps,
+        thermo=1000,
+        timestep=0.001,
+        Pstart=0.0,
+        Pstop=0.0,
+        Pdamp=1.0,
+        seed=seed,
+        dist="gaussian",
+        velocity_rescale_factor=1.0,
+        lmp=None,
+        output_keys=OutputMolecularDynamics.keys(),
+    )
+    structure_md = structure.copy()
+    structure_md.set_positions(output_md_dict["positions"][-1])
+    structure_md.set_cell(output_md_dict["cell"][-1])
+    return structure_md
+
+
+def _next_step_funct(
+    number_of_atoms: int,
+    key_max: str,
+    structure_left: Atoms,
+    structure_right: Atoms,
+    potential: pd.DataFrame,
+    temperature_left: float,
+    temperature_right: float,
+    distribution_initial_half: float,
+    structure_after_minimization: Atoms,
+    run_time_steps: int,
+    diamond_flag: bool,
+    seed: int,
+):
+    """
+    Perform one bisection step in the melting temperature search.
+
+    Analyses the structural order of the left and right bracket structures and
+    adjusts the temperature bracket accordingly:
+
+    - Both solid → shift the bracket upward.
+    - Left solid, right liquid → bisect downward.
+    - Both liquid → shift the bracket downward.
+
+    Args:
+        number_of_atoms (int): Total number of atoms in the simulation cell.
+        key_max (str): OVITO key of the dominant structural motif in the solid phase.
+        structure_left (Atoms): Structure equilibrated at ``temperature_left``.
+        structure_right (Atoms): Structure equilibrated at ``temperature_right``.
+        potential (pd.DataFrame): Interatomic potential DataFrame.
+        temperature_left (float): Lower bound of the current temperature bracket in K.
+        temperature_right (float): Upper bound of the current temperature bracket in K.
+        distribution_initial_half (float): Half of the initial solid-phase atom fraction
+            (threshold for solid/liquid classification).
+        structure_after_minimization (Atoms): The energy-minimised reference structure used
+            to seed new MD runs.
+        run_time_steps (int): Number of NPT MD timesteps per bracket point.
+        diamond_flag (bool): Whether to use the diamond structure detector instead of CNA.
+        seed (int): Random seed for MD velocity initialisation.
+
+    Returns:
+        tuple[Atoms, Atoms, float, float]: Updated
+            ``(structure_left, structure_right, temperature_left, temperature_right)``.
+
+    Raises:
+        ValueError: If none of the three expected cases is satisfied (should never happen).
+    """
+    structure_left_dict = _analyse_structure(
+        structure=structure_left,
+        mode="total",
+        diamond=diamond_flag,
+    )
+    structure_right_dict = _analyse_structure(
+        structure=structure_right,
+        mode="total",
+        diamond=diamond_flag,
+    )
+    temperature_diff = temperature_right - temperature_left
+    if (
+        structure_left_dict[key_max] / number_of_atoms > distribution_initial_half
+        and structure_right_dict[key_max] / number_of_atoms > distribution_initial_half
+    ):
+        structure_left = structure_right.copy()
+        temperature_left = temperature_right
+        temperature_right += temperature_diff
+        structure_right = _next_calc(
+            structure=structure_after_minimization,
+            temperature=temperature_right,
+            potential=potential,
+            seed=seed,
+            run_time_steps=run_time_steps,
+        )
+    elif (
+        structure_left_dict[key_max] / number_of_atoms
+        > distribution_initial_half
+        > structure_right_dict[key_max] / number_of_atoms
+    ):
+        temperature_diff /= 2
+        temperature_left += temperature_diff
+        structure_left = _next_calc(
+            structure=structure_after_minimization,
+            temperature=temperature_left,
+            potential=potential,
+            seed=seed,
+            run_time_steps=run_time_steps,
+        )
+    elif (
+        structure_left_dict[key_max] / number_of_atoms < distribution_initial_half
+        and structure_right_dict[key_max] / number_of_atoms < distribution_initial_half
+    ):
+        temperature_diff /= 2
+        temperature_right = temperature_left
+        temperature_left -= temperature_diff
+        structure_right = structure_left.copy()
+        structure_left = _next_calc(
+            structure=structure_after_minimization,
+            temperature=temperature_left,
+            potential=potential,
+            seed=seed,
+            run_time_steps=run_time_steps,
+        )
+    else:
+        raise ValueError("We should never reach this point!")
+    return structure_left, structure_right, temperature_left, temperature_right
+
+
+def _generate_structure_with_fixed_number_of_atoms(
+    structure: Atoms, number_of_atoms: int
+) -> Atoms:
+    """
+    Repeat a unit cell to reach approximately ``number_of_atoms`` atoms.
+
+    Estimates the cubic repetition factor from the ratio of target to current atom count,
+    tries floor/round/ceil candidates, and returns the repeat that minimises the
+    difference from ``number_of_atoms``. The minimum repetition is 5×5×5.
+
+    Args:
+        structure (Atoms): The primitive or conventional unit cell to tile.
+        number_of_atoms (int): Approximate target number of atoms.
+
+    Returns:
+        Atoms: The supercell with the atom count closest to ``number_of_atoms``.
+    """
+    r_est = (number_of_atoms / len(structure)) ** (1 / 3)
+    candidates = np.array(
+        [
+            max(1, int(np.floor(r_est))),
+            max(1, int(np.round(r_est))),
+            max(1, int(np.ceil(r_est))),
+        ]
+    )
+    basis_lst = [
+        structure.repeat([i, i, i]) if i > 5 else structure.repeat([5, 5, 5])
+        for i in candidates
+    ]
+
+    basis = basis_lst[np.argmin([np.abs(len(b) - number_of_atoms) for b in basis_lst])]
+    return basis
+
+
+def estimate_melting_temperature_using_bisection_CNA(
+    structure: Atoms,
+    potential_dataframe: pd.DataFrame,
+    target_number_of_atoms: int = 4000,
+    temperature_left: float = 0,
+    temperature_right: float = 1000,
+    run: int = 10000,
+    optimization_maxiter: int = 100000,
+    seed: Optional[int] = None,
+) -> int:
+    """
+    Estimate the melting temperature using bisection and common neighbour analysis (CNA).
+
+    The algorithm:
+
+    1. Tiles the unit cell to approximately ``target_number_of_atoms`` atoms.
+    2. Energy-minimises the supercell.
+    3. Identifies the dominant structural motif and sets a solid/liquid threshold.
+    4. Iteratively bisects the temperature bracket (via NPT MD + CNA) until the
+       bracket width falls below 10 K.
+
+    Args:
+        structure (Atoms): The input unit cell.
+        potential_dataframe (pd.DataFrame): Interatomic potential DataFrame with
+            ``"Species"`` and ``"Config"`` columns.
+        target_number_of_atoms (int): Approximate number of atoms for the supercell.
+            Defaults to ``4000``.
+        temperature_left (float): Lower bound of the initial temperature bracket in K.
+            Defaults to ``0``.
+        temperature_right (float): Upper bound of the initial temperature bracket in K.
+            Defaults to ``1000``.
+        run (int): Number of NPT MD timesteps per bracket evaluation. Defaults to ``10000``.
+        optimization_maxiter (int): Maximum iterations for the initial energy minimisation.
+            Defaults to ``100000``.
+        seed (int | None): Random seed for MD velocity initialisation. A random seed is
+            chosen if ``None``.
+
+    Returns:
+        int: Estimated melting temperature in K (rounded to the nearest integer).
+    """
+    if seed is None:
+        seed = random.randint(0, 99999)
+    seed = int(seed)
+
+    diamond_flag = _check_diamond(structure=structure)
+    repeated_structure = _generate_structure_with_fixed_number_of_atoms(
+        structure=structure, number_of_atoms=target_number_of_atoms
+    )
+
+    position_and_volume_optimized_structure = (
+        optimize_positions_and_volume_with_lammpslib(
+            structure=repeated_structure,
+            potential_dataframe=potential_dataframe,
+            min_style="cg",
+            etol=0.0,
+            ftol=0.0001,
+            maxiter=optimization_maxiter,
+            maxeval=10000000,
+            thermo=10,
+            lmp=None,
+        )
+    )
+
+    (
+        structure_after_minimization,
+        key_max,
+        number_of_atoms,
+        distribution_initial_half,
+        _,
+    ) = _analyse_minimized_structure(structure=position_and_volume_optimized_structure)
+
+    structure_left = structure_after_minimization
+    structure_right = _next_calc(
+        structure=structure_after_minimization,
+        temperature=temperature_right,
+        seed=seed,
+        potential=potential_dataframe,
+        run_time_steps=run,
+    )
+    temperature_step = temperature_right - temperature_left
+
+    while temperature_step > 10:
+        (
+            structure_left,
+            structure_right,
+            temperature_left,
+            temperature_right,
+        ) = _next_step_funct(
+            number_of_atoms=number_of_atoms,
+            key_max=key_max,
+            structure_left=structure_left,
+            structure_right=structure_right,
+            potential=potential_dataframe,
+            temperature_left=temperature_left,
+            temperature_right=temperature_right,
+            distribution_initial_half=distribution_initial_half,
+            structure_after_minimization=structure_after_minimization,
+            run_time_steps=run,
+            seed=seed,
+            diamond_flag=diamond_flag,
+        )
+        temperature_step = temperature_right - temperature_left
+
+    return int(round(temperature_left))

@@ -5,22 +5,19 @@ that evaluate a task dictionary.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, cast
 
-from atomistics.calculators.interface import TaskEnum, TaskOutputEnum
+from ase import Atoms
+
+from atomistics.calculators.interface import TaskEnum, TaskName, TaskOutputEnum
 
 if TYPE_CHECKING:
-    from ase import Atoms
-
-    from atomistics.calculators.interface import (
-        ResultsDict,
-        SimpleEvaluator,
-        TaskDict,
-        TaskName,
-    )
+    from atomistics.calculators.interface import ResultsDict, SimpleEvaluator, TaskDict
 
 
-def _convert_task_dict(old_task_dict: dict[TaskName, dict[str, Atoms]]) -> TaskDict:
+def _convert_task_dict(
+    old_task_dict: dict[TaskName, dict[str, Atoms] | Atoms],
+) -> TaskDict:
     """
     Converts the existing task dictionaries of the format
     `{result_type_string: {structure_label_string: structure, ...}, ...}`
@@ -30,7 +27,7 @@ def _convert_task_dict(old_task_dict: dict[TaskName, dict[str, Atoms]]) -> TaskD
     Can be removed if/when the rest of the codebase passing in these task
     dictionaries gets updated to the new format.
     """
-    task_dict = {}
+    task_dict: TaskDict = {}
     for method_name, subdict in old_task_dict.items():
         if not isinstance(subdict, dict):
             subdict = {"label_hidden": subdict}
@@ -44,7 +41,7 @@ def _convert_task_dict(old_task_dict: dict[TaskName, dict[str, Atoms]]) -> TaskD
 
 def as_task_dict_evaluator(
     calculate: SimpleEvaluator,
-) -> callable[[dict[TaskName, dict[str, Atoms]], ...], ResultsDict]:
+) -> Callable[..., ResultsDict]:
     """
     Takes a callable that acts on a single structure and a (string) list of tasks to
     and maps it to a function that operates on a task-list dictionary of structures,
@@ -63,12 +60,30 @@ def as_task_dict_evaluator(
     def evaluate_with_calculator(
         task_dict: dict[TaskName, dict[str, Atoms]],
         # TODO: Make workflows pass task dicts: dict[str, TaskSpec] ~ TaskDict,
-        *calculate_args,
-        **calculate_kwargs,
+        *calculate_args: Any,
+        **calculate_kwargs: Any,
     ) -> ResultsDict:
-        task_dict = _convert_task_dict(task_dict)
-        results_dict = {}
-        for label, (structure, task_lst) in task_dict.items():
+        """
+        Evaluate all structures in ``task_dict`` and aggregate results.
+
+        Converts the legacy task-dict format to the new per-structure format,
+        calls the wrapped ``calculate`` function for each structure, and maps
+        the per-structure outputs back to the nested results dictionary.
+
+        Args:
+            task_dict (dict[TaskName, dict[str, Atoms]]): Mapping from task names to
+                structure label → structure dicts.
+            *calculate_args: Positional arguments forwarded to ``calculate``.
+            **calculate_kwargs: Keyword arguments forwarded to ``calculate``.
+
+        Returns:
+            ResultsDict: Nested mapping ``{output_label: {structure_label: result}}``.
+        """
+        converted_task_dict = _convert_task_dict(
+            cast(dict[TaskName, dict[str, Atoms] | Atoms], task_dict)
+        )
+        results_dict: ResultsDict = {}
+        for label, (structure, task_lst) in converted_task_dict.items():
             tasks = [TaskEnum(t) for t in task_lst]
             output = calculate(structure, tasks, *calculate_args, **calculate_kwargs)
             for task_name in tasks:

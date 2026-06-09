@@ -5,19 +5,18 @@ import subprocess
 from ase.build import bulk
 import unittest
 
-from atomistics.workflows import (
-    analyse_results_for_harmonic_approximation,
-    get_band_structure,
-    get_dynamical_matrix,
-    get_hesse_matrix,
-    get_tasks_for_harmonic_approximation,
-    get_thermal_properties_for_harmonic_approximation,
-    optimize_positions_and_volume,
-)
-
 try:
     from lammpsparser import get_potential_by_name
     from atomistics.calculators.lammps.filecalculator import evaluate_with_lammpsfile
+    from atomistics.workflows import (
+        analyse_results_for_harmonic_approximation,
+        get_band_structure,
+        get_dynamical_matrix,
+        get_hesse_matrix,
+        get_tasks_for_harmonic_approximation,
+        get_thermal_properties_for_harmonic_approximation,
+        optimize_positions_and_volume,
+    )
 
     skip_lammps_test = False
 except ImportError:

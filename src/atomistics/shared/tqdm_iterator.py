@@ -1,4 +1,5 @@
 from collections.abc import Iterator
+from typing import Union
 
 try:
     from tqdm import tqdm
@@ -8,7 +9,7 @@ except ImportError:
     tqdm_available = False
 
 
-def get_tqdm_iterator(lst: list) -> Iterator:
+def get_tqdm_iterator(lst: list) -> Union[Iterator, list]:
     """
     Returns an iterator with tqdm progress bar if tqdm is available, otherwise returns the original list iterator.
 

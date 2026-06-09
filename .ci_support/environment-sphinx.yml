@@ -3,3 +3,4 @@ channels:
 dependencies:
 - sphinxdft =3.1
 - sphinxdft-data =0.0.1
+- sphinx_parser =0.1.9

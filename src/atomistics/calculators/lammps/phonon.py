@@ -1,4 +1,5 @@
 import sys
+from typing import Any, Optional, Union
 
 import dynaphopy.dynamics as dyn
 import numpy as np
@@ -21,7 +22,7 @@ def generate_pylammps_trajectory(
     silent: bool = False,
     memmap: bool = False,  # not fully implemented yet!
     velocity_only: bool = False,
-    temperature: float = None,
+    temperature: Optional[float] = None,
     thermostat_mass: float = 0.5,
     sampling_interval: int = 1,  # in timesteps
 ):
@@ -51,9 +52,9 @@ def generate_pylammps_trajectory(
     lmp.interactive_lib_command("run 0")
     simulation_cell = lmp.interactive_cells_getter()
 
-    positions = []
-    velocity = []
-    energy = []
+    positions_lst: list[Any] = []
+    velocity_lst: list[Any] = []
+    energy_lst: list[Any] = []
 
     reference = lmp.interactive_positions_getter()
     template = get_correct_arrangement(reference, structure)
@@ -73,15 +74,15 @@ def generate_pylammps_trajectory(
             )
 
         lmp.interactive_lib_command(f"run {sampling_interval}")
-        energy.append(lmp.interactive_energy_pot_getter())
-        velocity.append(lmp.interactive_velocities_getter()[indexing, :])
+        energy_lst.append(lmp.interactive_energy_pot_getter())
+        velocity_lst.append(lmp.interactive_velocities_getter()[indexing, :])
 
         if not velocity_only:
-            positions.append(lmp.interactive_positions_getter()[indexing, :])
+            positions_lst.append(lmp.interactive_positions_getter()[indexing, :])
 
-    positions = np.array(positions, dtype=complex)
-    velocity = np.array(velocity, dtype=complex)
-    energy = np.array(energy)
+    positions: Optional[np.ndarray] = np.array(positions_lst, dtype=complex)
+    velocity = np.array(velocity_lst, dtype=complex)
+    energy = np.array(energy_lst)
 
     if velocity_only:
         positions = None
@@ -105,7 +106,7 @@ def calc_molecular_dynamics_phonons_with_lammpslib(
     time_step: float = 0.001,  # ps
     relaxation_time: int = 5,  # ps
     silent: bool = True,
-    supercell: list[int] = None,
+    supercell: Optional[list[int]] = None,
     memmap: bool = False,
     velocity_only: bool = True,
     temperature: float = 300.0,

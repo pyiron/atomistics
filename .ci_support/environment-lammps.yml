@@ -2,9 +2,10 @@ channels:
 - conda-forge
 dependencies:
 - lammps =2024.08.29=*openmpi*
-- pandas =3.0.2
-- pylammpsmpi =0.3.12
+- pandas =3.0.3
+- pylammpsmpi =0.4.0
 - jinja2 =3.1.6
 - iprpy-data =2023.07.25
 - dynaphopy =1.18.0
-- lammpsparser =0.0.3
+- lammpsparser =0.0.5
+- pyscal3 = 3.3.2

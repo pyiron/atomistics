@@ -1,9 +1,10 @@
 # best would be StrEnum from py3.11
 import sys
+from collections.abc import Iterable
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any, Callable, Union
 
-if sys.version_info.minor < 11:
+if sys.version_info < (3, 11):
     # official impl' is not significantly different
     class StrEnum(str, Enum):
         def __str__(self):
@@ -14,6 +15,8 @@ else:
 
 
 class TaskEnum(StrEnum):
+    """Enumeration of supported calculator tasks."""
+
     calc_energy = "calc_energy"
     calc_forces = "calc_forces"
     calc_stress = "calc_stress"
@@ -27,6 +30,8 @@ class TaskEnum(StrEnum):
 
 
 class TaskOutputEnum(Enum):
+    """Maps task names to their corresponding output key names."""
+
     energy = "calc_energy"
     forces = "calc_forces"
     stress = "calc_stress"
@@ -37,28 +42,30 @@ class TaskOutputEnum(Enum):
     volume_over_temperature = "calc_molecular_dynamics_thermal_expansion"
 
 
+TaskName = Union[str, TaskEnum]
+
+
 if TYPE_CHECKING:
     from ase import Atoms
 
-    TaskName = Union[str, TaskEnum]
     TaskSpec = tuple[Atoms, list[TaskName]]
     TaskDict = dict[str, TaskSpec]
 
     TaskResults = dict[TaskName, Any]
     ResultsDict = dict[str, TaskResults]
 
-    SimpleEvaluator = callable[[Atoms, list[TaskName], ...], TaskResults]
+    SimpleEvaluator = Callable[..., TaskResults]
 
 
-def get_quantities_from_tasks(tasks: dict) -> list:
+def get_quantities_from_tasks(tasks: Iterable[str]) -> list[str]:
     """
     Get a list of quantities based on the given tasks.
 
     Args:
-        tasks (dict): A dictionary of tasks.
+        tasks (Iterable[str]): The requested tasks.
 
     Returns:
-        list: A list of quantities.
+        list[str]: A list of quantities.
 
     """
     quantities = []

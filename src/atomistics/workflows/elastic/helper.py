@@ -15,10 +15,30 @@ from atomistics.workflows.elastic.symmetry import (
 
 
 def _get_eta_matrix(
-    Lag_strain_list: list[float],
-    epss: list[float],
+    Lag_strain_list: list[str],
+    epss: np.ndarray,
     sqrt_eta: bool = True,
 ) -> dict[str, np.ndarray]:
+    """
+    Compute the Lagrangian strain matrices for all strain–amplitude combinations.
+
+    For each Lagrangian strain pattern and each non-zero strain amplitude, builds the
+    symmetric 3×3 eta matrix from the Voigt strain vector and optionally applies the
+    square-root mapping so that the resulting deformation gradient is symmetric.
+
+    Args:
+        Lag_strain_list (list[str]): List of Lagrangian strain pattern keys (looked up in ``Ls_Dic``).
+        epss (np.ndarray): Array of strain amplitudes (zero values are skipped).
+        sqrt_eta (bool): Whether to iteratively solve for the symmetric square root of the
+            strain matrix. Required for accurate large-strain calculations. Defaults to ``True``.
+
+    Returns:
+        dict[str, np.ndarray]: Mapping from subjob name to the 3×3 deformation matrix for
+            each (strain pattern, amplitude) pair.
+
+    Raises:
+        Exception: If the norm of the strain matrix exceeds 0.7 (deformation too large).
+    """
     eps_dict = {}
     for lag_strain in Lag_strain_list:
         Ls_list = Ls_Dic[lag_strain]
@@ -53,9 +73,9 @@ def _get_eta_matrix(
             if sqrt_eta:
                 while norm > 1.0e-10:
                     x = eta_matrix - np.dot(eps_matrix, eps_matrix) / 2.0
-                    norm = np.linalg.norm(x - eps_matrix)
+                    norm = float(np.linalg.norm(x - eps_matrix))
                     eps_matrix = x
-            eps_dict[_subjob_name(i=lag_strain, eps=eps)] = eps_matrix
+            eps_dict[_subjob_name(i=lag_strain, eps=float(eps))] = eps_matrix
     return eps_dict
 
 
@@ -65,7 +85,7 @@ def get_tasks_for_elastic_matrix(
     num_of_point: int,
     zero_strain_job_name: str = "s_e_0",
     sqrt_eta: bool = True,
-) -> tuple[dict[str, dict[str, ase.atoms.Atoms]], dict[str, int]]:
+) -> tuple[dict[str, dict[str, ase.atoms.Atoms]], dict[str, Any]]:
     """
     Generate structures for elastic analysis.
 
@@ -152,8 +172,8 @@ def analyse_results_for_elastic_matrix(
 
 def _get_elastic_matrix(
     output_dict: dict,
-    Lag_strain_list: list[float],
-    epss: float,
+    Lag_strain_list: list[str],
+    epss: np.ndarray,
     v0: float,
     LC: str,
     fit_order: int = 2,
@@ -177,18 +197,21 @@ def _get_elastic_matrix(
     if "energy" in output_dict:
         output_dict = output_dict["energy"]
 
-    ene0 = None
+    ene0: Optional[float] = None
     if 0.0 in epss:
         ene0 = output_dict[zero_strain_job_name]
-    strain_energy = []
+    strain_energy: list[list[tuple[float, float]]] = []
     for lag_strain in Lag_strain_list:
         strain_energy.append([])
         for eps in epss:
+            eps_float = float(eps)
             if eps != 0.0:
-                ene = output_dict[_subjob_name(i=lag_strain, eps=eps)]
+                ene = output_dict[_subjob_name(i=lag_strain, eps=eps_float)]
             else:
+                if ene0 is None:
+                    raise ValueError("Zero strain energy is not available.")
                 ene = ene0
-            strain_energy[-1].append((eps, ene))
+            strain_energy[-1].append((eps_float, ene))
     elastic_matrix, A2 = _fit_elastic_matrix(
         strain_ene=strain_energy,
         v0=v0,
@@ -198,7 +221,7 @@ def _get_elastic_matrix(
     return elastic_matrix, A2, strain_energy, ene0
 
 
-def _subjob_name(i: int, eps: float) -> str:
+def _subjob_name(i: str, eps: float) -> str:
     """
     Generate the subjob name.
 
@@ -227,13 +250,13 @@ def _fit_elastic_matrix(
     Returns:
         Tuple[np.ndarray, np.ndarray]: A tuple containing the elastic matrix and the A2 coefficients.
     """
-    A2 = []
+    A2_lst = []
     for s_e in strain_ene:
         ss = np.transpose(s_e)
         coeffs = np.polyfit(ss[0], ss[1] / v0, fit_order)
-        A2.append(coeffs[fit_order - 2])
+        A2_lst.append(coeffs[fit_order - 2])
 
-    A2 = np.array(A2)
+    A2 = np.array(A2_lst)
     C = get_C_from_A2(A2, LC)
 
     for i in range(5):
