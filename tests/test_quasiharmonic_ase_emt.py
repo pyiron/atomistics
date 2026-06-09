@@ -4,14 +4,22 @@ from ase.optimize import LBFGS
 import unittest
 
 from atomistics.calculators import evaluate_with_ase
-from atomistics.workflows import (
-    get_tasks_for_quasi_harmonic_approximation,
-    get_thermal_properties_for_quasi_harmonic_approximation,
-    analyse_results_for_quasi_harmonic_approximation,
-    optimize_volume,
+
+try:
+    from atomistics.workflows import (
+        get_tasks_for_quasi_harmonic_approximation,
+        get_thermal_properties_for_quasi_harmonic_approximation,
+        analyse_results_for_quasi_harmonic_approximation,
+        optimize_volume,
+    )
+    skip_phonopy_test = False
+except ImportError:
+    skip_phonopy_test = True
+
+
+@unittest.skipIf(
+    skip_phonopy_test, "Phonopy is not installed, so the Phonopy tests are skipped."
 )
-
-
 class TestPhonons(unittest.TestCase):
     def test_calc_phonons(self):
         structure = bulk("Al", cubic=True)

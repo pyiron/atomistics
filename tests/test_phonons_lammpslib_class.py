@@ -4,9 +4,9 @@ from ase.build import bulk
 import unittest
 
 from atomistics.workflows import optimize_positions_and_volume
-from atomistics.workflows.phonons.workflow import PhonopyWorkflow
 
 try:
+    from atomistics.workflows.phonons.workflow import PhonopyWorkflow
     from atomistics.calculators import evaluate_with_lammpslib, get_potential_by_name
 
     skip_lammps_test = False

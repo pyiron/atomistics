@@ -1,9 +1,9 @@
 import unittest
-from atomistics.referencedata import get_elastic_properties_from_wikipedia
 
 
 try:
     from atomistics.referencedata import (
+        get_elastic_properties_from_wikipedia,
         get_chemical_information_from_mendeleev,
         get_chemical_information_from_wolframalpha,
     )

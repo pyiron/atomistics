@@ -5,13 +5,16 @@ import subprocess
 from ase.build import bulk
 import unittest
 
-from atomistics.calculators import evaluate_with_sphinx
 from atomistics.workflows import (
     analyse_results_for_energy_volume_curve,
     get_tasks_for_energy_volume_curve,
-    get_thermal_properties_for_energy_volume_curve,
-    optimize_volume,
 )
+
+try:
+    from atomistics.calculators import evaluate_with_sphinx
+    skip_sphinx_test = False
+except ImportError:
+    skip_sphinx_test = True
 
 sphinx_command = "sphinx"
 if shutil.which(sphinx_command) is not None:

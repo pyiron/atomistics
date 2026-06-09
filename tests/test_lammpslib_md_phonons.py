@@ -3,10 +3,9 @@ import os
 from ase.build import bulk
 import unittest
 
-from atomistics.workflows import get_tasks_for_harmonic_approximation, analyse_results_for_harmonic_approximation
-
 
 try:
+    from atomistics.workflows import get_tasks_for_harmonic_approximation, analyse_results_for_harmonic_approximation
     from atomistics.calculators import (
         calc_molecular_dynamics_phonons_with_lammpslib,
         evaluate_with_lammpslib,
