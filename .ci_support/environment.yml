@@ -3,7 +3,7 @@ channels:
 dependencies:
 - ase =3.28.0
 - coverage
-- lxml =6.0.2
+- lxml =6.1.1
 - mendeleev =1.1.0
 - numpy =2.4.6
 - pandas =2.3.3
