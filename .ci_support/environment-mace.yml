@@ -4,3 +4,4 @@ dependencies:
 - pymace =0.3.12
 - pytorch =2.5.1
 - phonopy =3.2.0
+- structuretoolkit =0.0.44
