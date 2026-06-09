@@ -1,5 +1,5 @@
 channels:
 - conda-forge
 dependencies:
-- abinit =9.8.4
+- abinit =10.0.3
 - abinit-data =0.0.1
