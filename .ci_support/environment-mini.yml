@@ -1,0 +1,10 @@
+channels:
+- conda-forge
+dependencies:
+- ase =3.28.0
+- coverage
+- numpy =2.4.6
+- scipy =1.17.1
+- spglib =2.7.0
+- hatchling =1.30.1
+- hatch-vcs =0.5.0
