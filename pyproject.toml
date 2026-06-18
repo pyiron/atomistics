@@ -72,7 +72,7 @@ qe = [
     "pwtools==1.3.0"
 ]
 tqdm = [
-    "tqdm==4.68.2"
+    "tqdm==4.68.3"
 ]
 vasp = [
     "vaspparser==0.0.5"
