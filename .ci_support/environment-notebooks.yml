@@ -9,4 +9,4 @@ dependencies:
 - pylammpsmpi =0.4.0
 - jinja2 =3.1.6
 - dynaphopy =1.18.0
-- lammpsparser =0.0.5
+- lammpsparser =0.0.6
