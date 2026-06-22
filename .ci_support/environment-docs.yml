@@ -12,14 +12,14 @@ dependencies:
 - scipy =1.17.1
 - spglib =2.7.0
 - phonopy =3.2.0
-- structuretoolkit =0.0.44
+- structuretoolkit =0.0.45
 - seekpath =2.2.1
 - lammps =2025.07.22
 - pandas =3.0.3
 - pylammpsmpi =0.4.0
 - jinja2 =3.1.6
 - jupyter-book =1.0.0
-- lammpsparser =0.0.5
+- lammpsparser =0.0.6
 - vaspparser =0.0.5
 - hatchling =1.30.1
 - hatch-vcs =0.5.0

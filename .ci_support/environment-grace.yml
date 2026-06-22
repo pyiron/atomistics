@@ -3,5 +3,5 @@ channels:
 dependencies:
 - grace-tensorpotential =0.5.3
 - phonopy =3.2.0
-- structuretoolkit =0.0.44
+- structuretoolkit =0.0.45
 - seekpath =2.2.1
