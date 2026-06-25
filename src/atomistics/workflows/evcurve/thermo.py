@@ -210,7 +210,7 @@ class ThermoBulk:
                 raise ValueError()
         else:
             self._energies = (
-                np.ones((len(self.volumes), len(self.temperatures))) * erg_lst
+                np.ones((len(self.temperatures), len(self.volumes))) * erg_lst
             )
 
     def set_temperatures(
@@ -495,8 +495,8 @@ class ThermoBulk:
             import matplotlib.pyplot as plt
         if ax is None:
             fig, ax = plt.subplots(1, 1)
-            ax.xlabel(r"Volume [$\AA^3$]")
-            ax.ylabel("Temperature [K]")
+            ax.set_xlabel(r"Volume [$\AA^3$]")
+            ax.set_ylabel("Temperature [K]")
         ax.plot(self.get_minimum_energy_path(), self.temperatures, *args, **qwargs)
         return ax
 

@@ -33,7 +33,7 @@ def check_force_constants(structure: Atoms, force_constants: np.ndarray) -> np.n
         na = np.newaxis
         return (
             np.array(force_constants)[:, na, :, na] * np.eye(3)[na, :, na, :]
-        ).flatten()
+        ).reshape(3 * n_atom, 3 * n_atom)
     elif len(np.shape(force_constants)) == 4:
         force_shape = np.shape(force_constants)
         if force_shape[2] == 3 and force_shape[3] == 3:
