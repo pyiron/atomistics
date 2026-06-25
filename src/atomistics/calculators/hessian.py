@@ -189,10 +189,21 @@ def get_pressure_times_volume(
             np.linalg.inv(structure_equilibrium.cell),
         ) - np.eye(3)
         epsilon = (epsilon + epsilon.T) * 0.5
-        epsilon = np.append(epsilon.diagonal(), np.roll(epsilon, -1, axis=0).diagonal())
-        pressure = -np.einsum("ij,j->i", stiffness_tensor, epsilon)
-        pressure = pressure[3:] * np.roll(np.eye(3), -1, axis=1)
-        pressure += pressure.T + np.eye(3) * pressure[:3]
+        epsilon_voigt = np.array(
+            [
+                epsilon[0, 0],
+                epsilon[1, 1],
+                epsilon[2, 2],
+                epsilon[1, 2],
+                epsilon[0, 2],
+                epsilon[0, 1],
+            ]
+        )
+        pressure_voigt = -np.einsum("ij,j->i", stiffness_tensor, epsilon_voigt)
+        pressure = np.diag(pressure_voigt[:3])
+        pressure[1, 2] = pressure[2, 1] = pressure_voigt[3]
+        pressure[0, 2] = pressure[2, 0] = pressure_voigt[4]
+        pressure[0, 1] = pressure[1, 0] = pressure_voigt[5]
         return -np.sum(epsilon * pressure) * structure.get_volume()
     else:
         return 0.0
