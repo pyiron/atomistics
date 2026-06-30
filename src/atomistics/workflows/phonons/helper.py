@@ -80,7 +80,18 @@ class PhonopyProperties:
             with_eigenvectors=self._with_eigenvectors,
             with_group_velocities=self._with_group_velocities,
         )
-        self._band_structure_dict = self._phonopy.get_band_structure_dict()
+        bs = self._phonopy.band_structure
+        if bs is None:
+            raise ValueError(
+                "Phonopy band structure calculation did not produce a result."
+            )
+        self._band_structure_dict = {
+            "qpoints": bs.qpoints,
+            "distances": bs.distances,
+            "frequencies": bs.frequencies,
+            "eigenvectors": bs.eigenvectors,
+            "group_velocities": bs.group_velocities,
+        }
 
     def _calc_force_constants(self):
         """
@@ -110,7 +121,18 @@ class PhonopyProperties:
                 with_group_velocities=self._with_group_velocities,
                 is_gamma_center=self._is_gamma_center,
             )
-            self._mesh_dict = self._phonopy.get_mesh_dict()
+            mesh = self._phonopy.mesh
+            if mesh is None:
+                raise ValueError(
+                    "Phonopy mesh calculation did not produce a mesh dictionary."
+                )
+            self._mesh_dict = {
+                "qpoints": mesh.qpoints,
+                "weights": mesh.weights,
+                "frequencies": mesh.frequencies,
+                "eigenvectors": mesh.eigenvectors,
+                "group_velocities": mesh.group_velocities,
+            }
         if self._mesh_dict is None:
             raise ValueError(
                 "Phonopy mesh calculation did not produce a mesh dictionary."
@@ -191,7 +213,22 @@ class PhonopyThermalProperties:
             phonopy_instance (Phonopy): The Phonopy instance.
         """
         self._phonopy = phonopy_instance
-        self._thermal_properties = phonopy_instance.get_thermal_properties_dict()
+        thermal_props = phonopy_instance.thermal_properties
+        if thermal_props is None:
+            raise RuntimeError(
+                "run_thermal_properties has to be done before getting thermal properties."
+            )
+        tp = thermal_props.thermal_properties
+        if tp is None:
+            raise RuntimeError(
+                "Thermal properties are not available. Run run_thermal_properties first."
+            )
+        self._thermal_properties = {
+            "temperatures": tp[0],
+            "free_energy": tp[1],
+            "entropy": tp[2],
+            "heat_capacity": tp[3],
+        }
 
     def free_energy(self) -> np.ndarray:
         """
@@ -304,7 +341,7 @@ def get_tasks_for_harmonic_approximation(
             interaction_range=interaction_range,
             cell=unitcell.cell,
         ),
-        primitive_matrix=primitive_matrix,
+        primitive_matrix="P" if primitive_matrix is None else primitive_matrix,
     )
     phonopy_obj.generate_displacements(
         distance=displacement,
@@ -535,7 +572,16 @@ def get_band_structure(
         with_eigenvectors=with_eigenvectors,
         with_group_velocities=with_group_velocities,
     )
-    results = phonopy.get_band_structure_dict()
+    bs = phonopy.band_structure
+    if bs is None:
+        raise ValueError("Phonopy band structure calculation did not produce a result.")
+    results = {
+        "qpoints": bs.qpoints,
+        "distances": bs.distances,
+        "frequencies": bs.frequencies,
+        "eigenvectors": bs.eigenvectors,
+        "group_velocities": bs.group_velocities,
+    }
     if results["eigenvectors"] is not None:
         # see https://phonopy.github.io/phonopy/phonopy-module.html#eigenvectors for the way phonopy stores the
         # eigenvectors
@@ -572,9 +618,7 @@ def plot_band_structure(
     """
     import matplotlib.pyplot as plt
 
-    results = phonopy.get_band_structure_dict()
-    # HACK: strictly speaking this breaks phonopy API and could bite us
-    band_structure = phonopy._band_structure
+    band_structure = phonopy.band_structure
     if band_structure is None:
         raise ValueError("Phonopy band structure is not available.")
     path_connections = band_structure.path_connections
@@ -582,8 +626,8 @@ def plot_band_structure(
     if axis is None:
         _, axis = plt.subplots(1, 1)
 
-    distances = results["distances"]
-    frequencies = results["frequencies"]
+    distances = band_structure.distances
+    frequencies = band_structure.frequencies
 
     if "color" not in kwargs:
         kwargs["color"] = "black"
