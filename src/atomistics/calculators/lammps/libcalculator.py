@@ -690,6 +690,26 @@ def calc_molecular_dynamics_thermal_expansion_with_lammpslib(
     )
 
 
+def get_energy_pot_with_lammpslib(lmp: LammpsASELibrary, run: int = 0) -> float:
+    """
+    Advance an existing LAMMPS session by ``run`` timesteps and read back the
+    instantaneous potential energy.
+
+    Intended for hybrid MD/Monte-Carlo workflows that hold a session open across
+    many small steps (see ``lammps_run`` / ``lammps_shutdown`` for building and
+    tearing down such a session).
+
+    Args:
+        lmp (LammpsASELibrary): An active LAMMPS library instance.
+        run (int): Number of timesteps to advance before reading the energy. Defaults to ``0``.
+
+    Returns:
+        float: The instantaneous potential energy in eV.
+    """
+    lmp.interactive_lib_command(f"run {run}")
+    return lmp.interactive_energy_pot_getter()
+
+
 @as_task_dict_evaluator
 def evaluate_with_lammpslib_library_interface(
     structure: Atoms,

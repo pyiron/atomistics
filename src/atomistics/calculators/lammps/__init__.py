@@ -1,5 +1,6 @@
 from lammpsparser import get_potential_by_name, get_potential_dataframe
 
+from atomistics.calculators.lammps.helpers import lammps_run, lammps_shutdown
 from atomistics.calculators.lammps.libcalculator import (
     calc_molecular_dynamics_langevin_with_lammpslib,
     calc_molecular_dynamics_nph_with_lammpslib,
@@ -27,6 +28,8 @@ __all__: list[str] = [
     "optimize_positions_with_lammpslib",
     "get_potential_dataframe",
     "get_potential_by_name",
+    "lammps_run",
+    "lammps_shutdown",
 ]
 lammps_phonon_functions: list[str] = ["calc_molecular_dynamics_phonons_with_lammpslib"]
 
