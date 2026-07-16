@@ -742,6 +742,36 @@ def get_energy_pot_average_with_lammpslib(
     return lmp._interactive_library.extract_fix(fix_id, 0, 0)
 
 
+def get_structure_snapshot_with_lammpslib(structure: Atoms, lmp: LammpsASELibrary) -> Atoms:
+    """
+    Capture the current cell, positions, and velocities of a live LAMMPS session as a
+    standalone ``ase.Atoms`` snapshot.
+
+    The returned snapshot can be passed back into ``lammps_run`` (with an input
+    template that does not re-initialise velocities, e.g. omitting the
+    ``LAMMPS_VELOCITY`` command) to resume the session state later -- there is no
+    ``pylammpsmpi`` API to set velocities on an existing session directly, so a full
+    session rebuild from such a snapshot is the only way to restore them.
+
+    Chemical symbols are copied unchanged from ``structure``; callers that need to
+    change species (e.g. after a Monte Carlo swap) should call
+    ``structure.set_chemical_symbols(...)`` before passing ``structure`` in.
+
+    Args:
+        structure (Atoms): Template structure to copy (species, constraints, etc.);
+            its cell, positions, and velocities are overwritten from ``lmp``.
+        lmp (LammpsASELibrary): An active LAMMPS library instance.
+
+    Returns:
+        Atoms: A new ``Atoms`` snapshot of the current session state.
+    """
+    snapshot = structure.copy()
+    snapshot.set_cell(lmp.interactive_cells_getter(), scale_atoms=False)
+    snapshot.set_positions(lmp.interactive_positions_getter())
+    snapshot.set_velocities(lmp.interactive_velocities_getter())
+    return snapshot
+
+
 @as_task_dict_evaluator
 def evaluate_with_lammpslib_library_interface(
     structure: Atoms,

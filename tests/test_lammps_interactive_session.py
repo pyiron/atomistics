@@ -10,6 +10,7 @@ try:
     from atomistics.calculators.lammps.libcalculator import (
         get_energy_pot_average_with_lammpslib,
         get_energy_pot_with_lammpslib,
+        get_structure_snapshot_with_lammpslib,
     )
     from atomistics.calculators.lammps.commands import (
         LAMMPS_AVE_ENERGY,
@@ -92,3 +93,37 @@ class TestLammpsInteractiveSession(unittest.TestCase):
         self.assertNotEqual(average_energy, 0.0)
         self.assertAlmostEqual(average_energy, instantaneous_energy, delta=5.0)
         lammps_shutdown(lmp_instance=lmp)
+
+    def test_snapshot_round_trip(self):
+        structure = bulk("Al", cubic=True).repeat([2, 2, 2])
+        df_pot_selected = self._get_potential()
+        lmp = lammps_run(
+            structure=structure,
+            potential_dataframe=df_pot_selected,
+            input_template=_nvt_template(),
+        )
+        get_energy_pot_with_lammpslib(lmp=lmp, run=10)
+        snapshot = get_structure_snapshot_with_lammpslib(structure=structure, lmp=lmp)
+
+        self.assertEqual(
+            list(snapshot.get_chemical_symbols()), list(structure.get_chemical_symbols())
+        )
+        np.testing.assert_allclose(snapshot.cell.array, lmp.interactive_cells_getter())
+        np.testing.assert_allclose(snapshot.positions, lmp.interactive_positions_getter())
+        np.testing.assert_allclose(
+            snapshot.get_velocities(), lmp.interactive_velocities_getter()
+        )
+        energy_before_restore = lmp.interactive_energy_pot_getter()
+        lammps_shutdown(lmp_instance=lmp)
+
+        # Resume from the snapshot without re-randomising velocities: a fresh
+        # `velocity create` would overwrite the velocities the snapshot carries.
+        resume_template = _nvt_template(include_velocity=False)
+        lmp_resumed = lammps_run(
+            structure=snapshot,
+            potential_dataframe=df_pot_selected,
+            input_template=resume_template,
+        )
+        energy_after_restore = get_energy_pot_with_lammpslib(lmp=lmp_resumed, run=0)
+        self.assertAlmostEqual(energy_before_restore, energy_after_restore, places=6)
+        lammps_shutdown(lmp_instance=lmp_resumed)
