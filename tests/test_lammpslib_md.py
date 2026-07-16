@@ -6,6 +6,7 @@ import unittest
 
 
 try:
+    from pylammpsmpi import LammpsASELibrary
     from atomistics.calculators import (
         calc_molecular_dynamics_nvt_with_lammpslib,
         calc_molecular_dynamics_npt_with_lammpslib,
@@ -13,6 +14,7 @@ try:
         calc_molecular_dynamics_langevin_with_lammpslib,
         get_potential_by_name,
     )
+    from atomistics.calculators.lammps.helpers import lammps_get_structure
 
     skip_lammps_test = False
 except ImportError:
@@ -52,6 +54,55 @@ class TestLammpsMD(unittest.TestCase):
         self.assertEqual(result_dict["pressure"].shape, (10, 3, 3))
         self.assertTrue(result_dict["temperature"][-1] > 90)
         self.assertTrue(result_dict["temperature"][-1] < 110)
+
+    def test_lammps_md_nvt_all_lib(self):
+        structure = bulk("Al", cubic=True).repeat([2, 2, 2])
+        df_pot_selected = get_potential_by_name(
+            potential_name="1999--Mishin-Y--Al--LAMMPS--ipr1",
+            resource_path=os.path.join(os.path.dirname(__file__), "static", "lammps"),
+        )
+        lmp = LammpsASELibrary(
+            working_directory=None,
+            cores=1,
+            comm=None,
+            logger=None,
+            log_file=None,
+            library=None,
+            disable_log_file=True,
+        )
+        result_dict = calc_molecular_dynamics_nvt_with_lammpslib(
+            structure=structure,
+            potential_dataframe=df_pot_selected,
+            Tstart=100,
+            Tstop=100,
+            Tdamp=0.1,
+            run=100,
+            thermo=10,
+            timestep=0.001,
+            seed=4928459,
+            dist="gaussian",
+            lmp=lmp,
+        )
+        self.assertEqual(result_dict["positions"].shape, (10, 32, 3))
+        self.assertEqual(result_dict["velocities"].shape, (10, 32, 3))
+        self.assertEqual(result_dict["cell"].shape, (10, 3, 3))
+        self.assertEqual(result_dict["forces"].shape, (10, 32, 3))
+        self.assertEqual(result_dict["temperature"].shape, (10,))
+        self.assertEqual(result_dict["energy_pot"].shape, (10,))
+        self.assertEqual(result_dict["energy_tot"].shape, (10,))
+        self.assertEqual(result_dict["pressure"].shape, (10, 3, 3))
+        self.assertTrue(result_dict["temperature"][-1] > 90)
+        self.assertTrue(result_dict["temperature"][-1] < 110)
+        structure_md = lammps_get_structure(
+            structure=structure,
+            lmp_instance=lmp,
+            set_velocities=True,
+            scale_atoms=True,
+            set_cell=True,
+        )
+        self.assertEqual(structure.get_volume(), structure_md.get_volume())
+        self.assertTrue(sum(structure_md.get_velocities() ** 2) > 0)
+        lmp.close()
 
     def test_lammps_md_nvt_all_no_velocity(self):
         structure = bulk("Al", cubic=True).repeat([2, 2, 2])
