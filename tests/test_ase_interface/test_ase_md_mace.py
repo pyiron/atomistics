@@ -29,6 +29,7 @@ class TestASEMD(unittest.TestCase):
             timestep=1 * units.fs,
             temperature=100,
             friction=0.002,
+            seed=4928459,
         )
         self.assertEqual(result_dict["positions"].shape, (10, 32, 3))
         self.assertEqual(result_dict["velocities"].shape, (10, 32, 3))
