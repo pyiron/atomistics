@@ -10,6 +10,9 @@ from atomistics.calculators.lammps.libcalculator import (
     calc_static_with_lammpslib,
     evaluate_with_lammpslib,
     evaluate_with_lammpslib_library_interface,
+    get_energy_pot_average_with_lammpslib,
+    get_energy_pot_with_lammpslib,
+    get_structure_snapshot_with_lammpslib,
     optimize_positions_and_volume_with_lammpslib,
     optimize_positions_with_lammpslib,
 )
@@ -24,12 +27,15 @@ __all__: list[str] = [
     "calc_static_with_lammpslib",
     "evaluate_with_lammpslib",
     "evaluate_with_lammpslib_library_interface",
-    "optimize_positions_and_volume_with_lammpslib",
-    "optimize_positions_with_lammpslib",
+    "get_energy_pot_average_with_lammpslib",
+    "get_energy_pot_with_lammpslib",
     "get_potential_dataframe",
     "get_potential_by_name",
+    "get_structure_snapshot_with_lammpslib",
     "lammps_run",
     "lammps_shutdown",
+    "optimize_positions_and_volume_with_lammpslib",
+    "optimize_positions_with_lammpslib",
 ]
 lammps_phonon_functions: list[str] = ["calc_molecular_dynamics_phonons_with_lammpslib"]
 

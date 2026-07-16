@@ -6,11 +6,13 @@ from ase.build import bulk
 from jinja2 import Template
 
 try:
-    from atomistics.calculators.lammps import get_potential_by_name, lammps_run, lammps_shutdown
-    from atomistics.calculators.lammps.libcalculator import (
+    from atomistics.calculators import (
         get_energy_pot_average_with_lammpslib,
         get_energy_pot_with_lammpslib,
+        get_potential_by_name,
         get_structure_snapshot_with_lammpslib,
+        lammps_run,
+        lammps_shutdown,
     )
     from atomistics.calculators.lammps.commands import (
         LAMMPS_AVE_ENERGY,
