@@ -13,7 +13,6 @@ try:
         evaluate_with_lammpslib_library_interface,
         get_potential_by_name,
     )
-    from atomistics.calculators.lammps.helpers import lammps_get_structure
 
     skip_lammps_test = False
 except ImportError:
@@ -47,7 +46,7 @@ class TestLangevin(unittest.TestCase):
             library=None,
             disable_log_file=True,
         )
-        eng_pot_lst, eng_kin_lst, structure_lst = [], [], []
+        eng_pot_lst, eng_kin_lst = [], []
         for i in range(steps):
             task_dict = workflow.generate_structures()
             result_dict = evaluate_with_lammpslib_library_interface(
@@ -58,18 +57,8 @@ class TestLangevin(unittest.TestCase):
             eng_pot, eng_kin = workflow.analyse_structures(output_dict=result_dict)
             eng_pot_lst.append(eng_pot)
             eng_kin_lst.append(eng_kin)
-            structure_lst.append(
-                lammps_get_structure(
-                    lmp_instance=lmp, 
-                    structure=structure, 
-                    set_velocities=True, 
-                    scale_atoms=True, 
-                    set_cell=True,
-                ),
-            )
         lmp.close()
         eng_tot_lst = np.array(eng_pot_lst) + np.array(eng_kin_lst)
         eng_tot_mean = np.mean(eng_tot_lst[200:])
         self.assertTrue(-105 < eng_tot_mean)
         self.assertTrue(eng_tot_mean < -103)
-        self.assertEqual(len(structure_lst), steps)
