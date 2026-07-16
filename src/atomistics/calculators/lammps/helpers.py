@@ -244,3 +244,42 @@ def lammps_shutdown(
     lmp_instance.interactive_lib_command("clear")
     if close_instance:
         lmp_instance.close()
+
+
+def lammps_get_structure(
+    structure: Atoms, lmp: LammpsASELibrary, set_velocities: bool = True, scale_atoms: bool = True, set_cell: bool = True
+) -> Atoms:
+    """
+    Capture the current cell, positions, and velocities of a live LAMMPS session as a
+    standalone ``ase.Atoms`` snapshot.
+
+    The returned snapshot can be passed back into ``lammps_run`` (with an input
+    template that does not re-initialise velocities, e.g. omitting the
+    ``LAMMPS_VELOCITY`` command) to resume the session state later -- there is no
+    ``pylammpsmpi`` API to set velocities on an existing session directly, so a full
+    session rebuild from such a snapshot is the only way to restore them.
+
+    Chemical symbols are copied unchanged from ``structure``; callers that need to
+    change species (e.g. after a Monte Carlo swap) should call
+    ``structure.set_chemical_symbols(...)`` before passing ``structure`` in.
+
+    Args:
+        structure (Atoms): Template structure to copy (species, constraints, etc.);
+            its cell, positions, and velocities are overwritten from ``lmp``.
+        lmp (LammpsASELibrary): An active LAMMPS library instance.
+        set_velocities (bool): Whether to copy velocities from the LAMMPS session.
+            Set to ``False`` if the caller intends to re-initialise velocities later.
+        scale_atoms (bool): Whether to scale atomic positions when setting the cell.
+            Defaults to ``True`` to preserve fractional coordinates; set to ``False``
+        set_cell (bool): Whether to copy the cell from the LAMMPS session. Defaults to ``True``.
+
+    Returns:
+        Atoms: A new ``Atoms`` snapshot of the current session state.
+    """
+    snapshot = structure.copy()
+    if set_cell:
+        snapshot.set_cell(lmp.interactive_cells_getter(), scale_atoms=scale_atoms)
+    snapshot.set_positions(lmp.interactive_positions_getter())
+    if set_velocities:
+        snapshot.set_velocities(lmp.interactive_velocities_getter())
+    return snapshot
