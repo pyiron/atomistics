@@ -710,6 +710,38 @@ def get_energy_pot_with_lammpslib(lmp: LammpsASELibrary, run: int = 0) -> float:
     return lmp.interactive_energy_pot_getter()
 
 
+def get_energy_pot_average_with_lammpslib(
+    lmp: LammpsASELibrary, run: int, fix_id: str = "avePE"
+) -> float:
+    """
+    Advance an existing LAMMPS session by ``run`` timesteps and read back the
+    time-averaged potential energy from a LAMMPS ``fix ave/time`` (see
+    ``LAMMPS_AVE_ENERGY`` for the matching input template).
+
+    This reaches into the private ``lmp._interactive_library`` attribute to call
+    ``extract_fix`` directly, since ``pylammpsmpi`` does not expose LAMMPS'
+    ``extract_fix`` functionality through its public API. It therefore only works
+    when ``lmp`` was created with ``cores=1`` and without an ``executor`` argument
+    -- the case in which ``pylammpsmpi`` backs the session with the raw
+    ``lammps.lammps`` object rather than an MPI/executor wrapper. ``run`` should
+    equal (or be an integer multiple of) the averaging window the ``fix ave/time``
+    was configured with, otherwise the returned value reflects a stale or
+    incomplete window.
+
+    Args:
+        lmp (LammpsASELibrary): An active LAMMPS library instance created with
+            ``cores=1`` and no ``executor``, with a ``fix ave/time`` of id
+            ``fix_id`` already defined (see ``LAMMPS_AVE_ENERGY``).
+        run (int): Number of timesteps to advance before reading the averaged energy.
+        fix_id (str): LAMMPS id of the ``fix ave/time`` to read from. Defaults to ``"avePE"``.
+
+    Returns:
+        float: The time-averaged potential energy in eV.
+    """
+    lmp.interactive_lib_command(f"run {run}")
+    return lmp._interactive_library.extract_fix(fix_id, 0, 0)
+
+
 @as_task_dict_evaluator
 def evaluate_with_lammpslib_library_interface(
     structure: Atoms,

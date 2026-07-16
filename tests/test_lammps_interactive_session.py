@@ -7,8 +7,12 @@ from jinja2 import Template
 
 try:
     from atomistics.calculators.lammps import get_potential_by_name, lammps_run, lammps_shutdown
-    from atomistics.calculators.lammps.libcalculator import get_energy_pot_with_lammpslib
+    from atomistics.calculators.lammps.libcalculator import (
+        get_energy_pot_average_with_lammpslib,
+        get_energy_pot_with_lammpslib,
+    )
     from atomistics.calculators.lammps.commands import (
+        LAMMPS_AVE_ENERGY,
         LAMMPS_ENSEMBLE_NVT,
         LAMMPS_THERMO,
         LAMMPS_THERMO_STYLE,
@@ -39,6 +43,16 @@ def _nvt_template(thermo=10, timestep=0.001, T=300.0, Tdamp=0.1, seed=4928459, i
     )
 
 
+def _nvt_with_average_template(window, T=300.0, timestep=0.001, Tdamp=0.1, seed=4928459, include_velocity=True, fix_id="avePE"):
+    base = _nvt_template(
+        thermo=window, timestep=timestep, T=T, Tdamp=Tdamp, seed=seed, include_velocity=include_velocity
+    )
+    ave_energy = Template(LAMMPS_AVE_ENERGY).render(
+        energy_variable="myPE", fix_id=fix_id, window=window
+    )
+    return base + "\n" + ave_energy
+
+
 @unittest.skipIf(
     skip_lammps_test, "LAMMPS is not installed, so the LAMMPS tests are skipped."
 )
@@ -60,4 +74,21 @@ class TestLammpsInteractiveSession(unittest.TestCase):
         energy = get_energy_pot_with_lammpslib(lmp=lmp, run=10)
         self.assertIsInstance(energy, float)
         self.assertAlmostEqual(energy, lmp.interactive_energy_pot_getter(), places=8)
+        lammps_shutdown(lmp_instance=lmp)
+
+    def test_get_energy_pot_average_is_close_to_instantaneous(self):
+        structure = bulk("Al", cubic=True).repeat([2, 2, 2])
+        df_pot_selected = self._get_potential()
+        window = 10
+        lmp = lammps_run(
+            structure=structure,
+            potential_dataframe=df_pot_selected,
+            input_template=_nvt_with_average_template(window=window),
+        )
+        average_energy = get_energy_pot_average_with_lammpslib(lmp=lmp, run=window)
+        instantaneous_energy = lmp.interactive_energy_pot_getter()
+        self.assertIsInstance(average_energy, float)
+        self.assertTrue(np.isfinite(average_energy))
+        self.assertNotEqual(average_energy, 0.0)
+        self.assertAlmostEqual(average_energy, instantaneous_energy, delta=5.0)
         lammps_shutdown(lmp_instance=lmp)

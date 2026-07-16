@@ -33,3 +33,8 @@ LAMMPS_LANGEVIN = "fix ensemble all langevin {{Tstart}} {{Tstop}} {{Tdamp}} {{se
 
 
 LAMMPS_NVE = "fix integration all nve"
+
+
+LAMMPS_AVE_ENERGY = """\
+variable {{energy_variable}} equal pe
+fix {{fix_id}} all ave/time 1 {{window}} {{window}} v_{{energy_variable}}"""
