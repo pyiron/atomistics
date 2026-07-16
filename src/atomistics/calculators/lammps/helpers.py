@@ -247,7 +247,11 @@ def lammps_shutdown(
 
 
 def lammps_get_structure(
-    structure: Atoms, lmp: LammpsASELibrary, set_velocities: bool = True, scale_atoms: bool = True, set_cell: bool = True
+    structure: Atoms,
+    lmp: LammpsASELibrary,
+    set_velocities: bool = True,
+    scale_atoms: bool = True,
+    set_cell: bool = True,
 ) -> Atoms:
     """
     Capture the current cell, positions, and velocities of a live LAMMPS session as a
