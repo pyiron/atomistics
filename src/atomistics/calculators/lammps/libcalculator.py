@@ -99,7 +99,7 @@ def optimize_positions_and_volume_with_lammpslib(
         **kwargs,
     )
     structure_copy = lammps_get_structure(
-        lmp_instance=lmp,
+        lmp_instance=lmp_instance,
         structure=structure,
         set_velocities=False,
         scale_atoms=True,
@@ -155,7 +155,7 @@ def optimize_positions_with_lammpslib(
         **kwargs,
     )
     structure_copy = lammps_get_structure(
-        lmp_instance=lmp,
+        lmp_instance=lmp_instance,
         structure=structure,
         set_velocities=False,
         scale_atoms=False,
