@@ -282,7 +282,9 @@ def lammps_get_structure(
     """
     snapshot = structure.copy()
     if set_cell:
-        snapshot.set_cell(lmp_instance.interactive_cells_getter(), scale_atoms=scale_atoms)
+        snapshot.set_cell(
+            lmp_instance.interactive_cells_getter(), scale_atoms=scale_atoms
+        )
     snapshot.set_positions(lmp_instance.interactive_positions_getter())
     if set_velocities:
         snapshot.set_velocities(lmp_instance.interactive_velocities_getter())
