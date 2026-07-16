@@ -8,10 +8,10 @@ from atomistics.workflows import LangevinWorkflow
 
 
 try:
+    from pylammpsmpi import LammpsASELibrary
     from atomistics.calculators import (
         evaluate_with_lammpslib_library_interface,
         get_potential_by_name,
-        LammpsASELibrary,
     )
     from atomistics.calculators.lammps.helpers import lammps_get_structure
 
