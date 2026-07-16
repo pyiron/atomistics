@@ -45,7 +45,7 @@ class TestLangevin(unittest.TestCase):
             logger=None,
             log_file=None,
             library=None,
-            diable_log_file=True,
+            disable_log_file=True,
         )
         eng_pot_lst, eng_kin_lst, structure_lst = [], [], []
         for i in range(steps):
