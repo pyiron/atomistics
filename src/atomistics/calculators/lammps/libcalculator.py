@@ -742,7 +742,9 @@ def get_energy_pot_average_with_lammpslib(
     return lmp._interactive_library.extract_fix(fix_id, 0, 0)
 
 
-def get_structure_snapshot_with_lammpslib(structure: Atoms, lmp: LammpsASELibrary) -> Atoms:
+def get_structure_snapshot_with_lammpslib(
+    structure: Atoms, lmp: LammpsASELibrary
+) -> Atoms:
     """
     Capture the current cell, positions, and velocities of a live LAMMPS session as a
     standalone ``ase.Atoms`` snapshot.
