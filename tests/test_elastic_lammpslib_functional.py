@@ -10,7 +10,8 @@ from atomistics.workflows import (
 )
 
 try:
-    from atomistics.calculators import evaluate_with_lammpslib, get_potential_by_name
+    from lammpsparser import get_potential_by_name
+    from atomistics.calculators import evaluate_with_lammpslib
 
     skip_lammps_test = False
 except ImportError:
