@@ -248,7 +248,7 @@ def lammps_shutdown(
 
 def lammps_get_structure(
     structure: Atoms,
-    lmp: LammpsASELibrary,
+    lmp_instance: LammpsASELibrary,
     set_velocities: bool = True,
     scale_atoms: bool = True,
     set_cell: bool = True,
@@ -269,8 +269,8 @@ def lammps_get_structure(
 
     Args:
         structure (Atoms): Template structure to copy (species, constraints, etc.);
-            its cell, positions, and velocities are overwritten from ``lmp``.
-        lmp (LammpsASELibrary): An active LAMMPS library instance.
+            its cell, positions, and velocities are overwritten from ``lmp_instance``.
+        lmp_instance (LammpsASELibrary): An active LAMMPS library instance.
         set_velocities (bool): Whether to copy velocities from the LAMMPS session.
             Set to ``False`` if the caller intends to re-initialise velocities later.
         scale_atoms (bool): Whether to scale atomic positions when setting the cell.
@@ -282,8 +282,8 @@ def lammps_get_structure(
     """
     snapshot = structure.copy()
     if set_cell:
-        snapshot.set_cell(lmp.interactive_cells_getter(), scale_atoms=scale_atoms)
-    snapshot.set_positions(lmp.interactive_positions_getter())
+        snapshot.set_cell(lmp_instance.interactive_cells_getter(), scale_atoms=scale_atoms)
+    snapshot.set_positions(lmp_instance.interactive_positions_getter())
     if set_velocities:
-        snapshot.set_velocities(lmp.interactive_velocities_getter())
+        snapshot.set_velocities(lmp_instance.interactive_velocities_getter())
     return snapshot
