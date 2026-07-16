@@ -14,10 +14,8 @@ try:
         get_tasks_for_harmonic_approximation,
         analyse_results_for_harmonic_approximation,
     )
-    from pylammpsmpi import LammpsASELibrary
     from atomistics.calculators import (
         evaluate_with_lammpslib,
-        evaluate_with_lammpslib_library_interface,
         get_potential_by_name,
     )
 
