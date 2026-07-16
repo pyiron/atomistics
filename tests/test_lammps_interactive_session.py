@@ -3,9 +3,9 @@ import unittest
 
 import numpy as np
 from ase.build import bulk
-from jinja2 import Template
 
 try:
+    from jinja2 import Template
     from atomistics.calculators import (
         get_energy_pot_average_with_lammpslib,
         get_energy_pot_with_lammpslib,
