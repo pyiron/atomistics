@@ -6,8 +6,9 @@ import unittest
 from atomistics.workflows import optimize_positions_and_volume
 
 try:
+    from lammpsparser import get_potential_by_name
     from atomistics.workflows.quasiharmonic import QuasiHarmonicWorkflow
-    from atomistics.calculators import evaluate_with_lammpslib, get_potential_by_name
+    from atomistics.calculators import evaluate_with_lammpslib
 
     skip_lammps_test = False
 except ImportError:

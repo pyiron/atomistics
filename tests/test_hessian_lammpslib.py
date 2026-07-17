@@ -15,10 +15,10 @@ try:
         analyse_results_for_harmonic_approximation,
     )
     from pylammpsmpi import LammpsASELibrary
+    from lammpsparser import get_potential_by_name
     from atomistics.calculators import (
         evaluate_with_lammpslib,
         evaluate_with_lammpslib_library_interface,
-        get_potential_by_name,
     )
 
     skip_lammps_test = False

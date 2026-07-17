@@ -11,10 +11,10 @@ from atomistics.calculators import calc_molecular_dynamics_thermal_expansion_wit
 
 
 try:
+    from lammpsparser import get_potential_by_name
     from atomistics.calculators import (
         calc_molecular_dynamics_thermal_expansion_with_lammpslib,
         evaluate_with_lammpslib,
-        get_potential_by_name,
     )
 
     skip_lammps_test = False

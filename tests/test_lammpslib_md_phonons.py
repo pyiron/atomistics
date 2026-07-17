@@ -5,11 +5,11 @@ import unittest
 
 
 try:
+    from lammpsparser import get_potential_by_name
     from atomistics.workflows import get_tasks_for_harmonic_approximation, analyse_results_for_harmonic_approximation
     from atomistics.calculators import (
         calc_molecular_dynamics_phonons_with_lammpslib,
         evaluate_with_lammpslib,
-        get_potential_by_name,
     )
 
     skip_lammps_test = False

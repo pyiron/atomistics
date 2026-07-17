@@ -4,7 +4,8 @@ from ase.build import bulk
 import unittest
 
 try:
-    from atomistics.calculators import evaluate_with_lammpslib, get_potential_by_name
+    from lammpsparser import get_potential_by_name
+    from atomistics.calculators import evaluate_with_lammpslib
     from atomistics.workflows import (
         get_tasks_for_quasi_harmonic_approximation,
         analyse_results_for_quasi_harmonic_approximation,
