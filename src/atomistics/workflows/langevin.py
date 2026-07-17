@@ -17,6 +17,7 @@ def langevin_delta_v(
     masses: np.ndarray,
     velocities: np.ndarray,
     damping_timescale: Optional[float] = None,
+    rng: Optional[np.random.Generator] = None,
 ) -> np.ndarray:
     """
     Velocity changes due to the Langevin thermostat.
@@ -27,11 +28,14 @@ def langevin_delta_v(
         masses (numpy.ndarray): Per-atom masses in u with a shape (N_atoms, 1).
         damping_timescale (float): The characteristic timescale of the thermostat in fs.
         velocities (numpy.ndarray): Per-atom velocities in angstrom/fs.
+        rng (numpy.random.Generator): Random number generator to use for the thermal noise.
 
     Returns:
         (numpy.ndarray): Per atom accelerations to use for changing velocities.
     """
     if damping_timescale is not None:
+        if rng is None:
+            rng = np.random.default_rng()
         drag = -0.5 * time_step * velocities / damping_timescale
         noise = np.sqrt(
             EV_TO_U_ANGSQ_PER_FSSQ
@@ -39,7 +43,7 @@ def langevin_delta_v(
             * temperature
             * time_step
             / (masses * damping_timescale)
-        ) * np.random.randn(*velocities.shape)
+        ) * rng.standard_normal(velocities.shape)
         noise -= np.mean(noise, axis=0)
         return drag + noise
     else:
@@ -61,7 +65,10 @@ def convert_to_acceleration(forces: np.ndarray, masses: np.ndarray) -> np.ndarra
 
 
 def get_initial_velocities(
-    temperature: float, masses: np.ndarray, overheat_fraction: float = 2.0
+    temperature: float,
+    masses: np.ndarray,
+    overheat_fraction: float = 2.0,
+    rng: Optional[np.random.Generator] = None,
 ) -> np.ndarray:
     """
     Generate initial velocities for the Langevin thermostat.
@@ -70,14 +77,17 @@ def get_initial_velocities(
         temperature (float): The target temperature in K.
         masses (numpy.ndarray): Per-atom masses in u with a shape (N_atoms, 1).
         overheat_fraction (float): The factor to overheat the system by (default: 2.0).
+        rng (numpy.random.Generator): Random number generator to use for the initial velocities.
 
     Returns:
         (numpy.ndarray): Per-atom velocities in angstrom/fs.
     """
+    if rng is None:
+        rng = np.random.default_rng()
     vel_scale = np.sqrt(EV_TO_U_ANGSQ_PER_FSSQ * KB * temperature / masses) * np.sqrt(
         overheat_fraction
     )
-    vel_dir = np.random.randn(len(masses), 3)
+    vel_dir = rng.standard_normal((len(masses), 3))
     velocities = vel_scale * vel_dir
     velocities -= np.mean(velocities, axis=0)
     return velocities
@@ -112,6 +122,8 @@ class LangevinWorkflow(Workflow):
         overheat_fraction (float, optional): The fraction by which to overheat the system. Default is 2.0.
         damping_timescale (float, optional): The damping timescale in fs. Default is 100.0.
         time_step (int, optional): The time step in fs. Default is 1.
+        seed (int, optional): Seed for the random number generator, for reproducible
+            trajectories. Default is None, which uses non-deterministic entropy.
 
     Attributes:
         structure (ase.Atoms): The atomic structure.
@@ -138,18 +150,22 @@ class LangevinWorkflow(Workflow):
         overheat_fraction: float = 2.0,
         damping_timescale: float = 100.0,
         time_step: int = 1,
+        seed: Optional[int] = None,
     ):
         self.structure = structure
         self.temperature = temperature
         self.overheat_fraction = overheat_fraction
         self.damping_timescale = damping_timescale
         self.time_step = time_step
+        self.seed = seed
+        self.rng = np.random.default_rng(seed)
         self.masses = np.array([a.mass for a in self.structure[:]])[:, np.newaxis]
         self.positions = self.structure.positions
         self.velocities = get_initial_velocities(
             temperature=self.temperature,
             masses=self.masses,
             overheat_fraction=self.overheat_fraction,
+            rng=self.rng,
         )
         self.gamma = self.masses / self.damping_timescale
         self.forces: Optional[np.ndarray] = None
@@ -177,6 +193,7 @@ class LangevinWorkflow(Workflow):
                 masses=self.masses,
                 damping_timescale=self.damping_timescale,
                 velocities=self.velocities,
+                rng=self.rng,
             )
 
             # postion update
@@ -211,6 +228,7 @@ class LangevinWorkflow(Workflow):
             masses=self.masses,
             damping_timescale=self.damping_timescale,
             velocities=self.velocities,
+            rng=self.rng,
         )
 
         # kinetic energy

@@ -36,6 +36,7 @@ class TestLangevin(unittest.TestCase):
             overheat_fraction=2.0,
             damping_timescale=100.0,
             time_step=1,
+            seed=4928459,
         )
         lmp = LammpsASELibrary(
             working_directory=None,

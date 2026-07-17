@@ -1,5 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 import unittest
 
 from ase.build import bulk
@@ -133,17 +133,16 @@ class TestLangevinHelpers(unittest.TestCase):
         time_step = 1.0
         masses = np.array([[27.0], [27.0]])
         random_values = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
-        with patch(
-            "atomistics.workflows.langevin.np.random.randn",
-            return_value=random_values,
-        ):
-            delta_v = langevin_delta_v(
-                temperature=300.0,
-                time_step=time_step,
-                masses=masses,
-                velocities=velocities,
-                damping_timescale=damping_timescale,
-            )
+        rng = MagicMock()
+        rng.standard_normal.return_value = random_values
+        delta_v = langevin_delta_v(
+            temperature=300.0,
+            time_step=time_step,
+            masses=masses,
+            velocities=velocities,
+            damping_timescale=damping_timescale,
+            rng=rng,
+        )
         drag = -0.5 * time_step * velocities / damping_timescale
         noise_scale = np.sqrt(
             EV_TO_U_ANGSQ_PER_FSSQ
@@ -157,13 +156,17 @@ class TestLangevinHelpers(unittest.TestCase):
         self.assertTrue(np.allclose(delta_v, drag + expected_noise))
 
     def test_get_initial_velocities_zero_centered(self):
-        with patch(
-            "atomistics.workflows.langevin.np.random.randn",
-            return_value=np.array([[1.0, 2.0, 3.0], [3.0, 2.0, 1.0]]),
-        ):
-            velocities = get_initial_velocities(
-                temperature=500.0, masses=np.array([[27.0], [27.0]])
-            )
+        rng = MagicMock()
+        rng.standard_normal.return_value = np.array([[1.0, 2.0, 3.0], [3.0, 2.0, 1.0]])
+        velocities = get_initial_velocities(
+            temperature=500.0, masses=np.array([[27.0], [27.0]]), rng=rng
+        )
+        self.assertTrue(np.allclose(np.mean(velocities, axis=0), 0.0))
+
+    def test_get_initial_velocities_default_rng(self):
+        velocities = get_initial_velocities(
+            temperature=500.0, masses=np.array([[27.0], [27.0]])
+        )
         self.assertTrue(np.allclose(np.mean(velocities, axis=0), 0.0))
 
     def test_get_first_half_step(self):
@@ -187,6 +190,7 @@ class TestLangevinHelpers(unittest.TestCase):
                 temperature=300.0,
                 damping_timescale=100.0,
                 time_step=1.0,
+                seed=4928459,
             )
 
         initial_tasks = workflow.generate_structures()
@@ -219,6 +223,34 @@ class TestLangevinHelpers(unittest.TestCase):
         self.assertGreater(eng_kin, 0.0)
         self.assertTrue(
             np.allclose(stepped_tasks["calc_forces"][0].positions, expected_positions)
+        )
+
+    def test_langevin_workflow_seed_reproducibility(self):
+        structure = bulk("Al", cubic=True)
+
+        workflow_a = LangevinWorkflow(structure=structure, seed=42)
+        workflow_b = LangevinWorkflow(structure=structure, seed=42)
+        workflow_c = LangevinWorkflow(structure=structure, seed=123)
+
+        self.assertTrue(
+            np.allclose(workflow_a.velocities, workflow_b.velocities)
+        )
+        self.assertFalse(
+            np.allclose(workflow_a.velocities, workflow_c.velocities)
+        )
+
+        nat = len(structure)
+        for workflow in (workflow_a, workflow_b):
+            workflow.forces = np.ones((nat, 3))
+            workflow.generate_structures()
+            workflow.analyse_structures(
+                output_dict={
+                    "forces": {0: np.ones((nat, 3)) * 2.0},
+                    "energy": {0: -1.5},
+                }
+            )
+        self.assertTrue(
+            np.allclose(workflow_a.velocities, workflow_b.velocities)
         )
 
 
