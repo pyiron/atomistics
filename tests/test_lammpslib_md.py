@@ -2,6 +2,7 @@ import inspect
 import os
 
 from ase.build import bulk
+import numpy as np
 import unittest
 
 
@@ -137,7 +138,7 @@ class TestLammpsMD(unittest.TestCase):
             set_cell=True,
         )
         self.assertEqual(structure.get_volume(), structure_md.get_volume())
-        self.assertTrue(sum(structure_md.get_velocities() ** 2) > 0)
+        self.assertTrue(np.sum(structure_md.get_velocities() ** 2) > 0)
         lmp.close()
 
     def test_lammps_md_nvt_all_no_velocity(self):
