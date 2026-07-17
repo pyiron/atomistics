@@ -11,10 +11,10 @@ from atomistics.calculators import calc_molecular_dynamics_thermal_expansion_wit
 
 
 try:
+    from lammpsparser import get_potential_by_name
     from atomistics.calculators import (
         calc_molecular_dynamics_thermal_expansion_with_lammpslib,
         evaluate_with_lammpslib,
-        get_potential_by_name,
     )
 
     skip_lammps_test = False
@@ -122,6 +122,7 @@ class TestMolecularDynamicsThermalExpansion(unittest.TestCase):
             ttime=100 * units.fs,
             pfactor=2e6 * units.GPa * (units.fs**2),
             externalstress=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
+            seed=4928459,
         )
         self.assertTrue(all(np.array(results_dict["temperatures"]) < 600))
         self.assertTrue(all(np.array(results_dict["temperatures"]) > 0))

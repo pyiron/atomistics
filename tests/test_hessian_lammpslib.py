@@ -14,9 +14,9 @@ try:
         get_tasks_for_harmonic_approximation,
         analyse_results_for_harmonic_approximation,
     )
+    from lammpsparser import get_potential_by_name
     from atomistics.calculators import (
         evaluate_with_lammpslib,
-        get_potential_by_name,
     )
 
     skip_lammps_test = False

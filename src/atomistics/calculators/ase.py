@@ -246,6 +246,7 @@ def calc_molecular_dynamics_langevin_with_ase(
     timestep: float = 1.0,
     temperature: float = 100.0,
     friction: float = 0.002,
+    seed: int = 4928459,
     output_keys: tuple[str] = OutputMolecularDynamics.keys(),
 ) -> dict:
     """
@@ -259,6 +260,7 @@ def calc_molecular_dynamics_langevin_with_ase(
         timestep (float): The time step size in fs.
         temperature (float): The desired temperature in Kelvin.
         friction (float): The friction coefficient for the Langevin thermostat.
+        seed (int): Random seed used to initialise the atomic velocities.
         output_keys (list[str]): The keys of the properties to include in the output dictionary.
 
     Returns:
@@ -276,6 +278,7 @@ def calc_molecular_dynamics_langevin_with_ase(
         temperature=temperature,
         run=run,
         thermo=thermo,
+        seed=seed,
         output_keys=output_keys,
     )
 
@@ -381,6 +384,7 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
     ttime: float = 100 * units.fs,
     pfactor: float = 2e6 * units.GPa * (units.fs**2),
     externalstress: np.ndarray = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
+    seed: int = 4928459,
     output_keys: Iterable[str] = OutputThermalExpansion.keys(),
 ) -> dict:
     """
@@ -398,6 +402,8 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
         ttime (float, optional): The total time for the simulation in fs. Defaults to 100 * units.fs.
         pfactor (float, optional): The pressure factor in GPa * fs^2. Defaults to 2e6 * units.GPa * (units.fs**2).
         externalstress (np.ndarray, optional): The external stress tensor in bar. Defaults to np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar.
+        seed (int, optional): Random seed used to initialise the atomic velocities at each temperature step,
+            so that results are reproducible. Defaults to ``4928459``.
         output_keys (list[str], optional): The keys of the properties to include in the output dictionary. Defaults to OutputThermalExpansion.keys().
 
     Returns:
@@ -419,6 +425,7 @@ def calc_molecular_dynamics_thermal_expansion_with_ase(
             pfactor=pfactor,
             temperature=temperature,
             externalstress=externalstress,
+            seed=seed,
         )
         structure_current.set_cell(cell=result_dict["cell"][-1], scale_atoms=True)
         temperature_md_lst.append(result_dict["temperature"][-1])
@@ -440,6 +447,7 @@ def calc_molecular_dynamics_npt_with_ase(
     pfactor: float = 2e6 * units.GPa * (units.fs**2),
     temperature: float = 300.0,
     externalstress: np.ndarray = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar,
+    seed: int = 4928459,
     output_keys: Iterable[str] = OutputMolecularDynamics.keys(),
 ) -> dict:
     """
@@ -455,6 +463,7 @@ def calc_molecular_dynamics_npt_with_ase(
         pfactor (float, optional): The pressure factor in GPa * fs^2. Defaults to 2e6 * units.GPa * (units.fs**2).
         temperature (float, optional): The desired temperature in Kelvin. Defaults to 300.0.
         externalstress (np.ndarray, optional): The external stress tensor in bar. Defaults to np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * units.bar.
+        seed (int, optional): Random seed used to initialise the atomic velocities. Defaults to ``4928459``.
         output_keys (list[str], optional): The keys of the properties to include in the output dictionary. Defaults to OutputMolecularDynamics.keys().
 
     Returns:
@@ -480,6 +489,7 @@ def calc_molecular_dynamics_npt_with_ase(
         temperature=temperature,
         run=run,
         thermo=thermo,
+        seed=seed,
         output_keys=output_keys,
     )
 
@@ -492,6 +502,7 @@ def _calc_molecular_dynamics_with_ase(
     run: int,
     thermo: int,
     output_keys: Iterable[str],
+    seed: int | None = None,
 ) -> dict:
     """
     Perform molecular dynamics simulation using ASE.
@@ -504,12 +515,15 @@ def _calc_molecular_dynamics_with_ase(
         run (int): The number of MD steps to perform.
         thermo (int): The interval at which to print thermodynamic properties.
         output_keys (list[str]): The keys of the properties to include in the output dictionary.
+        seed (int, optional): Random seed used to initialise the atomic velocities, so that
+            results are reproducible. A ``None`` value falls back to the global numpy random state.
 
     Returns:
         dict: A dictionary containing the calculated properties at each MD step.
     """
     structure.calc = ase_calculator
-    MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature)
+    rng = np.random.RandomState(seed) if seed is not None else None
+    MaxwellBoltzmannDistribution(atoms=structure, temperature_K=temperature, rng=rng)
     output_key_lst = list(output_keys)
     cache: dict[str, list[Any]] = {q: [] for q in output_key_lst}
     for _i in range(int(run / thermo)):
