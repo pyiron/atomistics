@@ -6,6 +6,7 @@ import unittest
 
 
 try:
+    from jinja2 import Template
     from pylammpsmpi import LammpsASELibrary
     from lammpsparser import get_potential_by_name
     from atomistics.calculators import (
@@ -15,6 +16,20 @@ try:
         calc_molecular_dynamics_langevin_with_lammpslib,
     )
     from atomistics.calculators.lammps.helpers import lammps_get_structure
+
+    from atomistics.calculators.lammps.commands import (
+        LAMMPS_ENSEMBLE_NVT,
+        LAMMPS_RUN,
+        LAMMPS_THERMO,
+        LAMMPS_THERMO_STYLE,
+        LAMMPS_TIMESTEP,
+        LAMMPS_VELOCITY,
+    )
+    from atomistics.calculators.lammps.helpers import (
+        lammps_calc_md,
+        lammps_get_structure,
+        lammps_run,
+    )
 
     skip_lammps_test = False
 except ImportError:
@@ -70,18 +85,39 @@ class TestLammpsMD(unittest.TestCase):
             library=None,
             disable_log_file=True,
         )
-        result_dict = calc_molecular_dynamics_nvt_with_lammpslib(
-            structure=structure,
-            potential_dataframe=df_pot_selected,
+        init_str = "\n".join(
+            [
+                LAMMPS_THERMO_STYLE,
+                LAMMPS_TIMESTEP,
+                LAMMPS_THERMO,
+                LAMMPS_VELOCITY,
+                LAMMPS_ENSEMBLE_NVT,
+            ]
+        )
+        input_template = Template(init_str).render(
+            thermo=10,
             Tstart=100,
+            temp=100,
             Tstop=100,
             Tdamp=0.1,
-            run=100,
-            thermo=10,
             timestep=0.001,
             seed=4928459,
             dist="gaussian",
+            velocity_rescale_factor=2.0,
+        )
+        run_str = LAMMPS_RUN + "\n"
+        lmp_instance = lammps_run(
+            structure=structure,
+            potential_dataframe=df_pot_selected,
+            input_template=input_template,
             lmp=lmp,
+        )
+        result_dict = lammps_calc_md(
+            lmp_instance=lmp_instance,
+            run_str=run_str,
+            run=100,
+            thermo=10,
+            output_keys=["positions", "velocities", "cell", "forces", "temperature", "energy_pot", "energy_tot", "pressure"],
         )
         self.assertEqual(result_dict["positions"].shape, (10, 32, 3))
         self.assertEqual(result_dict["velocities"].shape, (10, 32, 3))
