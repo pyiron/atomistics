@@ -14,11 +14,9 @@ try:
         get_tasks_for_harmonic_approximation,
         analyse_results_for_harmonic_approximation,
     )
-    from pylammpsmpi import LammpsASELibrary
     from lammpsparser import get_potential_by_name
     from atomistics.calculators import (
         evaluate_with_lammpslib,
-        evaluate_with_lammpslib_library_interface,
     )
 
     skip_lammps_test = False
@@ -63,6 +61,7 @@ class TestLangevin(unittest.TestCase):
             overheat_fraction=2.0,
             damping_timescale=100.0,
             time_step=1,
+            seed=4928459,
         )
         eng_pot_lst, eng_kin_lst = [], []
         for i in range(steps):

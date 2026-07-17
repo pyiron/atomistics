@@ -24,6 +24,7 @@ from atomistics.calculators.lammps.commands import (
 )
 from atomistics.calculators.lammps.helpers import (
     lammps_calc_md,
+    lammps_get_structure,
     lammps_run,
     lammps_shutdown,
     lammps_thermal_expansion_loop,
@@ -97,9 +98,13 @@ def optimize_positions_and_volume_with_lammpslib(
         lmp=lmp,
         **kwargs,
     )
-    structure_copy = structure.copy()
-    structure_copy.set_cell(lmp_instance.interactive_cells_getter(), scale_atoms=True)
-    structure_copy.positions = lmp_instance.interactive_positions_getter()
+    structure_copy = lammps_get_structure(
+        lmp_instance=lmp_instance,
+        structure=structure,
+        set_velocities=False,
+        scale_atoms=True,
+        set_cell=True,
+    )
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return structure_copy
 
@@ -149,8 +154,13 @@ def optimize_positions_with_lammpslib(
         lmp=lmp,
         **kwargs,
     )
-    structure_copy = structure.copy()
-    structure_copy.positions = lmp_instance.interactive_positions_getter()
+    structure_copy = lammps_get_structure(
+        lmp_instance=lmp_instance,
+        structure=structure,
+        set_velocities=False,
+        scale_atoms=False,
+        set_cell=False,
+    )
     lammps_shutdown(lmp_instance=lmp_instance, close_instance=lmp is None)
     return structure_copy
 
