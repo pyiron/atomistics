@@ -439,6 +439,10 @@ def get_thermal_properties_for_harmonic_approximation(
     Returns:
         dict: The thermal properties as returned by Phonopy.
     """
+    if is_projection:
+        raise ValueError(
+            "is_projection=True is no longer supported as phonopy removed this parameter from run_thermal_properties()."
+        )
     phonopy.run_thermal_properties(
         t_step=t_step,
         t_max=t_max,
@@ -447,7 +451,6 @@ def get_thermal_properties_for_harmonic_approximation(
         cutoff_frequency=cutoff_frequency,
         pretend_real=pretend_real,
         band_indices=band_indices,
-        is_projection=is_projection,
     )
     phono = PhonopyThermalProperties(phonopy_instance=phonopy)
     return OutputThermodynamic(
