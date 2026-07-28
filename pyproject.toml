@@ -141,6 +141,8 @@ ignore = [
     "PLE0605",
     # Too many arguments in function definition
     "PLR0913",
+    # Too many not-keyword-only arguments,
+    "PLR0917",
     # Magic value used in comparison
     "PLR2004",
     # Too many statements
