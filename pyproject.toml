@@ -49,20 +49,20 @@ gpaw = [
 lammps = [
     "pylammpsmpi==0.5.0",
     "jinja2==3.1.6",
-    "pandas==3.0.3",
-    "lammpsparser==0.0.7",
+    "pandas==3.0.5",
+    "lammpsparser==0.0.8",
 ]
 lammps_phonons = [
     "pylammpsmpi==0.5.0",
     "jinja2==3.1.6",
-    "pandas==3.0.3",
+    "pandas==3.0.5",
     "dynaphopy==1.18.0",
-    "lammpsparser==0.0.7",
+    "lammpsparser==0.0.8",
 ]
 experimental = [
     "lxml==6.1.1",
     "mendeleev==1.1.0",
-    "pandas==3.0.3",
+    "pandas==3.0.5",
     "requests==2.34.2",
 ]
 sphinxdft = [
@@ -75,7 +75,7 @@ tqdm = [
     "tqdm==4.70.0"
 ]
 vasp = [
-    "vaspparser==0.0.7"
+    "vaspparser==0.0.8"
 ]
 
 [tool.hatch.build]
