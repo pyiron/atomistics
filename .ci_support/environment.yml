@@ -13,7 +13,7 @@ dependencies:
 - seekpath =2.2.1
 - spglib =2.7.0
 - structuretoolkit =0.0.45
-- sphinx_parser =0.1.9
+- sphinx_parser =0.1.10
 - tqdm =4.70.0
 - vaspparser =0.0.9
 - hatchling =1.31.0
