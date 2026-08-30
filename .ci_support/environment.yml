@@ -4,7 +4,7 @@ dependencies:
 - ase =3.29.0
 - coverage
 - lxml =6.1.2
-- mendeleev =1.1.0
+- mendeleev =1.2.0
 - numpy =2.4.6
 - pandas =3.0.5
 - phonopy =4.4.0
