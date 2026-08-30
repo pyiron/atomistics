@@ -1,7 +1,7 @@
 channels:
 - conda-forge
 dependencies:
-- gpaw =25.7.0
+- gpaw =26.7.0
 - phonopy =4.4.0
 - structuretoolkit =0.0.45
 - seekpath =2.2.1

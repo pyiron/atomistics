@@ -3,7 +3,7 @@ channels:
 dependencies:
 - jupyter
 - papermill
-- gpaw =25.7.0
+- gpaw =26.7.0
 - lammps =2025.07.22
 - pandas =3.0.5
 - pylammpsmpi =0.5.0
