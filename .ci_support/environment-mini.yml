@@ -3,8 +3,8 @@ channels:
 dependencies:
 - ase =3.29.0
 - coverage
-- numpy =2.4.6
-- scipy =1.17.1
+- numpy =2.5.3
+- scipy =1.18.0
 - spglib =2.7.0
 - hatchling =1.32.0
 - hatch-vcs =0.5.0
