@@ -47,7 +47,7 @@ task_dict = get_tasks_for_energy_volume_curve(
     structure=bulk("Al", a=4.05, cubic=True),
     num_points=11,
     vol_range=0.05,
-    axes=['x', 'y', 'z'],
+    axes=["x", "y", "z"],
 )
 print(task_dict)
 ```
@@ -80,12 +80,7 @@ from atomistics.calculators import evaluate_with_ase
 from gpaw import GPAW, PW
 
 result_dict = evaluate_with_ase(
-    task_dict=task_dict,
-    ase_calculator=GPAW(
-        xc="PBE",
-        mode=PW(300),
-        kpts=(3, 3, 3)
-    )
+    task_dict=task_dict, ase_calculator=GPAW(xc="PBE", mode=PW(300), kpts=(3, 3, 3))
 )
 print(result_dict)
 ```
@@ -114,9 +109,9 @@ the first step:
 from atomistics.workflows import analyse_results_for_energy_volume_curve
 
 fit_dict = analyse_results_for_energy_volume_curve(
-    output_dict=result_dict, 
+    output_dict=result_dict,
     task_dict=task_dict,
-    fit_type='polynomial',
+    fit_type="polynomial",
     fit_order=3,
 )
 print(fit_dict)
