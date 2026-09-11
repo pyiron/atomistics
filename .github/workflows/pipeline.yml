@@ -149,7 +149,7 @@ jobs:
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-lammps.yml >> environment.yml
         tail --lines=+4 .ci_support/environment-gpaw.yml >> environment.yml
-        tail --lines=+6 .ci_support/environment-sphinx.yml >> environment.yml
+        numpy_var=$(cat pyproject.toml | grep numpy | tail -n1); sed "s/$numpy_var/    \"numpy==2.4.6\",/g" pyproject.toml > pyproject.toml
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v3
       with:
