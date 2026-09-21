@@ -6,5 +6,5 @@ dependencies:
 - numpy =2.5.3
 - scipy =1.18.0
 - spglib =2.7.0
-- hatchling =1.32.0
+- hatchling =1.32.4
 - hatch-vcs =0.5.0
