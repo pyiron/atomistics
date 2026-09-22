@@ -9,17 +9,17 @@ dependencies:
 - ase =3.29.0
 - coverage
 - numpy =2.5.3
-- scipy =1.18.0
+- scipy =1.18.1
 - spglib =2.7.0
 - phonopy =4.5.0
-- structuretoolkit =0.0.46
+- structuretoolkit =0.0.47
 - seekpath =2.2.1
 - lammps =2025.07.22
-- pandas =3.0.5
-- pylammpsmpi =0.5.1
+- pandas =3.0.6
+- pylammpsmpi =0.5.2
 - jinja2 =3.1.6
 - jupyter-book =1.0.0
-- lammpsparser =0.0.9
-- vaspparser =0.0.10
+- lammpsparser =0.0.10
+- vaspparser =0.0.12
 - hatchling =1.32.4
 - hatch-vcs =0.5.0

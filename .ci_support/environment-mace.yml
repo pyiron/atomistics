@@ -4,5 +4,5 @@ dependencies:
 - pymace =0.3.12
 - pytorch =2.5.1
 - phonopy =4.5.0
-- structuretoolkit =0.0.46
+- structuretoolkit =0.0.47
 - seekpath =2.2.1
