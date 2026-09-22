@@ -1,7 +1,7 @@
 channels:
 - conda-forge
 dependencies:
-- grace-tensorpotential =0.5.3
+- grace-tensorpotential =0.6.1
 - phonopy =4.5.0
 - structuretoolkit =0.0.46
 - seekpath =2.2.1
