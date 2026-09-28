@@ -10,7 +10,7 @@ dependencies:
 - phonopy =4.6.0
 - requests =2.34.2
 - scipy =1.18.1
-- seekpath =2.2.1
+- seekpath =2.2.2
 - spglib =2.7.0
 - sphinx_parser =0.1.11
 - structuretoolkit =0.0.47
