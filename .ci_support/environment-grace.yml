@@ -4,4 +4,4 @@ dependencies:
 - grace-tensorpotential =0.6.1
 - phonopy =4.6.0
 - structuretoolkit =0.0.47
-- seekpath =2.2.1
+- seekpath =2.2.2
