@@ -41,23 +41,23 @@ Repository = "https://github.com/pyiron/atomistics"
 phonopy = [
     "phonopy==4.8.1",
     "seekpath==2.2.2",
-    "structuretoolkit==0.0.48",
+    "structuretoolkit==0.1.0",
 ]
 gpaw = [
     "gpaw==25.7.0",
 ]
 lammps = [
-    "pylammpsmpi==0.5.2",
+    "pylammpsmpi==0.6.0",
     "jinja2==3.1.6",
     "pandas==3.0.6",
-    "lammpsparser==0.0.10",
+    "lammpsparser==0.1.0",
 ]
 lammps_phonons = [
-    "pylammpsmpi==0.5.2",
+    "pylammpsmpi==0.6.0",
     "jinja2==3.1.6",
     "pandas==3.0.6",
     "dynaphopy==1.18.0",
-    "lammpsparser==0.0.10",
+    "lammpsparser==0.1.0",
 ]
 experimental = [
     "lxml==6.1.3",
@@ -75,7 +75,7 @@ tqdm = [
     "tqdm==4.70.1"
 ]
 vasp = [
-    "vaspparser==0.0.12"
+    "vaspparser==0.1.0"
 ]
 
 [tool.hatch.build]
