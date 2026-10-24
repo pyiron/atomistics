@@ -3,5 +3,5 @@ channels:
 dependencies:
 - gpaw =25.7.0
 - phonopy =4.8.1
-- structuretoolkit =0.0.48
+- structuretoolkit =0.1.0
 - seekpath =2.2.2
