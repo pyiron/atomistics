@@ -9,7 +9,7 @@ jobs:
   black:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - uses: psf/black@stable
       with:
         options: "--check --diff"
@@ -20,7 +20,7 @@ jobs:
     if: failure()
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         token: ${{ secrets.DEPENDABOT_WORKFLOW_TOKEN }}
         ref: ${{ github.event.pull_request.head.ref }} # Check out the head of the actual branch, not the PR
@@ -46,12 +46,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.13"
           architecture: x64
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install mypy
         run: pip install mypy
       - name: Test
@@ -61,7 +61,7 @@ jobs:
     needs: [black]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Setup environment
       shell: bash -l {0}
       run: |
@@ -69,7 +69,7 @@ jobs:
         tail --lines=+4 .ci_support/environment-lammps.yml >> environment.yml
         tail --lines=+4 .ci_support/environment-qe.yml >> environment.yml
     - name: Setup Mambaforge
-      uses: conda-incubator/setup-miniconda@v3
+      uses: conda-incubator/setup-miniconda@v4
       with:
         python-version: '3.14'
         miniforge-version: latest
@@ -98,9 +98,9 @@ jobs:
     needs: [black]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Setup Mambaforge
-      uses: conda-incubator/setup-miniconda@v3
+      uses: conda-incubator/setup-miniconda@v4
       with:
         python-version: '3.14'
         miniforge-version: latest
@@ -118,13 +118,13 @@ jobs:
     needs: [black]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Merge Notebook environment
         run: |
           cp .ci_support/environment.yml environment.yml
           tail --lines=+4 .ci_support/environment-notebooks.yml >> environment.yml
       - name: Setup Mambaforge
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           python-version: "3.14"
           miniforge-version: latest
@@ -143,14 +143,14 @@ jobs:
     needs: [black]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Conda config
       run: |
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-lammps.yml >> environment.yml
         tail --lines=+4 .ci_support/environment-gpaw.yml >> environment.yml
     - name: Setup Mambaforge
-      uses: conda-incubator/setup-miniconda@v3
+      uses: conda-incubator/setup-miniconda@v4
       with:
         python-version: '3.14'
         miniforge-version: latest
@@ -170,7 +170,7 @@ jobs:
     needs: [black]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - uses: astral-sh/setup-uv@v7
     - name: Install the project and pip check
       shell: bash -l {0}
@@ -200,7 +200,7 @@ jobs:
           python-version: '3.12'
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Setup environment (windows)
       if: matrix.operating-system == 'windows-latest'
       shell: bash -l {0}
@@ -213,7 +213,7 @@ jobs:
         cp .ci_support/environment.yml environment.yml
         tail --lines=+4 .ci_support/environment-lammps.yml >> environment.yml
     - name: Setup Mambaforge
-      uses: conda-incubator/setup-miniconda@v3
+      uses: conda-incubator/setup-miniconda@v4
       with:
         python-version: ${{ matrix.python-version }}
         miniforge-version: latest
@@ -231,13 +231,13 @@ jobs:
     needs: [black]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Merge Notebook environment
       run: |
         cp .ci_support/environment-mini.yml environment.yml
         tail --lines=+4 .ci_support/environment-abinit.yml >> environment.yml
     - name: Setup Mambaforge
-      uses: conda-incubator/setup-miniconda@v3
+      uses: conda-incubator/setup-miniconda@v4
       with:
         python-version: '3.13'
         miniforge-version: latest
@@ -259,13 +259,13 @@ jobs:
     needs: [black]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Merge Notebook environment
       run: |
         cp .ci_support/environment-mini.yml environment.yml
         tail --lines=+4 .ci_support/environment-gpaw.yml >> environment.yml
     - name: Setup Mambaforge
-      uses: conda-incubator/setup-miniconda@v3
+      uses: conda-incubator/setup-miniconda@v4
       with:
         python-version: '3.14'
         miniforge-version: latest
@@ -285,13 +285,13 @@ jobs:
     needs: [black]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Merge Notebook environment
       run: |
         cp .ci_support/environment-mini.yml environment.yml
         tail --lines=+4 .ci_support/environment-sphinx.yml >> environment.yml
     - name: Setup Mambaforge
-      uses: conda-incubator/setup-miniconda@v3
+      uses: conda-incubator/setup-miniconda@v4
       with:
         python-version: '3.14'
         miniforge-version: latest
@@ -309,13 +309,13 @@ jobs:
     needs: [black]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Merge Notebook environment
       run: |
         cp .ci_support/environment-mini.yml environment.yml
         tail --lines=+4 .ci_support/environment-mace.yml >> environment.yml
     - name: Setup Mambaforge
-      uses: conda-incubator/setup-miniconda@v3
+      uses: conda-incubator/setup-miniconda@v4
       with:
         python-version: '3.13'
         miniforge-version: latest
@@ -336,13 +336,13 @@ jobs:
     needs: [black]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Merge Notebook environment
       run: |
         cp .ci_support/environment-mini.yml environment.yml
         tail --lines=+4 .ci_support/environment-orb.yml >> environment.yml
     - name: Setup Mambaforge
-      uses: conda-incubator/setup-miniconda@v3
+      uses: conda-incubator/setup-miniconda@v4
       with:
         python-version: '3.13'
         miniforge-version: latest
@@ -360,13 +360,13 @@ jobs:
     needs: [black]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Merge Notebook environment
       run: |
         cp .ci_support/environment-mini.yml environment.yml
         tail --lines=+4 .ci_support/environment-grace.yml >> environment.yml
     - name: Setup Mambaforge
-      uses: conda-incubator/setup-miniconda@v3
+      uses: conda-incubator/setup-miniconda@v4
       with:
         python-version: '3.12'
         miniforge-version: latest
@@ -385,13 +385,13 @@ jobs:
     needs: [black]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Merge Notebook environment
       run: |
         cp .ci_support/environment-mini.yml environment.yml
         tail --lines=+4 .ci_support/environment-qe.yml >> environment.yml
     - name: Setup Mambaforge
-      uses: conda-incubator/setup-miniconda@v3
+      uses: conda-incubator/setup-miniconda@v4
       with:
         python-version: '3.14'
         miniforge-version: latest
@@ -415,13 +415,13 @@ jobs:
     needs: [black]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Merge Notebook environment
       run: |
         cp .ci_support/environment-mini.yml environment.yml
         tail --lines=+4 .ci_support/environment-siesta.yml >> environment.yml
     - name: Setup Mambaforge
-      uses: conda-incubator/setup-miniconda@v3
+      uses: conda-incubator/setup-miniconda@v4
       with:
         python-version: '3.13'
         miniforge-version: latest
@@ -439,9 +439,9 @@ jobs:
     needs: [black]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Setup Mambaforge
-      uses: conda-incubator/setup-miniconda@v3
+      uses: conda-incubator/setup-miniconda@v4
       with:
         python-version: '3.10'
         miniforge-version: latest
