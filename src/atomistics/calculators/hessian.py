@@ -217,7 +217,7 @@ def evaluate_with_hessian(
     force_constants: np.ndarray,
     bulk_modulus: float = 0.0,
     shear_modulus: float = 0.0,
-) -> dict[str, Union[float, np.ndarray]]:
+) -> dict[str, float | np.ndarray]:
     """
     Evaluate the specified tasks using the Hessian calculator.
 

@@ -297,7 +297,7 @@ def estimate_melting_temperature_using_bisection_CNA(
     temperature_right: float = 1000,
     run: int = 10000,
     optimization_maxiter: int = 100000,
-    seed: Optional[int] = None,
+    seed: int | None = None,
 ) -> int:
     """
     Estimate the melting temperature using bisection and common neighbour analysis (CNA).

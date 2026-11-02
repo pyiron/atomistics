@@ -37,7 +37,7 @@ def _strain_axes(
 
 def apply_strain(
     structure: Atoms,
-    epsilon: Union[float, list[float], np.ndarray],
+    epsilon: float | list[float] | np.ndarray,
     return_box: bool = False,
     mode: str = "linear",
 ) -> Atoms:
@@ -169,9 +169,9 @@ def fit_ev_curve(
 
 
 def get_strains(
-    vol_range: Optional[float] = None,
-    num_points: Optional[int] = None,
-    strain_lst: Optional[list[float]] = None,
+    vol_range: float | None = None,
+    num_points: int | None = None,
+    strain_lst: list[float] | None = None,
 ) -> np.ndarray:
     """
     Generate an array of strain values.
@@ -204,9 +204,9 @@ def get_strains(
 
 def get_tasks_for_energy_volume_curve(
     structure: Atoms,
-    vol_range: Optional[float] = None,
-    num_points: Optional[int] = None,
-    strain_lst: Optional[list[float]] = None,
+    vol_range: float | None = None,
+    num_points: int | None = None,
+    strain_lst: list[float] | None = None,
     axes: tuple[str, str, str] = ("x", "y", "z"),
 ) -> dict:
     """

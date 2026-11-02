@@ -3,7 +3,7 @@ from typing import Optional
 
 
 def get_box_relax_command(
-    pressure: float | Iterable[float | None], vmax: Optional[float]
+    pressure: float | Iterable[float | None], vmax: float | None
 ) -> str:
     """
     Build a LAMMPS ``fix box/relax`` command string for the given pressure specification.

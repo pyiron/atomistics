@@ -42,8 +42,8 @@ class PhonopyWorkflow(Workflow):
         interaction_range: float = 10.0,
         displacement: float = 0.01,
         dos_mesh: int = 20,
-        primitive_matrix: Optional[np.ndarray] = None,
-        number_of_snapshots: Optional[int] = None,
+        primitive_matrix: np.ndarray | None = None,
+        number_of_snapshots: int | None = None,
     ):
         """
         Initialize the PhonopyWorkflow.
@@ -115,10 +115,10 @@ class PhonopyWorkflow(Workflow):
         t_min: float = 1.0,
         t_max: float = 1500.0,
         t_step: float = 50.0,
-        temperatures: Optional[np.ndarray] = None,
-        cutoff_frequency: Optional[float] = None,
+        temperatures: np.ndarray | None = None,
+        cutoff_frequency: float | None = None,
         pretend_real: bool = False,
-        band_indices: Optional[np.ndarray] = None,
+        band_indices: np.ndarray | None = None,
         is_projection: bool = False,
         output_keys: tuple[str] = OutputThermodynamic.keys(),
     ) -> dict:
@@ -189,7 +189,7 @@ class PhonopyWorkflow(Workflow):
         return np.real_if_close(self._get_phonopy().get_dynamical_matrix_at_q(q))
 
     def write_phonopy_force_constants(
-        self, file_name: str = "FORCE_CONSTANTS", cwd: Optional[str] = None
+        self, file_name: str = "FORCE_CONSTANTS", cwd: str | None = None
     ):
         """
         Write the Phonopy force constants.
@@ -240,9 +240,7 @@ class PhonopyWorkflow(Workflow):
             with_group_velocities=with_group_velocities,
         )
 
-    def plot_band_structure(
-        self, axis=None, *args, label: Optional[str] = None, **kwargs
-    ):
+    def plot_band_structure(self, axis=None, *args, label: str | None = None, **kwargs):
         """
         Plot the band structure.
 

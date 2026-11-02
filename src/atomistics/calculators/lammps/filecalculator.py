@@ -1,6 +1,6 @@
 import os
-from collections.abc import Iterable
-from typing import Any, Callable, Optional
+from collections.abc import Callable, Iterable
+from typing import Any, Optional
 
 import pandas
 from ase.atoms import Atoms
@@ -129,7 +129,7 @@ def optimize_positions_and_volume_with_lammpsfile(
     maxeval: int = 10000000,
     thermo: int = 10,
     pressure: float | Iterable[float | None] = 0.0,
-    vmax: Optional[float] = None,
+    vmax: float | None = None,
 ) -> Atoms:
     """
     Relax atomic positions and cell with LAMMPS using file-based I/O.
@@ -313,7 +313,7 @@ def evaluate_with_lammpsfile(
     potential_dataframe: pandas.DataFrame,
     working_directory: str,
     executable_function: Callable[[str], Any],
-    lmp_optimizer_kwargs: Optional[dict[str, Any]] = None,
+    lmp_optimizer_kwargs: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """
     Evaluate a task dictionary using LAMMPS file-based I/O and return results for all tasks.

@@ -5,7 +5,8 @@ that evaluate a task dictionary.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, cast
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, cast
 
 from ase import Atoms
 

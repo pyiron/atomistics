@@ -9,7 +9,7 @@ except ImportError:
     tqdm_available = False
 
 
-def get_tqdm_iterator(lst: list) -> Union[Iterator, list]:
+def get_tqdm_iterator(lst: list) -> Iterator | list:
     """
     Returns an iterator with tqdm progress bar if tqdm is available, otherwise returns the original list iterator.
 

@@ -22,7 +22,7 @@ def generate_pylammps_trajectory(
     silent: bool = False,
     memmap: bool = False,  # not fully implemented yet!
     velocity_only: bool = False,
-    temperature: Optional[float] = None,
+    temperature: float | None = None,
     thermostat_mass: float = 0.5,
     sampling_interval: int = 1,  # in timesteps
 ):
@@ -80,7 +80,7 @@ def generate_pylammps_trajectory(
         if not velocity_only:
             positions_lst.append(lmp.interactive_positions_getter()[indexing, :])
 
-    positions: Optional[np.ndarray] = np.array(positions_lst, dtype=complex)
+    positions: np.ndarray | None = np.array(positions_lst, dtype=complex)
     velocity = np.array(velocity_lst, dtype=complex)
     energy = np.array(energy_lst)
 
@@ -106,7 +106,7 @@ def calc_molecular_dynamics_phonons_with_lammpslib(
     time_step: float = 0.001,  # ps
     relaxation_time: int = 5,  # ps
     silent: bool = True,
-    supercell: Optional[list[int]] = None,
+    supercell: list[int] | None = None,
     memmap: bool = False,
     velocity_only: bool = True,
     temperature: float = 300.0,

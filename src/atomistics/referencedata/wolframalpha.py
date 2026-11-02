@@ -1,6 +1,7 @@
 import os
+from collections.abc import Callable
 from io import StringIO
-from typing import Any, Callable, Optional, Union
+from typing import Any, Optional, Union
 
 import numpy as np
 import pandas
@@ -41,7 +42,7 @@ def _select_function_density(v: str) -> float:
         return float(v.split(maxsplit=1)[0])
 
 
-def _select_function_split(v: Union[str, float]) -> float:
+def _select_function_split(v: str | float) -> float:
     """
     Splits a string and returns the first element as a float.
 
@@ -74,7 +75,7 @@ def _select_function_lattice(v: str) -> tuple[float, float, float]:
     )
 
 
-def _select_function_scientific(v: Union[str, float]) -> float:
+def _select_function_scientific(v: str | float) -> float:
     """
     Converts a scientific notation string to a float.
 
@@ -94,7 +95,7 @@ def _select_function_scientific(v: Union[str, float]) -> float:
         return v
 
 
-def _extract_entry(df: pandas.DataFrame, n: str) -> Optional[Union[str, float]]:
+def _extract_entry(df: pandas.DataFrame, n: str) -> str | float | None:
     """
     Extracts the value corresponding to the given element name from a DataFrame.
 
@@ -112,7 +113,7 @@ def _extract_entry(df: pandas.DataFrame, n: str) -> Optional[Union[str, float]]:
     return None
 
 
-def _default_filter(v: Union[str, float]) -> bool:
+def _default_filter(v: str | float) -> bool:
     """
     Default filter function to check if the value is valid.
 
@@ -138,7 +139,7 @@ def _poisson_filter(v: float) -> bool:
     return v is not None and not np.isnan(v)
 
 
-def _select_function_poisson(v: Union[str, float]) -> Union[str, float]:
+def _select_function_poisson(v: str | float) -> str | float:
     """
     Selects the Poisson ratio value from a DataFrame entry.
 
@@ -152,7 +153,7 @@ def _select_function_poisson(v: Union[str, float]) -> Union[str, float]:
     return v
 
 
-def _select_function_mass(v: Union[str, float]) -> Union[float, str]:
+def _select_function_mass(v: str | float) -> float | str:
     """
     Selects the mass value from a DataFrame entry.
 
@@ -237,8 +238,8 @@ def _collect(
 
 
 def _get_volume(
-    lat_lst: Union[float, tuple[float, float, float]], crystal: str
-) -> Optional[float]:
+    lat_lst: float | tuple[float, float, float], crystal: str
+) -> float | None:
     """
     Calculate the volume of a crystal unit cell.
 

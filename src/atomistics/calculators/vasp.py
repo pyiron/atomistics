@@ -66,7 +66,7 @@ def calc_static_with_vasp(
     lreal: bool = False,
     lwave: bool = False,
     lorbit: int = 0,
-    kpts: Optional[list[int]] = None,
+    kpts: list[int] | None = None,
     output_keys: list[str] | tuple[str, ...] = OutputStatic.keys(),
     **kwargs,
 ) -> dict:
@@ -125,7 +125,7 @@ def optimize_positions_with_vasp(
     isif: int = 2,
     ibrion: int = 2,
     nsw: int = 100,
-    kpts: Optional[list[int]] = None,
+    kpts: list[int] | None = None,
     **kwargs,
 ) -> Atoms:
     """
@@ -186,7 +186,7 @@ def optimize_positions_and_volume_with_vasp(
     isif: int = 3,
     ibrion: int = 2,
     nsw: int = 100,
-    kpts: Optional[list[int]] = None,
+    kpts: list[int] | None = None,
     **kwargs,
 ) -> Atoms:
     """
@@ -248,7 +248,7 @@ def optimize_volume_with_vasp(
     isif: int = 7,
     ibrion: int = 2,
     nsw: int = 100,
-    kpts: Optional[list[int]] = None,
+    kpts: list[int] | None = None,
     **kwargs,
 ) -> Atoms:
     """
@@ -309,7 +309,7 @@ def optimize_cell_with_vasp(
     isif: int = 5,
     ibrion: int = 2,
     nsw: int = 100,
-    kpts: Optional[list[int]] = None,
+    kpts: list[int] | None = None,
     **kwargs,
 ) -> Atoms:
     """
@@ -369,7 +369,7 @@ def evaluate_with_vasp(
     lreal: bool = False,
     lwave: bool = False,
     lorbit: int = 0,
-    kpts: Optional[list[int]] = None,
+    kpts: list[int] | None = None,
     **kwargs,
 ) -> dict:
     """
