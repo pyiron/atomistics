@@ -637,7 +637,7 @@ def plot_band_structure(
 
     offset = 0.0
     tick_positions = [distances[0][0]]
-    for di, fi, ci in zip(distances, frequencies, path_connections):
+    for di, fi, ci in zip(distances, frequencies, path_connections, strict=False):
         axis.axvline(tick_positions[-1], color="black", linestyle="dotted", alpha=0.5)
         line, *_ = axis.plot(offset + di, fi, *args, **kwargs)
         tick_positions.append(di[-1] + offset)

@@ -1,17 +1,6 @@
-# best would be StrEnum from py3.11
-import sys
 from collections.abc import Iterable
-from enum import Enum
-from typing import TYPE_CHECKING, Any, Callable, Union
-
-if sys.version_info < (3, 11):
-    # official impl' is not significantly different
-    class StrEnum(str, Enum):
-        def __str__(self):
-            return str(self.value)
-
-else:
-    from enum import StrEnum
+from enum import Enum, StrEnum
+from typing import TYPE_CHECKING, Any, Callable
 
 
 class TaskEnum(StrEnum):
@@ -42,7 +31,7 @@ class TaskOutputEnum(Enum):
     volume_over_temperature = "calc_molecular_dynamics_thermal_expansion"
 
 
-TaskName = Union[str, TaskEnum]
+TaskName = str | TaskEnum
 
 
 if TYPE_CHECKING:

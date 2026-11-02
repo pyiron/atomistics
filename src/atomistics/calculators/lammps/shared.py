@@ -34,14 +34,16 @@ def get_box_relax_command(
         if len(pressure_lst) == 3:
             pressure_str = " ".join(
                 f"{tag} {value}"
-                for tag, value in zip(["x", "y", "z"], pressure_lst)
+                for tag, value in zip(["x", "y", "z"], pressure_lst, strict=False)
                 if value is not None
             )
             box_relax = f"fix ensemble all box/relax {pressure_str}"
         elif len(pressure_lst) == 6:
             pressure_str = " ".join(
                 f"{tag} {value}"
-                for tag, value in zip(["x", "y", "z", "xy", "xz", "yz"], pressure_lst)
+                for tag, value in zip(
+                    ["x", "y", "z", "xy", "xz", "yz"], pressure_lst, strict=False
+                )
                 if value is not None
             )
             box_relax = f"fix ensemble all box/relax {pressure_str}"

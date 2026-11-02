@@ -234,7 +234,7 @@ def get_tasks_for_energy_volume_curve(
         _strain_axes(structure=structure, axes=axes, volume_strain=strain)
         for strain in strain_arr
     ]
-    return {"calc_energy": dict(zip(key_lst, value_lst))}
+    return {"calc_energy": dict(zip(key_lst, value_lst, strict=False))}
 
 
 def analyse_results_for_energy_volume_curve(

@@ -193,7 +193,7 @@ def _extract_lst(
     element_lst, property_lst = [], []
     try:
         ptable = fetch_table("elements")
-        for n, el in zip(ptable.name.values, ptable.symbol.values):
+        for n, el in zip(ptable.name.values, ptable.symbol.values, strict=False):
             v = _extract_entry(df=df, n=n)
             if current_filter(v):
                 element_lst.append(el)
@@ -230,6 +230,7 @@ def _collect(
                     select_function=select_function,
                     current_filter=current_filter,
                 ),
+                strict=False,
             )
         )
     )

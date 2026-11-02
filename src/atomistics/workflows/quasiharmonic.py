@@ -242,7 +242,9 @@ def _get_thermal_properties_classical(
         t_property_lst = []
         for t in temperatures:
             t_property = 0.0
-            for freqs, w in zip(phono.mesh.frequencies, phono.mesh.weights):
+            for freqs, w in zip(
+                phono.mesh.frequencies, phono.mesh.weights, strict=False
+            ):
                 freqs_ev = np.array(freqs) * THzToEv
                 cond = freqs_ev > cutoff_frequency
                 t_property += (
@@ -307,6 +309,7 @@ class QuasiHarmonicThermalProperties:
                         ]
                     ).T,
                     self._volumes_selected_lst,
+                    strict=False,
                 )
             ]
         )
