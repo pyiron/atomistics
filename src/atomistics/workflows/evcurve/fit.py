@@ -286,8 +286,8 @@ class EnergyVolumeFit:
 
     def __init__(
         self,
-        volume_lst: Optional[np.ndarray] = None,
-        energy_lst: Optional[np.ndarray] = None,
+        volume_lst: np.ndarray | None = None,
+        energy_lst: np.ndarray | None = None,
     ):
         """
         Initialize the EnergyVolumeFit object.
@@ -298,7 +298,7 @@ class EnergyVolumeFit:
         """
         self._volume_lst = volume_lst
         self._energy_lst = energy_lst
-        self._fit_dict: Optional[dict[str, Any]] = None
+        self._fit_dict: dict[str, Any] | None = None
 
     @property
     def volume_lst(self) -> np.ndarray:
@@ -358,8 +358,8 @@ class EnergyVolumeFit:
 
     def _get_volume_and_energy_lst(
         self,
-        volume_lst: Optional[np.ndarray] = None,
-        energy_lst: Optional[np.ndarray] = None,
+        volume_lst: np.ndarray | None = None,
+        energy_lst: np.ndarray | None = None,
     ) -> tuple[np.ndarray, np.ndarray]:
         """
         Internal function to get the vector of volumes and the vector of energies
@@ -413,8 +413,8 @@ class EnergyVolumeFit:
 
     def fit_eos_general(
         self,
-        volume_lst: Optional[np.ndarray] = None,
-        energy_lst: Optional[np.ndarray] = None,
+        volume_lst: np.ndarray | None = None,
+        energy_lst: np.ndarray | None = None,
         fittype: str = "birchmurnaghan",
     ) -> dict:
         """
@@ -437,8 +437,8 @@ class EnergyVolumeFit:
 
     def fit_polynomial(
         self,
-        volume_lst: Optional[np.ndarray] = None,
-        energy_lst: Optional[np.ndarray] = None,
+        volume_lst: np.ndarray | None = None,
+        energy_lst: np.ndarray | None = None,
         fit_order: int = 3,
     ) -> dict:
         """
@@ -572,7 +572,7 @@ class EnergyVolumeFit:
 
 
 def get_energy_volume_curve_fit(
-    volume_lst: Optional[np.ndarray] = None, energy_lst: Optional[np.ndarray] = None
+    volume_lst: np.ndarray | None = None, energy_lst: np.ndarray | None = None
 ) -> EnergyVolumeFit:
     """
     Create an instance of EnergyVolumeFit class with the given volume and energy lists.

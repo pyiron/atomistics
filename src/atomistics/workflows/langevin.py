@@ -16,8 +16,8 @@ def langevin_delta_v(
     time_step: float,
     masses: np.ndarray,
     velocities: np.ndarray,
-    damping_timescale: Optional[float] = None,
-    rng: Optional[np.random.Generator] = None,
+    damping_timescale: float | None = None,
+    rng: np.random.Generator | None = None,
 ) -> np.ndarray:
     """
     Velocity changes due to the Langevin thermostat.
@@ -68,7 +68,7 @@ def get_initial_velocities(
     temperature: float,
     masses: np.ndarray,
     overheat_fraction: float = 2.0,
-    rng: Optional[np.random.Generator] = None,
+    rng: np.random.Generator | None = None,
 ) -> np.ndarray:
     """
     Generate initial velocities for the Langevin thermostat.
@@ -150,7 +150,7 @@ class LangevinWorkflow(Workflow):
         overheat_fraction: float = 2.0,
         damping_timescale: float = 100.0,
         time_step: int = 1,
-        seed: Optional[int] = None,
+        seed: int | None = None,
     ):
         self.structure = structure
         self.temperature = temperature
@@ -168,7 +168,7 @@ class LangevinWorkflow(Workflow):
             rng=self.rng,
         )
         self.gamma = self.masses / self.damping_timescale
-        self.forces: Optional[np.ndarray] = None
+        self.forces: np.ndarray | None = None
 
     def generate_structures(self) -> dict[str, dict[int, Atoms]]:
         """

@@ -50,10 +50,10 @@ def get_thermal_properties_for_quasi_harmonic_approximation(
     t_min: float = 1.0,
     t_max: float = 1500.0,
     t_step: float = 50.0,
-    temperatures: Optional[np.ndarray] = None,
-    cutoff_frequency: Optional[float] = None,
+    temperatures: np.ndarray | None = None,
+    cutoff_frequency: float | None = None,
     pretend_real: bool = False,
-    band_indices: Optional[np.ndarray] = None,
+    band_indices: np.ndarray | None = None,
     is_projection: bool = False,
     quantum_mechanical: bool = True,
     output_keys: tuple[str, ...] = OutputThermodynamic.keys(),
@@ -165,10 +165,10 @@ def _get_thermal_properties_quantum_mechanical(
     t_min: float = 1.0,
     t_max: float = 1500.0,
     t_step: float = 50.0,
-    temperatures: Optional[np.ndarray] = None,
-    cutoff_frequency: Optional[float] = None,
+    temperatures: np.ndarray | None = None,
+    cutoff_frequency: float | None = None,
     pretend_real: bool = False,
-    band_indices: Optional[np.ndarray] = None,
+    band_indices: np.ndarray | None = None,
     is_projection: bool = False,
     output_keys: tuple[str, ...] = OutputThermodynamic.keys(),
 ) -> dict:
@@ -213,8 +213,8 @@ def _get_thermal_properties_classical(
     t_min: float = 1.0,
     t_max: float = 1500.0,
     t_step: float = 50.0,
-    temperatures: Optional[np.ndarray] = None,
-    cutoff_frequency: Optional[float] = None,
+    temperatures: np.ndarray | None = None,
+    cutoff_frequency: float | None = None,
 ) -> dict:
     """
     Returns thermal properties at constant volume in the given temperature range. Can only be called after job
@@ -242,7 +242,9 @@ def _get_thermal_properties_classical(
         t_property_lst = []
         for t in temperatures:
             t_property = 0.0
-            for freqs, w in zip(phono.mesh.frequencies, phono.mesh.weights):
+            for freqs, w in zip(
+                phono.mesh.frequencies, phono.mesh.weights, strict=False
+            ):
                 freqs_ev = np.array(freqs) * THzToEv
                 cond = freqs_ev > cutoff_frequency
                 t_property += (
@@ -307,6 +309,7 @@ class QuasiHarmonicThermalProperties:
                         ]
                     ).T,
                     self._volumes_selected_lst,
+                    strict=False,
                 )
             ]
         )
@@ -359,11 +362,11 @@ class QuasiHarmonicThermalProperties:
 
 def get_tasks_for_quasi_harmonic_approximation(
     structure: Atoms,
-    vol_range: Optional[float] = None,
-    num_points: Optional[int] = None,
-    strain_lst: Optional[list[float]] = None,
+    vol_range: float | None = None,
+    num_points: int | None = None,
+    strain_lst: list[float] | None = None,
     displacement: float = 0.01,
-    number_of_snapshots: Optional[int] = None,
+    number_of_snapshots: int | None = None,
     interaction_range: float = 10.0,
 ) -> tuple[dict[str, dict[Any, Atoms]], dict[str, Any]]:
     """
@@ -430,7 +433,7 @@ def analyse_results_for_quasi_harmonic_approximation(
     qh_dict: dict | None,
     output_dict: dict,
     dos_mesh: int = 20,
-    number_of_snapshots: Optional[int] = None,
+    number_of_snapshots: int | None = None,
     output_keys: tuple[str, ...] = ("force_constants", "mesh_dict"),
 ) -> tuple[dict, dict]:
     """
@@ -477,8 +480,8 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         interaction_range: float = 10.0,
         displacement: float = 0.01,
         dos_mesh: int = 20,
-        primitive_matrix: Optional[np.ndarray] = None,
-        number_of_snapshots: Optional[int] = None,
+        primitive_matrix: np.ndarray | None = None,
+        number_of_snapshots: int | None = None,
     ):
         """
         Initialize the QuasiHarmonicWorkflow.
@@ -564,13 +567,13 @@ class QuasiHarmonicWorkflow(EnergyVolumeCurveWorkflow):
         t_min: float = 1.0,
         t_max: float = 1500.0,
         t_step: float = 50.0,
-        temperatures: Optional[np.ndarray] = None,
+        temperatures: np.ndarray | None = None,
         constant_volume: bool = False,
         output_keys: tuple[str, ...] = OutputThermodynamic.keys(),
         *,
-        cutoff_frequency: Optional[float] = None,
+        cutoff_frequency: float | None = None,
         pretend_real: bool = False,
-        band_indices: Optional[np.ndarray] = None,
+        band_indices: np.ndarray | None = None,
         is_projection: bool = False,
         quantum_mechanical: bool = True,
     ) -> dict:

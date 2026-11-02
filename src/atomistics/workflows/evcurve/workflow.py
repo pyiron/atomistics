@@ -25,7 +25,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         fit_order: int = 3,
         vol_range: float = 0.05,
         axes: tuple[str, str, str] = ("x", "y", "z"),
-        strains: Optional[list[float]] = None,
+        strains: list[float] | None = None,
     ):
         """
         Initialize the EnergyVolumeCurveWorkflow object.
@@ -106,7 +106,7 @@ class EnergyVolumeCurveWorkflow(Workflow):
         t_min: float = 1.0,
         t_max: float = 1500.0,
         t_step: float = 50.0,
-        temperatures: Optional[np.ndarray] = None,
+        temperatures: np.ndarray | None = None,
         constant_volume: bool = False,
         output_keys: tuple[str, ...] = OutputThermodynamic.keys(),
     ) -> dict[str, Any]:

@@ -26,8 +26,8 @@ def _generate_input(
     structure: Atoms,
     maxSteps: int = 100,
     energy_cutoff_in_eV: float = 500.0,
-    kpoint_coords: Optional[list[float]] = None,
-    kpoint_folding: Optional[list[int]] = None,
+    kpoint_coords: list[float] | None = None,
+    kpoint_folding: list[int] | None = None,
 ):
     """
     Build a SphinxDFT input object for a PAW calculation.
@@ -122,8 +122,8 @@ def optimize_positions_with_sphinxdft(
     mode: str = "linQN",
     dEnergy: float = 1.0e-6,
     max_ionic_steps: int = 50,
-    kpoint_coords: Optional[list[float]] = None,
-    kpoint_folding: Optional[list[int]] = None,
+    kpoint_coords: list[float] | None = None,
+    kpoint_folding: list[int] | None = None,
 ) -> Atoms:
     """
     Relax atomic positions with SphinxDFT (cell fixed).
@@ -181,8 +181,8 @@ def calc_static_with_sphinxdft(
     executable_function: Callable[[str], object],
     max_electronic_steps: int = 100,
     energy_cutoff_in_eV: float = 500.0,
-    kpoint_coords: Optional[list[float]] = None,
-    kpoint_folding: Optional[list[int]] = None,
+    kpoint_coords: list[float] | None = None,
+    kpoint_folding: list[int] | None = None,
     output_keys=OutputStatic.keys(),
 ) -> dict:
     """
@@ -235,9 +235,9 @@ def evaluate_with_sphinx(
     executable_function: Callable[[str], object],
     max_electronic_steps: int = 100,
     energy_cutoff_in_eV: float = 500,
-    kpoint_coords: Optional[list[float]] = None,
-    kpoint_folding: Optional[list[int]] = None,
-    sphinx_optimizer_kwargs: Optional[dict] = None,
+    kpoint_coords: list[float] | None = None,
+    kpoint_folding: list[int] | None = None,
+    sphinx_optimizer_kwargs: dict | None = None,
 ) -> dict:
     """
     Evaluate a task dictionary using SphinxDFT and return results for all requested tasks.

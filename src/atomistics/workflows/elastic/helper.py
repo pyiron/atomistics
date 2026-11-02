@@ -178,7 +178,7 @@ def _get_elastic_matrix(
     LC: str,
     fit_order: int = 2,
     zero_strain_job_name: str = "s_e_0",
-) -> tuple[np.ndarray, np.ndarray, list[list[tuple[float, float]]], Optional[float]]:
+) -> tuple[np.ndarray, np.ndarray, list[list[tuple[float, float]]], float | None]:
     """
     Calculate the elastic matrix and other properties.
 
@@ -197,7 +197,7 @@ def _get_elastic_matrix(
     if "energy" in output_dict:
         output_dict = output_dict["energy"]
 
-    ene0: Optional[float] = None
+    ene0: float | None = None
     if 0.0 in epss:
         ene0 = output_dict[zero_strain_job_name]
     strain_energy: list[list[tuple[float, float]]] = []

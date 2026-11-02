@@ -1,5 +1,5 @@
 [build-system]
-requires = ["ase", "numpy", "scipy", "spglib", "hatchling==1.32.4", "hatch-vcs==0.5.0"]
+requires = ["ase", "numpy", "scipy", "spglib", "hatchling==1.33.0", "hatch-vcs==0.5.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -11,18 +11,17 @@ authors = [
 readme = "README.md"
 license = { file = "LICENSE" }
 keywords = ["pyiron"]
-requires-python = ">=3.9, <3.15"
+requires-python = ">=3.11, <3.15"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Topic :: Scientific/Engineering :: Physics",
     "License :: OSI Approved :: BSD License",
     "Intended Audience :: Science/Research",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
     "ase==3.29.0",

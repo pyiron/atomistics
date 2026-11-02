@@ -15,12 +15,12 @@ class ThermoBulk:
     kB = 1 / scipy.constants.physical_constants["Boltzmann constant in eV/K"][0]
 
     def __init__(self):
-        self._volumes: Optional[np.ndarray] = None
-        self._temperatures: Optional[np.ndarray] = None
-        self._energies: Optional[np.ndarray] = None
-        self._entropy: Optional[np.ndarray] = None
-        self._pressure: Optional[np.ndarray] = None
-        self._num_atoms: Optional[int] = None
+        self._volumes: np.ndarray | None = None
+        self._temperatures: np.ndarray | None = None
+        self._energies: np.ndarray | None = None
+        self._entropy: np.ndarray | None = None
+        self._pressure: np.ndarray | None = None
+        self._num_atoms: int | None = None
 
         self._fit_order = 3
 
@@ -234,7 +234,7 @@ class ThermoBulk:
     def set_volumes(
         self,
         volume_min: float,
-        volume_max: Optional[float] = None,
+        volume_max: float | None = None,
         volume_steps: int = 10,
     ):
         """
@@ -259,9 +259,7 @@ class ThermoBulk:
         x_grid, y_grid = np.meshgrid(self.volumes, self.temperatures)
         return x_grid, y_grid
 
-    def get_minimum_energy_path(
-        self, pressure: Optional[np.ndarray] = None
-    ) -> np.ndarray:
+    def get_minimum_energy_path(self, pressure: np.ndarray | None = None) -> np.ndarray:
         """
         Get the minimum energy path.
 
@@ -286,7 +284,7 @@ class ThermoBulk:
         return np.array(v_min_lst)
 
     def get_free_energy(
-        self, vol: np.ndarray, pressure: Optional[np.ndarray] = None
+        self, vol: np.ndarray, pressure: np.ndarray | None = None
     ) -> np.ndarray:
         """
         Get the free energy.
@@ -303,7 +301,7 @@ class ThermoBulk:
         else:
             raise NotImplementedError()
 
-    def interpolate_volume(self, volumes: np.ndarray, fit_order: Optional[int] = None):
+    def interpolate_volume(self, volumes: np.ndarray, fit_order: int | None = None):
         """
         Interpolate the volumes.
 

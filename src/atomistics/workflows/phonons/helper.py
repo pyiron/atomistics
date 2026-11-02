@@ -15,17 +15,17 @@ class PhonopyProperties:
         self,
         phonopy_instance: Phonopy,
         dos_mesh: int,
-        shift: Optional[np.ndarray] = None,
+        shift: np.ndarray | None = None,
         is_time_reversal: bool = True,
         is_mesh_symmetry: bool = True,
         with_eigenvectors: bool = False,
         with_group_velocities: bool = False,
         is_gamma_center: bool = False,
-        number_of_snapshots: Optional[int] = None,
-        sigma: Optional[float] = None,
-        freq_min: Optional[float] = None,
-        freq_max: Optional[float] = None,
-        freq_pitch: Optional[float] = None,
+        number_of_snapshots: int | None = None,
+        sigma: float | None = None,
+        freq_min: float | None = None,
+        freq_max: float | None = None,
+        freq_pitch: float | None = None,
         use_tetrahedron_method: bool = True,
         npoints: int = 101,
     ):
@@ -66,10 +66,10 @@ class PhonopyProperties:
         self._with_group_velocities = with_group_velocities
         self._is_gamma_center = is_gamma_center
         self._number_of_snapshots = number_of_snapshots
-        self._total_dos: Optional[dict[str, Any]] = None
-        self._band_structure_dict: Optional[dict[str, Any]] = None
-        self._mesh_dict: Optional[dict[str, Any]] = None
-        self._force_constants: Optional[np.ndarray] = None
+        self._total_dos: dict[str, Any] | None = None
+        self._band_structure_dict: dict[str, Any] | None = None
+        self._mesh_dict: dict[str, Any] | None = None
+        self._force_constants: np.ndarray | None = None
 
     def _calc_band_structure(self):
         """
@@ -316,9 +316,9 @@ def restore_magmoms(
 
 def get_tasks_for_harmonic_approximation(
     structure: Atoms,
-    primitive_matrix: Optional[np.ndarray] = None,
+    primitive_matrix: np.ndarray | None = None,
     displacement: float = 0.01,
-    number_of_snapshots: Optional[int] = None,
+    number_of_snapshots: int | None = None,
     interaction_range: float = 10.0,
 ) -> tuple[dict[str, dict[int, Atoms]], Phonopy]:
     """
@@ -366,7 +366,7 @@ def analyse_results_for_harmonic_approximation(
     phonopy: Phonopy,
     output_dict: dict,
     dos_mesh: int = 20,
-    number_of_snapshots: Optional[int] = None,
+    number_of_snapshots: int | None = None,
     output_keys: tuple[str, ...] = OutputPhonons.keys(),
 ) -> dict:
     """
@@ -413,10 +413,10 @@ def get_thermal_properties_for_harmonic_approximation(
     t_min: float = 1.0,
     t_max: float = 1500.0,
     t_step: float = 50.0,
-    temperatures: Optional[np.ndarray] = None,
-    cutoff_frequency: Optional[float] = None,
+    temperatures: np.ndarray | None = None,
+    cutoff_frequency: float | None = None,
     pretend_real: bool = False,
-    band_indices: Optional[np.ndarray] = None,
+    band_indices: np.ndarray | None = None,
     is_projection: bool = False,
     output_keys: tuple[str, ...] = OutputThermodynamic.keys(),
 ) -> dict:
@@ -506,7 +506,7 @@ def get_hesse_matrix(phonopy: Phonopy) -> np.ndarray:
 def plot_dos(
     phonopy_dict: dict,
     *args,
-    axis: Optional[Any] = None,
+    axis: Any | None = None,
     **kwargs,
 ):
     """
@@ -597,9 +597,9 @@ def get_band_structure(
 
 def plot_band_structure(
     phonopy: Phonopy,
-    axis: Optional[Any] = None,
+    axis: Any | None = None,
     *args,
-    label: Optional[str] = None,
+    label: str | None = None,
     **kwargs,
 ):
     """
@@ -637,7 +637,7 @@ def plot_band_structure(
 
     offset = 0.0
     tick_positions = [distances[0][0]]
-    for di, fi, ci in zip(distances, frequencies, path_connections):
+    for di, fi, ci in zip(distances, frequencies, path_connections, strict=False):
         axis.axvline(tick_positions[-1], color="black", linestyle="dotted", alpha=0.5)
         line, *_ = axis.plot(offset + di, fi, *args, **kwargs)
         tick_positions.append(di[-1] + offset)

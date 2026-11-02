@@ -17,7 +17,7 @@ class DebyeThermalProperties:
         t_min: float = 1.0,
         t_max: float = 1500.0,
         t_step: float = 50.0,
-        temperatures: Optional[np.ndarray] = None,
+        temperatures: np.ndarray | None = None,
         constant_volume: bool = False,
         num_steps: int = 50,
     ):
@@ -179,16 +179,16 @@ class DebyeModel:
         self._fit_dict = fit_dict
         self._masses = masses
 
-        self._v_min: Optional[float] = None
-        self._v_max: Optional[float] = None
-        self._num_steps: Optional[int] = None
+        self._v_min: float | None = None
+        self._v_max: float | None = None
+        self._num_steps: int | None = None
 
-        self._volume: Optional[np.ndarray] = None
+        self._volume: np.ndarray | None = None
         self._init_volume()
 
         self.num_steps = num_steps
         self._fit_volume = None
-        self._debye_T: Optional[tuple[np.ndarray, np.ndarray]] = None
+        self._debye_T: tuple[np.ndarray, np.ndarray] | None = None
 
     def _init_volume(self):
         """
@@ -262,7 +262,7 @@ class DebyeModel:
         """
         self._debye_T = None
 
-    def interpolate(self, volumes: Optional[np.ndarray] = None) -> np.ndarray:
+    def interpolate(self, volumes: np.ndarray | None = None) -> np.ndarray:
         """
         Interpolate the energy based on the fit dictionary and volumes.
 
@@ -321,7 +321,7 @@ class DebyeModel:
     def energy_vib(
         self,
         T: np.ndarray,
-        debye_T: Optional[Union[float, np.ndarray]] = None,
+        debye_T: float | np.ndarray | None = None,
         low_T_limit: bool = True,
     ):
         """
@@ -382,7 +382,7 @@ def get_thermal_properties_for_energy_volume_curve(
     t_min: float = 1.0,
     t_max: float = 1500.0,
     t_step: float = 50.0,
-    temperatures: Optional[np.ndarray] = None,
+    temperatures: np.ndarray | None = None,
     constant_volume: bool = False,
     num_steps: int = 50,
     output_keys: tuple = OutputThermodynamic.keys(),
