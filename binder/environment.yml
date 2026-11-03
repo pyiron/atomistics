@@ -4,7 +4,7 @@ dependencies:
 - ase =3.29.0
 - numpy =2.5.3
 - scipy =1.18.1
-- spglib =2.7.0
+- spglib =2.8.0
 - phonopy =4.8.6
 - structuretoolkit =0.1.0
 - seekpath =2.2.2
