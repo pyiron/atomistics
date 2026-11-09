@@ -38,7 +38,7 @@ Repository = "https://github.com/pyiron/atomistics"
 
 [project.optional-dependencies]
 phonopy = [
-    "phonopy==4.8.6",
+    "phonopy==4.10.0",
     "seekpath==2.2.2",
     "structuretoolkit==0.1.0",
 ]
