@@ -3,20 +3,20 @@ channels:
 dependencies:
 - ase =3.23.0
 - dynaphopy =1.17.16
-- gpaw =23.6.0
+- gpaw =24.6.0
 - iprpy-data =2023.07.25
 - jinja2 =3.1.0
-- lammps =2022.06.23
-- lxml =4.9.1
+- lammps =2024.08.29
+- lxml =6.0.2
 - mendeleev =0.12.0
 - numpy =1.26.4
-- pandas =2.0.3
-- phonopy =2.20.0
+- pandas =2.3.3
+- phonopy =4.10.0
 - pylammpsmpi =0.2.1
 - requests =2.24.0
-- scipy =1.11.2
+- scipy =1.16.3
 - seekpath =1.9.0
-- spglib =2.0.2
+- spglib =2.8.0
 - structuretoolkit =0.0.10
 - tqdm =4.44.0
 - lammpsparser =0.0.1
