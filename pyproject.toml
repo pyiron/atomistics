@@ -67,9 +67,6 @@ experimental = [
 sphinxdft = [
     "sphinx-parser==0.1.11"
 ]
-qe = [
-    "pwtools==1.3.0"
-]
 tqdm = [
     "tqdm==4.70.1"
 ]
